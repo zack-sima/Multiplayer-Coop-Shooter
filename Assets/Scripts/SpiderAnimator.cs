@@ -8,6 +8,9 @@ public class SpiderAnimator : MonoBehaviour {
 
 	[SerializeField] private List<Transform> legs;
 
+	//TODO: migrate to separate turret
+	[SerializeField] private Transform turret;
+
 	#endregion
 
 	#region Constants
@@ -67,7 +70,7 @@ public class SpiderAnimator : MonoBehaviour {
 	private void Update() {
 		if (movedLegCountdown > 0) movedLegCountdown -= Time.deltaTime;
 
-		//movement
+		//movement TODO: migrate
 		float speed = 2.5f;
 		if (Input.GetKey(KeyCode.LeftShift)) {
 			speed = 3.5f;
@@ -83,6 +86,14 @@ public class SpiderAnimator : MonoBehaviour {
 		}
 		if (Input.GetKey(KeyCode.D)) {
 			transform.Translate(Vector3.right * Time.deltaTime * speed);
+		}
+
+		//turret TODO: migrate
+		if (Input.GetKey(KeyCode.Q)) {
+			turret.Rotate(0, Time.deltaTime * -200f, 0);
+		}
+		if (Input.GetKey(KeyCode.E)) {
+			turret.Rotate(0, Time.deltaTime * 200f, 0);
 		}
 
 		//leg that hasn't moved for the longest time gets to be moved first to prevent dragging
