@@ -90,10 +90,10 @@ public class SpiderAnimator : MonoBehaviour {
 
 		//turret TODO: migrate
 		if (Input.GetKey(KeyCode.Q)) {
-			turret.Rotate(0, Time.deltaTime * -200f, 0);
+			turret.Rotate(0, Time.deltaTime * -150f, 0);
 		}
 		if (Input.GetKey(KeyCode.E)) {
-			turret.Rotate(0, Time.deltaTime * 200f, 0);
+			turret.Rotate(0, Time.deltaTime * 150f, 0);
 		}
 
 		//leg that hasn't moved for the longest time gets to be moved first to prevent dragging

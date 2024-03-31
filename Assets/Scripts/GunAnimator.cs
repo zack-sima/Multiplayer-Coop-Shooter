@@ -9,6 +9,10 @@ public class GunAnimator : MonoBehaviour {
 	[SerializeField] private Transform gun;
 	[SerializeField] private List<GameObject> muzzleFlashes;
 
+	//TODO: migrate bullet
+	[SerializeField] private GameObject bulletPrefab;
+	[SerializeField] private Transform bulletAnchor;
+
 	#endregion
 
 	#region Members
@@ -45,8 +49,10 @@ public class GunAnimator : MonoBehaviour {
 		//TODO: migrate to human controller
 		if (Input.GetKeyDown(KeyCode.Space)) {
 			AddRecoil();
-		}
 
+			//TODO: temp spawn bullet
+			Instantiate(bulletPrefab, bulletAnchor.transform.position, bulletAnchor.transform.rotation);
+		}
 		if (gunRecoil > 0 && !addingRecoil) {
 			gunRecoil = Mathf.Max(0f, gunRecoil - Time.deltaTime);
 		}
