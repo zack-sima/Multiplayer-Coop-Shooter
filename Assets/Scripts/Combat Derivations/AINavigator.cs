@@ -23,6 +23,9 @@ public class AINavigator : MonoBehaviour {
 	public void SetTarget(Vector3 targetPosition) {
 		agent.SetDestination(targetPosition);
 	}
+	public void SetStopped(bool stopped) {
+		agent.isStopped = stopped;
+	}
 
 	#endregion
 

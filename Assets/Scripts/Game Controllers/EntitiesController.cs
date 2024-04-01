@@ -11,7 +11,7 @@ public class EntitiesController : MonoBehaviour {
 	#region Statics & Consts
 
 	public static EntitiesController instance;
-	public static Entity player; //TODO: spawn player here
+	public static CombatEntity player; //TODO: spawn player here
 
 	//TODO: only set this to true once game loading is done in multiplayer
 	public static bool gameInitialized = true;

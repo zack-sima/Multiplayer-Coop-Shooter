@@ -16,6 +16,12 @@ public class Entity : MonoBehaviour {
 
 	#endregion
 
+	#region Prefabs
+
+	[SerializeField] private GameObject explosionPrefab;
+
+	#endregion
+
 	#region References
 
 	[SerializeField] private RectTransform healthBarRect;
@@ -31,6 +37,10 @@ public class Entity : MonoBehaviour {
 	[SerializeField] private int team;
 	public int GetTeam() { return team; }
 
+	//TODO: set in controller
+	[SerializeField] private bool isPlayer;
+	public bool GetIsPlayer() { return isPlayer; }
+
 	//set in inspector; TODO: change via upgrades, etc & set at init function
 	[SerializeField] private float maxHealth;
 
@@ -39,15 +49,26 @@ public class Entity : MonoBehaviour {
 	//set at awake
 	private float health;
 
+	//for autohealing
+	private float lastDamageTimestamp = 0f;
+
 	#endregion
 
 	#region Callback Functions
 
 	private void EntityDied() {
-		//TODO: if entity is a player (need marking), use separate system of respawns
-		//  and hiding of canvas/hull
 		//TODO: handle networking despawning here
 		Debug.Log("entity has been killed");
+
+		if (this == EntitiesController.player) {
+			//TODO: if entity is a player (need marking), use separate system of respawns
+			//  and hiding of canvas/hull
+			Debug.Log("player needs to respawn/be hidden right now");
+			return;
+		}
+
+		Instantiate(explosionPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
+
 		RemoveEntityFromRegistry();
 		Destroy(gameObject);
 	}
@@ -65,9 +86,15 @@ public class Entity : MonoBehaviour {
 
 	#region Functions
 
+	public void PreventHealing() {
+		lastDamageTimestamp = Time.time;
+	}
 	public void LoseHealth(float damage) {
-		health -= damage;
+		health = Mathf.Max(0f, health - damage);
+
 		UpdateHealthBar();
+		PreventHealing();
+
 		if (health <= 0) EntityDied();
 	}
 
@@ -82,12 +109,18 @@ public class Entity : MonoBehaviour {
 	public virtual void RemoveEntityFromRegistry() {
 		EntitiesController.instance.RemoveFromStaticEntities(this);
 	}
-	private void Awake() {
+	protected virtual void Awake() {
 		healthCanvas.rotation = Camera.main.transform.rotation;
 		health = maxHealth;
 	}
-	private void Start() {
+	protected virtual void Start() {
 		UpdateHealthBar();
+	}
+	protected virtual void Update() {
+		if (isPlayer && health < maxHealth && Time.time - lastDamageTimestamp > 3.5f) {
+			health = Mathf.Min(maxHealth, health + Time.deltaTime * maxHealth / 12f);
+			UpdateHealthBar();
+		}
 	}
 
 	#endregion

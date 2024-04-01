@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6713562672070844821}
   - component: {fileID: 5528947131811420450}
   - component: {fileID: 7694750776747261333}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 1613248798462547781, guid: 4efaef36f6dfe432f8b144b7723b4c54, type: 3}
-  speed: 15
+  speed: 18
   damage: 10
 --- !u!54 &2229630022482374810
 Rigidbody:
@@ -143,7 +143,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3

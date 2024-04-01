@@ -24,9 +24,9 @@ public class Bullet : MonoBehaviour {
 	public void Init(int team) {
 		senderTeam = team;
 	}
-	private void OnCollisionEnter(Collision collision) {
+	private void OnTriggerEnter(Collider other) {
 		//TODO: link with networking
-		if (collision.gameObject.TryGetComponent(out Entity e)) {
+		if (other.gameObject.TryGetComponent(out Entity e)) {
 			if (e.GetTeam() == senderTeam) return;
 
 			e.LoseHealth(damage);

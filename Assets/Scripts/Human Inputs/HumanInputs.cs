@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class HumanInputs : MonoBehaviour {
 
+	#region Constants
+
+	private const bool USE_MOBILE = false;
+
+	#endregion
+
 	#region References
 
 	[SerializeField] private CombatEntity player;
@@ -13,17 +19,20 @@ public class HumanInputs : MonoBehaviour {
 	#region Functions
 
 	void Update() {
+		if (USE_MOBILE) return;
 
-		//TODO: change to use input manager
-
-		if (Input.GetKey(KeyCode.Space)) {
+		if (Input.GetMouseButton(0)) {
 			player.GetTurret().TryFireMainWeapon();
 		}
-		if (Input.GetKey(KeyCode.Q)) {
-			player.GetTurret().RotateTurret(isRight: false);
-		}
-		if (Input.GetKey(KeyCode.E)) {
-			player.GetTurret().RotateTurret(isRight: true);
+
+		//point to mouse
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+		if (Physics.Raycast(ray, out RaycastHit hit)) {
+			Vector2 diff = new(hit.point.x - player.transform.position.x,
+				hit.point.z - player.transform.position.z);
+			player.GetTurret().SetTargetTurretRotation(
+				Mathf.Atan2(diff.x, diff.y) * Mathf.Rad2Deg
+			);
 		}
 		if (Input.GetKey(KeyCode.W)) {
 			player.GetHull().Move(Vector3.forward);
