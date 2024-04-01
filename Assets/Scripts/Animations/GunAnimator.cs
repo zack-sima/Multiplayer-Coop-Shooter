@@ -2,16 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GunAnimator : MonoBehaviour {
+public class GunAnimator : TurretAnimatorBase {
 
 	#region References
 
 	[SerializeField] private Transform gun;
 	[SerializeField] private List<GameObject> muzzleFlashes;
-
-	//TODO: migrate bullet
-	[SerializeField] private GameObject bulletPrefab;
-	[SerializeField] private Transform bulletAnchor;
 
 	#endregion
 
@@ -44,15 +40,10 @@ public class GunAnimator : MonoBehaviour {
 		}
 		addingRecoil = false;
 	}
-
+	public override void FireMainWeapon() {
+		AddRecoil();
+	}
 	void Update() {
-		//TODO: migrate to human controller
-		if (Input.GetKeyDown(KeyCode.Space)) {
-			AddRecoil();
-
-			//TODO: temp spawn bullet
-			Instantiate(bulletPrefab, bulletAnchor.transform.position, bulletAnchor.transform.rotation);
-		}
 		if (gunRecoil > 0 && !addingRecoil) {
 			gunRecoil = Mathf.Max(0f, gunRecoil - Time.deltaTime);
 		}

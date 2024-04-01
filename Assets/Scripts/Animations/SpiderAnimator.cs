@@ -2,14 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpiderAnimator : MonoBehaviour {
+public class SpiderAnimator : HullAnimatorBase {
 
 	#region References
 
 	[SerializeField] private List<Transform> legs;
-
-	//TODO: migrate to separate turret
-	[SerializeField] private Transform turret;
 
 	#endregion
 
@@ -69,32 +66,6 @@ public class SpiderAnimator : MonoBehaviour {
 
 	private void Update() {
 		if (movedLegCountdown > 0) movedLegCountdown -= Time.deltaTime;
-
-		//movement TODO: migrate
-		float speed = 2.5f;
-		if (Input.GetKey(KeyCode.LeftShift)) {
-			speed = 3.5f;
-		}
-		if (Input.GetKey(KeyCode.W)) {
-			transform.Translate(Vector3.forward * Time.deltaTime * speed);
-		}
-		if (Input.GetKey(KeyCode.S)) {
-			transform.Translate(Vector3.back * Time.deltaTime * speed);
-		}
-		if (Input.GetKey(KeyCode.A)) {
-			transform.Translate(Vector3.left * Time.deltaTime * speed);
-		}
-		if (Input.GetKey(KeyCode.D)) {
-			transform.Translate(Vector3.right * Time.deltaTime * speed);
-		}
-
-		//turret TODO: migrate
-		if (Input.GetKey(KeyCode.Q)) {
-			turret.Rotate(0, Time.deltaTime * -150f, 0);
-		}
-		if (Input.GetKey(KeyCode.E)) {
-			turret.Rotate(0, Time.deltaTime * 150f, 0);
-		}
 
 		//leg that hasn't moved for the longest time gets to be moved first to prevent dragging
 		List<Vector3> queuedLegPositions = new();
