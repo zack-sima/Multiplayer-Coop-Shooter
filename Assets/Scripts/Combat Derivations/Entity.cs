@@ -60,7 +60,7 @@ public class Entity : MonoBehaviour {
 		//TODO: handle networking despawning here
 		Debug.Log("entity has been killed");
 
-		if (this == EntitiesController.player) {
+		if (this == EntityController.player) {
 			//TODO: if entity is a player (need marking), use separate system of respawns
 			//  and hiding of canvas/hull
 			Debug.Log("player needs to respawn/be hidden right now");
@@ -75,7 +75,7 @@ public class Entity : MonoBehaviour {
 	private void UpdateHealthBar() {
 		healthBarRect.localScale = new Vector2(health / maxHealth, 1f);
 
-		if (GetTeam() == EntitiesController.player.GetTeam()) {
+		if (GetTeam() == EntityController.player.GetTeam()) {
 			healthBarRect.GetComponent<Image>().color = Color.green;
 		} else {
 			healthBarRect.GetComponent<Image>().color = Color.red;
@@ -104,10 +104,10 @@ public class Entity : MonoBehaviour {
 	}
 	//adds to/removes from staticEntities list in EntitiesController (combat overrides these functions)
 	public virtual void AddEntityToRegistry() {
-		EntitiesController.instance.AddToStaticEntities(this);
+		EntityController.instance.AddToStaticEntities(this);
 	}
 	public virtual void RemoveEntityFromRegistry() {
-		EntitiesController.instance.RemoveFromStaticEntities(this);
+		EntityController.instance.RemoveFromStaticEntities(this);
 	}
 	protected virtual void Awake() {
 		healthCanvas.rotation = Camera.main.transform.rotation;

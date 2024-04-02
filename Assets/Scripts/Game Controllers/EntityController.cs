@@ -6,11 +6,11 @@ using UnityEngine;
 /// Keeps a catalog of all entities (players, AI, etc) that exist in the game
 /// </summary>
 
-public class EntitiesController : MonoBehaviour {
+public class EntityController : MonoBehaviour {
 
 	#region Statics & Consts
 
-	public static EntitiesController instance;
+	public static EntityController instance;
 	public static CombatEntity player; //TODO: spawn player here
 
 	//TODO: only set this to true once game loading is done in multiplayer

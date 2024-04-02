@@ -71,7 +71,7 @@ public class AIBrain : MonoBehaviour {
 	private void Update() {
 		//TODO: test for navigator
 		if (target == null) {
-			target = EntitiesController.player;
+			target = EntityController.player;
 		} else {
 			entity.GetTurret().SetTargetTurretRotation(
 				Mathf.Atan2(target.transform.position.x - transform.position.x,

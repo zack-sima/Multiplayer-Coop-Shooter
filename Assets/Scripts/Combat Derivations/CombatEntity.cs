@@ -19,10 +19,10 @@ public class CombatEntity : Entity {
 	#region Functions
 
 	public override void AddEntityToRegistry() {
-		EntitiesController.instance.AddToCombatEntities(this);
+		EntityController.instance.AddToCombatEntities(this);
 	}
 	public override void RemoveEntityFromRegistry() {
-		EntitiesController.instance.RemoveFromCombatEntities(this);
+		EntityController.instance.RemoveFromCombatEntities(this);
 	}
 
 	#endregion
