@@ -109,6 +109,13 @@ For a more in-depth overview over what changed check: [Coming from Fusion 1.0](h
 
 ## RC5
 
+### Build 824 (Mar 26, 2024)
+
+**Bug Fixes**
+
+- Fixed: Shared Mode State not being replicated
+- Fixed: RPCs not receiving objects with global AOI
+
 ### Build 823 (Mar 25, 2024)
 
 **Bug Fixes**

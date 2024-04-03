@@ -4,22 +4,20 @@ using UnityEngine;
 
 public class HumanInputs : MonoBehaviour {
 
-	#region Constants
+	#region Constants & Statics
 
+	public static HumanInputs instance;
 	private const bool USE_MOBILE = false;
-
-	#endregion
-
-	#region References
-
-	[SerializeField] private CombatEntity player;
 
 	#endregion
 
 	#region Functions
 
-	void Update() {
-		if (USE_MOBILE) return;
+	//TODO: mobile should still read other inputs here but redirect it
+	private void Update() {
+		if (USE_MOBILE || EntityController.player == null) return;
+
+		CombatEntity player = EntityController.player;
 
 		if (Input.GetMouseButton(0)) {
 			player.GetTurret().TryFireMainWeapon();
@@ -46,6 +44,12 @@ public class HumanInputs : MonoBehaviour {
 		if (Input.GetKey(KeyCode.D)) {
 			player.GetHull().Move(Vector3.right);
 		}
+
+		//TODO: formalize camera tracking
+		Camera.main.transform.position = player.transform.position + new Vector3(0, 10, -4.19f);
+	}
+	private void Awake() {
+		instance = this;
 	}
 
 	#endregion

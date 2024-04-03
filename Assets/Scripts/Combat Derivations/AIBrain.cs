@@ -46,7 +46,7 @@ public class AIBrain : MonoBehaviour {
 				canShootTarget = false;
 				bool veryCloseToTarget = GroundDistance(transform.position, target.transform.position) < 3f;
 
-				//line of sight to target check
+				//line of sight to target check; TODO: prevent other AI from blocking line of sight
 				Vector3 directionToPlayer = target.transform.position - transform.position;
 
 				hitbox.enabled = false;

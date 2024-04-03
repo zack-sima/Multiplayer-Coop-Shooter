@@ -11,7 +11,7 @@ public class EntityController : MonoBehaviour {
 	#region Statics & Consts
 
 	public static EntityController instance;
-	public static CombatEntity player; //TODO: spawn player here
+	public static CombatEntity player;
 
 	//TODO: only set this to true once game loading is done in multiplayer
 	public static bool gameInitialized = true;
@@ -20,18 +20,15 @@ public class EntityController : MonoBehaviour {
 
 	#region References
 
-	//TODO: replace player reference with spawning player prefab
-	[SerializeField] private CombatEntity playerRef;
-
 	#endregion
 
 	#region Members
 
 	//TODO: procedurally spawn EVERYTHING, including player
-	private List<CombatEntity> combatEntities = new();
+	private readonly List<CombatEntity> combatEntities = new();
 	public List<CombatEntity> GetCombatEntities() { return combatEntities; }
 
-	private List<Entity> staticEntities = new();
+	private readonly List<Entity> staticEntities = new();
 	public List<Entity> GetStaticEntities() { return staticEntities; }
 
 	#endregion
@@ -46,9 +43,6 @@ public class EntityController : MonoBehaviour {
 
 	private void Awake() {
 		instance = this;
-
-		//TODO: spawn player here
-		player = playerRef;
 	}
 
 	#endregion

@@ -20,6 +20,7 @@ public class Hull : MonoBehaviour {
 	#region Members
 
 	[SerializeField] private float speed;
+	public float GetSpeed() { return speed; }
 
 	#endregion
 
