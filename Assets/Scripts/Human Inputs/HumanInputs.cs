@@ -20,7 +20,7 @@ public class HumanInputs : MonoBehaviour {
 		CombatEntity player = EntityController.player;
 
 		if (Input.GetMouseButton(0)) {
-			player.GetTurret().TryFireMainWeapon();
+			player.TryFireMainWeapon();
 		}
 
 		//point to mouse

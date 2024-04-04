@@ -278,7 +278,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 874687f608b5841ee87bdd31f53fbe03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entity: {fileID: 3340661201575814219}
   animator: {fileID: 1663178819477477360}
   bulletAnchor: {fileID: 1109796582540023061}
   bulletPrefab: {fileID: 8601614415527540211, guid: fdc1978cc2d3b467ca08c2272a851337, type: 3}
@@ -355,9 +354,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 8446013055927753855, guid: f38fb189f42d947339efe6ce80c9c8c1, type: 3}
+  networker: {fileID: -1196544977470462147}
   healthBarRect: {fileID: 8950590745397680453}
   healthCanvas: {fileID: 8097916185287043902}
-  team: 0
+  teamMaterials: {fileID: 11400000, guid: faa23109d9fc044828b87850367187b7, type: 2}
   isPlayer: 1
   maxHealth: 1000
   healthBarType: 0
@@ -441,7 +441,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70e98c4928e4942f1ba86b92f2eae327, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 3340661201575814219}
+  mainEntity: {fileID: 3340661201575814219}
+  optionalCombatEntity: {fileID: 3340661201575814219}
+  isPlayer: 1
 --- !u!1 &746048456200575199
 GameObject:
   m_ObjectHideFlags: 0
@@ -1208,6 +1210,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac59a0275706c43c7b0ed58997e9d029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamColorRenderers:
+  - {fileID: 1054007341239735496}
+  - {fileID: 3531539039502419396}
+  - {fileID: 4007374939705087286}
+  - {fileID: 1554711364232972423}
+  - {fileID: 5627078319893534020}
+  - {fileID: 832685476007582581}
+  - {fileID: 4119434486087277020}
   legs:
   - {fileID: 2408242024662183644}
   - {fileID: 5394259873057329048}

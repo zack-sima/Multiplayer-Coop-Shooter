@@ -6,7 +6,6 @@ public class Turret : MonoBehaviour {
 
 	#region References
 
-	[SerializeField] private CombatEntity entity;
 	[SerializeField] private TurretAnimatorBase animator;
 	[SerializeField] private Transform bulletAnchor;
 
@@ -51,12 +50,10 @@ public class Turret : MonoBehaviour {
 		targetRotation = rotation;
 		useTargetRotation = true;
 	}
-
-	//TODO: sync to networking
-	public void TryFireMainWeapon() {
-		if (shootTimer > 0) return; //can't shoot yet
-
-		entity.PreventHealing();
+	//synced to networking, call only by local input;
+	//this function can be called in a framework where the turret is not a sub-part of a Networked Entity
+	public GameObject TryFireMainWeapon(int team, int bulletId = 0, CombatEntity optionalSender = null) {
+		if (shootTimer > 0) return null; //can't shoot yet
 
 		shootTimer += shootSpeed;
 
@@ -64,8 +61,24 @@ public class Turret : MonoBehaviour {
 			Quaternion.Euler(bulletAnchor.eulerAngles.x, bulletAnchor.eulerAngles.y + Random.Range(
 			-shootSpread / 2f, shootSpread / 2f), bulletAnchor.eulerAngles.z)).GetComponent<Bullet>();
 
-		b.Init(entity.GetTeam());
+		b.Init(optionalSender, team, bulletId, true);
+
 		animator.FireMainWeapon();
+
+		return b.gameObject;
+	}
+	//called by non-local clients' RPCs; this function must be called in the networked-structure
+	public GameObject NonLocalFireWeapon(CombatEntity sender, int team, int bulletId) {
+		animator.FireMainWeapon();
+
+		Bullet b = Instantiate(bulletPrefab, bulletAnchor.position,
+			Quaternion.Euler(bulletAnchor.eulerAngles.x, bulletAnchor.eulerAngles.y + Random.Range(
+			-shootSpread / 2f, shootSpread / 2f), bulletAnchor.eulerAngles.z)).GetComponent<Bullet>();
+
+		//not isLocal makes the bullet harmless and just self-destroy
+		b.Init(sender, team, bulletId, isLocal: false);
+
+		return b.gameObject;
 	}
 
 	private void Update() {

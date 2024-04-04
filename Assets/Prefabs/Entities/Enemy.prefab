@@ -188,6 +188,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac59a0275706c43c7b0ed58997e9d029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  teamColorRenderers: []
   legs:
   - {fileID: 52280438841839393}
   - {fileID: 5509573607134383816}
@@ -679,6 +680,8 @@ GameObject:
   - component: {fileID: 6567418196016060889}
   - component: {fileID: 8237030527633578300}
   - component: {fileID: 8195403455364224122}
+  - component: {fileID: 3905861489651218701}
+  - component: {fileID: 7198635240350548772}
   m_Layer: 6
   m_Name: Enemy
   m_TagString: Untagged
@@ -716,9 +719,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 8446013055927753855, guid: f38fb189f42d947339efe6ce80c9c8c1, type: 3}
+  networker: {fileID: 7198635240350548772}
   healthBarRect: {fileID: 6817933767653650959}
   healthCanvas: {fileID: 6503406538545106281}
-  team: 1
+  teamMaterials: {fileID: 11400000, guid: faa23109d9fc044828b87850367187b7, type: 2}
   isPlayer: 0
   maxHealth: 100
   healthBarType: 0
@@ -796,6 +800,39 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &3905861489651218701
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3237762160941215948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SortKey: 2168571475
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 7198635240350548772}
+--- !u!114 &7198635240350548772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3237762160941215948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70e98c4928e4942f1ba86b92f2eae327, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainEntity: {fileID: 1421494945761060084}
+  optionalCombatEntity: {fileID: 1421494945761060084}
+  isPlayer: 0
 --- !u!1 &3244282421466051850
 GameObject:
   m_ObjectHideFlags: 0
@@ -2291,7 +2328,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 874687f608b5841ee87bdd31f53fbe03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entity: {fileID: 1421494945761060084}
   animator: {fileID: 2220431015018140730}
   bulletAnchor: {fileID: 6682860868800584549}
   bulletPrefab: {fileID: 8601614415527540211, guid: fdc1978cc2d3b467ca08c2272a851337, type: 3}

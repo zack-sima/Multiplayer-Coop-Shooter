@@ -16,8 +16,58 @@ public class CombatEntity : Entity {
 
 	#endregion
 
+	#region Members
+
+	//unique bulletid
+	private int bulletsFired = 0;
+
+	//keeps track of bullets spawned so when an RPC is called to destroy nonlocal
+	private readonly Dictionary<int, GameObject> bullets = new();
+	public void AddBullet(int bulletId, GameObject bulletRef) {
+		bullets.TryAdd(bulletId, bulletRef);
+	}
+	public void RemoveBullet(int bulletId) {
+		if (bullets.ContainsKey(bulletId)) {
+			GameObject bullet = bullets[bulletId];
+			bullets.Remove(bulletId);
+
+			//NOTE: this must be after removing the bullet from the dictionary
+			//because DestroyBulletEffect attempts to remove the bullet again (for non-local players)
+			if (bullet != null) {
+				bullet.GetComponent<Bullet>().DestroyBulletEffect();
+			}
+		}
+	}
+
+	#endregion
+
 	#region Functions
 
+	//non-local bullet just for decorative purposes
+	public void NonLocalFireMainWeapon(int bulletId) {
+		GameObject b = turret.NonLocalFireWeapon(this, GetTeam(), bulletId);
+
+		if (b == null) return;
+
+		AddBullet(bulletId, b);
+	}
+	//the one that actually creates a bullet that matters
+	public void TryFireMainWeapon() {
+		GameObject b = turret.TryFireMainWeapon(GetTeam(), bulletsFired, optionalSender: this);
+
+		if (b == null) return;
+
+		PreventHealing();
+		AddBullet(bulletsFired, b);
+
+		GetNetworker().RPC_FireWeapon(bulletsFired);
+
+		bulletsFired++;
+	}
+	public override void SetTeam(int newTeam) {
+		base.SetTeam(newTeam);
+		hull.GetAnimator().SetTeamMaterial(GetTeamMaterials().GetTeamColor(newTeam));
+	}
 	public override void AddEntityToRegistry() {
 		EntityController.instance.AddToCombatEntities(this);
 	}

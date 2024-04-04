@@ -50,6 +50,7 @@ public class AIBrain : MonoBehaviour {
 				Vector3 directionToPlayer = target.transform.position - transform.position;
 
 				hitbox.enabled = false;
+				//TODO: disable all hitboxes of behaviours of the same team
 				if (Physics.Raycast(transform.position, directionToPlayer.normalized, out RaycastHit hit, maxRange)) {
 					if (hit.collider.gameObject == target.gameObject) {
 						canShootTarget = true;
@@ -65,11 +66,9 @@ public class AIBrain : MonoBehaviour {
 			yield return new WaitForSeconds(0.25f);
 		}
 	}
-
-	//TODO: for networking, give pathfinding target-setting authority to only ONE player (lowest-id?)
-	//to prevent AI decisions from overriding each other
 	private void Update() {
-		//TODO: test for navigator
+		if (!entity.GetNetworker().Runner.IsSharedModeMasterClient) return;
+
 		if (target == null) {
 			target = EntityController.player;
 		} else {
@@ -79,7 +78,7 @@ public class AIBrain : MonoBehaviour {
 			);
 		}
 		if (canShootTarget) {
-			entity.GetTurret().TryFireMainWeapon();
+			entity.TryFireMainWeapon();
 		}
 	}
 	private void Start() {

@@ -24,18 +24,16 @@ public class Entity : MonoBehaviour {
 
 	#region References
 
+	[SerializeField] private NetworkedEntity networker;
+	public NetworkedEntity GetNetworker() { return networker; }
 	[SerializeField] private RectTransform healthBarRect;
 	[SerializeField] private RectTransform healthCanvas;
+	[SerializeField] private TeamMaterialManager teamMaterials;
+	public TeamMaterialManager GetTeamMaterials() { return teamMaterials; }
 
 	#endregion
 
 	#region Members
-
-	//determines whether bullets pass by, health bar color, etc;
-	//TODO: set at init function
-	//TODO: make team -1 be for neutral (explosion barrels, etc)
-	[SerializeField] private int team;
-	public int GetTeam() { return team; }
 
 	//TODO: set in controller
 	[SerializeField] private bool isPlayer;
@@ -43,21 +41,37 @@ public class Entity : MonoBehaviour {
 
 	//set in inspector; TODO: change via upgrades, etc & set at init function
 	[SerializeField] private float maxHealth;
+	public float GetMaxHealth() { return maxHealth; }
 
 	[SerializeField] private HealthBarType healthBarType;
 
-	//set at awake
-	private float health;
+	//NOTE: if networked, this field is not used
+	private float localHealth;
 
 	//for autohealing
 	private float lastDamageTimestamp = 0f;
+	public float GetLastDamageTimestamp() { return lastDamageTimestamp; }
 
 	#endregion
 
 	#region Callback Functions
 
+	public int GetTeam() {
+		return networker.GetTeam();
+	}
+	public virtual void SetTeam(int newTeam) {
+		if (newTeam == EntityController.player.GetTeam()) {
+			healthBarRect.GetComponent<Image>().color = Color.green;
+		} else {
+			healthBarRect.GetComponent<Image>().color = Color.red;
+		}
+	}
+	public float GetHealth() {
+		return networker.GetHealth();
+	}
 	private void EntityDied() {
-		//TODO: handle networking despawning here
+		//TODO: handle networking despawning here: add networked despawn & a "onstopserver" to
+		//remove self from list of entities
 		Debug.Log("entity has been killed");
 
 		if (this == EntityController.player) {
@@ -70,16 +84,11 @@ public class Entity : MonoBehaviour {
 		Instantiate(explosionPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
 
 		RemoveEntityFromRegistry();
+
 		Destroy(gameObject);
 	}
-	private void UpdateHealthBar() {
-		healthBarRect.localScale = new Vector2(health / maxHealth, 1f);
-
-		if (GetTeam() == EntityController.player.GetTeam()) {
-			healthBarRect.GetComponent<Image>().color = Color.green;
-		} else {
-			healthBarRect.GetComponent<Image>().color = Color.red;
-		}
+	public void UpdateHealthBar() {
+		healthBarRect.localScale = new Vector2(GetHealth() / maxHealth, 1f);
 	}
 
 	#endregion
@@ -89,18 +98,11 @@ public class Entity : MonoBehaviour {
 	public void PreventHealing() {
 		lastDamageTimestamp = Time.time;
 	}
-	public void LoseHealth(float damage) {
-		health = Mathf.Max(0f, health - damage);
-
+	public void LostHealth() {
 		UpdateHealthBar();
 		PreventHealing();
 
-		if (health <= 0) EntityDied();
-	}
-
-	public void Init(int team) {
-		//TODO: initialize health, etc here; called by EntitiesController or whatever spawned this entity
-		this.team = team;
+		if (GetHealth() <= 0) EntityDied();
 	}
 	//adds to/removes from staticEntities list in EntitiesController (combat overrides these functions)
 	public virtual void AddEntityToRegistry() {
@@ -111,16 +113,12 @@ public class Entity : MonoBehaviour {
 	}
 	protected virtual void Awake() {
 		healthCanvas.rotation = Camera.main.transform.rotation;
-		health = maxHealth;
 	}
 	protected virtual void Start() {
 		UpdateHealthBar();
 	}
 	protected virtual void Update() {
-		if (isPlayer && health < maxHealth && Time.time - lastDamageTimestamp > 3.5f) {
-			health = Mathf.Min(maxHealth, health + Time.deltaTime * maxHealth / 12f);
-			UpdateHealthBar();
-		}
+
 	}
 
 	#endregion
