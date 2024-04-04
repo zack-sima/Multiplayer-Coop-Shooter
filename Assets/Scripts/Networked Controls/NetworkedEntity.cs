@@ -4,7 +4,7 @@ using UnityEngine;
 using Fusion;
 
 public class NetworkedEntity : NetworkBehaviour {
-	public static NetworkedEntity instance;
+	public static NetworkedEntity playerInstance;
 
 	#region References
 
@@ -12,7 +12,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	public Entity GetEntity() { return mainEntity; }
 
 	//if the entity is a combat entity, this refers to the same class
-	[SerializeField] private CombatEntity optionalCombatEntity;
+	private CombatEntity optionalCombatEntity = null;
 	public CombatEntity GetCombatEntity() { return optionalCombatEntity; }
 
 	#endregion
@@ -87,10 +87,16 @@ public class NetworkedEntity : NetworkBehaviour {
 		Health = Mathf.Max(0f, Health - damage);
 		mainEntity.LostHealth();
 	}
+	public void DeleteEntity() {
+		Runner.Despawn(Object);
+	}
+	public override void Despawned(NetworkRunner runner, bool hasState) {
+		mainEntity.RemoveEntityFromRegistry();
+	}
 	public override void Spawned() {
 		if (HasStateAuthority) {
 			if (isPlayer) {
-				instance = this;
+				playerInstance = this;
 				EntityController.player = optionalCombatEntity;
 
 				//TODO: add team selection
@@ -107,6 +113,11 @@ public class NetworkedEntity : NetworkBehaviour {
 			TurretRotation = optionalCombatEntity.GetTurret().transform.rotation;
 		}
 	}
+	private void Awake() {
+		if (isPlayer) {
+			optionalCombatEntity = (CombatEntity)mainEntity;
+		}
+	}
 	private void Start() {
 		if (optionalCombatEntity == null) return;
 
@@ -114,7 +125,6 @@ public class NetworkedEntity : NetworkBehaviour {
 		targetTurretRotation = optionalCombatEntity.GetTurret().transform.rotation;
 	}
 	private void Update() {
-		Debug.Log(Team);
 		if (!HasStateAuthority) {
 			//non-local player
 			if (Vector3.Distance(transform.position, targetPosition) < 5f) {

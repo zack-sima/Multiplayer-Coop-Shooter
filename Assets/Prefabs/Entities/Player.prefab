@@ -442,7 +442,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainEntity: {fileID: 3340661201575814219}
-  optionalCombatEntity: {fileID: 3340661201575814219}
   isPlayer: 1
 --- !u!1 &746048456200575199
 GameObject:

@@ -60,6 +60,7 @@ public class Entity : MonoBehaviour {
 		return networker.GetTeam();
 	}
 	public virtual void SetTeam(int newTeam) {
+		if (EntityController.player == null) return;
 		if (newTeam == EntityController.player.GetTeam()) {
 			healthBarRect.GetComponent<Image>().color = Color.green;
 		} else {
@@ -80,13 +81,11 @@ public class Entity : MonoBehaviour {
 			Debug.Log("player needs to respawn/be hidden right now");
 			return;
 		}
-
 		Instantiate(explosionPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
 
-		RemoveEntityFromRegistry();
-
-		Destroy(gameObject);
+		networker.DeleteEntity();
 	}
+
 	public void UpdateHealthBar() {
 		healthBarRect.localScale = new Vector2(GetHealth() / maxHealth, 1f);
 	}

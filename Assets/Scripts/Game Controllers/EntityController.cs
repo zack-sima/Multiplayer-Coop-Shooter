@@ -37,7 +37,9 @@ public class EntityController : MonoBehaviour {
 
 	//entities add/remove from entity lists automatically
 	public void AddToStaticEntities(Entity e) { staticEntities.Add(e); }
-	public void RemoveFromStaticEntities(Entity e) { staticEntities.Remove(e); }
+	public void RemoveFromStaticEntities(Entity e) {
+		if (staticEntities.Contains(e)) staticEntities.Remove(e);
+	}
 	public void AddToCombatEntities(CombatEntity e) { combatEntities.Add(e); }
 	public void RemoveFromCombatEntities(CombatEntity e) { combatEntities.Remove(e); }
 
