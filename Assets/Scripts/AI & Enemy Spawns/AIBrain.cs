@@ -34,6 +34,12 @@ public class AIBrain : MonoBehaviour {
 
 	private IEnumerator Tick() {
 		while (true) {
+			if (!entity.GetNetworker().Runner.IsSharedModeMasterClient &&
+				!entity.GetNetworker().Runner.IsSinglePlayer) {
+				yield return new WaitForSeconds(1f);
+				continue;
+			}
+
 			//TODO: enemies should "lose interest" if a direct line of sight can't be established;
 			//  when no target exists, enemy should wander in a random location (when not moving,
 			//  it should try to sample a random position within the map for ~10 times until it founds one)
@@ -62,12 +68,12 @@ public class AIBrain : MonoBehaviour {
 			} else {
 				navigator.SetStopped(true);
 			}
-
 			yield return new WaitForSeconds(0.25f);
 		}
 	}
 	private void Update() {
-		if (!entity.GetNetworker().Runner.IsSharedModeMasterClient) return;
+		if (!entity.GetNetworker().Runner.IsSharedModeMasterClient &&
+			!entity.GetNetworker().Runner.IsSinglePlayer) return;
 
 		if (target == null) {
 			target = EntityController.player;

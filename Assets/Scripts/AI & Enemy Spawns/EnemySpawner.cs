@@ -15,6 +15,13 @@ public class EnemySpawner : SimulationBehaviour {
 
 	#endregion
 
+	#region Members
+
+	//a hook to FixedUpdateNetwork
+	private bool spawnEnemyLater = false;
+
+	#endregion
+
 	#region Spawn Logic
 
 	private IEnumerator SpawnCycle() {
@@ -23,14 +30,20 @@ public class EnemySpawner : SimulationBehaviour {
 			yield return new WaitForSeconds(5);
 
 			//NOTE: Only proceed 
-			if (NetworkedEntity.playerInstance == null ||
-				!NetworkedEntity.playerInstance.Runner.IsSharedModeMasterClient) continue;
+			if (NetworkedEntity.playerInstance == null || !NetworkedEntity.playerInstance.
+				Runner.IsSharedModeMasterClient && !NetworkedEntity.playerInstance.Runner.IsSinglePlayer) continue;
 
-			SpawnEnemy();
+			spawnEnemyLater = true;
 		}
 	}
 	private void SpawnEnemy() {
 		Runner.Spawn(enemyPrefab, new Vector3(0, 1, 0), Quaternion.identity);
+	}
+	public override void FixedUpdateNetwork() {
+		if (spawnEnemyLater) {
+			spawnEnemyLater = false;
+			SpawnEnemy();
+		}
 	}
 
 	#endregion

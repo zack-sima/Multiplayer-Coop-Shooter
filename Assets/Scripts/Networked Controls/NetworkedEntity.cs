@@ -101,6 +101,7 @@ public class NetworkedEntity : NetworkBehaviour {
 
 				//TODO: add team selection
 				Team = (new List<PlayerRef>(Runner.ActivePlayers).Count + 1) % 2;
+				Health = optionalCombatEntity.GetMaxHealth();
 			}
 			transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 		}
