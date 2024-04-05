@@ -71,7 +71,6 @@ public class Entity : MonoBehaviour {
 		return networker.GetHealth();
 	}
 	private void EntityDied() {
-		//TODO: handle networking despawning here: add networked despawn & a "onstopserver" to
 		//remove self from list of entities
 		Debug.Log("entity has been killed");
 
@@ -81,9 +80,11 @@ public class Entity : MonoBehaviour {
 			Debug.Log("player needs to respawn/be hidden right now");
 			return;
 		}
-		Instantiate(explosionPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
-
 		networker.DeleteEntity();
+	}
+	//called by networked entity right before destroying object
+	public void EntityRemoved() {
+		Instantiate(explosionPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
 	}
 
 	public void UpdateHealthBar() {
@@ -111,6 +112,7 @@ public class Entity : MonoBehaviour {
 		EntityController.instance.RemoveFromStaticEntities(this);
 	}
 	protected virtual void Awake() {
+		AddEntityToRegistry();
 		healthCanvas.rotation = Camera.main.transform.rotation;
 	}
 	protected virtual void Start() {

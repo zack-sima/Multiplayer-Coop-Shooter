@@ -32,18 +32,20 @@ public class HumanInputs : MonoBehaviour {
 				Mathf.Atan2(diff.x, diff.y) * Mathf.Rad2Deg
 			);
 		}
+		Vector3 moveVector = Vector3.zero;
 		if (Input.GetKey(KeyCode.W)) {
-			player.GetHull().Move(Vector3.forward);
+			moveVector += Vector3.forward;
 		}
 		if (Input.GetKey(KeyCode.S)) {
-			player.GetHull().Move(Vector3.back);
+			moveVector += Vector3.back;
 		}
 		if (Input.GetKey(KeyCode.A)) {
-			player.GetHull().Move(Vector3.left);
+			moveVector += Vector3.left;
 		}
 		if (Input.GetKey(KeyCode.D)) {
-			player.GetHull().Move(Vector3.right);
+			moveVector += Vector3.right;
 		}
+		player.GetHull().Move(moveVector);
 
 		//TODO: formalize camera tracking
 		Camera.main.transform.position = player.transform.position + new Vector3(0, 10, -4.19f);

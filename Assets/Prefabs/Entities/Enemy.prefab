@@ -175,7 +175,7 @@ MonoBehaviour:
   optionalRigidbody: {fileID: 0}
   rootTransform: {fileID: 7908501331230498369}
   animator: {fileID: 8518298508420234852}
-  speed: 2.5
+  speed: 3.8
 --- !u!114 &8518298508420234852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -814,7 +814,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SortKey: 2168571475
   ObjectInterest: 1
-  Flags: 262145
+  Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 7198635240350548772}

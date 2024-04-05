@@ -46,11 +46,12 @@ public class SpiderAnimator : HullAnimatorBase {
 
 	#region Functions
 
-	void Awake() {
+	private void Start() {
 		legPositions = new();
 		targetLegPositions = new();
 		standardLegDistances = new();
 		legMoveTimestamps = new();
+		lastPosition = transform.position;
 
 		foreach (Transform t in legs) {
 			legMoveTimestamps.Add(Time.time);
@@ -59,9 +60,6 @@ public class SpiderAnimator : HullAnimatorBase {
 			standardLegDistances.Add(new Vector3(t.position.x - transform.position.x, 0,
 				t.position.z - transform.position.z));
 		}
-	}
-	private void Start() {
-		lastPosition = transform.position;
 	}
 
 	private void Update() {

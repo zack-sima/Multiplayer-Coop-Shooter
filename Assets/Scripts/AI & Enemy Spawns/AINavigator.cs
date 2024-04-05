@@ -26,6 +26,10 @@ public class AINavigator : MonoBehaviour {
 	public void SetStopped(bool stopped) {
 		agent.isStopped = stopped;
 	}
+	public void SetActive(bool isActive) {
+		if (agent.enabled != isActive)
+			agent.enabled = isActive;
+	}
 
 	#endregion
 

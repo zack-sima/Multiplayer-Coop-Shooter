@@ -35,7 +35,7 @@ public class Bullet : MonoBehaviour {
 			if (e.GetTeam() == senderTeam) return;
 			if (senderIsLocal) {
 				NetworkedEntity networker = e.GetNetworker();
-				networker.RPC_TakeDamage(damage);
+				networker.RPC_TakeDamage(networker.Object, damage);
 			}
 		}
 		if (senderIsLocal) {

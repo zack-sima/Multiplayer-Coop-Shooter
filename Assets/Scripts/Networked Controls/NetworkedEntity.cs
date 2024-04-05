@@ -39,10 +39,14 @@ public class NetworkedEntity : NetworkBehaviour {
 	#region Members
 
 	[SerializeField] private bool isPlayer;
+	public bool GetIsPlayer() { return isPlayer; }
 
 	//for non-local clients
 	private Vector3 targetPosition = Vector3.zero;
 	private Quaternion targetTurretRotation = Quaternion.identity;
+
+	//don't update unless initted in spawned
+	private bool initialized = false;
 
 	#endregion
 
@@ -70,20 +74,25 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	#region Functions
 
-	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+	//either is player and has state authority or isn't player and is master client/SP
+	public bool HasSyncAuthority() {
+		return HasStateAuthority && isPlayer || !isPlayer && (Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer);
+	}
+	[Rpc(RpcSources.StateAuthority, RpcTargets.Proxies)]
 	public void RPC_FireWeapon(int bulletId) {
-		if (HasStateAuthority || optionalCombatEntity == null) return;
+		if (HasSyncAuthority() || optionalCombatEntity == null) return;
 		optionalCombatEntity.GetTurret().NonLocalFireWeapon(
 			optionalCombatEntity, mainEntity.GetTeam(), bulletId);
 	}
 	//tries to delete the bullet on non-local clients (nothing happens if already destroyed)
-	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+	[Rpc(RpcSources.StateAuthority, RpcTargets.Proxies)]
 	public void RPC_DestroyBullet(int bulletId) {
-		if (HasStateAuthority || optionalCombatEntity == null) return;
+		if (HasSyncAuthority() || optionalCombatEntity == null) return;
 		optionalCombatEntity.RemoveBullet(bulletId);
 	}
 	[Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-	public void RPC_TakeDamage(float damage) {
+	public void RPC_TakeDamage(NetworkObject target, float damage) {
+		if (target != Object) return;
 		Health = Mathf.Max(0f, Health - damage);
 		mainEntity.LostHealth();
 	}
@@ -91,59 +100,69 @@ public class NetworkedEntity : NetworkBehaviour {
 		Runner.Despawn(Object);
 	}
 	public override void Despawned(NetworkRunner runner, bool hasState) {
+		mainEntity.EntityRemoved();
 		mainEntity.RemoveEntityFromRegistry();
 	}
 	public override void Spawned() {
-		if (HasStateAuthority) {
+		if (HasSyncAuthority()) {
 			if (isPlayer) {
 				playerInstance = this;
 				EntityController.player = optionalCombatEntity;
 
-				//TODO: add team selection
-				Team = (new List<PlayerRef>(Runner.ActivePlayers).Count + 1) % 2;
-				Health = optionalCombatEntity.GetMaxHealth();
+				//TODO: add team selection for pvp
+				Team = 0;//(new List<PlayerRef>(Runner.ActivePlayers).Count + 1) % 2;
+			} else {
+				Team = 1;
 			}
+			Health = optionalCombatEntity.GetMaxHealth();
 			transform.position = new Vector3(transform.position.x, 0, transform.position.z);
+		} else {
+			PositionChanged();
+			TurretRotationChanged();
+			SyncNonLocal();
 		}
 		TeamChanged();
+
+		initialized = true;
 	}
 	public override void FixedUpdateNetwork() {
-		if (HasStateAuthority && isPlayer) {
+		if (!initialized) return;
+
+		if (HasSyncAuthority()) {
 			//update position
 			Position = transform.position;
 			TurretRotation = optionalCombatEntity.GetTurret().transform.rotation;
 		}
 	}
-	private void Awake() {
-		if (isPlayer) {
-			optionalCombatEntity = (CombatEntity)mainEntity;
+	private void SyncNonLocal() {
+		if (Vector3.Distance(transform.position, targetPosition) < 3f) {
+			transform.position = Vector3.MoveTowards(
+				transform.position, targetPosition,
+				optionalCombatEntity.GetHull().GetSpeed() * Time.deltaTime * 1.2f
+			);
+		} else {
+			transform.position = targetPosition;
 		}
 	}
-	private void Start() {
-		if (optionalCombatEntity == null) return;
-
-		targetPosition = transform.position;
-		targetTurretRotation = optionalCombatEntity.GetTurret().transform.rotation;
+	private void Awake() {
+		if (mainEntity is CombatEntity entity) {
+			optionalCombatEntity = entity;
+		}
 	}
 	private void Update() {
-		if (!HasStateAuthority) {
-			//non-local player
-			if (Vector3.Distance(transform.position, targetPosition) < 5f) {
-				transform.position = Vector3.MoveTowards(
-					transform.position, targetPosition,
-					optionalCombatEntity.GetHull().GetSpeed() * Time.deltaTime * 1.2f
-				);
-			} else {
-				transform.position = targetPosition;
-			}
-		} else {
-			//local player
+		if (!initialized) return;
+
+		if (HasSyncAuthority()) {
+			//local entity
 			if (isPlayer && Health < mainEntity.GetMaxHealth() &&
 				Time.time - mainEntity.GetLastDamageTimestamp() > 3.5f) {
 				Health = Mathf.Min(mainEntity.GetMaxHealth(),
 					Health + Time.deltaTime * mainEntity.GetMaxHealth() / 12f);
 				mainEntity.UpdateHealthBar();
 			}
+		} else {
+			//non-local entity
+			SyncNonLocal();
 		}
 	}
 

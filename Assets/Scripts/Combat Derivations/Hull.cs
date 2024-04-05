@@ -31,6 +31,7 @@ public class Hull : MonoBehaviour {
 		if (optionalRigidbody == null) {
 			rootTransform.Translate(speed * Time.deltaTime * direction.normalized);
 		} else {
+			optionalRigidbody.velocity = Vector3.zero;
 			optionalRigidbody.MovePosition(optionalRigidbody.position +
 				speed * Time.deltaTime * direction.normalized);
 		}

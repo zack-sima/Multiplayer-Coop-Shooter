@@ -1196,7 +1196,7 @@ MonoBehaviour:
   optionalRigidbody: {fileID: 9132261980463617282}
   rootTransform: {fileID: 7576585974988101579}
   animator: {fileID: 3998920715072254225}
-  speed: 3
+  speed: 4.5
 --- !u!114 &3998920715072254225
 MonoBehaviour:
   m_ObjectHideFlags: 0

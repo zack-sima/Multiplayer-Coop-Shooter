@@ -34,12 +34,25 @@ public class AIBrain : MonoBehaviour {
 
 	private IEnumerator Tick() {
 		while (true) {
-			if (!entity.GetNetworker().Runner.IsSharedModeMasterClient &&
-				!entity.GetNetworker().Runner.IsSinglePlayer) {
+			//not client master
+			if (!entity.GetNetworker().HasSyncAuthority()) {
+				navigator.SetActive(false);
 				yield return new WaitForSeconds(1f);
 				continue;
-			}
+			} else navigator.SetActive(true);
 
+			//try finding target
+			if (target == null) {
+				float closestDistance = 999;
+				foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
+					if (ce.GetTeam() == entity.GetTeam()) continue;
+					float distance = Vector3.Distance(ce.transform.position, transform.position);
+					if (distance < closestDistance) {
+						closestDistance = distance;
+						target = ce;
+					}
+				}
+			}
 			//TODO: enemies should "lose interest" if a direct line of sight can't be established;
 			//  when no target exists, enemy should wander in a random location (when not moving,
 			//  it should try to sample a random position within the map for ~10 times until it founds one)
@@ -52,18 +65,23 @@ public class AIBrain : MonoBehaviour {
 				canShootTarget = false;
 				bool veryCloseToTarget = GroundDistance(transform.position, target.transform.position) < 3f;
 
-				//line of sight to target check; TODO: prevent other AI from blocking line of sight
+				//line of sight to target check; raycast all prevents other AI from blocking line of sight
 				Vector3 directionToPlayer = target.transform.position - transform.position;
+				directionToPlayer.y = 0;
 
-				hitbox.enabled = false;
-				//TODO: disable all hitboxes of behaviours of the same team
-				if (Physics.Raycast(transform.position, directionToPlayer.normalized, out RaycastHit hit, maxRange)) {
+				RaycastHit[] hits = Physics.RaycastAll(transform.position + Vector3.up,
+					directionToPlayer.normalized, maxRange);
+
+				foreach (var hit in hits) {
 					if (hit.collider.gameObject == target.gameObject) {
 						canShootTarget = true;
+						break;
+					} else if (hit.collider.GetComponent<CombatEntity>() == null &&
+						hit.collider.GetComponent<Bullet>() == null) {
+						//If hit is not a combat entity, break
+						break;
 					}
 				}
-				hitbox.enabled = true;
-
 				navigator.SetStopped(veryCloseToTarget || canShootTarget);
 			} else {
 				navigator.SetStopped(true);
@@ -72,12 +90,9 @@ public class AIBrain : MonoBehaviour {
 		}
 	}
 	private void Update() {
-		if (!entity.GetNetworker().Runner.IsSharedModeMasterClient &&
-			!entity.GetNetworker().Runner.IsSinglePlayer) return;
+		if (!entity.GetNetworker().HasSyncAuthority()) return;
 
-		if (target == null) {
-			target = EntityController.player;
-		} else {
+		if (target != null) {
 			entity.GetTurret().SetTargetTurretRotation(
 				Mathf.Atan2(target.transform.position.x - transform.position.x,
 				target.transform.position.z - transform.position.z) * Mathf.Rad2Deg

@@ -24,7 +24,6 @@ public class EntityController : MonoBehaviour {
 
 	#region Members
 
-	//TODO: procedurally spawn EVERYTHING, including player
 	private readonly List<CombatEntity> combatEntities = new();
 	public List<CombatEntity> GetCombatEntities() { return combatEntities; }
 
@@ -41,7 +40,9 @@ public class EntityController : MonoBehaviour {
 		if (staticEntities.Contains(e)) staticEntities.Remove(e);
 	}
 	public void AddToCombatEntities(CombatEntity e) { combatEntities.Add(e); }
-	public void RemoveFromCombatEntities(CombatEntity e) { combatEntities.Remove(e); }
+	public void RemoveFromCombatEntities(CombatEntity e) {
+		if (combatEntities.Contains(e)) combatEntities.Remove(e);
+	}
 
 	private void Awake() {
 		instance = this;
