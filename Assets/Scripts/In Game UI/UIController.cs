@@ -36,8 +36,9 @@ public class UIController : MonoBehaviour {
 	public void SetGameOverUIEnabled(bool enabled) {
 		gameOverUI.gameObject.SetActive(enabled);
 	}
-	public void SetScoreText(int score) {
-		scoreText.text = $"<color=#dddddd>Score:</color> <color=#aaeeaa>{score}</color>";
+	public void SetScoreAndWaveText(int score, int wave) {
+		scoreText.text = $"<color=#dddddd>Score: <color=#aaeeaa>{score}</color>\n" +
+			$"<color=#dddddd>Wave: <color=#eeeeaa>{wave}";
 	}
 
 	private void Awake() {

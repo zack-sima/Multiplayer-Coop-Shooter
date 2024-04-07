@@ -30,6 +30,13 @@ public class Turret : MonoBehaviour {
 	//in degrees of y-rotation per second
 	[SerializeField] private float rotateSpeed;
 
+	//ex: bomb mech is not rotatable
+	[SerializeField] private bool rotatable;
+	public bool GetIsRotatable() { return rotatable; }
+
+	[SerializeField] private bool proximityExplode;
+	public bool GetIsProximityExploder() { return proximityExplode; }
+
 	//set to shootSpeed
 	private float shootTimer = 0;
 

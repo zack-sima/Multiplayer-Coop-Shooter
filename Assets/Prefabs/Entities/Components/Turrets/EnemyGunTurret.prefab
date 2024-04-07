@@ -58,7 +58,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8306412023698569218, guid: 7affb4ce29449426eabe2ae4c4637b4e, type: 3}
       propertyPath: shootSpread
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

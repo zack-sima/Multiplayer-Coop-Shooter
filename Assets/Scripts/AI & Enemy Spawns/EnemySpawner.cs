@@ -42,20 +42,8 @@ public class EnemySpawner : NetworkBehaviour {
 				continue;
 			}
 
-			//waits until all enemies are dead
-			bool enemiesAlive;
-			do {
-				yield return new WaitForSeconds(0.5f);
-				enemiesAlive = false;
-				foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
-					if (e == null || e.GetIsPlayer()) continue;
-					enemiesAlive = true;
-					break;
-				}
-			} while (enemiesAlive);
-
-			//give players some time after killing all enemies
-			yield return new WaitForSeconds(10f);
+			//if master client is migrated, make sure to wait properly
+			yield return WaitUntilEnemiesDead();
 
 			int currWave = GameStatsSyncer.instance.GetWave();
 			Debug.Log($"Spawning wave {currWave + 1}");
@@ -67,6 +55,28 @@ public class EnemySpawner : NetworkBehaviour {
 				spawnEnemyLater = true;
 				yield return new WaitForSeconds(2f / (currWave + 5f) * 5f);
 			}
+			yield return WaitUntilEnemiesDead();
+		}
+	}
+	private IEnumerator WaitUntilEnemiesDead() {
+		//waits until all enemies are dead
+		bool enemiesAlive;
+		bool waited = false;
+		do {
+			yield return null;
+			enemiesAlive = false;
+			foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
+				if (e == null || e.GetIsPlayer()) continue;
+				enemiesAlive = true;
+				waited = true;
+				break;
+			}
+		} while (enemiesAlive);
+
+		//if waited, means enemies were actually spawned
+		if (waited) {
+			//give players some time after killing all enemies
+			yield return new WaitForSeconds(10f);
 			GameStatsSyncer.instance.IncrementWave();
 		}
 	}

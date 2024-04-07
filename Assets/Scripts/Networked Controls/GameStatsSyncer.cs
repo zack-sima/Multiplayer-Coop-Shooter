@@ -19,11 +19,12 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 	#region Synced
 
-	[Networked, OnChangedRender(nameof(ScoreChanged))]
+	[Networked, OnChangedRender(nameof(ScoreOrWaveChanged))]
 	private int Score { get; set; } = 0;
 	public void AddScore(int addition) { Score += addition; } //called by master client only
 
-	[Networked] private int Wave { get; set; } = 0;
+	[Networked, OnChangedRender(nameof(ScoreOrWaveChanged))]
+	private int Wave { get; set; } = 0;
 	public int GetWave() { return Wave; } //all spawners sync this and simulate same delays
 	public void IncrementWave() { Wave++; } //called by master client only
 
@@ -39,8 +40,8 @@ public class GameStatsSyncer : NetworkBehaviour {
 	#region Callbacks
 
 	//everyone displays the same score
-	private void ScoreChanged() {
-		UIController.instance.SetScoreText(Score);
+	private void ScoreOrWaveChanged() {
+		UIController.instance.SetScoreAndWaveText(Score, Wave + 1);
 	}
 	private void GameOverChanged() {
 		if (GameOver) {
@@ -90,6 +91,7 @@ public class GameStatsSyncer : NetworkBehaviour {
 	}
 	public override void Spawned() {
 		GameOverChanged();
+		ScoreOrWaveChanged();
 	}
 	private void Update() {
 		if (GameOver && !gameOverInvoked) {

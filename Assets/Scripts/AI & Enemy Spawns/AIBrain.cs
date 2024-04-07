@@ -99,14 +99,20 @@ public class AIBrain : MonoBehaviour {
 	}
 	private void Update() {
 		if (!entity.GetNetworker().HasSyncAuthority()) return;
+		if (target == null) return;
 
-		if (target != null) {
+		if (entity.GetTurret().GetIsRotatable()) {
 			entity.GetTurret().SetTargetTurretRotation(
 				Mathf.Atan2(target.transform.position.x - transform.position.x,
 				target.transform.position.z - transform.position.z) * Mathf.Rad2Deg
 			);
 		}
 		if (canShootTarget) {
+			entity.TryFireMainWeapon();
+		}
+		if (entity.GetTurret().GetIsProximityExploder() &&
+			GroundDistance(target.transform.position, transform.position) < 2.5f) {
+			//TODO: BOOM!
 			entity.TryFireMainWeapon();
 		}
 	}
