@@ -35,7 +35,7 @@ public class Bullet : MonoBehaviour {
 		if (alreadyHitTarget) return;
 
 		if (other.gameObject.TryGetComponent(out CombatEntity e)) {
-			if (e.GetTeam() == senderTeam) return;
+			if (!e.GetNetworker().GetInitialized() || e.GetTeam() == senderTeam) return;
 			if (senderIsLocal) {
 				NetworkedEntity networker = e.GetNetworker();
 				networker.RPC_TakeDamage(networker.Object, damage);
