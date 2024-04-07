@@ -51,6 +51,7 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	//don't update unless initted in spawned
 	private bool initialized = false;
+	public bool GetInitialized() { return initialized; }
 
 	#endregion
 
@@ -85,10 +86,10 @@ public class NetworkedEntity : NetworkBehaviour {
 	#region Functions
 
 	//must be called by local player!
-	public void PlayerDied() {
+	public void EntityDied() {
 		IsDead = true;
 	}
-	public void PlayerRespawned() {
+	public void EntityRespawned() {
 		IsDead = false;
 	}
 	//either is player and has state authority or isn't player and is master client/SP
@@ -126,6 +127,8 @@ public class NetworkedEntity : NetworkBehaviour {
 				playerInstance = this;
 				EntityController.player = optionalCombatEntity;
 
+				transform.position = new Vector3(99999, 0, 99999);
+
 				//TODO: add team selection for pvp
 				Team = 0;
 			} else {
@@ -138,6 +141,7 @@ public class NetworkedEntity : NetworkBehaviour {
 			TurretRotationChanged();
 			SyncNonLocal();
 		}
+		if (!IsDead) mainEntity.RespawnEntity();
 		TeamChanged();
 
 		initialized = true;

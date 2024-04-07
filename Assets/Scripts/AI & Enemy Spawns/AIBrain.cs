@@ -33,6 +33,61 @@ public class AIBrain : MonoBehaviour {
 		return Vector2.Distance(new Vector2(a.x, a.z), new Vector2(b.x, b.z));
 	}
 
+	private void EnemyDecisionTick() {
+		if (target != null && target.GetNetworker().GetIsDead()) {
+			canShootTarget = false;
+			target = null;
+		}
+
+		//try finding target
+		if (target == null) {
+			float closestDistance = 999;
+			foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
+				if (ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
+				float distance = Vector3.Distance(ce.transform.position, transform.position);
+				if (distance < closestDistance) {
+					closestDistance = distance;
+					target = ce;
+				}
+			}
+		}
+		//TODO: enemies should "lose interest" if a direct line of sight can't be established;
+		//  when no target exists, enemy should wander in a random location (when not moving,
+		//  it should try to sample a random position within the map for ~10 times until it founds one)
+		//TODO: enemies should not engage in shooting unless the target rotation is within 10˚ of current rotation
+		if (target != null) {
+			navigator.SetTarget(target.transform.position);
+
+			//try raycasting to target
+			canShootTarget = false;
+			bool veryCloseToTarget = GroundDistance(transform.position, target.transform.position) < 3f;
+
+			//line of sight to target check; raycast all prevents other AI from blocking line of sight
+			Vector3 directionToPlayer = target.transform.position - transform.position;
+			directionToPlayer.y = 0;
+
+			RaycastHit[] hits = Physics.RaycastAll(transform.position + Vector3.up,
+				directionToPlayer.normalized, maxRange);
+
+			List<RaycastHit> hitsList = hits.ToList();
+			hitsList.Sort((hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
+
+			foreach (var hit in hitsList) {
+				if (hit.collider.gameObject == target.gameObject) {
+					canShootTarget = true;
+					break;
+				} else if (hit.collider.GetComponent<CombatEntity>() == null &&
+					hit.collider.GetComponent<Bullet>() == null) {
+					//If hit is not a combat entity, break
+					break;
+				}
+			}
+			if (entity.GetTurret().GetIsProximityExploder()) canShootTarget = false;
+			navigator.SetStopped(veryCloseToTarget || canShootTarget);
+		} else {
+			navigator.SetStopped(true);
+		}
+	}
 	private IEnumerator Tick() {
 		while (true) {
 			//not client master
@@ -42,58 +97,10 @@ public class AIBrain : MonoBehaviour {
 				continue;
 			} else navigator.SetActive(true);
 
-			if (target != null && target.GetNetworker().GetIsDead()) {
-				canShootTarget = false;
-				target = null;
-			}
+			try {
+				EnemyDecisionTick();
+			} catch (System.Exception e) { Debug.LogWarning(e); }
 
-			//try finding target
-			if (target == null) {
-				float closestDistance = 999;
-				foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
-					if (ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
-					float distance = Vector3.Distance(ce.transform.position, transform.position);
-					if (distance < closestDistance) {
-						closestDistance = distance;
-						target = ce;
-					}
-				}
-			}
-			//TODO: enemies should "lose interest" if a direct line of sight can't be established;
-			//  when no target exists, enemy should wander in a random location (when not moving,
-			//  it should try to sample a random position within the map for ~10 times until it founds one)
-			//TODO: enemies should not engage in shooting unless the target rotation is within 10˚ of current rotation
-			if (target != null) {
-				navigator.SetTarget(target.transform.position);
-
-				//try raycasting to target
-				canShootTarget = false;
-				bool veryCloseToTarget = GroundDistance(transform.position, target.transform.position) < 3f;
-
-				//line of sight to target check; raycast all prevents other AI from blocking line of sight
-				Vector3 directionToPlayer = target.transform.position - transform.position;
-				directionToPlayer.y = 0;
-
-				RaycastHit[] hits = Physics.RaycastAll(transform.position + Vector3.up,
-					directionToPlayer.normalized, maxRange);
-
-				List<RaycastHit> hitsList = hits.ToList();
-				hitsList.Sort((hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
-
-				foreach (var hit in hitsList) {
-					if (hit.collider.gameObject == target.gameObject) {
-						canShootTarget = true;
-						break;
-					} else if (hit.collider.GetComponent<CombatEntity>() == null &&
-						hit.collider.GetComponent<Bullet>() == null) {
-						//If hit is not a combat entity, break
-						break;
-					}
-				}
-				navigator.SetStopped(veryCloseToTarget || canShootTarget);
-			} else {
-				navigator.SetStopped(true);
-			}
 			yield return new WaitForSeconds(0.25f);
 		}
 	}
@@ -107,13 +114,11 @@ public class AIBrain : MonoBehaviour {
 				target.transform.position.z - transform.position.z) * Mathf.Rad2Deg
 			);
 		}
-		if (canShootTarget) {
+		if (!entity.GetTurret().GetIsProximityExploder() && canShootTarget) {
 			entity.TryFireMainWeapon();
-		}
-		if (entity.GetTurret().GetIsProximityExploder() &&
+		} else if (entity.GetTurret().GetIsProximityExploder() &&
 			GroundDistance(target.transform.position, transform.position) < 2.5f) {
-			//TODO: BOOM!
-			entity.TryFireMainWeapon();
+			entity.GetNetworker().RPC_TakeDamage(entity.GetNetworker().Object, entity.GetMaxHealth());
 		}
 	}
 	private void Start() {

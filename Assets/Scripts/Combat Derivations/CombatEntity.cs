@@ -21,6 +21,9 @@ public class CombatEntity : Entity {
 	//unique bulletid
 	private int bulletsFired = 0;
 
+	//prevent double blow
+	private bool blownUp = false;
+
 	//keeps track of bullets spawned so when an RPC is called to destroy nonlocal
 	private readonly Dictionary<int, GameObject> bullets = new();
 	public void AddBullet(int bulletId, GameObject bulletRef) {
@@ -64,14 +67,43 @@ public class CombatEntity : Entity {
 
 		bulletsFired++;
 	}
+	//blows up a radius (kinda fun to use lol)
+	public void BlowUp() {
+		if (blownUp) return;
+		blownUp = true;
+
+		Debug.Log("tried blowing up");
+
+		float radius = turret.GetExplosionRadius();
+		foreach (CombatEntity e in new List<CombatEntity>(EntityController.instance.GetCombatEntities())) {
+			if (e == null || e == this || !e.GetNetworker().GetInitialized()) continue;
+
+			float dist = Vector3.Distance(transform.position, e.gameObject.transform.position);
+
+			if (!e.GetNetworker().GetInitialized() || e.GetNetworker().GetIsDead() || dist > radius) continue;
+
+			e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object,
+				turret.GetExplosionDamage() * Mathf.Min(radius - dist + radius / 2f, radius) / radius);
+		}
+	}
+	public override void EntityRemoved() {
+		base.EntityRemoved();
+
+		if (turret.GetIsProximityExploder() && GetNetworker().HasSyncAuthority()) {
+			try {
+				BlowUp();
+			} catch (System.Exception e) { Debug.LogWarning(e); }
+		}
+	}
 	public override void RespawnEntity() {
 		base.RespawnEntity();
 		hull.gameObject.SetActive(true);
 		hull.GetAnimator().Teleported();
 		turret.gameObject.SetActive(true);
+		turret.GetAnimator().ResetAnimations();
 	}
-	public override void SetEntityToDead() {
-		base.SetEntityToDead();
+	public override void DisableEntity() {
+		base.DisableEntity();
 		hull.gameObject.SetActive(false);
 		turret.gameObject.SetActive(false);
 	}

@@ -290,6 +290,8 @@ MonoBehaviour:
   shootSpeed: 0.1
   shootSpread: 0
   rotateSpeed: 180
+  rotatable: 1
+  proximityExplode: 0
 --- !u!114 &1943951446142591777
 MonoBehaviour:
   m_ObjectHideFlags: 0

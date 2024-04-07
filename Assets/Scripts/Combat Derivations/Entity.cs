@@ -75,23 +75,30 @@ public class Entity : MonoBehaviour {
 		//respawn player/cause game over
 		if (this == EntityController.player) {
 			if (networker.GetIsDead()) return;
+			networker.EntityDied();
 			SetEntityToDead();
-			networker.PlayerDied();
 			StartCoroutine(PlayerRespawnTimer());
 			return;
 		} else {
+			networker.EntityDied();
+
 			//add score
 			if (GameStatsSyncer.instance != null) {
 				//TODO: assign dynamic score value based on various rules
 				GameStatsSyncer.instance.AddScore(10);
 			}
 		}
+
+
 		//remove self from list of entities
 		networker.DeleteEntity();
 	}
 	//for respawnable entities (now: only players)
-	public virtual void SetEntityToDead() {
-		Instantiate(explosionPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
+	public void SetEntityToDead() {
+		SpawnExplosion();
+		DisableEntity();
+	}
+	public virtual void DisableEntity() {
 		healthCanvas.gameObject.SetActive(false);
 		hitbox.enabled = false;
 	}
@@ -100,7 +107,10 @@ public class Entity : MonoBehaviour {
 		hitbox.enabled = true;
 	}
 	//called by networked entity right before destroying object
-	public void EntityRemoved() {
+	public virtual void EntityRemoved() {
+		SpawnExplosion();
+	}
+	protected void SpawnExplosion() {
 		Instantiate(explosionPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
 	}
 	public void UpdateHealthBar() {
@@ -138,7 +148,7 @@ public class Entity : MonoBehaviour {
 		transform.position = new Vector3(0, 0, 0);
 
 		RespawnEntity();
-		networker.PlayerRespawned();
+		networker.EntityRespawned();
 	}
 	//adds to/removes from staticEntities list in EntitiesController (combat overrides these functions)
 	public virtual void AddEntityToRegistry() {
@@ -148,7 +158,10 @@ public class Entity : MonoBehaviour {
 		EntityController.instance.RemoveFromStaticEntities(this);
 	}
 	protected virtual void Awake() {
+		//set it back alive when Spawned() is run in the networker and it is not dead
+		DisableEntity();
 		AddEntityToRegistry();
+		transform.position = new Vector3(99999, 0, 99999);
 		healthCanvas.transform.rotation = Camera.main.transform.rotation;
 	}
 	protected virtual void Start() {

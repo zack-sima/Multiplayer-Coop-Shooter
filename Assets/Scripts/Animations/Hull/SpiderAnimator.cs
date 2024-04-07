@@ -19,7 +19,7 @@ public class SpiderAnimator : HullAnimatorBase {
 	private const float LEG_MOVE_SPEED = 16f;
 
 	//determines leg shift
-	private const float BODY_SIZE = 1.5f;
+	private const float BODY_SIZE = 1.3f;
 
 	#endregion
 
@@ -48,6 +48,7 @@ public class SpiderAnimator : HullAnimatorBase {
 
 	//resets leg positions
 	public override void Teleported() {
+		if (legPositions == null) return;
 		for (int i = 0; i < legPositions.Count; i++) {
 			legPositions[i] = new Vector3(standardLegDistances[i].x + transform.position.x,
 				legPositions[i].y, standardLegDistances[i].z + transform.position.z);

@@ -40,6 +40,11 @@ public class GunAnimator : TurretAnimatorBase {
 		}
 		addingRecoil = false;
 	}
+	public override void ResetAnimations() {
+		for (int i = 0; i < muzzleFlashes.Count; i++) {
+			muzzleFlashes[i].SetActive(false);
+		}
+	}
 	public override void FireMainWeapon() {
 		AddRecoil();
 	}

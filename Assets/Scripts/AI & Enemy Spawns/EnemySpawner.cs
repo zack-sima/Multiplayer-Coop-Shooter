@@ -18,6 +18,7 @@ public class EnemySpawner : NetworkBehaviour {
 	#region Prefabs
 
 	[SerializeField] private GameObject enemyPrefab;
+	[SerializeField] private GameObject enemy2Prefab;
 
 	#endregion
 
@@ -31,6 +32,8 @@ public class EnemySpawner : NetworkBehaviour {
 	#region Spawn Logic
 
 	private IEnumerator SpawnCycle() {
+		yield return new WaitForSeconds(5f);
+
 		while (true) {
 			while (EntityController.player == null || GameStatsSyncer.instance == null)
 				yield return null;
@@ -65,12 +68,14 @@ public class EnemySpawner : NetworkBehaviour {
 		do {
 			yield return null;
 			enemiesAlive = false;
-			foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
-				if (e == null || e.GetIsPlayer()) continue;
-				enemiesAlive = true;
-				waited = true;
-				break;
-			}
+			try {
+				foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
+					if (e == null || e.GetIsPlayer()) continue;
+					enemiesAlive = true;
+					waited = true;
+					break;
+				}
+			} catch { }
 		} while (enemiesAlive);
 
 		//if waited, means enemies were actually spawned
@@ -81,27 +86,30 @@ public class EnemySpawner : NetworkBehaviour {
 		}
 	}
 	private void SpawnEnemy() {
-		//find a point far away enough from players
-		int iterations = 0; //prevent infinite loop
+		try {
+			//find a point far away enough from players
+			int iterations = 0; //prevent infinite loop
 
-		//keep finding a random spawnpoint until it is far away enough from everyone
-		float spawnpointDistance;
-		Vector3 point;
-		do {
-			spawnpointDistance = 999;
-			int rand = Random.Range(0, MapController.instance.GetSpawnpointParent().childCount);
-			point = MapController.instance.GetSpawnpointParent().GetChild(rand).position;
-			foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
-				if (e == null || !e.GetIsPlayer()) continue;
+			//keep finding a random spawnpoint until it is far away enough from everyone
+			float spawnpointDistance;
+			Vector3 point;
+			do {
+				spawnpointDistance = 999;
+				int rand = Random.Range(0, MapController.instance.GetSpawnpointParent().childCount);
+				point = MapController.instance.GetSpawnpointParent().GetChild(rand).position;
+				foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
+					if (e == null || !e.GetIsPlayer()) continue;
 
-				float distance = Vector3.Distance(e.transform.position, point);
-				if (spawnpointDistance > distance)
-					spawnpointDistance = distance;
-			}
-			iterations++;
-		} while (iterations < 10 && spawnpointDistance < 15f);
+					float distance = Vector3.Distance(e.transform.position, point);
+					if (spawnpointDistance > distance)
+						spawnpointDistance = distance;
+				}
+				iterations++;
+			} while (iterations < 10 && spawnpointDistance < 15f);
 
-		Runner.Spawn(enemyPrefab, new Vector3(point.x, 1, point.z), Quaternion.identity);
+			Runner.Spawn(Random.Range(0, 10) < 11 ? enemy2Prefab : enemyPrefab,
+				new Vector3(point.x, 1, point.z), Quaternion.identity);
+		} catch (System.Exception e) { Debug.LogWarning(e); }
 	}
 	public override void FixedUpdateNetwork() {
 		if (spawnEnemyLater) {

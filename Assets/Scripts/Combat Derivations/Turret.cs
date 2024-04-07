@@ -37,6 +37,12 @@ public class Turret : MonoBehaviour {
 	[SerializeField] private bool proximityExplode;
 	public bool GetIsProximityExploder() { return proximityExplode; }
 
+	[SerializeField] private float explosionRadius;
+	public float GetExplosionRadius() { return explosionRadius; }
+
+	[SerializeField] private float explosionDamage;
+	public float GetExplosionDamage() { return explosionDamage; }
+
 	//set to shootSpeed
 	private float shootTimer = 0;
 

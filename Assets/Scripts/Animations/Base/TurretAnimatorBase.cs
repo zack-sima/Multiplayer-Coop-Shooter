@@ -19,6 +19,8 @@ public class TurretAnimatorBase : MonoBehaviour {
 		}
 	}
 
+	//to fix the bug where muzzle is on when dead
+	public virtual void ResetAnimations() { }
 	public virtual void FireMainWeapon() { }
 
 	#endregion
