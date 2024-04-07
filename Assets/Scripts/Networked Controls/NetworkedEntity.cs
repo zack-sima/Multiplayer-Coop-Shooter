@@ -36,7 +36,7 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	[Networked, OnChangedRender(nameof(IsDeadChanged))]
 	private bool IsDead { get; set; } = false;
-	public bool GetIsDead() { return IsDead; }
+	public bool GetIsDead() { if (!initialized) return true; return IsDead; }
 
 	#endregion
 

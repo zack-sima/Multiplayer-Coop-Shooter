@@ -72,15 +72,15 @@ public class CombatEntity : Entity {
 		if (blownUp) return;
 		blownUp = true;
 
-		Debug.Log("tried blowing up");
-
 		float radius = turret.GetExplosionRadius();
 		foreach (CombatEntity e in new List<CombatEntity>(EntityController.instance.GetCombatEntities())) {
 			if (e == null || e == this || !e.GetNetworker().GetInitialized()) continue;
 
 			float dist = Vector3.Distance(transform.position, e.gameObject.transform.position);
 
-			if (!e.GetNetworker().GetInitialized() || e.GetNetworker().GetIsDead() || dist > radius) continue;
+			try { //for some reason, GetIsDead() throws error in chain blow up sometimes
+				if (e.GetNetworker().GetIsDead() || dist > radius) continue;
+			} catch { continue; }
 
 			e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object,
 				turret.GetExplosionDamage() * Mathf.Min(radius - dist + radius / 2f, radius) / radius);
