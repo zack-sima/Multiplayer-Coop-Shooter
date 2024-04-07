@@ -127,7 +127,7 @@ public class NetworkedEntity : NetworkBehaviour {
 				playerInstance = this;
 				EntityController.player = optionalCombatEntity;
 
-				transform.position = new Vector3(99999, 0, 99999);
+				transform.position = new Vector3(0, 0, 0);
 
 				//TODO: add team selection for pvp
 				Team = 0;

@@ -161,7 +161,8 @@ public class Entity : MonoBehaviour {
 		//set it back alive when Spawned() is run in the networker and it is not dead
 		DisableEntity();
 		AddEntityToRegistry();
-		transform.position = new Vector3(99999, 0, 99999);
+
+		if (!isPlayer) transform.position = new Vector3(99999, 0, 99999);
 		healthCanvas.transform.rotation = Camera.main.transform.rotation;
 	}
 	protected virtual void Start() {
@@ -181,3 +182,5 @@ public class Entity : MonoBehaviour {
 	#endregion
 
 }
+
+
