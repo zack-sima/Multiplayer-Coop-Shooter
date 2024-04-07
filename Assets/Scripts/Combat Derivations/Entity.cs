@@ -125,6 +125,9 @@ public class Entity : MonoBehaviour {
 	private IEnumerator PlayerRespawnTimer() {
 		UIController.instance.SetRespawnUIEnabled(true);
 		for (float i = 15f - 0.00001f; i > 0f; i -= Time.deltaTime) {
+			//if game is over, don't respawn
+			if (GameStatsSyncer.instance.GetGameOver()) yield break;
+
 			//UIController screen
 			UIController.instance.SetRespawnTimerText($"Respawn in:\n{Mathf.CeilToInt(i)}");
 			yield return null;

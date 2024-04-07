@@ -29,6 +29,10 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 	[Networked, OnChangedRender(nameof(GameOverChanged))]
 	private bool GameOver { get; set; } = false;
+	public bool GetGameOver() { return GameOver; }
+
+	//local game over called
+	private bool gameOverInvoked = false;
 
 	#endregion
 
@@ -38,16 +42,59 @@ public class GameStatsSyncer : NetworkBehaviour {
 	private void ScoreChanged() {
 		UIController.instance.SetScoreText(Score);
 	}
-
 	private void GameOverChanged() {
+		if (GameOver) {
+			StartCoroutine(GameOverCoroutine());
+		}
 	}
 
 	#endregion
 
 	#region Functions
 
-	private void Update() {
+	public bool HasSyncAuthority() {
+		return Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer;
+	}
+	public override void FixedUpdateNetwork() {
+		if (!HasSyncAuthority() || EntityController.player == null) return;
 
+		//check if all players are alive; if not, end game
+		bool someoneAlive = false;
+		foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
+			if (e == null || !e.GetIsPlayer()) continue;
+			if (!e.GetNetworker().GetIsDead()) {
+				someoneAlive = true;
+				break;
+			}
+		}
+		//it's joever
+		if (!someoneAlive) {
+			GameOver = true;
+		}
+	}
+	//called when game over is detected as true
+	private IEnumerator GameOverCoroutine() {
+		UIController.instance.SetRespawnUIEnabled(false);
+		UIController.instance.SetGameOverUIEnabled(true);
+
+		for (float i = 10f - 0.00001f; i > 0f; i -= Time.deltaTime) {
+			//UIController screen
+			UIController.instance.SetGameOverTimerText($"Game over. Leaving in:\n{Mathf.CeilToInt(i)}");
+			yield return null;
+		}
+
+		//leave game!
+		Runner.Shutdown();
+
+		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(0);
+	}
+	public override void Spawned() {
+		GameOverChanged();
+	}
+	private void Update() {
+		if (GameOver && !gameOverInvoked) {
+			StartCoroutine(GameOverCoroutine());
+		}
 	}
 	private void Awake() {
 		if (instance != null) {
