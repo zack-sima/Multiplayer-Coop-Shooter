@@ -64,9 +64,23 @@ public class CombatEntity : Entity {
 
 		bulletsFired++;
 	}
+	public override void RespawnEntity() {
+		base.RespawnEntity();
+		hull.gameObject.SetActive(true);
+		hull.GetAnimator().Teleported();
+		turret.gameObject.SetActive(true);
+	}
+	public override void SetEntityToDead() {
+		base.SetEntityToDead();
+		hull.gameObject.SetActive(false);
+		turret.gameObject.SetActive(false);
+	}
 	public override void SetTeam(int newTeam) {
 		base.SetTeam(newTeam);
-		hull.GetAnimator().SetTeamMaterial(GetTeamMaterials().GetTeamColor(newTeam));
+
+		Material teamMat = GetTeamMaterials().GetTeamColor(newTeam);
+		hull.GetAnimator().SetTeamMaterial(teamMat);
+		turret.GetAnimator().SetTeamMaterial(teamMat);
 	}
 	public override void AddEntityToRegistry() {
 		EntityController.instance.AddToCombatEntities(this);

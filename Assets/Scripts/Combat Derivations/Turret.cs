@@ -7,6 +7,8 @@ public class Turret : MonoBehaviour {
 	#region References
 
 	[SerializeField] private TurretAnimatorBase animator;
+	public TurretAnimatorBase GetAnimator() { return animator; }
+
 	[SerializeField] private Transform bulletAnchor;
 
 	#endregion

@@ -11,11 +11,21 @@ public class HumanInputs : MonoBehaviour {
 
 	#endregion
 
+	#region Members
+
+	private Vector3 cameraLocalPosition = Vector3.zero;
+
+	#endregion
+
 	#region Functions
 
+	private void Start() {
+		cameraLocalPosition = Camera.main.gameObject.transform.localPosition;
+	}
 	//TODO: mobile should still read other inputs here but redirect it
 	private void Update() {
-		if (USE_MOBILE || EntityController.player == null) return;
+		if (USE_MOBILE || EntityController.player == null ||
+			EntityController.player.GetNetworker().GetIsDead()) return;
 
 		CombatEntity player = EntityController.player;
 
@@ -48,7 +58,7 @@ public class HumanInputs : MonoBehaviour {
 		player.GetHull().Move(moveVector);
 
 		//TODO: formalize camera tracking
-		Camera.main.transform.position = player.transform.position + new Vector3(0, 10, -4.19f);
+		Camera.main.transform.position = player.transform.position + cameraLocalPosition;
 	}
 	private void Awake() {
 		instance = this;

@@ -19,6 +19,7 @@ public class Bullet : MonoBehaviour {
 	private int senderTeam = -1;
 	private int bulletId = -1;
 	private bool senderIsLocal = false;
+	private bool alreadyHitTarget = false;
 
 	#endregion
 
@@ -31,6 +32,8 @@ public class Bullet : MonoBehaviour {
 		this.bulletId = bulletId;
 	}
 	private void OnTriggerEnter(Collider other) {
+		if (alreadyHitTarget) return;
+
 		if (other.gameObject.TryGetComponent(out CombatEntity e)) {
 			if (e.GetTeam() == senderTeam) return;
 			if (senderIsLocal) {
@@ -38,6 +41,7 @@ public class Bullet : MonoBehaviour {
 				networker.RPC_TakeDamage(networker.Object, damage);
 			}
 		}
+		alreadyHitTarget = true;
 		if (senderIsLocal) {
 			DestroyLocalBullet();
 		} else {
@@ -52,9 +56,10 @@ public class Bullet : MonoBehaviour {
 	}
 	//tries to make an RPC call so everyone destroys the bullet
 	private void DestroyLocalBullet() {
-		if (senderEntity != null) {
-			senderEntity.GetNetworker().RPC_DestroyBullet(bulletId);
-		}
+		try {
+			if (senderEntity != null)
+				senderEntity.GetNetworker().RPC_DestroyBullet(bulletId);
+		} catch (System.Exception e) { Debug.LogWarning(e); }
 		DestroyBulletEffect();
 	}
 	private IEnumerator DelayedDestroy() {

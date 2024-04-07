@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 /// <summary>
 /// Autonomously decides on an AI enemy's course of action
@@ -41,11 +42,16 @@ public class AIBrain : MonoBehaviour {
 				continue;
 			} else navigator.SetActive(true);
 
+			if (target != null && target.GetNetworker().GetIsDead()) {
+				canShootTarget = false;
+				target = null;
+			}
+
 			//try finding target
 			if (target == null) {
 				float closestDistance = 999;
 				foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
-					if (ce.GetTeam() == entity.GetTeam()) continue;
+					if (ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
 					float distance = Vector3.Distance(ce.transform.position, transform.position);
 					if (distance < closestDistance) {
 						closestDistance = distance;
@@ -57,7 +63,6 @@ public class AIBrain : MonoBehaviour {
 			//  when no target exists, enemy should wander in a random location (when not moving,
 			//  it should try to sample a random position within the map for ~10 times until it founds one)
 			//TODO: enemies should not engage in shooting unless the target rotation is within 10˚ of current rotation
-			//TODO: check that in networking, AI has authority to trace enemies, etc
 			if (target != null) {
 				navigator.SetTarget(target.transform.position);
 
@@ -72,7 +77,10 @@ public class AIBrain : MonoBehaviour {
 				RaycastHit[] hits = Physics.RaycastAll(transform.position + Vector3.up,
 					directionToPlayer.normalized, maxRange);
 
-				foreach (var hit in hits) {
+				List<RaycastHit> hitsList = hits.ToList();
+				hitsList.Sort((hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
+
+				foreach (var hit in hitsList) {
 					if (hit.collider.gameObject == target.gameObject) {
 						canShootTarget = true;
 						break;

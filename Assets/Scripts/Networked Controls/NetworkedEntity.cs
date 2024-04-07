@@ -34,6 +34,10 @@ public class NetworkedEntity : NetworkBehaviour {
 	private int Team { get; set; } = -1;
 	public int GetTeam() { return Team; }
 
+	[Networked, OnChangedRender(nameof(IsDeadChanged))]
+	private bool IsDead { get; set; } = false;
+	public bool GetIsDead() { return IsDead; }
+
 	#endregion
 
 	#region Members
@@ -69,11 +73,24 @@ public class NetworkedEntity : NetworkBehaviour {
 			mainEntity.UpdateHealthBar();
 		}
 	}
+	private void IsDeadChanged() {
+		if (HasSyncAuthority()) return;
+
+		if (!IsDead) mainEntity.RespawnEntity();
+		else mainEntity.SetEntityToDead();
+	}
 
 	#endregion
 
 	#region Functions
 
+	//must be called by local player!
+	public void PlayerDied() {
+		IsDead = true;
+	}
+	public void PlayerRespawned() {
+		IsDead = false;
+	}
 	//either is player and has state authority or isn't player and is master client/SP
 	public bool HasSyncAuthority() {
 		return HasStateAuthority && isPlayer || !isPlayer && (Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer);
@@ -110,7 +127,7 @@ public class NetworkedEntity : NetworkBehaviour {
 				EntityController.player = optionalCombatEntity;
 
 				//TODO: add team selection for pvp
-				Team = 0;//(new List<PlayerRef>(Runner.ActivePlayers).Count + 1) % 2;
+				Team = 0;
 			} else {
 				Team = 1;
 			}

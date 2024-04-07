@@ -26,16 +26,19 @@ public class Entity : MonoBehaviour {
 
 	[SerializeField] private NetworkedEntity networker;
 	public NetworkedEntity GetNetworker() { return networker; }
-	[SerializeField] private RectTransform healthBarRect;
-	[SerializeField] private RectTransform healthCanvas;
+
+	[SerializeField] private HealthCanvas healthCanvas;
+	public HealthCanvas GetHealthCanvas() { return healthCanvas; }
+
 	[SerializeField] private TeamMaterialManager teamMaterials;
 	public TeamMaterialManager GetTeamMaterials() { return teamMaterials; }
+
+	[SerializeField] private Collider hitbox;
 
 	#endregion
 
 	#region Members
 
-	//TODO: set in controller
 	[SerializeField] private bool isPlayer;
 	public bool GetIsPlayer() { return isPlayer; }
 
@@ -44,9 +47,6 @@ public class Entity : MonoBehaviour {
 	public float GetMaxHealth() { return maxHealth; }
 
 	[SerializeField] private HealthBarType healthBarType;
-
-	//NOTE: if networked, this field is not used
-	private float localHealth;
 
 	//for autohealing
 	private float lastDamageTimestamp = 0f;
@@ -62,33 +62,49 @@ public class Entity : MonoBehaviour {
 	public virtual void SetTeam(int newTeam) {
 		if (EntityController.player == null) return;
 		if (newTeam == EntityController.player.GetTeam()) {
-			healthBarRect.GetComponent<Image>().color = Color.green;
+			healthCanvas.GetHealthBar().GetComponent<Image>().color = Color.green;
 		} else {
-			healthBarRect.GetComponent<Image>().color = Color.red;
+			healthCanvas.GetHealthBar().GetComponent<Image>().color = Color.red;
 		}
 	}
 	public float GetHealth() {
 		return networker.GetHealth();
 	}
+	//invoked on local player or master client enemy
 	private void EntityDied() {
-		//remove self from list of entities
-		Debug.Log("entity has been killed");
-
+		//respawn player/cause game over
 		if (this == EntityController.player) {
-			//TODO: if entity is a player (need marking), use separate system of respawns
-			//  and hiding of canvas/hull
-			Debug.Log("player needs to respawn/be hidden right now");
+			if (networker.GetIsDead()) return;
+			SetEntityToDead();
+			networker.PlayerDied();
+			StartCoroutine(PlayerRespawnTimer());
 			return;
+		} else {
+			//add score
+			if (GameStatsSyncer.instance != null) {
+				//TODO: assign dynamic score value based on various rules
+				GameStatsSyncer.instance.AddScore(10);
+			}
 		}
+		//remove self from list of entities
 		networker.DeleteEntity();
+	}
+	//for respawnable entities (now: only players)
+	public virtual void SetEntityToDead() {
+		Instantiate(explosionPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
+		healthCanvas.gameObject.SetActive(false);
+		hitbox.enabled = false;
+	}
+	public virtual void RespawnEntity() {
+		healthCanvas.gameObject.SetActive(true);
+		hitbox.enabled = true;
 	}
 	//called by networked entity right before destroying object
 	public void EntityRemoved() {
 		Instantiate(explosionPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
 	}
-
 	public void UpdateHealthBar() {
-		healthBarRect.localScale = new Vector2(GetHealth() / maxHealth, 1f);
+		healthCanvas.GetHealthBar().localScale = new Vector2(GetHealth() / maxHealth, 1f);
 	}
 
 	#endregion
@@ -98,11 +114,28 @@ public class Entity : MonoBehaviour {
 	public void PreventHealing() {
 		lastDamageTimestamp = Time.time;
 	}
+	//invoked on local player by networker
 	public void LostHealth() {
 		UpdateHealthBar();
 		PreventHealing();
 
 		if (GetHealth() <= 0) EntityDied();
+	}
+	//local timer to respawn player
+	private IEnumerator PlayerRespawnTimer() {
+		UIController.instance.SetRespawnUIEnabled(true);
+		for (float i = 15f - 0.00001f; i > 0f; i -= Time.deltaTime) {
+			//UIController screen
+			UIController.instance.SetRespawnTimerText($"Respawn in:\n{Mathf.CeilToInt(i)}");
+			yield return null;
+		}
+		UIController.instance.SetRespawnUIEnabled(false);
+
+		//TODO: designate specific player spawns (and when player is first spawned in)
+		transform.position = new Vector3(0, 0, 0);
+
+		RespawnEntity();
+		networker.PlayerRespawned();
 	}
 	//adds to/removes from staticEntities list in EntitiesController (combat overrides these functions)
 	public virtual void AddEntityToRegistry() {
@@ -113,13 +146,20 @@ public class Entity : MonoBehaviour {
 	}
 	protected virtual void Awake() {
 		AddEntityToRegistry();
-		healthCanvas.rotation = Camera.main.transform.rotation;
+		healthCanvas.transform.rotation = Camera.main.transform.rotation;
 	}
 	protected virtual void Start() {
 		UpdateHealthBar();
 	}
 	protected virtual void Update() {
+		RectTransform healthBar = healthCanvas.GetHealthBar();
+		RectTransform healthChange = healthCanvas.GetHealthBarChange();
 
+		if (healthBar.localScale.x > healthChange.localScale.x) {
+			healthChange.localScale = new Vector2(healthBar.localScale.x, 1);
+		} else if (healthBar.localScale.x < healthChange.localScale.x) {
+			healthChange.localScale = new Vector2(healthChange.localScale.x - Time.deltaTime * 0.5f, 1);
+		}
 	}
 
 	#endregion

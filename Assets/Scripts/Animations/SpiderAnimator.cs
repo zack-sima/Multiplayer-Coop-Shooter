@@ -46,6 +46,15 @@ public class SpiderAnimator : HullAnimatorBase {
 
 	#region Functions
 
+	//resets leg positions
+	public override void Teleported() {
+		for (int i = 0; i < legPositions.Count; i++) {
+			legPositions[i] = new Vector3(standardLegDistances[i].x + transform.position.x,
+				legPositions[i].y, standardLegDistances[i].z + transform.position.z);
+			targetLegPositions[i] = legPositions[i];
+		}
+	}
+
 	private void Start() {
 		legPositions = new();
 		targetLegPositions = new();
