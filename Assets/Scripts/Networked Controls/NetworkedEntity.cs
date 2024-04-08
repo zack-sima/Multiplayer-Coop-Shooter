@@ -141,10 +141,15 @@ public class NetworkedEntity : NetworkBehaviour {
 			TurretRotationChanged();
 			SyncNonLocal();
 		}
-		if (!IsDead) mainEntity.RespawnEntity();
+		StartCoroutine(StartupDelay());
 		TeamChanged();
 
 		initialized = true;
+	}
+	//wait a few frames for networking to fully sync
+	private IEnumerator StartupDelay() {
+		yield return new WaitForSeconds(0.1f);
+		if (!IsDead) mainEntity.RespawnEntity();
 	}
 	public override void FixedUpdateNetwork() {
 		if (!initialized) return;

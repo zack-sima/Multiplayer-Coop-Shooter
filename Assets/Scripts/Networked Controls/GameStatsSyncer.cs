@@ -24,7 +24,7 @@ public class GameStatsSyncer : NetworkBehaviour {
 	public void AddScore(int addition) { Score += addition; } //called by master client only
 
 	[Networked, OnChangedRender(nameof(ScoreOrWaveChanged))]
-	private int Wave { get; set; } = 40;
+	private int Wave { get; set; } = 0;
 	public int GetWave() { return Wave; } //all spawners sync this and simulate same delays
 	public void IncrementWave() { Wave++; } //called by master client only
 

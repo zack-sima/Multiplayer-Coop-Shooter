@@ -56,6 +56,8 @@ public class CombatEntity : Entity {
 	}
 	//the one that actually creates a bullet that matters
 	public void TryFireMainWeapon() {
+		if (!turret.gameObject.activeInHierarchy) return;
+
 		GameObject b = turret.TryFireMainWeapon(GetTeam(), bulletsFired, optionalSender: this);
 
 		if (b == null) return;

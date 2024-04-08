@@ -16,10 +16,10 @@ public class SpiderAnimator : HullAnimatorBase {
 	private const float LEG_STOP_TIME = 0.08f;
 
 	//leg shifting speed
-	private const float LEG_MOVE_SPEED = 16f;
+	private const float LEG_MOVE_SPEED = 18f;
 
 	//determines leg shift
-	private const float BODY_SIZE = 1.3f;
+	private const float BODY_SIZE = 1.5f;
 
 	#endregion
 
@@ -48,6 +48,7 @@ public class SpiderAnimator : HullAnimatorBase {
 
 	//resets leg positions
 	public override void Teleported() {
+		Debug.Log("teleport");
 		if (legPositions == null) return;
 		for (int i = 0; i < legPositions.Count; i++) {
 			legPositions[i] = new Vector3(standardLegDistances[i].x + transform.position.x,
@@ -84,23 +85,28 @@ public class SpiderAnimator : HullAnimatorBase {
 			legPositions[i] = Vector3.MoveTowards(legPositions[i], targetLegPositions[i],
 				Time.deltaTime * LEG_MOVE_SPEED);
 
+			if (Vector3.Distance(legPositions[i], targetLegPositions[i]) > BODY_SIZE * 2f) {
+				Teleported();
+			}
+
 			//reset leg position from local to saved global position
 			legs[i].position = legPositions[i];
 
-			Vector3 newLegDistance = new(targetLegPositions[i].x - transform.position.x, 0,
+			Vector3 newLegDifference = new(targetLegPositions[i].x - transform.position.x, 0,
 				targetLegPositions[i].z - transform.position.z);
 
-			//move out
-			if ((newLegDistance.magnitude < standardLegDistances[i].magnitude - 0.3f * BODY_SIZE) && movedLegCountdown <= 0) {
-				Vector3 newPosition = transform.position + standardLegDistances[i] + 0.5f * BODY_SIZE * velocity.normalized;
-				newPosition.y = 0;
+			float rawMovement = (newLegDifference - standardLegDistances[i]).magnitude;
 
-				queuedLegPositions[i] = newPosition;
-			}
-			//move in
-			if ((newLegDistance.magnitude > standardLegDistances[i].magnitude + 0.75f * BODY_SIZE ||
-				(newLegDistance - standardLegDistances[i]).magnitude > 0.5f * BODY_SIZE) && movedLegCountdown <= 0) {
-				Vector3 newPosition = transform.position + standardLegDistances[i] + 0.2f * BODY_SIZE * velocity.normalized;
+
+			float threshold = 0.59f;
+
+			//move out/move in leg
+			if (rawMovement > threshold * BODY_SIZE && Vector3.Dot(velocity, newLegDifference) < 0 &&
+				movedLegCountdown <= 0) {
+
+				Vector3 newPosition = transform.position + standardLegDistances[i] +
+					threshold * 0.8f * BODY_SIZE * velocity.normalized;
+
 				newPosition.y = 0;
 
 				queuedLegPositions[i] = newPosition;
