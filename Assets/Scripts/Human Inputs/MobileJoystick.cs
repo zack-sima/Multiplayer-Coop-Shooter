@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,55 +11,44 @@ using UnityEngine.EventSystems;
 public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IPointerUpHandler {
 	[SerializeField] private RectTransform joystickTip;
 
-	private bool buttonJustUp = false; //when pointer is up, this will be set true until first poll
+	public event Action OnJoystickPressed;
+	public event Action OnJoystickReleased;
+
 	private bool buttonDown = false; //for full auto
-	private bool buttonJustDown = false;
 	private float joystickAngle = Mathf.PI / 2f, joystickMagnitude = 0; //magnitude between 0 and 1
-	private float lastJoystickMagnitude = 0; //don't reset this one!
 	protected PointerEventData currentPointer = null;
 	private Canvas mainCanvas = null;
+
+	private Vector2 initPosition = new();
 
 	public float GetJoystickAngle() {
 		return joystickAngle;
 	}
-	public float GetJoystickMagnitude(bool getLast) {
-		return getLast ? lastJoystickMagnitude : joystickMagnitude;
+	public float GetJoystickMagnitude() {
+		return joystickMagnitude;
 	}
 	public bool GetButtonIsDown() {
 		return buttonDown;
 	}
+	public void SetPosition(Vector2 position) {
+		transform.position = position;
+	}
+	public void RevertPosition() {
+		GetComponent<RectTransform>().anchoredPosition = initPosition;
+	}
 	public void OnPointerDown(PointerEventData eventData) {
 		buttonDown = true;
 		currentPointer = eventData;
-		PointerDown();
+		OnJoystickPressed?.Invoke();
 	}
 	public void OnPointerUp(PointerEventData eventData) {
 		buttonDown = false;
 		currentPointer = null;
-		PointerUp();
-	}
-	public bool ButtonWasJustUp() {
-		if (buttonJustUp) {
-			buttonJustUp = false;
-			return true;
-		}
-		return false;
-	}
-	public bool ButtonWasJustDown() {
-		if (buttonJustDown) {
-			buttonJustDown = false;
-			return true;
-		}
-		return false;
-	}
-	protected virtual void PointerDown() {
-		buttonJustDown = true;
-	}
-	protected virtual void PointerUp() {
-		buttonJustUp = true;
+		OnJoystickPressed?.Invoke();
 	}
 	void Start() {
 		mainCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();
+		initPosition = GetComponent<RectTransform>().anchoredPosition;
 	}
 	void Update() {
 		if (currentPointer != null) {
@@ -69,7 +59,6 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 
 			joystickTip.localPosition = diff.normalized * magnitude / mainCanvas.scaleFactor;
 			joystickMagnitude = magnitude / scale;
-			lastJoystickMagnitude = joystickMagnitude;
 			joystickAngle = Mathf.Atan2(diff.y, diff.x);
 		} else {
 			joystickTip.localPosition = Vector2.zero;

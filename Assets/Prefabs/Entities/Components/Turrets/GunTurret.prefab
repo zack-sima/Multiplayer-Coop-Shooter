@@ -289,9 +289,11 @@ MonoBehaviour:
   bulletPrefab: {fileID: 8601614415527540211, guid: fdc1978cc2d3b467ca08c2272a851337, type: 3}
   shootSpeed: 0.1
   shootSpread: 0
-  rotateSpeed: 180
+  rotateSpeed: 200
   rotatable: 1
   proximityExplode: 0
+  explosionRadius: 0
+  explosionDamage: 0
 --- !u!114 &1943951446142591777
 MonoBehaviour:
   m_ObjectHideFlags: 0

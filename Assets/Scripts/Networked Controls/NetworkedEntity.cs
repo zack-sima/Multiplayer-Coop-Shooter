@@ -181,7 +181,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		if (HasSyncAuthority()) {
 			//local entity
 			if (isPlayer && Health < mainEntity.GetMaxHealth() &&
-				Time.time - mainEntity.GetLastDamageTimestamp() > 3.5f) {
+				Time.time - mainEntity.GetLastDamageTimestamp() > 2.5f) {
 				Health = Mathf.Min(mainEntity.GetMaxHealth(),
 					Health + Time.deltaTime * mainEntity.GetMaxHealth() / 12f);
 				mainEntity.UpdateHealthBar();

@@ -18,6 +18,15 @@ public class CombatEntity : Entity {
 
 	#region Members
 
+	//when set rotation/maintain rotation hasn't been called
+	private bool turretFollowsMovement = false;
+
+	//set this back to time.time when rotation is called on mobile
+	private float freezeTurretTimestamp = -10f;
+	public bool GetTurretFollowsMovement() {
+		return turretFollowsMovement && (Time.time - freezeTurretTimestamp > 1f);
+	}
+
 	//unique bulletid
 	private int bulletsFired = 0;
 
@@ -45,6 +54,18 @@ public class CombatEntity : Entity {
 	#endregion
 
 	#region Functions
+
+	#region Mobile Controls
+
+	public void MaintainTurretRotation() {
+		freezeTurretTimestamp = Time.time;
+	}
+	//when set to true, whenever entity turret is not being set it will rotate with its movement
+	public void SetTurretFollowsMovement(bool follow) {
+		turretFollowsMovement = follow;
+	}
+
+	#endregion
 
 	//non-local bullet just for decorative purposes
 	public void NonLocalFireMainWeapon(int bulletId) {
@@ -121,6 +142,17 @@ public class CombatEntity : Entity {
 	}
 	public override void RemoveEntityFromRegistry() {
 		EntityController.instance.RemoveFromCombatEntities(this);
+	}
+	protected override void Update() {
+		base.Update();
+
+		if (GetTurretFollowsMovement() && TryGetComponent(out Rigidbody rb)) {
+			Debug.Log(rb.velocity != Vector3.zero);
+
+			if (rb.velocity != Vector3.zero)
+				turret.SetTargetTurretRotation(Mathf.Atan2(
+					rb.velocity.x, rb.velocity.z) * Mathf.Rad2Deg);
+		}
 	}
 
 	#endregion

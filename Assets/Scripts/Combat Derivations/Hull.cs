@@ -29,11 +29,9 @@ public class Hull : MonoBehaviour {
 	//NOTE: movement can also be performed by AINavigator for AI combat entities that have a NavMeshAgent
 	public void Move(Vector3 direction) {
 		if (optionalRigidbody == null) {
-			rootTransform.Translate(speed * Time.deltaTime * direction.normalized);
+			rootTransform.Translate(speed * Time.deltaTime * direction);
 		} else {
-			optionalRigidbody.velocity = Vector3.zero;
-			optionalRigidbody.MovePosition(optionalRigidbody.position +
-				speed * Time.deltaTime * direction.normalized);
+			optionalRigidbody.velocity = speed * direction;
 		}
 	}
 

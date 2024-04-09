@@ -13,13 +13,13 @@ public class SpiderAnimator : HullAnimatorBase {
 	#region Constants
 
 	//how long to prevent leg movement when moving legs
-	private const float LEG_STOP_TIME = 0.08f;
+	private const float LEG_STOP_TIME = 0.07f;
 
 	//leg shifting speed
 	private const float LEG_MOVE_SPEED = 18f;
 
 	//determines leg shift
-	private const float BODY_SIZE = 1.5f;
+	private const float BODY_SIZE = 1.25f;
 
 	#endregion
 
@@ -48,7 +48,6 @@ public class SpiderAnimator : HullAnimatorBase {
 
 	//resets leg positions
 	public override void Teleported() {
-		Debug.Log("teleport");
 		if (legPositions == null) return;
 		for (int i = 0; i < legPositions.Count; i++) {
 			legPositions[i] = new Vector3(standardLegDistances[i].x + transform.position.x,
@@ -98,7 +97,7 @@ public class SpiderAnimator : HullAnimatorBase {
 			float rawMovement = (newLegDifference - standardLegDistances[i]).magnitude;
 
 
-			float threshold = 0.59f;
+			float threshold = 0.52f;
 
 			//move out/move in leg
 			if (rawMovement > threshold * BODY_SIZE && Vector3.Dot(velocity, newLegDifference) < 0 &&

@@ -56,10 +56,6 @@ public class Turret : MonoBehaviour {
 
 	#region Functions
 
-	//old-style turret rotation by keys
-	public void RotateTurret(bool isRight) {
-		transform.Rotate(0, Time.deltaTime * rotateSpeed * (isRight ? 1f : -1f), 0);
-	}
 	//mobile/new turret rotation
 	public void SetTargetTurretRotation(float rotation) {
 		targetRotation = rotation;

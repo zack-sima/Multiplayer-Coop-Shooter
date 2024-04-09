@@ -7,7 +7,14 @@ public class HumanInputs : MonoBehaviour {
 	#region Constants & Statics
 
 	public static HumanInputs instance;
-	private const bool USE_MOBILE = false;
+	private const bool USE_MOBILE = true;
+
+	#endregion
+
+	#region References
+
+	[SerializeField] private MobileJoystick movementJoystick;
+	[SerializeField] private MobileJoystick mainWeaponJoystick;
 
 	#endregion
 
@@ -19,20 +26,40 @@ public class HumanInputs : MonoBehaviour {
 
 	#region Functions
 
-	private void Start() {
-		cameraLocalPosition = Camera.main.gameObject.transform.localPosition;
+	#region Mobile
+
+	private void MobileOnlyUpdate(CombatEntity player) {
+		player.SetTurretFollowsMovement(true);
+
+		if (movementJoystick.GetButtonIsDown()) {
+			float mag = movementJoystick.GetJoystickMagnitude();
+			float angleRad = movementJoystick.GetJoystickAngle();
+
+			Vector3 moveVector = mag * new Vector3(Mathf.Cos(angleRad), 0, Mathf.Sin(angleRad));
+			player.GetHull().Move(moveVector);
+		} else {
+			player.GetHull().Move(Vector3.zero);
+		}
+		if (mainWeaponJoystick.GetButtonIsDown()) {
+			player.MaintainTurretRotation();
+			player.TryFireMainWeapon();
+
+			float mag = mainWeaponJoystick.GetJoystickMagnitude();
+			if (mag > 1 / 8f) {
+				player.GetTurret().SetTargetTurretRotation(
+					-mainWeaponJoystick.GetJoystickAngle() * Mathf.Rad2Deg + 90f);
+			}
+		}
 	}
-	//TODO: mobile should still read other inputs here but redirect it
-	private void Update() {
-		if (USE_MOBILE || EntityController.player == null ||
-			EntityController.player.GetNetworker().GetIsDead()) return;
+	//for semi-auto release fire
+	public void MainWeaponJoystickReleased() { }
 
-		CombatEntity player = EntityController.player;
+	#endregion
 
+	private void PCOnlyUpdate(CombatEntity player) {
 		if (Input.GetMouseButton(0)) {
 			player.TryFireMainWeapon();
 		}
-
 		//point to mouse
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		if (Physics.Raycast(ray, out RaycastHit hit)) {
@@ -42,6 +69,8 @@ public class HumanInputs : MonoBehaviour {
 				Mathf.Atan2(diff.x, diff.y) * Mathf.Rad2Deg
 			);
 		}
+
+		//wasd movement
 		Vector3 moveVector = Vector3.zero;
 		if (Input.GetKey(KeyCode.W)) {
 			moveVector += Vector3.forward;
@@ -55,9 +84,32 @@ public class HumanInputs : MonoBehaviour {
 		if (Input.GetKey(KeyCode.D)) {
 			moveVector += Vector3.right;
 		}
+		moveVector = moveVector.normalized;
 		player.GetHull().Move(moveVector);
+	}
 
-		//TODO: formalize camera tracking
+	private void Start() {
+		cameraLocalPosition = Camera.main.gameObject.transform.localPosition;
+
+		UIController.instance.SetMobileUIEnabled(USE_MOBILE);
+
+		if (USE_MOBILE) {
+			mainWeaponJoystick.OnJoystickReleased += MainWeaponJoystickReleased;
+		}
+	}
+	//TODO: mobile should still read other inputs here but redirect it
+	private void Update() {
+		if (EntityController.player == null ||
+			EntityController.player.GetNetworker().GetIsDead()) return;
+
+		CombatEntity player = EntityController.player;
+
+		if (USE_MOBILE) {
+			MobileOnlyUpdate(player);
+		} else {
+			PCOnlyUpdate(player);
+		}
+
 		Camera.main.transform.position = player.transform.position + cameraLocalPosition;
 	}
 	private void Awake() {

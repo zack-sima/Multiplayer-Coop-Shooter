@@ -71,7 +71,7 @@ MonoBehaviour:
   teamMaterials: {fileID: 11400000, guid: faa23109d9fc044828b87850367187b7, type: 2}
   hitbox: {fileID: 5383900387921732267}
   isPlayer: 1
-  maxHealth: 500
+  maxHealth: 750
   healthBarType: 0
   hull: {fileID: 2798158656864830621}
   turret: {fileID: 6906709247677600904}
