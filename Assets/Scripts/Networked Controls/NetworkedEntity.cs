@@ -143,7 +143,11 @@ public class NetworkedEntity : NetworkBehaviour {
 		}
 		StartCoroutine(StartupDelay());
 		TeamChanged();
-
+		StartCoroutine(WaitInitialize());
+	}
+	//sometimes there's a bug where even if initialization is done networking doesn't allow calls
+	private IEnumerator WaitInitialize() {
+		yield return new WaitForEndOfFrame();
 		initialized = true;
 	}
 	//wait a few frames for networking to fully sync

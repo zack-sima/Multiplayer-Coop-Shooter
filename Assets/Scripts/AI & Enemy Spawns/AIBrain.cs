@@ -43,7 +43,8 @@ public class AIBrain : MonoBehaviour {
 		if (target == null) {
 			float closestDistance = 999;
 			foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
-				if (ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
+				if (!ce.GetNetworker().GetInitialized() ||
+					ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
 				float distance = Vector3.Distance(ce.transform.position, transform.position);
 				if (distance < closestDistance) {
 					closestDistance = distance;

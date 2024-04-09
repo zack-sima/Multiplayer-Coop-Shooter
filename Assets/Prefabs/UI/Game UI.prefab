@@ -723,6 +723,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6a9d216c02b547adb8df1d182b04931, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mobileUI: {fileID: 4449895767327604419}
   movementJoystick: {fileID: 7254146070885338247}
   mainWeaponJoystick: {fileID: 3139455547273535819}
 --- !u!1 &4113291441402818280

@@ -7,12 +7,12 @@ public class HumanInputs : MonoBehaviour {
 	#region Constants & Statics
 
 	public static HumanInputs instance;
-	private const bool USE_MOBILE = true;
 
 	#endregion
 
 	#region References
 
+	[SerializeField] private RectTransform mobileUI;
 	[SerializeField] private MobileJoystick movementJoystick;
 	[SerializeField] private MobileJoystick mainWeaponJoystick;
 
@@ -41,11 +41,11 @@ public class HumanInputs : MonoBehaviour {
 			player.GetHull().Move(Vector3.zero);
 		}
 		if (mainWeaponJoystick.GetButtonIsDown()) {
-			player.MaintainTurretRotation();
 			player.TryFireMainWeapon();
 
 			float mag = mainWeaponJoystick.GetJoystickMagnitude();
-			if (mag > 1 / 8f) {
+			if (mag > 0.33f) {
+				player.MaintainTurretRotation();
 				player.GetTurret().SetTargetTurretRotation(
 					-mainWeaponJoystick.GetJoystickAngle() * Mathf.Rad2Deg + 90f);
 			}
@@ -91,10 +91,12 @@ public class HumanInputs : MonoBehaviour {
 	private void Start() {
 		cameraLocalPosition = Camera.main.gameObject.transform.localPosition;
 
-		UIController.instance.SetMobileUIEnabled(USE_MOBILE);
+		UIController.instance.SetMobileUIEnabled(UIController.GetIsMobile());
 
-		if (USE_MOBILE) {
+		if (UIController.GetIsMobile()) {
 			mainWeaponJoystick.OnJoystickReleased += MainWeaponJoystickReleased;
+		} else {
+			mobileUI.gameObject.SetActive(false);
 		}
 	}
 	//TODO: mobile should still read other inputs here but redirect it
@@ -104,7 +106,7 @@ public class HumanInputs : MonoBehaviour {
 
 		CombatEntity player = EntityController.player;
 
-		if (USE_MOBILE) {
+		if (UIController.GetIsMobile()) {
 			MobileOnlyUpdate(player);
 		} else {
 			PCOnlyUpdate(player);

@@ -6,9 +6,16 @@ using TMPro;
 
 public class UIController : MonoBehaviour {
 
-	#region Statics
+	#region Statics & Consts
 
 	public static UIController instance;
+	private const bool OVERRIDE_MOBILE = true;
+
+	public static bool GetIsMobile() {
+		if (OVERRIDE_MOBILE) return true;
+		if (Application.isEditor) return false;
+		return Application.isMobilePlatform;
+	}
 
 	#endregion
 

@@ -61,15 +61,18 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 		//check if all players are alive; if not, end game
 		bool someoneAlive = false;
+		bool someoneDead = false;
 		foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
-			if (e == null || !e.GetIsPlayer()) continue;
+			if (e == null || !e.GetIsPlayer() || !e.GetNetworker().GetInitialized()) continue;
 			if (!e.GetNetworker().GetIsDead()) {
 				someoneAlive = true;
 				break;
+			} else {
+				someoneDead = true;
 			}
 		}
-		//it's joever
-		if (!someoneAlive) {
+		//it's joever (make sure players were actually initialized and at least one is dead)
+		if (!someoneAlive && someoneDead) {
 			GameOver = true;
 		}
 	}

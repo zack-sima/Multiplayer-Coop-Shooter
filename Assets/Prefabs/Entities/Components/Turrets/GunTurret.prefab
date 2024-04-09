@@ -288,7 +288,7 @@ MonoBehaviour:
   bulletAnchor: {fileID: 5873466652764302217}
   bulletPrefab: {fileID: 8601614415527540211, guid: fdc1978cc2d3b467ca08c2272a851337, type: 3}
   shootSpeed: 0.1
-  shootSpread: 0
+  shootSpread: 5
   rotateSpeed: 200
   rotatable: 1
   proximityExplode: 0

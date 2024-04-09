@@ -14,6 +14,8 @@ public class CombatEntity : Entity {
 	[SerializeField] private Turret turret; //for combat
 	public Turret GetTurret() { return turret; }
 
+	[SerializeField] private Transform movementMarker; //movement indicator
+
 	#endregion
 
 	#region Members
@@ -24,8 +26,12 @@ public class CombatEntity : Entity {
 	//set this back to time.time when rotation is called on mobile
 	private float freezeTurretTimestamp = -10f;
 	public bool GetTurretFollowsMovement() {
-		return turretFollowsMovement && (Time.time - freezeTurretTimestamp > 1f);
+		return turretFollowsMovement && (Time.time - freezeTurretTimestamp > 0.1f);
 	}
+
+	//autoaim target
+	private CombatEntity target = null;
+	private float targetFindTimer = 0f;
 
 	//unique bulletid
 	private int bulletsFired = 0;
@@ -143,15 +149,53 @@ public class CombatEntity : Entity {
 	public override void RemoveEntityFromRegistry() {
 		EntityController.instance.RemoveFromCombatEntities(this);
 	}
+
 	protected override void Update() {
 		base.Update();
 
 		if (GetTurretFollowsMovement() && TryGetComponent(out Rigidbody rb)) {
-			Debug.Log(rb.velocity != Vector3.zero);
+			//try to auto-aim towards nearest target within screen before following hull
 
-			if (rb.velocity != Vector3.zero)
-				turret.SetTargetTurretRotation(Mathf.Atan2(
-					rb.velocity.x, rb.velocity.z) * Mathf.Rad2Deg);
+			if (targetFindTimer > 0) {
+				targetFindTimer -= Time.deltaTime;
+			} else {
+				targetFindTimer = 0.25f;
+				float closestDistance = 15f;
+				target = null;
+				foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
+					if (!ce.GetNetworker().GetInitialized() || ce.GetTeam() == GetTeam() ||
+						ce.GetNetworker().GetIsDead()) continue;
+					float distance = Vector3.Distance(ce.transform.position, transform.position);
+					if (distance < closestDistance) {
+						closestDistance = distance;
+						target = ce;
+					}
+				}
+				targetFindTimer = 0;
+			}
+			if (target != null) {
+				turret.SetTargetTurretRotation(
+					Mathf.Atan2(target.transform.position.x - transform.position.x,
+					target.transform.position.z - transform.position.z) * Mathf.Rad2Deg
+				);
+			} else {
+				if (rb.velocity != Vector3.zero)
+					turret.SetTargetTurretRotation(Mathf.Atan2(
+						rb.velocity.x, rb.velocity.z) * Mathf.Rad2Deg, slow: true);
+			}
+		}
+		if (movementMarker != null && UIController.GetIsMobile()) {
+			if (GetIsPlayer() && GetNetworker().HasSyncAuthority()) {
+				if (TryGetComponent(out Rigidbody rb2) && rb2.velocity != Vector3.zero &&
+					GetNetworker().GetInitialized() && !GetNetworker().GetIsDead()) {
+					movementMarker.localPosition = 0.35f * new Vector3(rb2.velocity.x, 0, rb2.velocity.z);
+					movementMarker.gameObject.SetActive(true);
+				} else {
+					movementMarker.gameObject.SetActive(false);
+				}
+			} else if (movementMarker.gameObject.activeInHierarchy) {
+				movementMarker.gameObject.SetActive(false);
+			}
 		}
 	}
 

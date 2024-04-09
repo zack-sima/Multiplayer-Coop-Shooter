@@ -52,14 +52,18 @@ public class Turret : MonoBehaviour {
 	//NOTE: only follows target rotation if one has been set
 	private bool useTargetRotation = false;
 
+	//rotate slowly when auto rotating back for mobile
+	private bool inSlowMode = false;
+
 	#endregion
 
 	#region Functions
 
 	//mobile/new turret rotation
-	public void SetTargetTurretRotation(float rotation) {
+	public void SetTargetTurretRotation(float rotation, bool slow = false) {
 		targetRotation = rotation;
 		useTargetRotation = true;
+		inSlowMode = slow;
 	}
 	//synced to networking, call only by local input;
 	//this function can be called in a framework where the turret is not a sub-part of a Networked Entity
@@ -97,7 +101,8 @@ public class Turret : MonoBehaviour {
 
 		if (useTargetRotation) {
 			transform.rotation = Quaternion.RotateTowards(transform.rotation,
-				Quaternion.Euler(0, targetRotation, 0), Time.deltaTime * rotateSpeed);
+				Quaternion.Euler(0, targetRotation, 0),
+				Time.deltaTime * rotateSpeed * (inSlowMode ? 0.55f : 1f));
 		}
 	}
 
