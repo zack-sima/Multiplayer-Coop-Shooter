@@ -184,7 +184,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 321581956327634332, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 25
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 321581956327634332, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_LocalPosition.x
@@ -200,19 +200,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 321581956327634332, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.8191521
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 321581956327634332, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.5735764
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 321581956327634332, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 321581956327634332, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 321581956327634332, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -224,7 +224,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 321581956327634332, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 70
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 321581956327634332, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -233,6 +233,10 @@ PrefabInstance:
     - target: {fileID: 321581956327634332, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2810985809936746586, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7584455675748913447, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_Name
@@ -275,6 +279,10 @@ PrefabInstance:
       propertyPath: turret
       value: 
       objectReference: {fileID: 7574545832438206258}
+    - target: {fileID: 366278136777289315, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
+      propertyPath: maxHealth
+      value: 750
+      objectReference: {fileID: 0}
     - target: {fileID: 366278136777289315, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: healthCanvas
       value: 

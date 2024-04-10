@@ -35,7 +35,9 @@ public class Bullet : MonoBehaviour {
 		if (alreadyHitTarget) return;
 
 		if (other.gameObject.TryGetComponent(out CombatEntity e)) {
-			if (!e.GetNetworker().GetInitialized() || e.GetTeam() == senderTeam) return;
+			try {
+				if (!e.GetNetworker().GetInitialized() || e.GetTeam() == senderTeam) return;
+			} catch { return; }
 
 			if (senderIsLocal) {
 				NetworkedEntity networker = e.GetNetworker();

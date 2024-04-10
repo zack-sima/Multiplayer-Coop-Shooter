@@ -177,6 +177,7 @@ public class Entity : MonoBehaviour {
 		} else if (healthBar.localScale.x < healthChange.localScale.x) {
 			healthChange.localScale = new Vector2(healthChange.localScale.x - Time.deltaTime * 0.5f, 1);
 		}
+		healthCanvas.GetHealthText().text = Mathf.CeilToInt(GetHealth()).ToString();
 	}
 
 	#endregion

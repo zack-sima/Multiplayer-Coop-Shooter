@@ -22,6 +22,9 @@ public class HumanInputs : MonoBehaviour {
 
 	private Vector3 cameraLocalPosition = Vector3.zero;
 
+	private bool playerShooting = false;
+	public bool GetPlayerShooting() { return playerShooting; }
+
 	#endregion
 
 	#region Functions
@@ -41,6 +44,7 @@ public class HumanInputs : MonoBehaviour {
 			player.GetHull().Move(Vector3.zero);
 		}
 		if (mainWeaponJoystick.GetButtonIsDown()) {
+			playerShooting = true;
 			player.TryFireMainWeapon();
 
 			float mag = mainWeaponJoystick.GetJoystickMagnitude();
@@ -49,6 +53,8 @@ public class HumanInputs : MonoBehaviour {
 				player.GetTurret().SetTargetTurretRotation(
 					-mainWeaponJoystick.GetJoystickAngle() * Mathf.Rad2Deg + 90f);
 			}
+		} else {
+			playerShooting = false;
 		}
 	}
 	//for semi-auto release fire
@@ -58,8 +64,12 @@ public class HumanInputs : MonoBehaviour {
 
 	private void PCOnlyUpdate(CombatEntity player) {
 		if (Input.GetMouseButton(0)) {
+			playerShooting = true;
 			player.TryFireMainWeapon();
+		} else {
+			playerShooting = false;
 		}
+
 		//point to mouse
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		if (Physics.Raycast(ray, out RaycastHit hit)) {

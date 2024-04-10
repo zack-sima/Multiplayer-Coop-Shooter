@@ -60,6 +60,10 @@ PrefabInstance:
       propertyPath: shootSpread
       value: 15
       objectReference: {fileID: 0}
+    - target: {fileID: 8306412023698569218, guid: 7affb4ce29449426eabe2ae4c4637b4e, type: 3}
+      propertyPath: bulletPrefab
+      value: 
+      objectReference: {fileID: 8601614415527540211, guid: fdc1978cc2d3b467ca08c2272a851337, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

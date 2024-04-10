@@ -663,6 +663,7 @@ GameObject:
   - component: {fileID: 2553011054576309641}
   - component: {fileID: 3848680765277500733}
   - component: {fileID: 8346407976520134454}
+  - component: {fileID: 1890779474984233302}
   m_Layer: 5
   m_Name: Game UI
   m_TagString: Untagged
@@ -726,6 +727,18 @@ MonoBehaviour:
   mobileUI: {fileID: 4449895767327604419}
   movementJoystick: {fileID: 7254146070885338247}
   mainWeaponJoystick: {fileID: 3139455547273535819}
+--- !u!114 &1890779474984233302
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3243132742402371420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 51de46ffa7b1b476c903a0c06b8cc350, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4113291441402818280
 GameObject:
   m_ObjectHideFlags: 0

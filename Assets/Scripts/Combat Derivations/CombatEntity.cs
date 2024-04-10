@@ -26,7 +26,7 @@ public class CombatEntity : Entity {
 	//set this back to time.time when rotation is called on mobile
 	private float freezeTurretTimestamp = -10f;
 	public bool GetTurretFollowsMovement() {
-		return turretFollowsMovement && (Time.time - freezeTurretTimestamp > 0.1f);
+		return turretFollowsMovement && (Time.time - freezeTurretTimestamp > 0.5f);
 	}
 
 	//autoaim target
@@ -84,10 +84,13 @@ public class CombatEntity : Entity {
 	//the one that actually creates a bullet that matters
 	public void TryFireMainWeapon() {
 		if (!turret.gameObject.activeInHierarchy) return;
+		if (GetIsPlayer() && PlayerInfo.instance.GetAmmoLeft() <= 0) return;
 
 		GameObject b = turret.TryFireMainWeapon(GetTeam(), bulletsFired, optionalSender: this);
 
 		if (b == null) return;
+
+		if (GetIsPlayer()) PlayerInfo.instance.ConsumeAmmo();
 
 		PreventHealing();
 		AddBullet(bulletsFired, b);
@@ -160,8 +163,11 @@ public class CombatEntity : Entity {
 				targetFindTimer -= Time.deltaTime;
 			} else {
 				targetFindTimer = 0.25f;
-				float closestDistance = 15f;
-				target = null;
+
+				//prioritize existing target (don't switch unless much closer)
+				float closestDistance = target != null ?
+					Vector3.Distance(target.transform.position, transform.position) - 3f : 15f;
+
 				foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
 					if (!ce.GetNetworker().GetInitialized() || ce.GetTeam() == GetTeam() ||
 						ce.GetNetworker().GetIsDead()) continue;
@@ -196,6 +202,11 @@ public class CombatEntity : Entity {
 			} else if (movementMarker.gameObject.activeInHierarchy) {
 				movementMarker.gameObject.SetActive(false);
 			}
+		}
+		//ammo display for local player
+		if (GetIsPlayer() && GetNetworker().HasSyncAuthority()) {
+			GetHealthCanvas().GetAmmoBar().localScale = new Vector2(
+				(float)PlayerInfo.instance.GetAmmoLeft() / PlayerInfo.instance.GetMaxAmmo(), 1f);
 		}
 	}
 

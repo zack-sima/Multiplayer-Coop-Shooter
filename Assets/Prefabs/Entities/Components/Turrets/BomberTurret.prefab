@@ -55,7 +55,7 @@ MonoBehaviour:
   rotatable: 0
   proximityExplode: 1
   explosionRadius: 5
-  explosionDamage: 300
+  explosionDamage: 2250
 --- !u!114 &5624494410719778117
 MonoBehaviour:
   m_ObjectHideFlags: 0
