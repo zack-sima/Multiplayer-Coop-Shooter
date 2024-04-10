@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 3, y: -17.11}
-  m_SizeDelta: {x: -6, y: -40.43}
+  m_AnchoredPosition: {x: 5, y: -16.5}
+  m_SizeDelta: {x: -10, y: -43}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &1803409989585042779
 CanvasRenderer:
@@ -173,15 +173,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2810985809936746586, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_PresetInfoIsWorld
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5058091306184017805, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -19.42
+      value: -20.83
       objectReference: {fileID: 0}
     - target: {fileID: 5058091306184017805, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 6.71
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6082987222856036439, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: ammoBar
@@ -193,11 +193,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8178120963249979236, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_SizeDelta.y
-      value: -19.42
+      value: -20.83
       objectReference: {fileID: 0}
     - target: {fileID: 8178120963249979236, guid: 3824e09282e7f4f5c8869fe17f2db723, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 6.71
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

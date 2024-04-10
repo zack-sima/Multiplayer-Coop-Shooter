@@ -44,8 +44,10 @@ public class HumanInputs : MonoBehaviour {
 			player.GetHull().Move(Vector3.zero);
 		}
 		if (mainWeaponJoystick.GetButtonIsDown()) {
-			playerShooting = true;
-			player.TryFireMainWeapon();
+			if (player.GetTurret().GetIsFullAuto()) {
+				playerShooting = true;
+				player.TryFireMainWeapon();
+			}
 
 			float mag = mainWeaponJoystick.GetJoystickMagnitude();
 			if (mag > 0.33f) {
@@ -58,12 +60,37 @@ public class HumanInputs : MonoBehaviour {
 		}
 	}
 	//for semi-auto release fire
-	public void MainWeaponJoystickReleased() { }
+	public void MainWeaponJoystickReleased() {
+		if (EntityController.player == null ||
+			EntityController.player.GetNetworker().GetIsDead()) return;
+
+		CombatEntity player = EntityController.player;
+
+		if (player.GetTurret().GetIsFullAuto()) return;
+
+		player.TryFireMainWeapon();
+	}
 
 	#endregion
 
 	private void PCOnlyUpdate(CombatEntity player) {
-		if (Input.GetMouseButton(0)) {
+
+		//TODO: temporary turret switching
+		if (Input.GetKeyDown(KeyCode.Alpha1)) {
+			player.GetNetworker().SetTurretName(
+				PlayerInfo.instance.GetTurrets()[0].turretName
+			);
+		}
+		if (Input.GetKeyDown(KeyCode.Alpha2)) {
+			player.GetNetworker().SetTurretName(
+				PlayerInfo.instance.GetTurrets()[1].turretName
+			);
+		}
+
+		if (Input.GetMouseButtonUp(0)) {
+			MainWeaponJoystickReleased();
+		}
+		if (Input.GetMouseButton(0) && player.GetTurret().GetIsFullAuto()) {
 			playerShooting = true;
 			player.TryFireMainWeapon();
 		} else {

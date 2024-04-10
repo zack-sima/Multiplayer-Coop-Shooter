@@ -21,8 +21,20 @@ public class Turret : MonoBehaviour {
 
 	#region Members
 
+	//ammo parameters
+	[SerializeField] private int maxAmmo;
+	public int GetMaxAmmo() { return maxAmmo; }
+
+	//bullets per second
+	[SerializeField] private float ammoRegenerationSpeed;
+	public float GetAmmoRegenSpeed() { return ammoRegenerationSpeed; }
+
+	[SerializeField] private bool isFullAuto;
+	public bool GetIsFullAuto() { return isFullAuto; }
+
 	//in seconds before shooting again
 	[SerializeField] private float shootSpeed;
+	public float GetShootSpeed() { return shootSpeed; }
 
 	//in degrees of y-randomness
 	[SerializeField] private float shootSpread;
@@ -34,6 +46,7 @@ public class Turret : MonoBehaviour {
 	[SerializeField] private bool rotatable;
 	public bool GetIsRotatable() { return rotatable; }
 
+	//for proximity explode/bomber turret only
 	[SerializeField] private bool proximityExplode;
 	public bool GetIsProximityExploder() { return proximityExplode; }
 

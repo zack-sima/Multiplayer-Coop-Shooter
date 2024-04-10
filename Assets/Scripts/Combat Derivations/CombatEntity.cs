@@ -57,6 +57,9 @@ public class CombatEntity : Entity {
 		}
 	}
 
+	//spawned in when instantiated; when a player switches turrets after enable/disable here
+	List<PlayerInfo.TurretInfo> spawnedTurrets = new();
+
 	#endregion
 
 	#region Functions
@@ -73,6 +76,19 @@ public class CombatEntity : Entity {
 
 	#endregion
 
+	//callback from networker
+	public void TurretChanged(string newTurretName) {
+		foreach (PlayerInfo.TurretInfo t in spawnedTurrets) {
+			if (t.turretName == newTurretName) {
+				t.turret.gameObject.SetActive(true);
+				turret = t.turret;
+			} else {
+				t.turret.gameObject.SetActive(false);
+			}
+		}
+		turret.GetAnimator().SetTeamMaterial(GetTeamMaterials().GetTeamColor(GetTeam()));
+	}
+
 	//non-local bullet just for decorative purposes
 	public void NonLocalFireMainWeapon(int bulletId) {
 		GameObject b = turret.NonLocalFireWeapon(this, GetTeam(), bulletId);
@@ -84,7 +100,7 @@ public class CombatEntity : Entity {
 	//the one that actually creates a bullet that matters
 	public void TryFireMainWeapon() {
 		if (!turret.gameObject.activeInHierarchy) return;
-		if (GetIsPlayer() && PlayerInfo.instance.GetAmmoLeft() <= 0) return;
+		if (GetIsPlayer() && PlayerInfo.instance.GetAmmoLeft() < 1) return;
 
 		GameObject b = turret.TryFireMainWeapon(GetTeam(), bulletsFired, optionalSender: this);
 
@@ -104,19 +120,8 @@ public class CombatEntity : Entity {
 		if (blownUp) return;
 		blownUp = true;
 
-		float radius = turret.GetExplosionRadius();
-		foreach (CombatEntity e in new List<CombatEntity>(EntityController.instance.GetCombatEntities())) {
-			if (e == null || e == this || !e.GetNetworker().GetInitialized()) continue;
-
-			float dist = Vector3.Distance(transform.position, e.gameObject.transform.position);
-
-			try { //for some reason, GetIsDead() throws error in chain blow up sometimes
-				if (e.GetNetworker().GetIsDead() || dist > radius) continue;
-			} catch { continue; }
-
-			e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object,
-				turret.GetExplosionDamage() * Mathf.Min(radius - dist + radius / 2f, radius) / radius);
-		}
+		DamageHandler.DealExplosiveDamage(transform.position, turret.GetExplosionRadius(),
+			turret.GetExplosionDamage(), canDamageTeam: true, self: this);
 	}
 	public override void EntityRemoved() {
 		base.EntityRemoved();
@@ -152,7 +157,35 @@ public class CombatEntity : Entity {
 	public override void RemoveEntityFromRegistry() {
 		EntityController.instance.RemoveFromCombatEntities(this);
 	}
+	protected override void Start() {
+		if (!GetIsPlayer()) {
+			base.Start();
+			return;
+		}
+		//spawn in all the required turrets
+		List<PlayerInfo.TurretInfo> turrets = PlayerInfo.instance.GetTurrets();
 
+		//clear current turret
+		if (turret != null) {
+			Destroy(turret.gameObject);
+		}
+		foreach (PlayerInfo.TurretInfo t in turrets) {
+			GameObject g = Instantiate(t.turret.gameObject, transform);
+			g.transform.SetLocalPositionAndRotation(t.localPositionOffset, Quaternion.identity);
+			g.SetActive(false);
+
+			PlayerInfo.TurretInfo localInfo = new() {
+				turret = g.GetComponent<Turret>(), //NOTE: actually a reference, not a prefab 
+				turretName = t.turretName
+			};
+			spawnedTurrets.Add(localInfo);
+		}
+		//fallback to first turret if none actually given
+		turret = spawnedTurrets[0].turret;
+		turret.gameObject.SetActive(true);
+
+		base.Start();
+	}
 	protected override void Update() {
 		base.Update();
 

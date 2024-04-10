@@ -38,6 +38,10 @@ public class NetworkedEntity : NetworkBehaviour {
 	private bool IsDead { get; set; } = false;
 	public bool GetIsDead() { if (!initialized) return true; return IsDead; }
 
+	[Networked, OnChangedRender(nameof(TurretChanged))]
+	private string TurretName { get; set; } = "Autocannon";
+	public void SetTurretName(string turretName) { TurretName = turretName; } //only by local
+
 	#endregion
 
 	#region Members
@@ -59,6 +63,14 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	private void PositionChanged() {
 		targetPosition = Position;
+	}
+	private void TurretChanged() {
+		if (optionalCombatEntity == null || !isPlayer) return;
+		optionalCombatEntity.TurretChanged(TurretName);
+
+		if (HasSyncAuthority() && isPlayer) {
+			PlayerInfo.instance.TurretChanged(TurretName);
+		}
 	}
 	//NOTE: only applies to CombatEntities
 	private void TurretRotationChanged() {
@@ -127,6 +139,9 @@ public class NetworkedEntity : NetworkBehaviour {
 				playerInstance = this;
 				EntityController.player = optionalCombatEntity;
 
+				TurretName = PlayerInfo.instance.GetLocalPlayerTurretName();
+				TurretChanged();
+
 				transform.position = new Vector3(0, 0, 0);
 
 				//TODO: add team selection for pvp
@@ -138,6 +153,7 @@ public class NetworkedEntity : NetworkBehaviour {
 			transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 		} else {
 			PositionChanged();
+			TurretChanged();
 			TurretRotationChanged();
 			SyncNonLocal();
 		}

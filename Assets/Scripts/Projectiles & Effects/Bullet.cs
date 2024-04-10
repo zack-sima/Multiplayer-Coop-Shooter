@@ -15,6 +15,9 @@ public class Bullet : MonoBehaviour {
 	[SerializeField] private float speed;
 	[SerializeField] private float damage;
 
+	[SerializeField] private bool isExplosion;
+	[SerializeField] private float explosionRadius;
+
 	private CombatEntity senderEntity = null;
 	private int senderTeam = -1;
 	private int bulletId = -1;
@@ -34,15 +37,20 @@ public class Bullet : MonoBehaviour {
 	private void OnTriggerEnter(Collider other) {
 		if (alreadyHitTarget) return;
 
+		if (other.gameObject.layer == LayerMask.NameToLayer("Projectiles")) return;
+
 		if (other.gameObject.TryGetComponent(out CombatEntity e)) {
 			try {
 				if (!e.GetNetworker().GetInitialized() || e.GetTeam() == senderTeam) return;
 			} catch { return; }
 
-			if (senderIsLocal) {
-				NetworkedEntity networker = e.GetNetworker();
-				networker.RPC_TakeDamage(networker.Object, damage);
+			if (senderIsLocal && !isExplosion) {
+				DamageHandler.DealDamageToTarget(e, damage);
 			}
+		}
+		if (isExplosion) {
+			DamageHandler.DealExplosiveDamage(transform.position, explosionRadius,
+				damage, false, senderEntity);
 		}
 		alreadyHitTarget = true;
 		if (senderIsLocal) {

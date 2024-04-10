@@ -739,6 +739,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51de46ffa7b1b476c903a0c06b8cc350, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turretPrefabs:
+  - turret: {fileID: 8306412023698569218, guid: 7affb4ce29449426eabe2ae4c4637b4e, type: 3}
+    turretName: Autocannon
+    localPositionOffset: {x: 0, y: 1.29, z: 0}
+  - turret: {fileID: 8306412023698569218, guid: c1265b1ee98774bfd98e1347ffb7cf8a, type: 3}
+    turretName: Explosive Cannon
+    localPositionOffset: {x: 0, y: 1.29, z: 0}
 --- !u!1 &4113291441402818280
 GameObject:
   m_ObjectHideFlags: 0
