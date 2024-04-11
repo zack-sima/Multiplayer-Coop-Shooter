@@ -43,13 +43,14 @@ public class ServerLinker : MonoBehaviour {
 		await tcs.Task;
 		// Additional code here after scene has loaded
 	}
-	public async void StartShared(int sceneIndex) {
+	public async void StartShared(int sceneIndex, string roomId = "") {
 		// Make sure FusionBootstrap and NetworkRunner are ready
 		if (bootstrap != null) {
 			// Change to the gameplay scene
 			await LoadSceneAsync(sceneIndex);
 
 			// After scene is loaded, start the network game as shared
+			bootstrap.DefaultRoomName = roomId;
 			bootstrap.StartSharedClient(); // Adjust the client count as necessary
 		}
 	}

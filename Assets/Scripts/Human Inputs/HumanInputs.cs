@@ -8,6 +8,8 @@ public class HumanInputs : MonoBehaviour {
 
 	public static HumanInputs instance;
 
+	private const float AIM_DRAG_THRESHOLD = 0.33f;
+
 	#endregion
 
 	#region References
@@ -25,11 +27,29 @@ public class HumanInputs : MonoBehaviour {
 	private bool playerShooting = false;
 	public bool GetPlayerShooting() { return playerShooting; }
 
+	//mobile semi auto doesn't shoot if dragged for long enough
+	private float mainShootButtonDownTime = 0f;
+
+	//before button release, magnitude of attack joystick
+	private float lastMainWeaponJoystickMagnitude = 0f;
+
 	#endregion
 
 	#region Functions
 
 	#region Mobile
+
+	/// <summary>
+	/// Returns whether the main weapon joystick is down or not
+	/// </summary>
+
+	public bool GetIsMobileAiming() {
+		return mainWeaponJoystick.GetButtonIsDown() &&
+			mainWeaponJoystick.GetJoystickMagnitude() > AIM_DRAG_THRESHOLD;
+	}
+	public bool GetJoystickThresholdIsAiming() {
+		return lastMainWeaponJoystickMagnitude > AIM_DRAG_THRESHOLD;
+	}
 
 	private void MobileOnlyUpdate(CombatEntity player) {
 		player.SetTurretFollowsMovement(true);
@@ -50,11 +70,12 @@ public class HumanInputs : MonoBehaviour {
 			}
 
 			float mag = mainWeaponJoystick.GetJoystickMagnitude();
-			if (mag > 0.33f) {
+			if (mag > AIM_DRAG_THRESHOLD) {
 				player.MaintainTurretRotation();
 				player.GetTurret().SetTargetTurretRotation(
 					-mainWeaponJoystick.GetJoystickAngle() * Mathf.Rad2Deg + 90f);
 			}
+			lastMainWeaponJoystickMagnitude = mainWeaponJoystick.GetJoystickMagnitude();
 		} else {
 			playerShooting = false;
 		}
@@ -68,14 +89,19 @@ public class HumanInputs : MonoBehaviour {
 
 		if (player.GetTurret().GetIsFullAuto()) return;
 
+		if (Time.time - mainShootButtonDownTime > 0.5f && !GetJoystickThresholdIsAiming()) return;
+
 		player.TryFireMainWeapon();
+	}
+	public void MainWeaponJoystickDown() {
+		mainShootButtonDownTime = Time.time;
 	}
 
 	#endregion
 
 	private void PCOnlyUpdate(CombatEntity player) {
 
-		//TODO: temporary turret switching
+#if UNITY_EDITOR //NOTE: for testing, temporary turret switching
 		if (Input.GetKeyDown(KeyCode.Alpha1)) {
 			player.GetNetworker().SetTurretName(
 				PlayerInfo.instance.GetTurrets()[0].turretName
@@ -86,7 +112,10 @@ public class HumanInputs : MonoBehaviour {
 				PlayerInfo.instance.GetTurrets()[1].turretName
 			);
 		}
-
+#endif
+		if (Input.GetKeyDown(KeyCode.Escape)) {
+			UIController.instance.ToggleOptions();
+		}
 		if (Input.GetMouseButtonUp(0)) {
 			MainWeaponJoystickReleased();
 		}
@@ -132,6 +161,7 @@ public class HumanInputs : MonoBehaviour {
 
 		if (UIController.GetIsMobile()) {
 			mainWeaponJoystick.OnJoystickReleased += MainWeaponJoystickReleased;
+			mainWeaponJoystick.OnJoystickPressed += MainWeaponJoystickDown;
 		} else {
 			mobileUI.gameObject.SetActive(false);
 		}

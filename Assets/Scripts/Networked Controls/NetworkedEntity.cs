@@ -32,11 +32,12 @@ public class NetworkedEntity : NetworkBehaviour {
 	//Team: determines whether bullets pass by, health bar color, etc;
 	[Networked, OnChangedRender(nameof(TeamChanged))]
 	private int Team { get; set; } = -1;
-	public int GetTeam() { return Team; }
+	public int GetTeam() { try { return Team; } catch { return -1; } }
 
 	[Networked, OnChangedRender(nameof(IsDeadChanged))]
 	private bool IsDead { get; set; } = false;
 	public bool GetIsDead() { try { return IsDead; } catch { return true; } }
+	public bool GetIsDeadUncaught() { return IsDead; } //for game over don't return true when error
 
 	[Networked, OnChangedRender(nameof(TurretChanged))]
 	private string TurretName { get; set; } = "Autocannon";

@@ -9,10 +9,12 @@ public class UIController : MonoBehaviour {
 	#region Statics & Consts
 
 	public static UIController instance;
-	private const bool OVERRIDE_MOBILE = false;
+	private const bool OVERRIDE_MOBILE = true;
 
 	public static bool GetIsMobile() {
+#if UNITY_EDITOR
 		if (OVERRIDE_MOBILE) return true;
+#endif
 		if (Application.isEditor) return false;
 		return Application.isMobilePlatform;
 	}
@@ -31,6 +33,15 @@ public class UIController : MonoBehaviour {
 
 	#region Functions
 
+	public void ResumeGame() {
+		optionsUI.gameObject.SetActive(false);
+	}
+	public void ToggleOptions() {
+		optionsUI.gameObject.SetActive(!optionsUI.gameObject.activeInHierarchy);
+	}
+	public void LeaveGame() {
+		ServerLinker.instance.StopGame();
+	}
 	public void SetMobileUIEnabled(bool enabled) {
 		mobileUI.gameObject.SetActive(enabled);
 	}

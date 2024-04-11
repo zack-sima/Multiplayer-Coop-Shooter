@@ -44,7 +44,7 @@ public class MobileJoystick : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 	public void OnPointerUp(PointerEventData eventData) {
 		buttonDown = false;
 		currentPointer = null;
-		OnJoystickPressed?.Invoke();
+		OnJoystickReleased?.Invoke();
 	}
 	void Start() {
 		mainCanvas = GameObject.Find("Canvas").GetComponent<Canvas>();

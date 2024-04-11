@@ -24,9 +24,6 @@ public class PlayerInfo : MonoBehaviour {
 
 	#region Prefabs
 
-	//TODO: temp const
-	private const string TEMP_TURRET_NAME = "Explosive Cannon";
-
 	//uses turret name to query for turret (fallback to first turret)
 	[SerializeField] private List<TurretInfo> turretPrefabs;
 
@@ -34,7 +31,7 @@ public class PlayerInfo : MonoBehaviour {
 
 	#region Members
 
-	//TODO: actually set this from shop, init, etc
+	//set by turret
 	private int maxAmmo = 1;
 	public int GetMaxAmmo() { return maxAmmo; }
 
@@ -45,7 +42,7 @@ public class PlayerInfo : MonoBehaviour {
 	public void ConsumeAmmo() { ammoLeft--; }
 
 	//TODO: add
-	private int energyLeft = 30;
+	//private int energyLeft = 30;
 
 	#endregion
 
@@ -73,8 +70,7 @@ public class PlayerInfo : MonoBehaviour {
 		return turretPrefabs;
 	}
 	public string GetLocalPlayerTurretName() {
-		//TODO: setup with PlayerPrefs
-		return TEMP_TURRET_NAME;
+		return PlayerPrefs.GetString("turret_name");
 	}
 	private void Update() {
 		if (ammoLeft < maxAmmo && !HumanInputs.instance.GetPlayerShooting())

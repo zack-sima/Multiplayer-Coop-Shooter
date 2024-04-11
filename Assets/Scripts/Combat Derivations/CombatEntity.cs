@@ -14,7 +14,8 @@ public class CombatEntity : Entity {
 	[SerializeField] private Turret turret; //for combat
 	public Turret GetTurret() { return turret; }
 
-	[SerializeField] private Transform movementMarker; //movement indicator
+	[SerializeField] private Transform movementMarker; //mobile movement indicator
+	[SerializeField] private Transform aimMarker; //mobile aim indicator
 
 	#endregion
 
@@ -199,7 +200,7 @@ public class CombatEntity : Entity {
 
 				//prioritize existing target (don't switch unless much closer)
 				float closestDistance = target != null ?
-					Vector3.Distance(target.transform.position, transform.position) - 3f : 15f;
+					Vector3.Distance(target.transform.position, transform.position) - 3f : 20f;
 
 				foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
 					if (!ce.GetNetworker().GetInitialized() || ce.GetTeam() == GetTeam() ||
@@ -221,6 +222,15 @@ public class CombatEntity : Entity {
 				if (rb.velocity != Vector3.zero)
 					turret.SetTargetTurretRotation(Mathf.Atan2(
 						rb.velocity.x, rb.velocity.z) * Mathf.Rad2Deg, slow: true);
+			}
+		}
+		if (aimMarker != null && UIController.GetIsMobile()) {
+			if (GetIsPlayer() && GetNetworker().HasSyncAuthority() &&
+				HumanInputs.instance.GetIsMobileAiming()) {
+				aimMarker.gameObject.SetActive(true);
+				aimMarker.eulerAngles = new Vector3(0, turret.transform.eulerAngles.y - 90, 0);
+			} else if (aimMarker.gameObject.activeInHierarchy) {
+				aimMarker.gameObject.SetActive(false);
 			}
 		}
 		if (movementMarker != null && UIController.GetIsMobile()) {
