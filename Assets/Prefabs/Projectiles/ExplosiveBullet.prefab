@@ -48,11 +48,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c3060a9d95b24047bc3211e8a0e3bb0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  explosionPrefab: {fileID: 8446013055927753855, guid: f38fb189f42d947339efe6ce80c9c8c1, type: 3}
+  explosionPrefab: {fileID: 8446013055927753855, guid: fdbc35bd3f6774bebbe877f64dbe32de, type: 3}
   speed: 20
-  damage: 500
+  damage: 600
   isExplosion: 1
-  explosionRadius: 3.5
+  explosionRadius: 3.8
 --- !u!54 &2229630022482374810
 Rigidbody:
   m_ObjectHideFlags: 0

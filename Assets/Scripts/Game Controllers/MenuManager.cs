@@ -31,10 +31,13 @@ public class MenuManager : MonoBehaviour {
 		ServerLinker.instance.StartSinglePlayer(mapDropdownSceneIndices[mapDropdown.value]);
 	}
 	private void InitGame() {
+		PlayerPrefs.SetInt("turret_index", turretDropdown.value);
 		PlayerPrefs.SetString("turret_name", turretDropdownNames[turretDropdown.value]);
 	}
 	void Start() {
 		Application.targetFrameRate = 90;
+
+		turretDropdown.value = PlayerPrefs.GetInt("turret_index");
 	}
 
 	#endregion

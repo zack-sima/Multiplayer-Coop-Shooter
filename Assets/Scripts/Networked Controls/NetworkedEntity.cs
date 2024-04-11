@@ -110,7 +110,9 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 	//either is player and has state authority or isn't player and is master client/SP
 	public bool HasSyncAuthority() {
-		return HasStateAuthority && isPlayer || !isPlayer && (Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer);
+		try {
+			return HasStateAuthority && isPlayer || !isPlayer && (Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer);
+		} catch { return false; }
 	}
 	[Rpc(RpcSources.StateAuthority, RpcTargets.Proxies)]
 	public void RPC_FireWeapon(int bulletId) {

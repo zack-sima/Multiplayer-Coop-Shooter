@@ -88,6 +88,9 @@ public class CombatEntity : Entity {
 			}
 		}
 		turret.GetAnimator().SetTeamMaterial(GetTeamMaterials().GetTeamColor(GetTeam()));
+
+		if (GetIsPlayer())
+			GetHealthCanvas().UpdateAmmoTickerCount(turret.GetIsFullAuto() ? 0 : turret.GetMaxAmmo() - 1);
 	}
 
 	//non-local bullet just for decorative purposes
@@ -248,8 +251,17 @@ public class CombatEntity : Entity {
 		}
 		//ammo display for local player
 		if (GetIsPlayer() && GetNetworker().HasSyncAuthority()) {
-			GetHealthCanvas().GetAmmoBar().localScale = new Vector2(
-				(float)PlayerInfo.instance.GetAmmoLeft() / PlayerInfo.instance.GetMaxAmmo(), 1f);
+			if (turret.GetIsFullAuto()) {
+				GetHealthCanvas().GetAmmoGrowBar().localScale = Vector2.zero;
+				GetHealthCanvas().GetAmmoBar().localScale = new Vector2(
+					(float)PlayerInfo.instance.GetAmmoLeft() / PlayerInfo.instance.GetMaxAmmo(), 1f);
+			} else {
+				//shows not full ammo ammo in gray
+				GetHealthCanvas().GetAmmoGrowBar().localScale = new Vector2(
+					(float)PlayerInfo.instance.GetAmmoLeft() / PlayerInfo.instance.GetMaxAmmo(), 1f);
+				GetHealthCanvas().GetAmmoBar().localScale = new Vector2(
+					(int)PlayerInfo.instance.GetAmmoLeft() / (float)PlayerInfo.instance.GetMaxAmmo(), 1f);
+			}
 		}
 	}
 

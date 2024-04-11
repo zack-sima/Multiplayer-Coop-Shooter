@@ -19,18 +19,20 @@ public static class DamageHandler {
 			//same team
 			if (!canDamageTeam && self != null && e.GetTeam() == self.GetTeam()) continue;
 
-			float dist = Vector3.Distance(position, e.gameObject.transform.position);
+			float dist = AIBrain.GroundDistance(position, e.gameObject.transform.position);
 
 			try { //for some reason, GetIsDead() throws error in chain blow up sometimes
 				if (e.GetNetworker().GetIsDead() || dist > radius) continue;
 			} catch { continue; }
 
 			e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object,
-				damage * Mathf.Min(radius - dist + radius / 2f, radius) / radius);
+				damage * Mathf.Min(1.5f * radius - 1.2f * dist, radius) / radius);
 		}
 	}
 	public static void DealDamageToTarget(CombatEntity target, float damage) {
 		NetworkedEntity networker = target.GetNetworker();
+
+		if (!networker.GetInitialized()) return;
 		networker.RPC_TakeDamage(networker.Object, damage);
 	}
 }

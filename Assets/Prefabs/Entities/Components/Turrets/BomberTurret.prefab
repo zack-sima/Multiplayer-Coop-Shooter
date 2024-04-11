@@ -49,12 +49,15 @@ MonoBehaviour:
   animator: {fileID: 5624494410719778117}
   bulletAnchor: {fileID: 0}
   bulletPrefab: {fileID: 0}
+  maxAmmo: 0
+  ammoRegenerationSpeed: 0
+  isFullAuto: 0
   shootSpeed: 1
   shootSpread: 0
   rotateSpeed: 0
   rotatable: 0
   proximityExplode: 1
-  explosionRadius: 5
+  explosionRadius: 4.2
   explosionDamage: 2250
 --- !u!114 &5624494410719778117
 MonoBehaviour:

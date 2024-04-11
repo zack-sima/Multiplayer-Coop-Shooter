@@ -9,7 +9,7 @@ public class UIController : MonoBehaviour {
 	#region Statics & Consts
 
 	public static UIController instance;
-	private const bool OVERRIDE_MOBILE = true;
+	private const bool OVERRIDE_MOBILE = false;
 
 	public static bool GetIsMobile() {
 #if UNITY_EDITOR
@@ -31,12 +31,25 @@ public class UIController : MonoBehaviour {
 
 	#endregion
 
+	#region Members
+
+	//if just closed options, don't allow fire
+	private float closedOptionsTimestamp = 0f;
+
+	#endregion
+
 	#region Functions
 
+	public bool InOptions() {
+		if (Time.time - closedOptionsTimestamp < 0.07f) return true;
+		return optionsUI.gameObject.activeInHierarchy;
+	}
 	public void ResumeGame() {
+		closedOptionsTimestamp = Time.time;
 		optionsUI.gameObject.SetActive(false);
 	}
 	public void ToggleOptions() {
+		closedOptionsTimestamp = Time.time;
 		optionsUI.gameObject.SetActive(!optionsUI.gameObject.activeInHierarchy);
 	}
 	public void LeaveGame() {
@@ -61,7 +74,6 @@ public class UIController : MonoBehaviour {
 		scoreText.text = $"<color=#dddddd>Score: <color=#aaeeaa>{score}</color>\n" +
 			$"<color=#dddddd>Wave: <color=#eeeeaa>{wave}";
 	}
-
 	private void Awake() {
 		instance = this;
 		loadingUI.gameObject.SetActive(true);

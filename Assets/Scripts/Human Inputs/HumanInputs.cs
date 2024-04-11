@@ -89,7 +89,8 @@ public class HumanInputs : MonoBehaviour {
 
 		if (player.GetTurret().GetIsFullAuto()) return;
 
-		if (Time.time - mainShootButtonDownTime > 0.5f && !GetJoystickThresholdIsAiming()) return;
+		if (UIController.GetIsMobile() && Time.time - mainShootButtonDownTime > 0.5f &&
+			!GetJoystickThresholdIsAiming()) return;
 
 		player.TryFireMainWeapon();
 	}
@@ -173,10 +174,12 @@ public class HumanInputs : MonoBehaviour {
 
 		CombatEntity player = EntityController.player;
 
-		if (UIController.GetIsMobile()) {
-			MobileOnlyUpdate(player);
-		} else {
-			PCOnlyUpdate(player);
+		if (!UIController.instance.InOptions()) {
+			if (UIController.GetIsMobile()) {
+				MobileOnlyUpdate(player);
+			} else {
+				PCOnlyUpdate(player);
+			}
 		}
 
 		Camera.main.transform.position = player.transform.position + cameraLocalPosition;

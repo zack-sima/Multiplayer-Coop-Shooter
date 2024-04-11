@@ -9,6 +9,12 @@ public class GunAnimator : TurretAnimatorBase {
 	[SerializeField] private Transform gun;
 	[SerializeField] private List<GameObject> muzzleFlashes;
 
+	//sounds
+	[SerializeField] private AudioSource gunSound;
+	[SerializeField] private string gunSoundName;
+	[SerializeField] private float audioCutoff;
+
+
 	#endregion
 
 	#region Members
@@ -47,6 +53,11 @@ public class GunAnimator : TurretAnimatorBase {
 	}
 	public override void FireMainWeapon() {
 		AddRecoil();
+		if (gunSound != null) {
+			if (AudioSourceController.CanPlaySound(gunSoundName, audioCutoff)) {
+				gunSound.PlayOneShot(gunSound.clip);
+			}
+		}
 	}
 	void Update() {
 		if (gunRecoil > 0 && !addingRecoil) {
