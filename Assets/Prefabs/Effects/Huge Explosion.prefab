@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3259126640427656305}
   - component: {fileID: 3672619000761084657}
   - component: {fileID: 3424934296618022517}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Explosion Mult
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5013,7 +5013,7 @@ GameObject:
   - component: {fileID: 963773261891197237}
   - component: {fileID: 1836917172173517580}
   - component: {fileID: 346695690303342265}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Smoke Colon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9738,7 +9738,7 @@ GameObject:
   - component: {fileID: 5498446259981025968}
   - component: {fileID: 214539811998395799}
   - component: {fileID: 4295027971020468206}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Dot Sparkles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14454,7 +14454,7 @@ GameObject:
   - component: {fileID: 4428257863978096469}
   - component: {fileID: 676914165331516148}
   - component: {fileID: 5746814339081071523}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Glow Horizontal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19295,7 +19295,7 @@ GameObject:
   - component: {fileID: 739966153788839986}
   - component: {fileID: 2856657484867250122}
   - component: {fileID: 5443408246697802622}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Explosion Add
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24272,7 +24272,7 @@ GameObject:
   - component: {fileID: 4767002746003200624}
   - component: {fileID: 2528133135527730826}
   - component: {fileID: 4756170610573983563}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Huge Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}

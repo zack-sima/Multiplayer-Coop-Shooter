@@ -48,7 +48,7 @@ public class Bullet : MonoBehaviour {
 				DamageHandler.DealDamageToTarget(e, damage);
 			}
 		}
-		if (isExplosion) {
+		if (senderIsLocal && isExplosion) {
 			DamageHandler.DealExplosiveDamage(transform.position, explosionRadius,
 				damage, false, senderEntity);
 		}

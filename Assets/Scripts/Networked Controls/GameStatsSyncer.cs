@@ -88,9 +88,7 @@ public class GameStatsSyncer : NetworkBehaviour {
 		}
 
 		//leave game!
-		Runner.Shutdown();
-
-		UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(0);
+		ServerLinker.instance.StopGame();
 	}
 	public override void Spawned() {
 		GameOverChanged();

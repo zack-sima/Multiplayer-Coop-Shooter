@@ -36,7 +36,7 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	[Networked, OnChangedRender(nameof(IsDeadChanged))]
 	private bool IsDead { get; set; } = false;
-	public bool GetIsDead() { if (!initialized) return true; return IsDead; }
+	public bool GetIsDead() { try { return IsDead; } catch { return true; } }
 
 	[Networked, OnChangedRender(nameof(TurretChanged))]
 	private string TurretName { get; set; } = "Autocannon";
@@ -57,6 +57,8 @@ public class NetworkedEntity : NetworkBehaviour {
 	private bool initialized = false;
 	public bool GetInitialized() { return initialized; }
 
+	private Rigidbody optionalRigidbody = null;
+
 	#endregion
 
 	#region Callbacks
@@ -66,6 +68,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 	private void TurretChanged() {
 		if (optionalCombatEntity == null || !isPlayer) return;
+
 		optionalCombatEntity.TurretChanged(TurretName);
 
 		if (HasSyncAuthority() && isPlayer) {
@@ -110,7 +113,8 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 	[Rpc(RpcSources.StateAuthority, RpcTargets.Proxies)]
 	public void RPC_FireWeapon(int bulletId) {
-		if (HasSyncAuthority() || optionalCombatEntity == null) return;
+		if (HasSyncAuthority() || optionalCombatEntity == null ||
+			!optionalCombatEntity.GetTurret().gameObject.activeInHierarchy) return;
 		optionalCombatEntity.GetTurret().NonLocalFireWeapon(
 			optionalCombatEntity, mainEntity.GetTeam(), bulletId);
 	}
@@ -140,7 +144,6 @@ public class NetworkedEntity : NetworkBehaviour {
 				EntityController.player = optionalCombatEntity;
 
 				TurretName = PlayerInfo.instance.GetLocalPlayerTurretName();
-				TurretChanged();
 
 				transform.position = new Vector3(0, 0, 0);
 
@@ -153,23 +156,24 @@ public class NetworkedEntity : NetworkBehaviour {
 			transform.position = new Vector3(transform.position.x, 0, transform.position.z);
 		} else {
 			PositionChanged();
-			TurretChanged();
 			TurretRotationChanged();
 			SyncNonLocal();
 		}
-		StartCoroutine(StartupDelay());
 		TeamChanged();
+		StartCoroutine(StartupDelay());
 		StartCoroutine(WaitInitialize());
 	}
 	//sometimes there's a bug where even if initialization is done networking doesn't allow calls
 	private IEnumerator WaitInitialize() {
 		yield return new WaitForEndOfFrame();
 		initialized = true;
+		TurretChanged();
 	}
 	//wait a few frames for networking to fully sync
 	private IEnumerator StartupDelay() {
 		yield return new WaitForSeconds(0.1f);
 		if (!IsDead) mainEntity.RespawnEntity();
+		TurretChanged();
 	}
 	public override void FixedUpdateNetwork() {
 		if (!initialized) return;
@@ -182,6 +186,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 	private void SyncNonLocal() {
 		if (Vector3.Distance(transform.position, targetPosition) < 3f) {
+			if (optionalRigidbody != null) optionalRigidbody.velocity = Vector3.zero;
 			transform.position = Vector3.MoveTowards(
 				transform.position, targetPosition,
 				optionalCombatEntity.GetHull().GetSpeed() * Time.deltaTime * 1.2f
@@ -194,6 +199,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		if (mainEntity is CombatEntity entity) {
 			optionalCombatEntity = entity;
 		}
+		TryGetComponent(out optionalRigidbody);
 	}
 	private void Update() {
 		if (!initialized) return;

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3751128691678046854}
   - component: {fileID: 3221250275244238900}
   - component: {fileID: 3836348873309602818}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Glow sparkles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -532,7 +532,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 45
+    maxNumParticles: 10
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -4928,13 +4928,13 @@ GameObject:
   - component: {fileID: 8102607346552546329}
   - component: {fileID: 7629067639255131250}
   - component: {fileID: 926296767784468334}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Dot Sparkles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8102607346552546329
 Transform:
   m_ObjectHideFlags: 0
@@ -5449,7 +5449,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     gravitySource: 0
-    maxNumParticles: 85
+    maxNumParticles: 20
     customEmitterVelocity: {x: 0, y: 0, z: 0}
     size3D: 0
     rotation3D: 0
@@ -9818,7 +9818,7 @@ GameObject:
   - component: {fileID: 6414327351691547912}
   - component: {fileID: 8057734634435335018}
   - component: {fileID: 2935172712491649485}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14534,7 +14534,7 @@ GameObject:
   - component: {fileID: 6799568209939314216}
   - component: {fileID: 2782254923976055041}
   - component: {fileID: 8904598315878599761}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Dot Sparkles Vertical
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19426,7 +19426,7 @@ GameObject:
   - component: {fileID: 5286724081701702586}
   - component: {fileID: 2352577726750930508}
   - component: {fileID: 7324744214448121755}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Destruction Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19464,6 +19464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 773f11f7dca6d4cd798212c2c88543e1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timer: 3
 --- !u!198 &5286724081701702586
 ParticleSystem:
   m_ObjectHideFlags: 0

@@ -25,7 +25,7 @@ public class UIController : MonoBehaviour {
 	private TMP_Text respawnTimerText, gameOverTimerText, scoreText;
 
 	[SerializeField]
-	private RectTransform respawnUI, gameOverUI, mobileUI;
+	private RectTransform respawnUI, gameOverUI, mobileUI, loadingUI, optionsUI;
 
 	#endregion
 
@@ -53,6 +53,12 @@ public class UIController : MonoBehaviour {
 
 	private void Awake() {
 		instance = this;
+		loadingUI.gameObject.SetActive(true);
+		StartCoroutine(WaitStartPlayer());
+	}
+	private IEnumerator WaitStartPlayer() {
+		while (NetworkedEntity.playerInstance == null) yield return null;
+		loadingUI.gameObject.SetActive(false);
 	}
 
 	#endregion
