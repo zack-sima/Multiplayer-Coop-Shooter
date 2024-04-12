@@ -89,8 +89,13 @@ public class CombatEntity : Entity {
 		}
 		turret.GetAnimator().SetTeamMaterial(GetTeamMaterials().GetTeamColor(GetTeam()));
 
-		if (GetIsPlayer())
-			GetHealthCanvas().UpdateAmmoTickerCount(turret.GetIsFullAuto() ? 0 : turret.GetMaxAmmo() - 1);
+		if (GetIsPlayer()) {
+			if (GetNetworker().HasSyncAuthority()) {
+				GetHealthCanvas().UpdateAmmoTickerCount(turret.GetIsFullAuto() ? 0 : turret.GetMaxAmmo() - 1);
+			} else {
+				SetHealthCanvasToFallback();
+			}
+		}
 	}
 
 	//non-local bullet just for decorative purposes

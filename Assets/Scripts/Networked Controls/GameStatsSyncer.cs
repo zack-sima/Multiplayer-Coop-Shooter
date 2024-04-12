@@ -95,6 +95,10 @@ public class GameStatsSyncer : NetworkBehaviour {
 	public override void Spawned() {
 		GameOverChanged();
 		ScoreOrWaveChanged();
+
+		if (HasSyncAuthority()) {
+			Wave = Mathf.Max(PlayerPrefs.GetInt("debug_starting_wave") - 1, 0);
+		}
 	}
 	private void Update() {
 		if (GameOver && !gameOverInvoked) {

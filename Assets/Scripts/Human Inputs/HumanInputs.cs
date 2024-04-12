@@ -14,7 +14,6 @@ public class HumanInputs : MonoBehaviour {
 
 	#region References
 
-	[SerializeField] private RectTransform mobileUI;
 	[SerializeField] private MobileJoystick movementJoystick;
 	[SerializeField] private MobileJoystick mainWeaponJoystick;
 
@@ -159,12 +158,11 @@ public class HumanInputs : MonoBehaviour {
 		cameraLocalPosition = Camera.main.gameObject.transform.localPosition;
 
 		UIController.instance.SetMobileUIEnabled(UIController.GetIsMobile());
+		UIController.instance.SetPCUIEnabled(!UIController.GetIsMobile());
 
 		if (UIController.GetIsMobile()) {
 			mainWeaponJoystick.OnJoystickReleased += MainWeaponJoystickReleased;
 			mainWeaponJoystick.OnJoystickPressed += MainWeaponJoystickDown;
-		} else {
-			mobileUI.gameObject.SetActive(false);
 		}
 	}
 	//TODO: mobile should still read other inputs here but redirect it

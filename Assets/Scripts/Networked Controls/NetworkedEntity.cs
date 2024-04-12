@@ -60,9 +60,36 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	private Rigidbody optionalRigidbody = null;
 
+	//local ability toggles; TODO: scale ability level, etc
+	private bool abilityHealOn = false;
+	private bool abilityOverclockOn = false;
+
 	#endregion
 
 	#region Callbacks
+
+	#region Ability Effects
+
+	//Note: these should be called on the local player only, and the coroutines called will assume this.
+
+	public void AbilityHealCalled() {
+		StartCoroutine(AbilityHealCoroutine());
+	}
+	public void AbilityOverclockCalled() {
+		StartCoroutine(AbilityOverclockCoroutine());
+	}
+	private IEnumerator AbilityHealCoroutine() {
+		abilityHealOn = true;
+		yield return new WaitForSeconds(2f);
+		abilityHealOn = false;
+	}
+	private IEnumerator AbilityOverclockCoroutine() {
+		abilityOverclockOn = true;
+		yield return new WaitForSeconds(2f);
+		abilityOverclockOn = false;
+	}
+
+	#endregion
 
 	private void PositionChanged() {
 		targetPosition = Position;
@@ -148,6 +175,8 @@ public class NetworkedEntity : NetworkBehaviour {
 
 				TurretName = PlayerInfo.instance.GetLocalPlayerTurretName();
 
+				GetComponent<AudioListener>().enabled = true;
+
 				transform.position = new Vector3(0, 0, 0);
 
 				//TODO: add team selection for pvp
@@ -209,11 +238,24 @@ public class NetworkedEntity : NetworkBehaviour {
 
 		if (HasSyncAuthority()) {
 			//local entity
-			if (isPlayer && Health < mainEntity.GetMaxHealth() &&
-				Time.time - mainEntity.GetLastDamageTimestamp() > 2.5f) {
-				Health = Mathf.Min(mainEntity.GetMaxHealth(),
-					Health + Time.deltaTime * mainEntity.GetMaxHealth() / 12f);
-				mainEntity.UpdateHealthBar();
+			if (isPlayer) {
+				//overclock ability
+				if (abilityOverclockOn) {
+					PlayerInfo.instance.ReloadFaster();
+					optionalCombatEntity.GetTurret().ReloadFaster();
+				}
+				//healing ability, TODO: scale by ability stats instead
+				if (abilityHealOn) {
+					Health = Mathf.Min(mainEntity.GetMaxHealth(),
+						Health + Time.deltaTime * mainEntity.GetMaxHealth() / 5f);
+					mainEntity.UpdateHealthBar();
+				}
+				//natural healing
+				if (Time.time - mainEntity.GetLastDamageTimestamp() > 2.5f) {
+					Health = Mathf.Min(mainEntity.GetMaxHealth(),
+						Health + Time.deltaTime * mainEntity.GetMaxHealth() / 12f);
+					mainEntity.UpdateHealthBar();
+				}
 			}
 		} else {
 			//non-local entity

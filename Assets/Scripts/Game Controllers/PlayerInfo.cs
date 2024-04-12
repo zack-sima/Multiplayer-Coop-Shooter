@@ -29,6 +29,10 @@ public class PlayerInfo : MonoBehaviour {
 
 	#endregion
 
+	#region References
+
+	#endregion
+
 	#region Members
 
 	//set by turret
@@ -47,6 +51,19 @@ public class PlayerInfo : MonoBehaviour {
 	#endregion
 
 	#region Functions
+
+	#region Abilities Callback
+
+	//NOTE: only call on local player!
+
+	public void AbilityHealActivated() {
+		NetworkedEntity.playerInstance.AbilityHealCalled();
+	}
+	public void AbilityOverclockActivated() {
+		NetworkedEntity.playerInstance.AbilityOverclockCalled();
+	}
+
+	#endregion
 
 	//NOTE: should only be called at start, but for debug is called by player
 	public void TurretChanged(string newTurretName) {
@@ -72,9 +89,17 @@ public class PlayerInfo : MonoBehaviour {
 	public string GetLocalPlayerTurretName() {
 		return PlayerPrefs.GetString("turret_name");
 	}
-	private void Update() {
-		if (ammoLeft < maxAmmo && !HumanInputs.instance.GetPlayerShooting())
+	private void ReloadAmmoOnce(bool reloadRegardless = false) {
+		if (ammoLeft < maxAmmo && (!HumanInputs.instance.GetPlayerShooting() || reloadRegardless))
 			ammoLeft = Mathf.Min(maxAmmo, ammoLeft + Time.deltaTime * ammoReloadSpeed);
+	}
+	//called by overclock ability
+	public void ReloadFaster() {
+		for (int i = 0; i < 3; i++)
+			ReloadAmmoOnce(reloadRegardless: true);
+	}
+	private void Update() {
+		ReloadAmmoOnce();
 	}
 	private void Start() {
 		TurretChanged(GetLocalPlayerTurretName());

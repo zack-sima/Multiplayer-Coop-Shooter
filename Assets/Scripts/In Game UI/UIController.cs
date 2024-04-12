@@ -27,7 +27,7 @@ public class UIController : MonoBehaviour {
 	private TMP_Text respawnTimerText, gameOverTimerText, scoreText;
 
 	[SerializeField]
-	private RectTransform respawnUI, gameOverUI, mobileUI, loadingUI, optionsUI;
+	private RectTransform respawnUI, gameOverUI, mobileUI, pcUI, loadingUI, optionsUI;
 
 	#endregion
 
@@ -57,6 +57,9 @@ public class UIController : MonoBehaviour {
 	}
 	public void SetMobileUIEnabled(bool enabled) {
 		mobileUI.gameObject.SetActive(enabled);
+	}
+	public void SetPCUIEnabled(bool enabled) {
+		pcUI.gameObject.SetActive(enabled);
 	}
 	public void SetRespawnTimerText(string text) {
 		respawnTimerText.text = text;

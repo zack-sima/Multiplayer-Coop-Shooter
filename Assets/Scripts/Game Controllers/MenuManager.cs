@@ -8,7 +8,7 @@ public class MenuManager : MonoBehaviour {
 
 	#region References
 
-	[SerializeField] private TMP_InputField roomInput;
+	[SerializeField] private TMP_InputField roomInput, waveInput;
 
 	//map
 	[SerializeField] private TMP_Dropdown mapDropdown;
@@ -33,6 +33,12 @@ public class MenuManager : MonoBehaviour {
 	private void InitGame() {
 		PlayerPrefs.SetInt("turret_index", turretDropdown.value);
 		PlayerPrefs.SetString("turret_name", turretDropdownNames[turretDropdown.value]);
+
+		if (int.TryParse(waveInput.text, out int wave) && wave > 0) {
+			PlayerPrefs.SetInt("debug_starting_wave", wave);
+		} else {
+			PlayerPrefs.SetInt("debug_starting_wave", 0);
+		}
 	}
 	void Start() {
 		Application.targetFrameRate = 90;

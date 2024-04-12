@@ -29139,7 +29139,7 @@ MonoBehaviour:
   - {fileID: 5438088891224232068}
   - {fileID: 2038266058975655049}
   audioName: exp_big
-  audioCutoff: 0.1
+  audioCutoff: 0.05
 --- !u!82 &5438088891224232068
 AudioSource:
   m_ObjectHideFlags: 0
@@ -29163,7 +29163,7 @@ AudioSource:
   MinDistance: 1
   MaxDistance: 50
   Pan2D: 0
-  rolloffMode: 2
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0

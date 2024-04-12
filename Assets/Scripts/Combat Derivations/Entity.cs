@@ -30,6 +30,15 @@ public class Entity : MonoBehaviour {
 	[SerializeField] private HealthCanvas healthCanvas;
 	public HealthCanvas GetHealthCanvas() { return healthCanvas; }
 
+	//if a player is non-local, switch to fallback
+	[SerializeField] private HealthCanvas fallbackHealthCanvas;
+	protected void SetHealthCanvasToFallback() {
+		healthCanvas.gameObject.SetActive(false);
+		fallbackHealthCanvas.gameObject.SetActive(true);
+		fallbackHealthCanvas.transform.rotation = healthCanvas.transform.rotation;
+		healthCanvas = fallbackHealthCanvas;
+	}
+
 	[SerializeField] private TeamMaterialManager teamMaterials;
 	public TeamMaterialManager GetTeamMaterials() { return teamMaterials; }
 

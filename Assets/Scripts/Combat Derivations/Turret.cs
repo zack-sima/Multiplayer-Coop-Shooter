@@ -108,7 +108,10 @@ public class Turret : MonoBehaviour {
 
 		return b.gameObject;
 	}
-
+	//called when overclocked ability is on
+	public void ReloadFaster() {
+		if (shootTimer > 0) shootTimer -= Time.deltaTime;
+	}
 	private void Update() {
 		if (shootTimer > 0) shootTimer -= Time.deltaTime;
 

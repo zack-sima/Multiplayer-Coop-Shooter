@@ -25,15 +25,6 @@ public class ServerLinker : MonoBehaviour {
 		}
 	}
 	private void Update() {
-		if (Input.GetKeyDown(KeyCode.Alpha9)) {
-			StartShared(1);
-		}
-		if (Input.GetKeyDown(KeyCode.Alpha8)) {
-			StartSinglePlayer(1);
-		}
-		if (Input.GetKeyDown(KeyCode.Alpha0)) {
-			StopGame();
-		}
 	}
 	public async Task LoadSceneAsync(int sceneIndex) {
 		// Wrap the AsyncOperation in a Task

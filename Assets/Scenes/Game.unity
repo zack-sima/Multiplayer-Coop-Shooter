@@ -2792,7 +2792,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1250893130}
   - component: {fileID: 1250893129}
-  - component: {fileID: 1250893128}
   - component: {fileID: 1250893127}
   - component: {fileID: 1250893126}
   m_Layer: 6
@@ -2861,16 +2860,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PreferredRunner: 0
   Components:
-  - {fileID: 1250893128}
+  - {fileID: 0}
   _guid: e79cf1cb-b58b-4684-
---- !u!81 &1250893128
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1250893125}
-  m_Enabled: 1
 --- !u!20 &1250893129
 Camera:
   m_ObjectHideFlags: 0
@@ -2906,7 +2897,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 9
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -4416,7 +4407,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 9
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2

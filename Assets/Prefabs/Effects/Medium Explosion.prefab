@@ -14578,7 +14578,7 @@ MonoBehaviour:
   audioSources:
   - {fileID: 5920494578282918464}
   audioName: exp_med
-  audioCutoff: 0.1
+  audioCutoff: 0.05
 --- !u!198 &5286724081701702586
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -19432,7 +19432,7 @@ AudioSource:
   MinDistance: 1
   MaxDistance: 50
   Pan2D: 0
-  rolloffMode: 2
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
@@ -19440,7 +19440,7 @@ AudioSource:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0.02
+      time: 0.11278297
       value: 1
       inSlope: -50.01992
       outSlope: -50.01992
@@ -19449,7 +19449,7 @@ AudioSource:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.04
+      time: 0.13278297
       value: 0.5
       inSlope: -12.50498
       outSlope: -12.50498
@@ -19458,7 +19458,7 @@ AudioSource:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.08
+      time: 0.17278297
       value: 0.25
       inSlope: -3.126245
       outSlope: -3.126245
@@ -19467,7 +19467,7 @@ AudioSource:
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.16
+      time: 0.25278297
       value: 0.125
       inSlope: -0.78156126
       outSlope: -0.78156126

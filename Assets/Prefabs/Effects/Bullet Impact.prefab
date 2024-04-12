@@ -9657,7 +9657,7 @@ MonoBehaviour:
   audioSources:
   - {fileID: -5216558911239807001}
   audioName: exp_small
-  audioCutoff: 0.07
+  audioCutoff: 0.05
 --- !u!198 &2637255746512433051
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -14461,7 +14461,7 @@ AudioSource:
   m_audioClip: {fileID: 8300000, guid: 9c818621c2aba414b96a5721df87a769, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
-  m_Pitch: 1.5
+  m_Pitch: 3
   Loop: 0
   Mute: 0
   Spatialize: 0
@@ -14471,7 +14471,7 @@ AudioSource:
   MinDistance: 1
   MaxDistance: 50
   Pan2D: 0
-  rolloffMode: 2
+  rolloffMode: 1
   BypassEffects: 0
   BypassListenerEffects: 0
   BypassReverbZones: 0
