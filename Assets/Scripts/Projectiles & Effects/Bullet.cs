@@ -12,7 +12,7 @@ public class Bullet : MonoBehaviour {
 
 	#region Members
 
-	[SerializeField] private float speed;
+	[SerializeField] protected float speed;
 	[SerializeField] private float damage;
 
 	[SerializeField] private bool isExplosion;

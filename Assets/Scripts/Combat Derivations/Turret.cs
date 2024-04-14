@@ -7,7 +7,7 @@ public class Turret : MonoBehaviour {
 
 	#region References
 
-	[SerializeField] private TurretAnimatorBase animator;
+	[SerializeField] protected TurretAnimatorBase animator;
 	public TurretAnimatorBase GetAnimator() { return animator; }
 
 	[SerializeField] private Transform bulletAnchor;
@@ -23,51 +23,51 @@ public class Turret : MonoBehaviour {
 	#region Members
 
 	//ammo parameters
-	[SerializeField] private int maxAmmo;
+	[SerializeField] protected int maxAmmo;
 	public int GetMaxAmmo() { return maxAmmo; }
 
 	[Tooltip("Bullets per second")]
-	[SerializeField] private float ammoRegenerationSpeed;
+	[SerializeField] protected float ammoRegenerationSpeed;
 	public float GetAmmoRegenSpeed() { return ammoRegenerationSpeed; }
 
-	[SerializeField] private bool isFullAuto;
+	[SerializeField] protected bool isFullAuto;
 	public bool GetIsFullAuto() { return isFullAuto; }
 
 	[Tooltip("in seconds before shooting again")]
-	[SerializeField] private float shootSpeed;
+	[SerializeField] protected float shootSpeed;
 	public float GetShootSpeed() { return shootSpeed; }
 
 	//in degrees of y-randomness
-	[SerializeField] private float shootSpread;
+	[SerializeField] protected float shootSpread;
 
 	[Tooltip("in degrees of y-rotation per second")]
-	[SerializeField] private float rotateSpeed;
+	[SerializeField] protected float rotateSpeed;
 
 	//ex: bomb mech is not rotatable
-	[SerializeField] private bool rotatable;
+	[SerializeField] protected bool rotatable;
 	public bool GetIsRotatable() { return rotatable; }
 
 	//for proximity explode/bomber turret only
-	[SerializeField] private bool proximityExplode;
+	[SerializeField] protected bool proximityExplode;
 	public bool GetIsProximityExploder() { return proximityExplode; }
 
-	[SerializeField] private float explosionRadius;
+	[SerializeField] protected float explosionRadius;
 	public float GetExplosionRadius() { return explosionRadius; }
 
-	[SerializeField] private float explosionDamage;
+	[SerializeField] protected float explosionDamage;
 	public float GetExplosionDamage() { return explosionDamage; }
 
 	//set to shootSpeed
-	private float shootTimer = 0;
+	protected float shootTimer = 0;
 
 	//turret target rotation
-	private float targetRotation = 0;
+	protected float targetRotation = 0;
 
 	//NOTE: only follows target rotation if one has been set
-	private bool useTargetRotation = false;
+	protected bool useTargetRotation = false;
 
 	//rotate slowly when auto rotating back for mobile
-	private bool inSlowMode = false;
+	protected bool inSlowMode = false;
 
 	#endregion
 
@@ -113,7 +113,7 @@ public class Turret : MonoBehaviour {
 	public void ReloadFaster() {
 		if (shootTimer > 0) shootTimer -= Time.deltaTime;
 	}
-	private void Update() {
+	protected void Update() {
 		if (shootTimer > 0) shootTimer -= Time.deltaTime;
 
 		if (useTargetRotation) {
