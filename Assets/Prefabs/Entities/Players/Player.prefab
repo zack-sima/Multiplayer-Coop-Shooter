@@ -368,8 +368,7 @@ MonoBehaviour:
   turret: {fileID: 1528361845630613159}
   movementMarker: {fileID: 747168800691588733}
   aimMarker: {fileID: 4301405775318760930}
-  lobUIPrefab: {fileID: 0}
-  lobSectionPrefab: {fileID: 6778804892143942938}
+  lobMarker: {fileID: 1805754263690053379}
 --- !u!54 &6744555938843193653
 Rigidbody:
   m_ObjectHideFlags: 0

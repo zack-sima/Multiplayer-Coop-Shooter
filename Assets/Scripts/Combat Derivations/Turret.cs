@@ -115,7 +115,7 @@ public class Turret : MonoBehaviour {
 	public void ReloadFaster() {
 		if (shootTimer > 0) shootTimer -= Time.deltaTime;
 	}
-	protected void Update() {
+	protected virtual void Update() {
 		if (shootTimer > 0) shootTimer -= Time.deltaTime;
 
 		if (useTargetRotation) {

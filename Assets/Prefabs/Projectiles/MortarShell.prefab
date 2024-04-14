@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3032760409629855194}
   - component: {fileID: 7446348119440724990}
   - component: {fileID: 6232766089810626233}
-  - component: {fileID: 5548500578866382163}
+  - component: {fileID: 2403963101904188423}
   m_Layer: 7
   m_Name: MortarShell
   m_TagString: Untagged
@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4, y: 4, z: 4}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4725560248186559322}
@@ -49,9 +49,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 8446013055927753855, guid: fdbc35bd3f6774bebbe877f64dbe32de, type: 3}
   speed: 15
-  damage: 2000
+  damage: 550
   isExplosion: 1
-  explosionRadius: 5
+  explosionRadius: 4.5
 --- !u!54 &6232766089810626233
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -74,13 +74,13 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 0
+  m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!65 &5548500578866382163
-BoxCollider:
+--- !u!135 &2403963101904188423
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -98,7 +98,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.1, y: 0.1, z: 0.1}
+  m_Radius: 0.25
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5395101997624820192
 GameObject:

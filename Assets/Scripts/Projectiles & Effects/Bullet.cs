@@ -82,7 +82,7 @@ public class Bullet : MonoBehaviour {
 	private void Start() {
 		StartCoroutine(DelayedDestroy());
 	}
-	void Update() {
+	virtual protected void Update() {
 		transform.Translate(speed * Time.deltaTime * Vector3.forward);
 	}
 

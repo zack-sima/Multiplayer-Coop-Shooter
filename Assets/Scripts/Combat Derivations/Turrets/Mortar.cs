@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class Mortar : Turret {
     #region Statics & Consts
@@ -18,38 +20,41 @@ public class Mortar : Turret {
 
 	#region Members
 
-    private float targetDistance = 5f;
     private float targetHeight = -45; // degrees
     private float elevationRate = 90f;
+
+    private float distance = 10f;
 
 	#endregion
 
 	#region Functions
 
     private static float CalculateLaunchAngle(float velocity, float distance) {
-        if (distance > 10f) return -45f;
-        return -(90f - (.5f * Mathf.Asin(10f * distance / Mathf.Pow(velocity, 2)) * 180 / Mathf.PI));
+        
+        float asinVal = Mathf.Abs(Physics.gravity.y) * distance / Mathf.Pow(velocity, 2);
+        if (asinVal < -1f || asinVal > 1f) return -45f;
+
+        return  -(90f - (.5f * Mathf.Asin(asinVal) * 180 / Mathf.PI));
     }
 
-    public void SetTargetLocation(Vector3 location) {
-        targetDistance = Vector3.Distance(location, transform.position);
+    public void SetDistance(float d) {
+        distance = d;
     }
 
-    private void Awake() {
+	protected override void Update() { 
+        base.Update();
 
-    }
+        targetHeight = CalculateLaunchAngle(15f, distance);
 
-	private new void Update() { 
-        if (shootTimer > 0) shootTimer -= Time.deltaTime;
-
-		if (useTargetRotation) {
-			transform.rotation = Quaternion.RotateTowards(transform.rotation,
-				Quaternion.Euler(0, targetRotation + 90, 0),
-				Time.deltaTime * rotateSpeed * (inSlowMode ? 0.55f : 1f));
-		}
-        targetHeight = CalculateLaunchAngle(15f, targetDistance);
-        mortarCore.transform.rotation = Quaternion.RotateTowards(mortarCore.transform.rotation, 
-            Quaternion.Euler(transform.rotation.eulerAngles.x + targetHeight, transform.rotation.eulerAngles.y - 90, 0), elevationRate);
+        try {
+            if (transform.rotation != Quaternion.identity) {
+                Quaternion targetRot = Quaternion.Euler(transform.eulerAngles.x + targetHeight,
+                    transform.eulerAngles.y, transform.eulerAngles.z);
+            
+                if (targetRot != Quaternion.identity)
+                    mortarCore.transform.rotation = Quaternion.RotateTowards(mortarCore.transform.rotation, targetRot, elevationRate);
+            }
+        } catch { }
         //targetHeight += 10 * Time.deltaTime;
         //mortarCore.transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x + 90, transform.rotation.eulerAngles.y, 0);
         //Pivot barrel up and down to hit a position.
