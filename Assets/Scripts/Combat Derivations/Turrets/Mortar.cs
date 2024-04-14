@@ -18,7 +18,7 @@ public class Mortar : Turret {
 
 	#region Members
 
-    private Vector3 targetLocation;
+    private float targetDistance = 5f;
     private float targetHeight = -45; // degrees
     private float elevationRate = 90f;
 
@@ -32,11 +32,11 @@ public class Mortar : Turret {
     }
 
     public void SetTargetLocation(Vector3 location) {
-        targetLocation = location;
+        targetDistance = Vector3.Distance(location, transform.position);
     }
 
     private void Awake() {
-       targetLocation = Vector3.zero;
+
     }
 
 	private new void Update() { 
@@ -47,7 +47,7 @@ public class Mortar : Turret {
 				Quaternion.Euler(0, targetRotation + 90, 0),
 				Time.deltaTime * rotateSpeed * (inSlowMode ? 0.55f : 1f));
 		}
-        targetHeight = CalculateLaunchAngle(10f, 10f);
+        targetHeight = CalculateLaunchAngle(15f, targetDistance);
         mortarCore.transform.rotation = Quaternion.RotateTowards(mortarCore.transform.rotation, 
             Quaternion.Euler(transform.rotation.eulerAngles.x + targetHeight, transform.rotation.eulerAngles.y - 90, 0), elevationRate);
         //targetHeight += 10 * Time.deltaTime;
