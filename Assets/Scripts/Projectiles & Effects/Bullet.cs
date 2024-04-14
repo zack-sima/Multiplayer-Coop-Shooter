@@ -45,7 +45,9 @@ public class Bullet : MonoBehaviour {
 			} catch { return; }
 
 			if (senderIsLocal && !isExplosion) {
-				DamageHandler.DealDamageToTarget(e, damage);
+				try {
+					DamageHandler.DealDamageToTarget(e, damage);
+				} catch { return; }
 			}
 		}
 		if (senderIsLocal && isExplosion) {
