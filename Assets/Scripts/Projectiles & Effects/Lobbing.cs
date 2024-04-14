@@ -23,5 +23,7 @@ public class Lobbing : Bullet {
             
         downwardVelocity -= Vector3.up * GRAVITY * Time.deltaTime;
 		transform.Translate(speed * Time.deltaTime * Vector3.forward + transform.InverseTransformDirection(downwardVelocity));
+
+        
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,19 +20,19 @@ public class Mortar : Turret {
 
     private Vector3 targetLocation;
     private float targetHeight = -45; // degrees
-    private float maxElevation = -75f, minDepression = -25f, elevationRate = 20f;
+    private float elevationRate = 90f;
 
 	#endregion
 
 	#region Functions
 
-    private void AdjustElevation() {
-        
+    private static float CalculateLaunchAngle(float velocity, float distance) {
+        if (distance > 10f) return -45f;
+        return -(90f - (.5f * Mathf.Asin(10f * distance / Mathf.Pow(velocity, 2)) * 180 / Mathf.PI));
     }
 
     public void SetTargetLocation(Vector3 location) {
         targetLocation = location;
-        AdjustElevation();
     }
 
     private void Awake() {
@@ -46,6 +47,7 @@ public class Mortar : Turret {
 				Quaternion.Euler(0, targetRotation + 90, 0),
 				Time.deltaTime * rotateSpeed * (inSlowMode ? 0.55f : 1f));
 		}
+        targetHeight = CalculateLaunchAngle(10f, 10f);
         mortarCore.transform.rotation = Quaternion.RotateTowards(mortarCore.transform.rotation, 
             Quaternion.Euler(transform.rotation.eulerAngles.x + targetHeight, transform.rotation.eulerAngles.y - 90, 0), elevationRate);
         //targetHeight += 10 * Time.deltaTime;

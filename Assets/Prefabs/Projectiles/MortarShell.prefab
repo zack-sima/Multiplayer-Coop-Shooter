@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7446348119440724990}
   - component: {fileID: 6232766089810626233}
   - component: {fileID: 5548500578866382163}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MortarShell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -29,7 +29,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 4, y: 4, z: 4}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4725560248186559322}
@@ -98,7 +98,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3, y: 3, z: 0.1}
+  m_Size: {x: 0.1, y: 0.1, z: 0.1}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &5395101997624820192
 GameObject:
@@ -111,7 +111,7 @@ GameObject:
   - component: {fileID: 4725560248186559322}
   - component: {fileID: 8519486233956766975}
   - component: {fileID: 5899641701127036981}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MortarShellArchive
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -161,7 +161,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -6478536213147159724, guid: e1ef0d2669a284c989f6c200c72b7808, type: 3}
+  - {fileID: 2100000, guid: 2b6bba9a048b744a4b902e5301b778d7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

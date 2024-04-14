@@ -200,11 +200,9 @@ public class CombatEntity : Entity {
 
 		if (GetTurretFollowsMovement() && TryGetComponent(out Rigidbody rb)) {
 			//try to auto-aim towards nearest target within screen before following hull
-
 			if (targetFindTimer > 0) {
 				targetFindTimer -= Time.deltaTime;
 			} else {
-				targetFindTimer = 0.25f;
 
 				//prioritize existing target (don't switch unless much closer)
 				float closestDistance = target != null ?
@@ -222,6 +220,9 @@ public class CombatEntity : Entity {
 				targetFindTimer = 0;
 			}
 			if (target != null) {
+				if (turret is Mortar) {
+					((Mortar)turret).SetTargetLocation(target.transform.position);
+				}
 				turret.SetTargetTurretRotation(
 					Mathf.Atan2(target.transform.position.x - transform.position.x,
 					target.transform.position.z - transform.position.z) * Mathf.Rad2Deg
