@@ -7,7 +7,7 @@ public class Gatling : Turret {
 	[SerializeField] private Transform bulletAnchor2;
 
 	//gatling shoots 2 instead of 1
-	public override GameObject TryFireMainWeapon(int team, int bulletId = 0, CombatEntity optionalSender = null) {
+	public override List<GameObject> TryFireMainWeapon(int team, int bulletId = 0, CombatEntity optionalSender = null) {
 		if (shootTimer > 0) return null; //can't shoot yet
 
 		shootTimer += shootSpeed;
@@ -24,13 +24,13 @@ public class Gatling : Turret {
 
 		b2.Init(optionalSender, team, bulletId, true);
 
-		animator.FireMainWeapon();
+		animator.FireMainWeapon(bulletId);
 
-		return b.gameObject;
+		return new() { b.gameObject, b2.gameObject };
 	}
 	//called by non-local clients' RPCs; this function must be called in the networked-structure
-	public override GameObject NonLocalFireWeapon(CombatEntity sender, int team, int bulletId) {
-		animator.FireMainWeapon();
+	public override List<GameObject> NonLocalFireWeapon(CombatEntity sender, int team, int bulletId) {
+		animator.FireMainWeapon(bulletId);
 
 		Bullet b = Instantiate(GetBulletPrefab(), GetBulletAnchor().position,
 			Quaternion.Euler(GetBulletAnchor().eulerAngles.x, GetBulletAnchor().eulerAngles.y + Random.Range(
@@ -45,6 +45,6 @@ public class Gatling : Turret {
 
 		b2.Init(sender, team, bulletId, isLocal: false);
 
-		return b.gameObject;
+		return new() { b.gameObject, b2.gameObject };
 	}
 }

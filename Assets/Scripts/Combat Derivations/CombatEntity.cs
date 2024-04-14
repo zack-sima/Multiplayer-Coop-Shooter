@@ -100,25 +100,26 @@ public class CombatEntity : Entity {
 
 	//non-local bullet just for decorative purposes
 	public void NonLocalFireMainWeapon(int bulletId) {
-		GameObject b = turret.NonLocalFireWeapon(this, GetTeam(), bulletId);
+		List<GameObject> b = turret.NonLocalFireWeapon(this, GetTeam(), bulletId);
 
-		if (b == null) return;
+		if (b == null || b.Count == 0) return;
 
-		AddBullet(bulletId, b);
+		foreach (GameObject g in b) AddBullet(bulletId, g);
 	}
 	//the one that actually creates a bullet that matters
 	public void TryFireMainWeapon() {
 		if (!turret.gameObject.activeInHierarchy) return;
 		if (GetIsPlayer() && PlayerInfo.instance.GetAmmoLeft() < 1) return;
 
-		GameObject b = turret.TryFireMainWeapon(GetTeam(), bulletsFired, optionalSender: this);
+		List<GameObject> b = turret.TryFireMainWeapon(GetTeam(), bulletsFired, optionalSender: this);
 
-		if (b == null) return;
+		if (b == null || b.Count == 0) return;
 
 		if (GetIsPlayer()) PlayerInfo.instance.ConsumeAmmo();
 
 		PreventHealing();
-		AddBullet(bulletsFired, b);
+
+		foreach (GameObject g in b) AddBullet(bulletsFired, g);
 
 		GetNetworker().RPC_FireWeapon(bulletsFired);
 

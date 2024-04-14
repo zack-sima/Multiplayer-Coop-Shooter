@@ -128,7 +128,7 @@ public class HumanInputs : MonoBehaviour {
 
 		//point to mouse
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		if (Physics.Raycast(ray, out RaycastHit hit)) {
+		if (Physics.Raycast(ray, out RaycastHit hit, 100, ~LayerMask.GetMask("In Game UI"))) {
 			Vector2 diff = new(hit.point.x - player.transform.position.x,
 				hit.point.z - player.transform.position.z);
 			player.GetTurret().SetTargetTurretRotation(
