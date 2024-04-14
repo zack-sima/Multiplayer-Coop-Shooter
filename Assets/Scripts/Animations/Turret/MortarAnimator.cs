@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MortarAnimator : TurretAnimatorBase {
-    #region References
+
+	#region References
 
 	[SerializeField] private Transform gun;
 	[SerializeField] private List<GameObject> muzzleFlashes;
@@ -50,7 +51,7 @@ public class MortarAnimator : TurretAnimatorBase {
 			muzzleFlashes[i].SetActive(false);
 		}
 	}
-	public override void FireMainWeapon() {
+	public override void FireMainWeapon(int bulletIndex = 0) {
 		AddRecoil();
 		if (gunSound != null) {
 			if (AudioSourceController.CanPlaySound(gunSoundName, audioCutoff)) {

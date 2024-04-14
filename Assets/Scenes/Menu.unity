@@ -965,6 +965,8 @@ MonoBehaviour:
       m_Image: {fileID: 0}
     - m_Text: Gatling
       m_Image: {fileID: 0}
+    - m_Text: Double Cannon
+      m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -3262,10 +3264,6 @@ MonoBehaviour:
   mapDropdown: {fileID: 2005873604}
   mapDropdownSceneIndices: 01000000
   turretDropdown: {fileID: 378129317}
-  turretDropdownNames:
-  - Autocannon
-  - Explosive Cannon
-  - Mortar
 --- !u!1 &1365469761
 GameObject:
   m_ObjectHideFlags: 0

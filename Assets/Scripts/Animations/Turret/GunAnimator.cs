@@ -14,7 +14,6 @@ public class GunAnimator : TurretAnimatorBase {
 	[SerializeField] private string gunSoundName;
 	[SerializeField] private float audioCutoff;
 
-
 	#endregion
 
 	#region Members
@@ -51,7 +50,7 @@ public class GunAnimator : TurretAnimatorBase {
 			muzzleFlashes[i].SetActive(false);
 		}
 	}
-	public override void FireMainWeapon() {
+	public override void FireMainWeapon(int bulletIndex) {
 		AddRecoil();
 		if (gunSound != null) {
 			if (AudioSourceController.CanPlaySound(gunSoundName, audioCutoff)) {

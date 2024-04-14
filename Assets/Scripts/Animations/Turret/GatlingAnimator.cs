@@ -35,7 +35,7 @@ public class GatlingAnimator : TurretAnimatorBase {
 			rightMuzzleFlashes[i].SetActive(false);
 		}
 	}
-	public override void FireMainWeapon() {
+	public override void FireMainWeapon(int bulletIndex) {
 		int muzzleIndex = Random.Range(0, leftMuzzleFlashes.Count);
 		leftMuzzleFlashes[muzzleIndex].SetActive(true);
 		StartCoroutine(StopMuzzleFlash(leftMuzzleFlashes[muzzleIndex]));

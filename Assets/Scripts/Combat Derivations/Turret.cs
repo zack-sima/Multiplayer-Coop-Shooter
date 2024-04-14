@@ -83,7 +83,7 @@ public class Turret : MonoBehaviour {
 	}
 	//synced to networking, call only by local input;
 	//this function can be called in a framework where the turret is not a sub-part of a Networked Entity
-	public virtual GameObject TryFireMainWeapon(int team, int bulletId = 0, CombatEntity optionalSender = null) {
+	public virtual List<GameObject> TryFireMainWeapon(int team, int bulletId = 0, CombatEntity optionalSender = null) {
 		if (shootTimer > 0) return null; //can't shoot yet
 
 		shootTimer += shootSpeed;
@@ -94,13 +94,13 @@ public class Turret : MonoBehaviour {
 
 		b.Init(optionalSender, team, bulletId, true);
 
-		animator.FireMainWeapon();
+		animator.FireMainWeapon(bulletId);
 
-		return b.gameObject;
+		return new() { b.gameObject };
 	}
 	//called by non-local clients' RPCs; this function must be called in the networked-structure
-	public virtual GameObject NonLocalFireWeapon(CombatEntity sender, int team, int bulletId) {
-		animator.FireMainWeapon();
+	public virtual List<GameObject> NonLocalFireWeapon(CombatEntity sender, int team, int bulletId) {
+		animator.FireMainWeapon(bulletId);
 
 		Bullet b = Instantiate(bulletPrefab, bulletAnchor.position,
 			Quaternion.Euler(bulletAnchor.eulerAngles.x, bulletAnchor.eulerAngles.y + Random.Range(
@@ -109,7 +109,7 @@ public class Turret : MonoBehaviour {
 		//not isLocal makes the bullet harmless and just self-destroy
 		b.Init(sender, team, bulletId, isLocal: false);
 
-		return b.gameObject;
+		return new() { b.gameObject };
 	}
 	//called when overclocked ability is on
 	public void ReloadFaster() {
