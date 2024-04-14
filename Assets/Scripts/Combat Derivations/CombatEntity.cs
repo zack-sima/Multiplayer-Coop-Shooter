@@ -14,9 +14,6 @@ public class CombatEntity : Entity {
 	[SerializeField] private Turret turret; //for combat
 	public Turret GetTurret() { return turret; }
 
-	[SerializeField] private Transform movementMarker; //mobile movement indicator
-	[SerializeField] private Transform aimMarker; //mobile aim indicator
-
 	#endregion
 
 	#region Members
@@ -29,10 +26,6 @@ public class CombatEntity : Entity {
 	public bool GetTurretFollowsMovement() {
 		return turretFollowsMovement && (Time.time - freezeTurretTimestamp > 0.5f);
 	}
-
-	//autoaim target
-	private CombatEntity target = null;
-	private float targetFindTimer = 0f;
 
 	//unique bulletid
 	private int bulletsFired = 0;
@@ -100,25 +93,26 @@ public class CombatEntity : Entity {
 
 	//non-local bullet just for decorative purposes
 	public void NonLocalFireMainWeapon(int bulletId) {
-		GameObject b = turret.NonLocalFireWeapon(this, GetTeam(), bulletId);
+		List<GameObject> b = turret.NonLocalFireWeapon(this, GetTeam(), bulletId);
 
-		if (b == null) return;
+		if (b == null || b.Count == 0) return;
 
-		AddBullet(bulletId, b);
+		foreach (GameObject g in b) AddBullet(bulletId, g);
 	}
 	//the one that actually creates a bullet that matters
 	public void TryFireMainWeapon() {
 		if (!turret.gameObject.activeInHierarchy) return;
 		if (GetIsPlayer() && PlayerInfo.instance.GetAmmoLeft() < 1) return;
 
-		GameObject b = turret.TryFireMainWeapon(GetTeam(), bulletsFired, optionalSender: this);
+		List<GameObject> b = turret.TryFireMainWeapon(GetTeam(), bulletsFired, optionalSender: this);
 
-		if (b == null) return;
+		if (b == null || b.Count == 0) return;
 
 		if (GetIsPlayer()) PlayerInfo.instance.ConsumeAmmo();
 
 		PreventHealing();
-		AddBullet(bulletsFired, b);
+
+		foreach (GameObject g in b) AddBullet(bulletsFired, g);
 
 		GetNetworker().RPC_FireWeapon(bulletsFired);
 
@@ -197,77 +191,6 @@ public class CombatEntity : Entity {
 	}
 	protected override void Update() {
 		base.Update();
-
-		if (GetTurretFollowsMovement() && TryGetComponent(out Rigidbody rb)) {
-			//try to auto-aim towards nearest target within screen before following hull
-
-			if (targetFindTimer > 0) {
-				targetFindTimer -= Time.deltaTime;
-			} else {
-				targetFindTimer = 0.25f;
-
-				//prioritize existing target (don't switch unless much closer)
-				float closestDistance = target != null ?
-					Vector3.Distance(target.transform.position, transform.position) - 3f : 20f;
-
-				foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
-					if (!ce.GetNetworker().GetInitialized() || ce.GetTeam() == GetTeam() ||
-						ce.GetNetworker().GetIsDead()) continue;
-					float distance = Vector3.Distance(ce.transform.position, transform.position);
-					if (distance < closestDistance) {
-						closestDistance = distance;
-						target = ce;
-					}
-				}
-				targetFindTimer = 0;
-			}
-			if (target != null) {
-				turret.SetTargetTurretRotation(
-					Mathf.Atan2(target.transform.position.x - transform.position.x,
-					target.transform.position.z - transform.position.z) * Mathf.Rad2Deg
-				);
-			} else {
-				if (rb.velocity != Vector3.zero)
-					turret.SetTargetTurretRotation(Mathf.Atan2(
-						rb.velocity.x, rb.velocity.z) * Mathf.Rad2Deg, slow: true);
-			}
-		}
-		if (aimMarker != null && UIController.GetIsMobile()) {
-			if (GetIsPlayer() && GetNetworker().HasSyncAuthority() &&
-				HumanInputs.instance.GetIsMobileAiming()) {
-				aimMarker.gameObject.SetActive(true);
-				aimMarker.eulerAngles = new Vector3(0, turret.transform.eulerAngles.y - 90, 0);
-			} else if (aimMarker.gameObject.activeInHierarchy) {
-				aimMarker.gameObject.SetActive(false);
-			}
-		}
-		if (movementMarker != null && UIController.GetIsMobile()) {
-			if (GetIsPlayer() && GetNetworker().HasSyncAuthority()) {
-				if (TryGetComponent(out Rigidbody rb2) && rb2.velocity != Vector3.zero &&
-					GetNetworker().GetInitialized() && !GetNetworker().GetIsDead()) {
-					movementMarker.localPosition = 0.35f * new Vector3(rb2.velocity.x, 0, rb2.velocity.z);
-					movementMarker.gameObject.SetActive(true);
-				} else {
-					movementMarker.gameObject.SetActive(false);
-				}
-			} else if (movementMarker.gameObject.activeInHierarchy) {
-				movementMarker.gameObject.SetActive(false);
-			}
-		}
-		//ammo display for local player
-		if (GetIsPlayer() && GetNetworker().HasSyncAuthority()) {
-			if (turret.GetIsFullAuto()) {
-				GetHealthCanvas().GetAmmoGrowBar().localScale = Vector2.zero;
-				GetHealthCanvas().GetAmmoBar().localScale = new Vector2(
-					(float)PlayerInfo.instance.GetAmmoLeft() / PlayerInfo.instance.GetMaxAmmo(), 1f);
-			} else {
-				//shows not full ammo ammo in gray
-				GetHealthCanvas().GetAmmoGrowBar().localScale = new Vector2(
-					(float)PlayerInfo.instance.GetAmmoLeft() / PlayerInfo.instance.GetMaxAmmo(), 1f);
-				GetHealthCanvas().GetAmmoBar().localScale = new Vector2(
-					(int)PlayerInfo.instance.GetAmmoLeft() / (float)PlayerInfo.instance.GetMaxAmmo(), 1f);
-			}
-		}
 	}
 
 	#endregion

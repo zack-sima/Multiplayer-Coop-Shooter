@@ -12,7 +12,7 @@ public class Bullet : MonoBehaviour {
 
 	#region Members
 
-	[SerializeField] private float speed;
+	[SerializeField] protected float speed;
 	[SerializeField] private float damage;
 
 	[SerializeField] private bool isExplosion;
@@ -45,7 +45,9 @@ public class Bullet : MonoBehaviour {
 			} catch { return; }
 
 			if (senderIsLocal && !isExplosion) {
-				DamageHandler.DealDamageToTarget(e, damage);
+				try {
+					DamageHandler.DealDamageToTarget(e, damage);
+				} catch { return; }
 			}
 		}
 		if (senderIsLocal && isExplosion) {
@@ -80,7 +82,7 @@ public class Bullet : MonoBehaviour {
 	private void Start() {
 		StartCoroutine(DelayedDestroy());
 	}
-	void Update() {
+	virtual protected void Update() {
 		transform.Translate(speed * Time.deltaTime * Vector3.forward);
 	}
 

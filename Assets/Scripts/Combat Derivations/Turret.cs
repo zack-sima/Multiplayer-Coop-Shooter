@@ -1,72 +1,75 @@
 using System.Collections;
 using System.Collections.Generic;
+using Fusion;
 using UnityEngine;
 
 public class Turret : MonoBehaviour {
 
 	#region References
 
-	[SerializeField] private TurretAnimatorBase animator;
+	[SerializeField] protected TurretAnimatorBase animator;
 	public TurretAnimatorBase GetAnimator() { return animator; }
 
 	[SerializeField] private Transform bulletAnchor;
+	protected Transform GetBulletAnchor() { return bulletAnchor; }
 
 	#endregion
 
 	#region Prefabs
 
 	[SerializeField] private GameObject bulletPrefab;
+	protected GameObject GetBulletPrefab() { return bulletPrefab; }
 
 	#endregion
 
 	#region Members
 
 	//ammo parameters
-	[SerializeField] private int maxAmmo;
+	[SerializeField] protected int maxAmmo;
 	public int GetMaxAmmo() { return maxAmmo; }
 
-	//bullets per second
-	[SerializeField] private float ammoRegenerationSpeed;
+	[Tooltip("Bullets per second")]
+	[SerializeField] protected float ammoRegenerationSpeed;
 	public float GetAmmoRegenSpeed() { return ammoRegenerationSpeed; }
 
-	[SerializeField] private bool isFullAuto;
+	[SerializeField] protected bool isFullAuto;
 	public bool GetIsFullAuto() { return isFullAuto; }
 
-	//in seconds before shooting again
-	[SerializeField] private float shootSpeed;
+	[Tooltip("in seconds before shooting again")]
+	[SerializeField] protected float shootSpeed;
 	public float GetShootSpeed() { return shootSpeed; }
 
 	//in degrees of y-randomness
-	[SerializeField] private float shootSpread;
+	[SerializeField] protected float shootSpread;
 
-	//in degrees of y-rotation per second
-	[SerializeField] private float rotateSpeed;
+	[Tooltip("in degrees of y-rotation per second")]
+	[SerializeField] protected float rotateSpeed;
 
 	//ex: bomb mech is not rotatable
-	[SerializeField] private bool rotatable;
+	[SerializeField] protected bool rotatable;
 	public bool GetIsRotatable() { return rotatable; }
 
 	//for proximity explode/bomber turret only
-	[SerializeField] private bool proximityExplode;
+	[SerializeField] protected bool proximityExplode;
 	public bool GetIsProximityExploder() { return proximityExplode; }
 
-	[SerializeField] private float explosionRadius;
+	[SerializeField] protected float explosionRadius;
 	public float GetExplosionRadius() { return explosionRadius; }
 
-	[SerializeField] private float explosionDamage;
+	[SerializeField] protected float explosionDamage;
 	public float GetExplosionDamage() { return explosionDamage; }
 
 	//set to shootSpeed
-	private float shootTimer = 0;
+	protected float shootTimer = 0;
 
 	//turret target rotation
-	private float targetRotation = 0;
+	protected float targetRotation = 0;
 
 	//NOTE: only follows target rotation if one has been set
-	private bool useTargetRotation = false;
+	protected bool useTargetRotation = false;
 
 	//rotate slowly when auto rotating back for mobile
-	private bool inSlowMode = false;
+	protected bool inSlowMode = false;
 
 	#endregion
 
@@ -80,7 +83,7 @@ public class Turret : MonoBehaviour {
 	}
 	//synced to networking, call only by local input;
 	//this function can be called in a framework where the turret is not a sub-part of a Networked Entity
-	public GameObject TryFireMainWeapon(int team, int bulletId = 0, CombatEntity optionalSender = null) {
+	public virtual List<GameObject> TryFireMainWeapon(int team, int bulletId = 0, CombatEntity optionalSender = null) {
 		if (shootTimer > 0) return null; //can't shoot yet
 
 		shootTimer += shootSpeed;
@@ -91,13 +94,13 @@ public class Turret : MonoBehaviour {
 
 		b.Init(optionalSender, team, bulletId, true);
 
-		animator.FireMainWeapon();
+		animator.FireMainWeapon(bulletId);
 
-		return b.gameObject;
+		return new() { b.gameObject };
 	}
 	//called by non-local clients' RPCs; this function must be called in the networked-structure
-	public GameObject NonLocalFireWeapon(CombatEntity sender, int team, int bulletId) {
-		animator.FireMainWeapon();
+	public virtual List<GameObject> NonLocalFireWeapon(CombatEntity sender, int team, int bulletId) {
+		animator.FireMainWeapon(bulletId);
 
 		Bullet b = Instantiate(bulletPrefab, bulletAnchor.position,
 			Quaternion.Euler(bulletAnchor.eulerAngles.x, bulletAnchor.eulerAngles.y + Random.Range(
@@ -106,13 +109,13 @@ public class Turret : MonoBehaviour {
 		//not isLocal makes the bullet harmless and just self-destroy
 		b.Init(sender, team, bulletId, isLocal: false);
 
-		return b.gameObject;
+		return new() { b.gameObject };
 	}
 	//called when overclocked ability is on
 	public void ReloadFaster() {
 		if (shootTimer > 0) shootTimer -= Time.deltaTime;
 	}
-	private void Update() {
+	protected virtual void Update() {
 		if (shootTimer > 0) shootTimer -= Time.deltaTime;
 
 		if (useTargetRotation) {

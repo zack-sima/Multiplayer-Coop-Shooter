@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class HumanInputs : MonoBehaviour {
 
@@ -9,6 +10,8 @@ public class HumanInputs : MonoBehaviour {
 	public static HumanInputs instance;
 
 	private const float AIM_DRAG_THRESHOLD = 0.33f;
+	private const float DEFAULT_LOB_DISTANCE = 5f;
+	private const float MAX_LOB_DISTANCE = 10f;
 
 	#endregion
 
@@ -31,6 +34,13 @@ public class HumanInputs : MonoBehaviour {
 
 	//before button release, magnitude of attack joystick
 	private float lastMainWeaponJoystickMagnitude = 0f;
+
+	//lobbing distance (resets by default)
+	private float mobileLobDistance = DEFAULT_LOB_DISTANCE;
+	public float GetMobileLobDistance() { if (!GetIsMobileAiming()) return DEFAULT_LOB_DISTANCE; return mobileLobDistance; }
+
+	private Vector3 mouseWorldPos = Vector3.zero;
+	public Vector3 GetMouseWorldPos() { return mouseWorldPos; }
 
 	#endregion
 
@@ -70,6 +80,7 @@ public class HumanInputs : MonoBehaviour {
 
 			float mag = mainWeaponJoystick.GetJoystickMagnitude();
 			if (mag > AIM_DRAG_THRESHOLD) {
+				mobileLobDistance = (mag - AIM_DRAG_THRESHOLD / 2f) * MAX_LOB_DISTANCE * (1f + AIM_DRAG_THRESHOLD / 2f);
 				player.MaintainTurretRotation();
 				player.GetTurret().SetTargetTurretRotation(
 					-mainWeaponJoystick.GetJoystickAngle() * Mathf.Rad2Deg + 90f);
@@ -128,7 +139,8 @@ public class HumanInputs : MonoBehaviour {
 
 		//point to mouse
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		if (Physics.Raycast(ray, out RaycastHit hit)) {
+		if (Physics.Raycast(ray, out RaycastHit hit, 100, ~LayerMask.GetMask("In Game UI"))) {
+			mouseWorldPos = hit.point;
 			Vector2 diff = new(hit.point.x - player.transform.position.x,
 				hit.point.z - player.transform.position.z);
 			player.GetTurret().SetTargetTurretRotation(
