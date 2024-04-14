@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Fusion;
 using UnityEngine;
 
 public class Turret : MonoBehaviour {
@@ -25,21 +26,21 @@ public class Turret : MonoBehaviour {
 	[SerializeField] private int maxAmmo;
 	public int GetMaxAmmo() { return maxAmmo; }
 
-	//bullets per second
+	[Tooltip("Bullets per second")]
 	[SerializeField] private float ammoRegenerationSpeed;
 	public float GetAmmoRegenSpeed() { return ammoRegenerationSpeed; }
 
 	[SerializeField] private bool isFullAuto;
 	public bool GetIsFullAuto() { return isFullAuto; }
 
-	//in seconds before shooting again
+	[Tooltip("in seconds before shooting again")]
 	[SerializeField] private float shootSpeed;
 	public float GetShootSpeed() { return shootSpeed; }
 
 	//in degrees of y-randomness
 	[SerializeField] private float shootSpread;
 
-	//in degrees of y-rotation per second
+	[Tooltip("in degrees of y-rotation per second")]
 	[SerializeField] private float rotateSpeed;
 
 	//ex: bomb mech is not rotatable
