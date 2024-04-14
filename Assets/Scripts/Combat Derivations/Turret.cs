@@ -11,12 +11,14 @@ public class Turret : MonoBehaviour {
 	public TurretAnimatorBase GetAnimator() { return animator; }
 
 	[SerializeField] private Transform bulletAnchor;
+	protected Transform GetBulletAnchor() { return bulletAnchor; }
 
 	#endregion
 
 	#region Prefabs
 
 	[SerializeField] private GameObject bulletPrefab;
+	protected GameObject GetBulletPrefab() { return bulletPrefab; }
 
 	#endregion
 
@@ -81,7 +83,7 @@ public class Turret : MonoBehaviour {
 	}
 	//synced to networking, call only by local input;
 	//this function can be called in a framework where the turret is not a sub-part of a Networked Entity
-	public GameObject TryFireMainWeapon(int team, int bulletId = 0, CombatEntity optionalSender = null) {
+	public virtual GameObject TryFireMainWeapon(int team, int bulletId = 0, CombatEntity optionalSender = null) {
 		if (shootTimer > 0) return null; //can't shoot yet
 
 		shootTimer += shootSpeed;
@@ -97,7 +99,7 @@ public class Turret : MonoBehaviour {
 		return b.gameObject;
 	}
 	//called by non-local clients' RPCs; this function must be called in the networked-structure
-	public GameObject NonLocalFireWeapon(CombatEntity sender, int team, int bulletId) {
+	public virtual GameObject NonLocalFireWeapon(CombatEntity sender, int team, int bulletId) {
 		animator.FireMainWeapon();
 
 		Bullet b = Instantiate(bulletPrefab, bulletAnchor.position,

@@ -16,7 +16,6 @@ public class MenuManager : MonoBehaviour {
 
 	//turret
 	[SerializeField] private TMP_Dropdown turretDropdown;
-	[SerializeField] private List<string> turretDropdownNames;
 
 	#endregion
 
@@ -32,7 +31,7 @@ public class MenuManager : MonoBehaviour {
 	}
 	private void InitGame() {
 		PlayerPrefs.SetInt("turret_index", turretDropdown.value);
-		PlayerPrefs.SetString("turret_name", turretDropdownNames[turretDropdown.value]);
+		PlayerPrefs.SetString("turret_name", turretDropdown.options[turretDropdown.value].text);
 
 		if (int.TryParse(waveInput.text, out int wave) && wave > 0) {
 			PlayerPrefs.SetInt("debug_starting_wave", wave);

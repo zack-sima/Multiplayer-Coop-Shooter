@@ -1628,6 +1628,9 @@ MonoBehaviour:
   - turret: {fileID: 2400704804962253976, guid: a33be31fbf5b642bc87c4c1cb1d8d725, type: 3}
     turretName: Mortar
     localPositionOffset: {x: 0, y: 1.29, z: 0}
+  - turret: {fileID: 8306412023698569218, guid: 74d102caca7cf40c6a6f7d5335157f53, type: 3}
+    turretName: Gatling
+    localPositionOffset: {x: 0, y: 1.29, z: 0}
 --- !u!114 &4836627643148608670
 MonoBehaviour:
   m_ObjectHideFlags: 0
