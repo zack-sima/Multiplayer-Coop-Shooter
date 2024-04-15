@@ -107,7 +107,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	private void PositionChanged() {
 		targetPosition = Position;
 	}
-	private void PlayerNameChanged() {
+	public void PlayerNameChanged() {
 		if (optionalCombatEntity == null || !isPlayer) return;
 
 		optionalCombatEntity.SetName(PlayerName);

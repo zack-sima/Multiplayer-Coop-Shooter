@@ -108,7 +108,7 @@ public class EnemySpawner : NetworkBehaviour {
 				iterations++;
 			} while (iterations < 10 && spawnpointDistance < 15f);
 
-			Runner.Spawn(Random.Range(0, 10) < 20 ? enemy2Prefab : enemyPrefab,
+			Runner.Spawn(Random.Range(0, 10) < 2 ? enemy2Prefab : enemyPrefab,
 				new Vector3(point.x, 1, point.z), Quaternion.identity);
 		} catch (System.Exception e) { Debug.LogWarning(e); }
 	}

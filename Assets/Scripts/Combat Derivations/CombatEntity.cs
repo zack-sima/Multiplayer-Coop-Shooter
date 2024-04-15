@@ -87,6 +87,7 @@ public class CombatEntity : Entity {
 				GetHealthCanvas().UpdateAmmoTickerCount(turret.GetIsFullAuto() ? 0 : turret.GetMaxAmmo() - 1);
 			} else {
 				SetHealthCanvasToFallback();
+				GetNetworker().PlayerNameChanged();
 			}
 		}
 	}
