@@ -54,6 +54,12 @@ public class CombatEntity : Entity {
 	//spawned in when instantiated; when a player switches turrets after enable/disable here
 	List<PlayerInfo.TurretInfo> spawnedTurrets = new();
 
+	//to track mortar/other projectile predictions
+	private Vector3 velocity = Vector3.zero;
+	public Vector3 GetVelocity() { return velocity; }
+
+	private Vector3 lastPosition = Vector3.zero;
+
 	#endregion
 
 	#region Functions
@@ -198,6 +204,10 @@ public class CombatEntity : Entity {
 	}
 	protected override void Update() {
 		base.Update();
+
+		//v = dx/dt
+		velocity = (transform.position - lastPosition) / Time.deltaTime;
+		lastPosition = transform.position;
 	}
 
 	#endregion

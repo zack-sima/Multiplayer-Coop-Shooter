@@ -127,7 +127,7 @@ public class NetworkedEntity : NetworkBehaviour {
 
 		//<20˚ will be interpolated, otherwise snap
 		if (Quaternion.Angle(TurretRotation, optionalCombatEntity.GetTurret().transform.rotation) > 20f) {
-			optionalCombatEntity.GetTurret().SnapToTargetRotation(TurretRotation.eulerAngles.y);
+			optionalCombatEntity.GetTurret().SnapToTargetRotation(TurretRotation.eulerAngles.y, true);
 		} else {
 			optionalCombatEntity.GetTurret().SetTargetTurretRotation(TurretRotation.eulerAngles.y);
 		}

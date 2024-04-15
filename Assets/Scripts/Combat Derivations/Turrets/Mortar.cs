@@ -9,8 +9,6 @@ public class Mortar : Turret {
 
 	#region Statics & Consts
 
-	private const float GRAVITY = .2f;
-
 	#endregion
 
 	#region References
@@ -50,7 +48,7 @@ public class Mortar : Turret {
 	protected override void Update() {
 		base.Update();
 
-		targetHeight = CalculateLaunchAngle(15f, distance);
+		targetHeight = CalculateLaunchAngle(GetBulletPrefab().GetComponent<Lobbing>().GetSpeed(), distance);
 
 		try {
 			if (transform.rotation != Quaternion.identity) {
@@ -61,6 +59,7 @@ public class Mortar : Turret {
 					mortarCore.transform.rotation = Quaternion.RotateTowards(mortarCore.transform.rotation, targetRot, elevationRate);
 			}
 		} catch { }
+
 		//targetHeight += 10 * Time.deltaTime;
 		//mortarCore.transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x + 90, transform.rotation.eulerAngles.y, 0);
 		//Pivot barrel up and down to hit a position.
