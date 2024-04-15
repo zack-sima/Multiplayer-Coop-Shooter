@@ -78,8 +78,14 @@ public class HumanInputs : MonoBehaviour {
 		}
 		if (mainWeaponJoystick.GetButtonIsDown()) {
 			float mag = mainWeaponJoystick.GetJoystickMagnitude();
+			float targetRotationY = -mainWeaponJoystick.GetJoystickAngle() * Mathf.Rad2Deg + 90f;
+
 			if (player.GetTurret().GetIsFullAuto()) {
-				if (fullAutoDelay > 0 && mag < AIM_DRAG_THRESHOLD) {
+				//only allow shooting if turret is oriented
+				bool onTarget = Quaternion.Angle(player.GetTurret().transform.rotation,
+					Quaternion.Euler(0, targetRotationY, 0)) < 10f;
+
+				if (fullAutoDelay > 0 && (mag < AIM_DRAG_THRESHOLD || !onTarget)) {
 					fullAutoDelay -= Time.deltaTime;
 				} else {
 					playerShooting = true;
@@ -89,8 +95,7 @@ public class HumanInputs : MonoBehaviour {
 			if (mag > AIM_DRAG_THRESHOLD) {
 				mobileLobDistance = (mag - AIM_DRAG_THRESHOLD) * MAX_LOB_DISTANCE * (1f + AIM_DRAG_THRESHOLD);
 				player.MaintainTurretRotation();
-				player.GetTurret().SnapToTargetRotation(
-					-mainWeaponJoystick.GetJoystickAngle() * Mathf.Rad2Deg + 90f, true);
+				player.GetTurret().SnapToTargetRotation(targetRotationY, true);
 			}
 			lastMainWeaponJoystickMagnitude = mainWeaponJoystick.GetJoystickMagnitude();
 		} else {
