@@ -82,7 +82,7 @@ public class HumanInputs : MonoBehaviour {
 			if (mag > AIM_DRAG_THRESHOLD) {
 				mobileLobDistance = (mag - AIM_DRAG_THRESHOLD / 2f) * MAX_LOB_DISTANCE * (1f + AIM_DRAG_THRESHOLD / 2f);
 				player.MaintainTurretRotation();
-				player.GetTurret().SetTargetTurretRotation(
+				player.GetTurret().SnapToTargetRotation(
 					-mainWeaponJoystick.GetJoystickAngle() * Mathf.Rad2Deg + 90f);
 			}
 			lastMainWeaponJoystickMagnitude = mainWeaponJoystick.GetJoystickMagnitude();

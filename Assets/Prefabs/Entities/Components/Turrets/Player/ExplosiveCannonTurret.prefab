@@ -429,7 +429,7 @@ MonoBehaviour:
   isFullAuto: 0
   shootSpeed: 0.1
   shootSpread: 5
-  rotateSpeed: 250
+  rotateSpeed: 300
   rotatable: 1
   proximityExplode: 0
   explosionRadius: 0

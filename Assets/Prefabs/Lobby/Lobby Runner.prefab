@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5348962519825137043}
+  - component: {fileID: -4073659638776961856}
   - component: {fileID: 190959045812398488}
-  - component: {fileID: 2038141366403639929}
   - component: {fileID: 284553129610219807}
   m_Layer: 0
-  m_Name: Photon Runner
+  m_Name: Lobby Runner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -34,6 +34,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-4073659638776961856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3174526879500930759}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94e8b7ef742194478ab36060d4a380a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  PlayerPrefab: {fileID: 1996783341834756926, guid: 2aea553826814490aa1f53106b9045f8, type: 3}
+  LobbyStatsSyncerPrefab: {fileID: 635472368494815613, guid: 1d91e9f114e644499bee1bf8c11b903a, type: 3}
 --- !u!114 &190959045812398488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46,21 +60,6 @@ MonoBehaviour:
   m_Script: {fileID: -1199893898, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2038141366403639929
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3174526879500930759}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0fb17d00cda14dcab7cbc4084dee8e9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PlayerPrefab: {fileID: 1464522555559032542, guid: eea1cab4830ad48beabf17cacc7c8178, type: 3}
-  StatsSyncerPrefab: {fileID: 1476347172882440911, guid: 5392fe1770ace4036a3c2c29a68651cb, type: 3}
-  EnemySpawnerPrefab: {fileID: 1476347172882440911, guid: 894d542ee360d4f88b9703ad5002534f, type: 3}
 --- !u!114 &284553129610219807
 MonoBehaviour:
   m_ObjectHideFlags: 0

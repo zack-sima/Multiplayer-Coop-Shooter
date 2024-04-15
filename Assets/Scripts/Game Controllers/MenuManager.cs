@@ -6,6 +6,12 @@ using TMPro;
 
 public class MenuManager : MonoBehaviour {
 
+	#region Statics
+
+	public static MenuManager instance;
+
+	#endregion
+
 	#region References
 
 	[SerializeField] private TMP_InputField roomInput, waveInput;
@@ -21,9 +27,21 @@ public class MenuManager : MonoBehaviour {
 
 	#region Functions
 
+	public void StartLobby() {
+		//NOTE: lobbies directly use room_id; games have _g appended to it to distinguish it from lobby rooms
+		PlayerPrefs.SetString("room_id", roomInput.text);
+		ServerLinker.instance.StartLobby(roomInput.text);
+	}
+	//NOTE: only call this from the lobby!
+	//TODO for UI: move InitGame stuff to a singleton manager that is called when lobby decides to start game
 	public void StartShared() {
 		InitGame();
-		ServerLinker.instance.StartShared(mapDropdownSceneIndices[mapDropdown.value], roomInput.text);
+
+		ServerLinker.instance.StopLobby();
+
+		//saved lobby room ID + "_g" goes to correct game room
+		ServerLinker.instance.StartShared(mapDropdownSceneIndices[mapDropdown.value],
+			PlayerPrefs.GetString("room_id") + "_g");
 	}
 	public void StartSingle() {
 		InitGame();
@@ -38,6 +56,9 @@ public class MenuManager : MonoBehaviour {
 		} else {
 			PlayerPrefs.SetInt("debug_starting_wave", 0);
 		}
+	}
+	private void Awake() {
+		instance = this;
 	}
 	void Start() {
 		Application.targetFrameRate = 90;

@@ -6,18 +6,19 @@ using UnityEngine.Video;
 
 public class HumanCombatEntity : CombatEntity {
 
-    #region References
+	#region References
+
 	[SerializeField] private Transform movementMarker; //mobile movement indicator
 	[SerializeField] private Transform aimMarker, lobMarker; //mobile aim indicator
 
-    #endregion
+	#endregion
 
 	//autoaim target
 	private CombatEntity target = null;
 	private float targetFindTimer = 0f;
 
-    protected override void Update() {
-        if (GetTurretFollowsMovement() && TryGetComponent(out Rigidbody rb)) {
+	protected override void Update() {
+		if (GetTurretFollowsMovement() && TryGetComponent(out Rigidbody rb)) {
 			//try to auto-aim towards nearest target within screen before following hull
 			if (targetFindTimer > 0) {
 				targetFindTimer -= Time.deltaTime;
@@ -55,7 +56,7 @@ public class HumanCombatEntity : CombatEntity {
 						rb.velocity.x, rb.velocity.z) * Mathf.Rad2Deg, slow: true);
 			}
 		}
-        //ammo display for local player
+		//ammo display for local player
 		if (GetIsPlayer() && GetNetworker().HasSyncAuthority()) {
 			if (GetTurret().GetIsFullAuto()) {
 				GetHealthCanvas().GetAmmoGrowBar().localScale = Vector2.zero;
@@ -69,34 +70,34 @@ public class HumanCombatEntity : CombatEntity {
 					(int)PlayerInfo.instance.GetAmmoLeft() / (float)PlayerInfo.instance.GetMaxAmmo(), 1f);
 			}
 		}
-        //aim marker
-        if (UIController.GetIsMobile()) {
+		//aim marker
+		if (UIController.GetIsMobile()) {
 			if (GetIsPlayer() && GetNetworker().HasSyncAuthority() &&
 				HumanInputs.instance.GetIsMobileAiming()) {
 
-                if (GetTurret() is Mortar) { //NOTE: lobbing
-                    lobMarker.gameObject.SetActive(true);
-                    aimMarker.gameObject.SetActive(false);
-                    
-                    ((Mortar)GetTurret()).SetDistance(HumanInputs.instance.GetMobileLobDistance());
-                    lobMarker.transform.rotation = Quaternion.Euler(0, GetTurret().transform.eulerAngles.y, 0);
-                    lobMarker.transform.localScale = new Vector3(1f, 1f, HumanInputs.instance.GetMobileLobDistance() / 5f);
-                } else {
-                    lobMarker.gameObject.SetActive(false);
-				    aimMarker.gameObject.SetActive(true);
-				    aimMarker.eulerAngles = new Vector3(0, GetTurret().transform.eulerAngles.y - 90, 0);
-                }
+				if (GetTurret() is Mortar) { //NOTE: lobbing
+					lobMarker.gameObject.SetActive(true);
+					aimMarker.gameObject.SetActive(false);
+
+					((Mortar)GetTurret()).SetDistance(HumanInputs.instance.GetMobileLobDistance());
+					lobMarker.transform.rotation = Quaternion.Euler(0, GetTurret().transform.eulerAngles.y, 0);
+					lobMarker.transform.localScale = new Vector3(1f, 1f, HumanInputs.instance.GetMobileLobDistance() / 6.5f);
+				} else {
+					lobMarker.gameObject.SetActive(false);
+					aimMarker.gameObject.SetActive(true);
+					aimMarker.eulerAngles = new Vector3(0, GetTurret().transform.eulerAngles.y - 90, 0);
+				}
 			} else {
 				aimMarker.gameObject.SetActive(false);
-                lobMarker.gameObject.SetActive(false);
+				lobMarker.gameObject.SetActive(false);
 			}
 		} else {
-            //PC
-            if (GetTurret() is Mortar) {
-                ((Mortar)GetTurret()).SetDistance(Vector3.Distance(transform.position, HumanInputs.instance.GetMouseWorldPos()));
-            }
-        }
-        //movement marker
+			//PC
+			if (GetTurret() is Mortar) {
+				((Mortar)GetTurret()).SetDistance(Vector3.Distance(transform.position, HumanInputs.instance.GetMouseWorldPos()));
+			}
+		}
+		//movement marker
 		if (movementMarker != null && UIController.GetIsMobile()) {
 			if (GetIsPlayer() && GetNetworker().HasSyncAuthority()) {
 				if (TryGetComponent(out Rigidbody rb2) && rb2.velocity != Vector3.zero &&
@@ -110,6 +111,6 @@ public class HumanCombatEntity : CombatEntity {
 				movementMarker.gameObject.SetActive(false);
 			}
 		}
-        base.Update();
-    }
+		base.Update();
+	}
 }

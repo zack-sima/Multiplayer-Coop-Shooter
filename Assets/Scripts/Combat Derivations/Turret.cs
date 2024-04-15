@@ -75,11 +75,16 @@ public class Turret : MonoBehaviour {
 
 	#region Functions
 
-	//mobile/new turret rotation
+	//for non-instant rotations
 	public void SetTargetTurretRotation(float rotation, bool slow = false) {
 		targetRotation = rotation;
 		useTargetRotation = true;
-		inSlowMode = slow;
+		//inSlowMode = slow; TODO: cleanup (not necessary?)
+	}
+	//MOBILE: instant rotation when joystick is used
+	public void SnapToTargetRotation(float rotation) {
+		targetRotation = rotation;
+		transform.rotation = Quaternion.Euler(0, targetRotation, 0);
 	}
 	//synced to networking, call only by local input;
 	//this function can be called in a framework where the turret is not a sub-part of a Networked Entity

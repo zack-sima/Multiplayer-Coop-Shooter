@@ -6,9 +6,15 @@ using System.Threading.Tasks;
 
 public class ServerLinker : MonoBehaviour {
 
+	#region Consts & Statics
+
 	public static ServerLinker instance;
 
-	private FusionBootstrap bootstrap;
+	private const int LOBBY_SCENE = 0;
+
+	#endregion
+
+	[SerializeField] FusionBootstrap gameBootstrap, lobbyBootstrap;
 
 	private void Awake() {
 		if (instance != null) {
@@ -17,14 +23,6 @@ public class ServerLinker : MonoBehaviour {
 		}
 		instance = this;
 		DontDestroyOnLoad(gameObject);
-
-		// Find FusionBootstrap in the scene
-		bootstrap = FindObjectOfType<FusionBootstrap>();
-		if (bootstrap == null) {
-			Debug.LogError("FusionBootstrap instance not found in the scene. Make sure it's added and properly configured.");
-		}
-	}
-	private void Update() {
 	}
 	public async Task LoadSceneAsync(int sceneIndex) {
 		// Wrap the AsyncOperation in a Task
@@ -32,37 +30,56 @@ public class ServerLinker : MonoBehaviour {
 		var asyncOp = SceneManager.LoadSceneAsync(sceneIndex);
 		asyncOp.completed += _ => tcs.SetResult(true);
 		await tcs.Task;
-		// Additional code here after scene has loaded
+	}
+	//NOTE: starting lobby will stay in the menu scene (should be 0) 
+	public async void StartLobby(string roomId = "") {
+		// Make sure FusionBootstrap and NetworkRunner are ready
+		if (lobbyBootstrap != null) {
+			// Change to the gameplay scene (if not currently there)
+			if (SceneManager.GetActiveScene().buildIndex != LOBBY_SCENE)
+				await LoadSceneAsync(LOBBY_SCENE);
+
+			// After scene is loaded, start the lobby as shared
+			lobbyBootstrap.DefaultRoomName = roomId;
+			lobbyBootstrap.StartSharedClient(); // Adjust the client count as necessary
+		}
 	}
 	public async void StartShared(int sceneIndex, string roomId = "") {
 		// Make sure FusionBootstrap and NetworkRunner are ready
-		if (bootstrap != null) {
+		if (gameBootstrap != null) {
 			// Change to the gameplay scene
 			await LoadSceneAsync(sceneIndex);
 
 			// After scene is loaded, start the network game as shared
-			bootstrap.DefaultRoomName = roomId;
-			bootstrap.StartSharedClient(); // Adjust the client count as necessary
+			gameBootstrap.DefaultRoomName = roomId;
+			gameBootstrap.StartSharedClient(); // Adjust the client count as necessary
 		}
 	}
 
 	public async void StartSinglePlayer(int sceneIndex) {
-		if (bootstrap != null) {
+		if (gameBootstrap != null) {
 			// Change to the gameplay scene
 			await LoadSceneAsync(sceneIndex);
 
 			// Start the game in single-player mode
-			bootstrap.StartSinglePlayer();
+			gameBootstrap.StartSinglePlayer();
 		}
 	}
-
+	public void StopLobby() {
+		if (lobbyBootstrap != null) {
+			lobbyBootstrap.ShutdownAll();
+		}
+	}
 	public void StopGame() {
-		// This function stops the game and returns to the menu scene (index 0)
-		if (bootstrap != null) {
-			bootstrap.ShutdownAll(); // This shuts down the NetworkRunner instances
+		// This function stops the game and returns to the lobby/menu scene
+		if (gameBootstrap != null) {
+			gameBootstrap.ShutdownAll(); // This shuts down the NetworkRunner instances
 		}
 
-		// Load the menu scene
-		SceneManager.LoadSceneAsync(0);
+		//TODO: if player was in a lobby before starting game, return to that lobby with start lobby
+		if (SceneManager.GetActiveScene().buildIndex != LOBBY_SCENE) {
+			Debug.Log("loading scene...");
+			SceneManager.LoadSceneAsync(LOBBY_SCENE);
+		}
 	}
 }
