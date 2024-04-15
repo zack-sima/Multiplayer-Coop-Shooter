@@ -15,6 +15,10 @@ public class MapController : MonoBehaviour {
 	[SerializeField] private Transform spawnpointParent;
 	public Transform GetSpawnpointParent() { return spawnpointParent; }
 
+	//TODO: add more options for teams, etc
+	[SerializeField] private Transform playerSpawnpoint;
+	public Transform GetPlayerSpawnpoint() { return playerSpawnpoint; }
+
 	#endregion
 
 	#region Functions

@@ -24,9 +24,7 @@ public class LobbyUI : MonoBehaviour {
 	//TODO: replace this with more fancy stuff (currently just a single string that displays everything)
 	[SerializeField] private TMP_Text lobbyTextDisplay;
 
-	[SerializeField] private TMP_InputField playerNameInput, waveInput;
-
-	[SerializeField] private TMP_Dropdown mapDropdown;
+	[SerializeField] private RectTransform lobbyLoadingUI, gameStartingUI;
 
 	#endregion
 
@@ -44,6 +42,11 @@ public class LobbyUI : MonoBehaviour {
 
 	//sends current player information (master client) to LobbyStatsSyncer script
 	public void InitLocalSync() {
+		StartCoroutine(WaitInitData());
+	}
+	private IEnumerator WaitInitData() {
+		yield return new WaitForSeconds(0.2f);
+
 		MapDropdownChanged();
 		PlayerNameInputChanged();
 	}
@@ -51,7 +54,7 @@ public class LobbyUI : MonoBehaviour {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 
 		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
-			if (int.TryParse(waveInput.text, out int wave))
+			if (int.TryParse(MenuManager.instance.GetWaveInput().text, out int wave))
 				LobbyStatsSyncer.instance.SetStartingWave(wave);
 		}
 	}
@@ -59,14 +62,15 @@ public class LobbyUI : MonoBehaviour {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 
 		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
-			LobbyStatsSyncer.instance.SetMap(mapDropdown.options[mapDropdown.value].text);
+			LobbyStatsSyncer.instance.SetMap(MenuManager.instance.GetMapDropdown().options[
+				MenuManager.instance.GetMapDropdown().value].text);
 		}
 	}
 	public void PlayerNameInputChanged() {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 
-		if (playerNameInput.text != "") {
-			LobbyPlayer.playerInstance.SetPlayerName(playerNameInput.text);
+		if (MenuManager.instance.GetPlayerNameInput().text != "") {
+			LobbyPlayer.playerInstance.SetPlayerName(MenuManager.instance.GetPlayerNameInput().text);
 		} else {
 			LobbyPlayer.playerInstance.SetPlayerName("Player");
 		}
@@ -83,11 +87,37 @@ public class LobbyUI : MonoBehaviour {
 	public void SetLobbyText(string text) {
 		lobbyTextDisplay.text = text;
 	}
+	public void QuitLobby() {
+		ServerLinker.instance.StopLobby();
+		SetLobbyUIActive(false);
+
+		Destroy(ServerLinker.instance.gameObject);
+		UnityEngine.SceneManagement.SceneManager.LoadScene(ServerLinker.LOBBY_SCENE);
+	}
 	//NOTE: this calls the singleton lobby player assuming the player exists
 	public void ToggleIsReady() {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 
 		LobbyPlayer.playerInstance.ToggleIsReady();
+	}
+	public void SetLobbyLoading(bool loading) {
+		lobbyLoadingUI.gameObject.SetActive(loading);
+		StartCoroutine(LobbyLoadingTimeout(lobbyLoadingUI.gameObject));
+	}
+	public void SetGameStarting() {
+		gameStartingUI.gameObject.SetActive(true);
+		StartCoroutine(LobbyLoadingTimeout(gameStartingUI.gameObject));
+	}
+	//if something fishy happens with the lobby loader, don't leave the UI on forever
+	private IEnumerator LobbyLoadingTimeout(GameObject ui) {
+		for (float t = 0; t < 10f; t += Time.deltaTime) {
+			yield return null;
+			if (!ui.activeInHierarchy) {
+				Debug.Log("lobby load hidden");
+				yield break;
+			}
+		}
+		ui.SetActive(true);
 	}
 
 	private void Awake() {

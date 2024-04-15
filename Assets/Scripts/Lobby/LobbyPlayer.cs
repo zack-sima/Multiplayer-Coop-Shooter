@@ -23,6 +23,10 @@ public class LobbyPlayer : NetworkBehaviour {
 	private string PlayerName { get; set; } = "Player";
 	public string GetPlayerName() { return PlayerName; }
 
+	[Networked]
+	private bool IsMasterClient { get; set; } = false;
+	public bool GetIsMasterClient() { return IsMasterClient; }
+
 	#endregion
 
 	#region Callbacks
@@ -45,6 +49,10 @@ public class LobbyPlayer : NetworkBehaviour {
 			playerInstance = this;
 			LobbyUI.instance.InitLocalSync();
 			LobbyUI.instance.SetLobbyUIActive(true);
+
+			if (Runner.IsSharedModeMasterClient) {
+				IsMasterClient = true;
+			}
 		}
 
 		//TODO: this adds player reference to the LobbyUI script, which is a little bit scuffed.
@@ -57,27 +65,28 @@ public class LobbyPlayer : NetworkBehaviour {
 	}
 	private void Update() {
 		if (LobbyStatsSyncer.instance == null) return;
+		if (!HasStateAuthority) return; //local player
 
 		//update local UI; TODO: change this so it doesn't just send a big chunk of string text to the LobbyUI
-		if (HasStateAuthority) {
-			string lobbyDisplayText = "";
+		string lobbyDisplayText = "";
 
-			//NOTE: room ID is stored locally through PlayerPrefs
-			lobbyDisplayText += $"Lobby ID: {PlayerPrefs.GetString("room_id")}\n";
-			lobbyDisplayText += $"Selected Map: {LobbyStatsSyncer.instance.GetMap()}\n";
-			lobbyDisplayText += $"Starting Wave: {LobbyStatsSyncer.instance.GetStartingWave()}\n";
+		//NOTE: room ID is stored locally through PlayerPrefs
+		lobbyDisplayText += $"Lobby ID: {PlayerPrefs.GetString("room_id")}\n";
+		lobbyDisplayText += $"Selected Map: {LobbyStatsSyncer.instance.GetMap()}\n";
+		lobbyDisplayText += $"Starting Wave: {LobbyStatsSyncer.instance.GetStartingWave()}\n";
 
-			//TODO: give LobbyUI all synced information here to actually display it
-			foreach (LobbyPlayer p in LobbyUI.instance.GetLobbyPlayers()) {
-				string readyText = p.GetIsReady() ? "Ready" : "Not Ready";
-				string hostText = p.Runner.IsSharedModeMasterClient ? " (Host)" : "";
-				lobbyDisplayText += $"\n{p.GetPlayerName()}{hostText}: {readyText}";
-			}
-			LobbyUI.instance.SetLobbyText(lobbyDisplayText);
+		//TODO: give LobbyUI all synced information here to actually display it
+		foreach (LobbyPlayer p in LobbyUI.instance.GetLobbyPlayers()) {
+			string readyText = p.GetIsReady() ? "Ready" : "Not Ready";
+			string hostText = p.GetIsMasterClient() ? " (Host)" : "";
+			lobbyDisplayText += $"\n{p.GetPlayerName()}{hostText}: {readyText}";
 		}
+		LobbyUI.instance.SetLobbyText(lobbyDisplayText);
 
 		//master client decisions
 		if (Runner.IsSharedModeMasterClient) {
+			if (!IsMasterClient) IsMasterClient = true;
+
 			//start game if all players are ready
 			bool allPlayersReady = true;
 			foreach (LobbyPlayer p in LobbyUI.instance.GetLobbyPlayers()) {

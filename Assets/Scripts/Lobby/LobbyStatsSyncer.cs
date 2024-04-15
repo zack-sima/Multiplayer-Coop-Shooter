@@ -14,7 +14,7 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 	#region Synced
 
 	[Networked]
-	private string MapName { get; set; } = "Default Map";
+	private string MapName { get; set; } = "[Map]";
 	public string GetMap() { return MapName; }
 	public void SetMap(string map) { MapName = map; }
 
@@ -41,8 +41,8 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 		//TODO: use map name setting here to load correct scene!
 
 		//force all clients (master or not) to go to game scene once this is ever set to true
-		//MenuManager.instance.
-		MenuManager.instance.StartShared();
+		MenuManager.instance.StartShared(MapName);
+		LobbyUI.instance.SetGameStarting();
 	}
 
 	#endregion

@@ -14,10 +14,16 @@ public class MenuManager : MonoBehaviour {
 
 	#region References
 
-	[SerializeField] private TMP_InputField roomInput, waveInput;
+	[SerializeField] private TMP_InputField roomInput, waveInput, playerNameInput;
+	public TMP_InputField GetRoomInput() { return roomInput; }
+	public TMP_InputField GetWaveInput() { return waveInput; }
+	public TMP_InputField GetPlayerNameInput() { return playerNameInput; }
 
-	//map
+	//map select
 	[SerializeField] private TMP_Dropdown mapDropdown;
+	public TMP_Dropdown GetMapDropdown() { return mapDropdown; }
+
+	//TODO: move this to a separate map scene manager that tracks each map's properties, name, scene index, etc
 	[SerializeField] private List<int> mapDropdownSceneIndices;
 
 	//turret
@@ -31,17 +37,29 @@ public class MenuManager : MonoBehaviour {
 		//NOTE: lobbies directly use room_id; games have _g appended to it to distinguish it from lobby rooms
 		PlayerPrefs.SetString("room_id", roomInput.text);
 		ServerLinker.instance.StartLobby(roomInput.text);
+
+		//NOTE: this calls the lobby UI loading screen
+		LobbyUI.instance.SetLobbyLoading(true);
 	}
 	//NOTE: only call this from the lobby!
 	//TODO for UI: move InitGame stuff to a singleton manager that is called when lobby decides to start game
-	public void StartShared() {
+	public void StartShared(string mapName) {
 		InitGame();
 
 		ServerLinker.instance.StopLobby();
 
+		int mapIndex = 1;
+
+		//TODO: change this scuffed map name matching with dropdowns
+		for (int i = 0; i < mapDropdown.options.Count; i++) {
+			if (mapDropdown.options[i].text == mapName) {
+				mapIndex = mapDropdownSceneIndices[i];
+				break;
+			}
+		}
+
 		//saved lobby room ID + "_g" goes to correct game room
-		ServerLinker.instance.StartShared(mapDropdownSceneIndices[mapDropdown.value],
-			PlayerPrefs.GetString("room_id") + "_g");
+		ServerLinker.instance.StartShared(mapIndex, PlayerPrefs.GetString("room_id") + "_g");
 	}
 	public void StartSingle() {
 		InitGame();
@@ -50,6 +68,7 @@ public class MenuManager : MonoBehaviour {
 	private void InitGame() {
 		PlayerPrefs.SetInt("turret_index", turretDropdown.value);
 		PlayerPrefs.SetString("turret_name", turretDropdown.options[turretDropdown.value].text);
+		PlayerPrefs.SetString("player_name", playerNameInput.text);
 
 		if (int.TryParse(waveInput.text, out int wave) && wave > 0) {
 			PlayerPrefs.SetInt("debug_starting_wave", wave);
@@ -64,6 +83,10 @@ public class MenuManager : MonoBehaviour {
 		Application.targetFrameRate = 90;
 
 		turretDropdown.value = PlayerPrefs.GetInt("turret_index");
+		playerNameInput.text = PlayerPrefs.GetString("player_name");
+
+		if (PlayerPrefs.GetInt("debug_starting_wave") > 0)
+			waveInput.text = PlayerPrefs.GetInt("debug_starting_wave").ToString();
 	}
 
 	#endregion

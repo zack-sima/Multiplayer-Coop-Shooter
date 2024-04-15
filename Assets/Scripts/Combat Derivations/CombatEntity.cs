@@ -126,6 +126,12 @@ public class CombatEntity : Entity {
 		DamageHandler.DealExplosiveDamage(transform.position, turret.GetExplosionRadius(),
 			turret.GetExplosionDamage(), canDamageTeam: true, self: this);
 	}
+	//only called by player functions
+	public void SetName(string name) {
+		GetHealthCanvas().GetNameGhostText().gameObject.SetActive(true);
+		GetHealthCanvas().GetNameGhostText().text = name;
+		GetHealthCanvas().GetNameText().text = name;
+	}
 	public override void EntityRemoved() {
 		base.EntityRemoved();
 

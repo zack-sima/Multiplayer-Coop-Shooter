@@ -50,6 +50,9 @@ public class NetworkedEntity : NetworkBehaviour {
 	private string TurretName { get; set; } = "Autocannon";
 	public void SetTurretName(string turretName) { TurretName = turretName; } //only by local
 
+	[Networked, OnChangedRender(nameof(PlayerNameChanged))]
+	private string PlayerName { get; set; } = "Player";
+
 	#endregion
 
 	#region Members
@@ -103,6 +106,11 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	private void PositionChanged() {
 		targetPosition = Position;
+	}
+	private void PlayerNameChanged() {
+		if (optionalCombatEntity == null || !isPlayer) return;
+
+		optionalCombatEntity.SetName(PlayerName);
 	}
 	private void TurretChanged() {
 		if (optionalCombatEntity == null || !isPlayer) return;
@@ -198,9 +206,10 @@ public class NetworkedEntity : NetworkBehaviour {
 
 				TurretName = PlayerInfo.instance.GetLocalPlayerTurretName();
 
-				GetComponent<AudioListener>().enabled = true;
+				PlayerName = PlayerPrefs.GetString("player_name");
+				if (PlayerName == "") PlayerName = "Player";
 
-				transform.position = new Vector3(0, 0, 0);
+				GetComponent<AudioListener>().enabled = true;
 
 				//TODO: add team selection for pvp
 				Team = 0;

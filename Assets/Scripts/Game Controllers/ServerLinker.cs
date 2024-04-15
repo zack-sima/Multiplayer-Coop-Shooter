@@ -10,7 +10,7 @@ public class ServerLinker : MonoBehaviour {
 
 	public static ServerLinker instance;
 
-	private const int LOBBY_SCENE = 0;
+	public const int LOBBY_SCENE = 0;
 
 	#endregion
 
@@ -67,7 +67,8 @@ public class ServerLinker : MonoBehaviour {
 	}
 	public void StopLobby() {
 		if (lobbyBootstrap != null) {
-			lobbyBootstrap.ShutdownAll();
+			//NOTE: ShutdownAll was modified with this argument so scene change isn't forced
+			lobbyBootstrap.ShutdownAll(changeScene: false);
 		}
 	}
 	public void StopGame() {

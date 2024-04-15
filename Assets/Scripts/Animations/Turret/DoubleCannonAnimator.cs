@@ -81,8 +81,6 @@ public class DoubleCannonAnimator : TurretAnimatorBase {
 		}
 	}
 	private void Update() {
-		Debug.Log(gunRecoil);
-
 		if (gunRecoil > 0 && !addingRecoil) {
 			gunRecoil = Mathf.Max(0f, gunRecoil - Time.deltaTime);
 		}

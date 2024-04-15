@@ -16,4 +16,8 @@ public class LobbyPlayerSpawner : SimulationBehaviour, IPlayerJoined {
 			}
 		}
 	}
+	//called whether lobby succeeded loading or not
+	public void LobbyFinishedLoading() {
+		LobbyUI.instance.SetLobbyLoading(false);
+	}
 }
