@@ -154,7 +154,7 @@ public class Entity : MonoBehaviour {
 		UIController.instance.SetRespawnUIEnabled(false);
 
 		//TODO: designate specific player spawns (and when player is first spawned in)
-		transform.position = new Vector3(0, 0, 0);
+		transform.position = MapController.instance.GetPlayerSpawnpoint().position;
 
 		RespawnEntity();
 		networker.EntityRespawned();

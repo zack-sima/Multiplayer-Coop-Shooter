@@ -43,6 +43,8 @@ public class MenuManager : MonoBehaviour {
 	}
 	//NOTE: only call this from the lobby!
 	//TODO for UI: move InitGame stuff to a singleton manager that is called when lobby decides to start game
+	//TODO: NOTE: all players' PlayerPrefs needs to be updated with the right map & wave settings from lobby
+	//because the lobby host won't necessarily be the master client
 	public void StartShared(string mapName) {
 		InitGame();
 
