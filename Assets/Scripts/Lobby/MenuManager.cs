@@ -34,6 +34,8 @@ public class MenuManager : MonoBehaviour {
 	#region Functions
 
 	public void StartLobby() {
+		if (roomInput.text == "") return;
+
 		//NOTE: lobbies directly use room_id; games have _g appended to it to distinguish it from lobby rooms
 		PlayerPrefs.SetString("room_id", roomInput.text);
 		ServerLinker.instance.StartLobby(roomInput.text);

@@ -60,15 +60,13 @@ public class ServerLinker : MonoBehaviour {
 	}
 
 	public async void StartSinglePlayer(int sceneIndex) {
-		if (bootstrap != null) {
-			// Change to the gameplay scene
-			await LoadSceneAsync(sceneIndex);
+		// Change to the gameplay scene
+		await LoadSceneAsync(sceneIndex);
 
-			if (!TryFindBootstrap()) return;
+		if (!TryFindBootstrap()) return;
 
-			// Start the game in single-player mode
-			bootstrap.StartSinglePlayer();
-		}
+		// Start the game in single-player mode
+		bootstrap.StartSinglePlayer();
 	}
 	public void StopLobby() {
 		//NOTE: ShutdownAll was modified with this argument so scene change isn't forced
