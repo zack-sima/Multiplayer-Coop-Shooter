@@ -18,6 +18,10 @@ public class HealthCanvas : MonoBehaviour {
 	public RectTransform GetAmmoGrowBar() { return ammoGrowBar; }
 	[SerializeField] private TMP_Text healthText;
 	public TMP_Text GetHealthText() { return healthText; }
+	[SerializeField] private TMP_Text nameText;
+	public TMP_Text GetNameText() { return nameText; }
+	[SerializeField] private TMP_Text nameGhostText;
+	public TMP_Text GetNameGhostText() { return nameGhostText; }
 
 	//player ammo, set to invisible
 	[SerializeField] private GameObject ammoTickerRef;

@@ -289,11 +289,11 @@ MonoBehaviour:
   bulletAnchor: {fileID: 5873466652764302217}
   bulletPrefab: {fileID: 6077797457950610488, guid: 812b09296caff49ec8fa231f33918f5e, type: 3}
   maxAmmo: 35
-  ammoRegenerationSpeed: 6
+  ammoRegenerationSpeed: 7.5
   isFullAuto: 1
   shootSpeed: 0.1
   shootSpread: 5
-  rotateSpeed: 250
+  rotateSpeed: 300
   rotatable: 1
   proximityExplode: 0
   explosionRadius: 0

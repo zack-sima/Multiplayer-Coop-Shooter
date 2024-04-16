@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.AI;
 
 /// <summary>
 /// Autonomously decides on an AI enemy's course of action
@@ -32,12 +33,14 @@ public class AIBrain : MonoBehaviour {
 	public static float GroundDistance(Vector3 a, Vector3 b) {
 		return Vector2.Distance(new Vector2(a.x, a.z), new Vector2(b.x, b.z));
 	}
-
 	private void EnemyDecisionTick() {
 		if (target != null && target.GetNetworker().GetIsDead()) {
 			canShootTarget = false;
 			target = null;
 		}
+
+		//wait for NavMeshAgent to initialize
+		if (!navigator.GetIsNavigable()) return;
 
 		//try finding target
 		if (target == null) {
@@ -102,7 +105,7 @@ public class AIBrain : MonoBehaviour {
 				EnemyDecisionTick();
 			} catch (System.Exception e) { Debug.LogWarning(e); }
 
-			yield return new WaitForSeconds(0.25f);
+			yield return new WaitForSeconds(0.15f);
 		}
 	}
 	private void Update() {
@@ -115,11 +118,20 @@ public class AIBrain : MonoBehaviour {
 				target.transform.position.z - transform.position.z) * Mathf.Rad2Deg
 			);
 		}
+		navigator.SetActive(true);
 		if (!entity.GetTurret().GetIsProximityExploder() && canShootTarget) {
 			entity.TryFireMainWeapon();
 		} else if (entity.GetTurret().GetIsProximityExploder() &&
 			GroundDistance(target.transform.position, transform.position) < 2.5f) {
 			entity.GetNetworker().RPC_TakeDamage(entity.GetNetworker().Object, entity.GetMaxHealth());
+		} else if (entity.GetTurret().GetIsProximityExploder() && //close enough to walk straight
+			GroundDistance(target.transform.position, transform.position) < 5f) {
+			navigator.SetActive(false);
+
+			Vector3 newPos = Vector3.MoveTowards(transform.position, target.transform.position,
+				navigator.GetSpeed() * Time.deltaTime);
+
+			transform.position = new Vector3(newPos.x, transform.position.y, newPos.z);
 		}
 	}
 	private void Start() {

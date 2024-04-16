@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 2038141366403639929}
   - component: {fileID: 284553129610219807}
   m_Layer: 0
-  m_Name: Photon Runner
+  m_Name: Game Runner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

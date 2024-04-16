@@ -4,7 +4,14 @@ using UnityEngine;
 using Fusion;
 
 public class NetworkedEntity : NetworkBehaviour {
+
+	#region Const & Statics
+
 	public static NetworkedEntity playerInstance;
+
+	private const float RESPAWN_PROTECTION_TIME = 3f;
+
+	#endregion
 
 	#region References
 
@@ -43,6 +50,9 @@ public class NetworkedEntity : NetworkBehaviour {
 	private string TurretName { get; set; } = "Autocannon";
 	public void SetTurretName(string turretName) { TurretName = turretName; } //only by local
 
+	[Networked, OnChangedRender(nameof(PlayerNameChanged))]
+	private string PlayerName { get; set; } = "Player";
+
 	#endregion
 
 	#region Members
@@ -63,6 +73,9 @@ public class NetworkedEntity : NetworkBehaviour {
 	//local ability toggles; TODO: scale ability level, etc
 	private bool abilityHealOn = false;
 	private bool abilityOverclockOn = false;
+
+	//respawn protection (locally enforced); compares Time.time
+	private float lastRespawnTimestamp = -10f;
 
 	#endregion
 
@@ -94,6 +107,11 @@ public class NetworkedEntity : NetworkBehaviour {
 	private void PositionChanged() {
 		targetPosition = Position;
 	}
+	public void PlayerNameChanged() {
+		if (optionalCombatEntity == null || !isPlayer) return;
+
+		optionalCombatEntity.SetName(PlayerName);
+	}
 	private void TurretChanged() {
 		if (optionalCombatEntity == null || !isPlayer) return;
 
@@ -106,7 +124,13 @@ public class NetworkedEntity : NetworkBehaviour {
 	//NOTE: only applies to CombatEntities
 	private void TurretRotationChanged() {
 		if (optionalCombatEntity == null) return;
-		optionalCombatEntity.GetTurret().SetTargetTurretRotation(TurretRotation.eulerAngles.y);
+
+		//<20˚ will be interpolated, otherwise snap
+		if (Quaternion.Angle(TurretRotation, optionalCombatEntity.GetTurret().transform.rotation) > 20f) {
+			optionalCombatEntity.GetTurret().SnapToTargetRotation(TurretRotation.eulerAngles.y, true);
+		} else {
+			optionalCombatEntity.GetTurret().SetTargetTurretRotation(TurretRotation.eulerAngles.y);
+		}
 	}
 	private void HealthBarChanged() {
 		mainEntity.UpdateHealthBar();
@@ -134,6 +158,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 	public void EntityRespawned() {
 		IsDead = false;
+		lastRespawnTimestamp = Time.time;
 	}
 	//either is player and has state authority or isn't player and is master client/SP
 	public bool HasSyncAuthority() {
@@ -156,7 +181,13 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 	[Rpc(RpcSources.All, RpcTargets.StateAuthority)]
 	public void RPC_TakeDamage(NetworkObject target, float damage) {
+		//NOTE: RPC is called on all objects the player owns (bots, players, etc if master client)
+		// target needs to be checked to make sure THIS object is the actual one being targeted
 		if (target != Object) return;
+
+		//within respawn protection
+		if (Time.time - lastRespawnTimestamp < RESPAWN_PROTECTION_TIME) return;
+
 		Health = Mathf.Max(0f, Health - damage);
 		mainEntity.LostHealth();
 	}
@@ -175,9 +206,10 @@ public class NetworkedEntity : NetworkBehaviour {
 
 				TurretName = PlayerInfo.instance.GetLocalPlayerTurretName();
 
-				GetComponent<AudioListener>().enabled = true;
+				PlayerName = PlayerPrefs.GetString("player_name");
+				if (PlayerName == "") PlayerName = "Player";
 
-				transform.position = new Vector3(0, 0, 0);
+				GetComponent<AudioListener>().enabled = true;
 
 				//TODO: add team selection for pvp
 				Team = 0;

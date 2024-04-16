@@ -30,6 +30,18 @@ public class AINavigator : MonoBehaviour {
 		if (agent.enabled != isActive)
 			agent.enabled = isActive;
 	}
+	public float GetSpeed() {
+		return agent.speed;
+	}
+	/// <summary>
+	/// Whether or not NavMesh is on the right surface right now
+	/// </summary>
+	public bool GetIsNavigable() {
+		if (agent.isOnNavMesh && !agent.enabled) {
+			agent.enabled = true;
+		}
+		return agent.isOnNavMesh;
+	}
 
 	#endregion
 

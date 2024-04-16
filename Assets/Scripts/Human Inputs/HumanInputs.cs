@@ -9,9 +9,10 @@ public class HumanInputs : MonoBehaviour {
 
 	public static HumanInputs instance;
 
-	private const float AIM_DRAG_THRESHOLD = 0.33f;
+	private const float AIM_DRAG_THRESHOLD = 0.5f;
 	private const float DEFAULT_LOB_DISTANCE = 5f;
-	private const float MAX_LOB_DISTANCE = 10f;
+	private const float MAX_LOB_DISTANCE = 13.5f;
+	private const float FULL_AUTO_DELAY = 0.15f;
 
 	#endregion
 
@@ -31,6 +32,9 @@ public class HumanInputs : MonoBehaviour {
 
 	//mobile semi auto doesn't shoot if dragged for long enough
 	private float mainShootButtonDownTime = 0f;
+
+	//force wait of ~0.15s before shooting full auto
+	private float fullAutoDelay = 0f;
 
 	//before button release, magnitude of attack joystick
 	private float lastMainWeaponJoystickMagnitude = 0f;
@@ -73,21 +77,32 @@ public class HumanInputs : MonoBehaviour {
 			player.GetHull().Move(Vector3.zero);
 		}
 		if (mainWeaponJoystick.GetButtonIsDown()) {
-			if (player.GetTurret().GetIsFullAuto()) {
-				playerShooting = true;
-				player.TryFireMainWeapon();
-			}
-
 			float mag = mainWeaponJoystick.GetJoystickMagnitude();
+			float targetRotationY = -mainWeaponJoystick.GetJoystickAngle() * Mathf.Rad2Deg + 90f;
+
+			if (player.GetTurret().GetIsFullAuto()) {
+				//only allow shooting if turret is oriented
+				bool onTarget = Quaternion.Angle(player.GetTurret().transform.rotation,
+					Quaternion.Euler(0, targetRotationY, 0)) < 10f;
+
+				if (fullAutoDelay > 0 && (mag < AIM_DRAG_THRESHOLD || !onTarget)) {
+					fullAutoDelay -= Time.deltaTime;
+				} else {
+					playerShooting = true;
+					player.TryFireMainWeapon();
+				}
+			}
 			if (mag > AIM_DRAG_THRESHOLD) {
-				mobileLobDistance = (mag - AIM_DRAG_THRESHOLD / 2f) * MAX_LOB_DISTANCE * (1f + AIM_DRAG_THRESHOLD / 2f);
+				mobileLobDistance = (mag - AIM_DRAG_THRESHOLD) * MAX_LOB_DISTANCE * (1f + AIM_DRAG_THRESHOLD);
 				player.MaintainTurretRotation();
-				player.GetTurret().SetTargetTurretRotation(
-					-mainWeaponJoystick.GetJoystickAngle() * Mathf.Rad2Deg + 90f);
+				player.GetTurret().SnapToTargetRotation(targetRotationY, true);
 			}
 			lastMainWeaponJoystickMagnitude = mainWeaponJoystick.GetJoystickMagnitude();
 		} else {
 			playerShooting = false;
+			if (player.GetTurret().GetIsFullAuto()) {
+				fullAutoDelay = FULL_AUTO_DELAY;
+			}
 		}
 	}
 	//for semi-auto release fire

@@ -13,6 +13,8 @@ public class Bullet : MonoBehaviour {
 	#region Members
 
 	[SerializeField] protected float speed;
+	public float GetSpeed() { return speed; }
+
 	[SerializeField] private float damage;
 
 	[SerializeField] private bool isExplosion;

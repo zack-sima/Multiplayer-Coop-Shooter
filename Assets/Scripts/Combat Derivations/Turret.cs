@@ -68,18 +68,29 @@ public class Turret : MonoBehaviour {
 	//NOTE: only follows target rotation if one has been set
 	protected bool useTargetRotation = false;
 
-	//rotate slowly when auto rotating back for mobile
-	protected bool inSlowMode = false;
+	//rotate super fast (but not instant) for mobile
+	protected bool rotateFast = false;
 
 	#endregion
 
 	#region Functions
 
-	//mobile/new turret rotation
-	public void SetTargetTurretRotation(float rotation, bool slow = false) {
+	//for non-instant rotations
+	public void SetTargetTurretRotation(float rotation) {
 		targetRotation = rotation;
 		useTargetRotation = true;
-		inSlowMode = slow;
+		rotateFast = false;
+	}
+	//MOBILE: instant rotation when joystick is used
+	public void SnapToTargetRotation(float rotation, bool instant) {
+		targetRotation = rotation;
+		useTargetRotation = true;
+
+		if (instant) {
+			transform.eulerAngles = new Vector3(0, rotation, 0);
+		} else {
+			rotateFast = true;
+		}
 	}
 	//synced to networking, call only by local input;
 	//this function can be called in a framework where the turret is not a sub-part of a Networked Entity
@@ -120,8 +131,7 @@ public class Turret : MonoBehaviour {
 
 		if (useTargetRotation) {
 			transform.rotation = Quaternion.RotateTowards(transform.rotation,
-				Quaternion.Euler(0, targetRotation, 0),
-				Time.deltaTime * rotateSpeed * (inSlowMode ? 0.55f : 1f));
+				Quaternion.Euler(0, targetRotation, 0), Time.deltaTime * (rotateFast ? rotateSpeed * 2 : rotateSpeed));
 		}
 	}
 

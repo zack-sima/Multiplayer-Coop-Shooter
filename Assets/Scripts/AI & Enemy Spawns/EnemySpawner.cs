@@ -35,7 +35,8 @@ public class EnemySpawner : NetworkBehaviour {
 		yield return new WaitForSeconds(5f);
 
 		while (true) {
-			while (EntityController.player == null || GameStatsSyncer.instance == null)
+			while (EntityController.player == null || GameStatsSyncer.instance == null ||
+				GameStatsSyncer.instance.GetGameOver())
 				yield return null;
 
 			//NOTE: Only proceed 

@@ -54,6 +54,12 @@ public class CombatEntity : Entity {
 	//spawned in when instantiated; when a player switches turrets after enable/disable here
 	List<PlayerInfo.TurretInfo> spawnedTurrets = new();
 
+	//to track mortar/other projectile predictions
+	private Vector3 velocity = Vector3.zero;
+	public Vector3 GetVelocity() { return velocity; }
+
+	private Vector3 lastPosition = Vector3.zero;
+
 	#endregion
 
 	#region Functions
@@ -87,6 +93,7 @@ public class CombatEntity : Entity {
 				GetHealthCanvas().UpdateAmmoTickerCount(turret.GetIsFullAuto() ? 0 : turret.GetMaxAmmo() - 1);
 			} else {
 				SetHealthCanvasToFallback();
+				GetNetworker().PlayerNameChanged();
 			}
 		}
 	}
@@ -125,6 +132,12 @@ public class CombatEntity : Entity {
 
 		DamageHandler.DealExplosiveDamage(transform.position, turret.GetExplosionRadius(),
 			turret.GetExplosionDamage(), canDamageTeam: true, self: this);
+	}
+	//only called by player functions
+	public void SetName(string name) {
+		GetHealthCanvas().GetNameGhostText().gameObject.SetActive(true);
+		GetHealthCanvas().GetNameGhostText().text = name;
+		GetHealthCanvas().GetNameText().text = name;
 	}
 	public override void EntityRemoved() {
 		base.EntityRemoved();
@@ -191,6 +204,10 @@ public class CombatEntity : Entity {
 	}
 	protected override void Update() {
 		base.Update();
+
+		//v = dx/dt
+		velocity = (transform.position - lastPosition) / Time.deltaTime;
+		lastPosition = transform.position;
 	}
 
 	#endregion
