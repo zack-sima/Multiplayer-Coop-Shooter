@@ -19,12 +19,14 @@ public class LobbyUI : MonoBehaviour {
 	#region References
 
 	//disable this if not in a lobby
-	[SerializeField] private RectTransform lobbyButtons;
+	[SerializeField] private Button quitButton, readyButton;
 
 	//TODO: replace this with more fancy stuff (currently just a single string that displays everything)
 	[SerializeField] private TMP_Text lobbyTextDisplay;
 
 	[SerializeField] private RectTransform lobbyLoadingUI, gameStartingUI;
+
+	[SerializeField] private Button joinLobbyButton;
 
 	#endregion
 
@@ -81,7 +83,9 @@ public class LobbyUI : MonoBehaviour {
 		} else {
 			lobbyTextDisplay.text = "Loading lobby...";
 		}
-		lobbyButtons.gameObject.SetActive(isActive);
+		quitButton.gameObject.SetActive(isActive);
+		readyButton.enabled = isActive;
+		joinLobbyButton.enabled = !isActive;
 	}
 	//TODO: modify the lobby controls script to give this script actual information instead of one string
 	public void SetLobbyText(string text) {
@@ -129,4 +133,16 @@ public class LobbyUI : MonoBehaviour {
 
 	#endregion
 
+
+	#region Button Methods
+
+	public void ActivateScreen(GameObject screen) {
+		screen.SetActive(true);
+	}
+
+	public void DeactivateScreen(GameObject screen) {
+		screen.SetActive(false);
+	}
+
+	#endregion
 }
