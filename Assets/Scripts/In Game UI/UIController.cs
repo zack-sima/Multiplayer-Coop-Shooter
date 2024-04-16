@@ -9,11 +9,11 @@ public class UIController : MonoBehaviour {
 	#region Statics & Consts
 
 	public static UIController instance;
-	private const bool OVERRIDE_MOBILE = false;
+	private const bool OVERRIDE_MOBILE = true;
 
 	public static bool GetIsMobile() {
 #if UNITY_EDITOR
-		if (OVERRIDE_MOBILE) return true;
+		if (OVERRIDE_MOBILE) return false;
 #endif
 		if (Application.isEditor) return false;
 		return Application.isMobilePlatform;

@@ -7,6 +7,7 @@ public class Bullet : MonoBehaviour {
 	#region Prefabs
 
 	[SerializeField] private GameObject explosionPrefab;
+	[SerializeField] private GameObject firePrefab;
 
 	#endregion
 
@@ -16,15 +17,19 @@ public class Bullet : MonoBehaviour {
 	public float GetSpeed() { return speed; }
 
 	[SerializeField] private float damage;
-
-	[SerializeField] private bool isExplosion;
+	[SerializeField] private bool isExplosion, isFlame;
 	[SerializeField] private float explosionRadius;
+	[SerializeField] private float destructionTimer = 5f;
 
 	private CombatEntity senderEntity = null;
 	private int senderTeam = -1;
 	private int bulletId = -1;
 	private bool senderIsLocal = false;
 	private bool alreadyHitTarget = false;
+
+	//for flame
+	private readonly List<Collider> hitTargets = new();
+	private GameObject spawnedFlame = null;
 
 	#endregion
 
@@ -36,11 +41,19 @@ public class Bullet : MonoBehaviour {
 		senderEntity = sender;
 		this.bulletId = bulletId;
 	}
+	//checks layermask (gpt)
+	private bool IsLayerInLayerMask(GameObject obj, LayerMask mask) {
+		return ((mask.value & (1 << obj.layer)) != 0);
+	}
 	private void OnTriggerEnter(Collider other) {
 		if (alreadyHitTarget) return;
-
 		if (other.gameObject.layer == LayerMask.NameToLayer("Projectiles")) return;
 
+		//flamethrower gets to hit every target once
+		if (isFlame) {
+			if (hitTargets.Contains(other)) return;
+			hitTargets.Add(other);
+		}
 		if (other.gameObject.TryGetComponent(out CombatEntity e)) {
 			try {
 				if (!e.GetNetworker().GetInitialized() || e.GetTeam() == senderTeam) return;
@@ -56,6 +69,19 @@ public class Bullet : MonoBehaviour {
 			DamageHandler.DealExplosiveDamage(transform.position, explosionRadius,
 				damage, false, senderEntity);
 		}
+		if (isFlame && IsLayerInLayerMask(other.gameObject, LayerMask.GetMask("Default", "Ground"))) {
+			StartCoroutine(DelayedDestroyFlame());
+			return;
+		}
+		if (!isFlame) {
+			MarkProjectileDestroyed();
+		}
+	}
+	private IEnumerator DelayedDestroyFlame() {
+		yield return new WaitForSeconds(0.15f);
+		MarkProjectileDestroyed();
+	}
+	private void MarkProjectileDestroyed() {
 		alreadyHitTarget = true;
 		if (senderIsLocal) {
 			DestroyLocalBullet();
@@ -66,7 +92,10 @@ public class Bullet : MonoBehaviour {
 	//just destroys the bullet and removes entity reference to it
 	public void DestroyBulletEffect() {
 		senderEntity.RemoveBullet(bulletId);
-		Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+		if (explosionPrefab != null)
+			Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+		if (spawnedFlame != null)
+			Destroy(spawnedFlame);
 		Destroy(gameObject);
 	}
 	//tries to make an RPC call so everyone destroys the bullet
@@ -78,11 +107,15 @@ public class Bullet : MonoBehaviour {
 		DestroyBulletEffect();
 	}
 	private IEnumerator DelayedDestroy() {
-		yield return new WaitForSeconds(5f);
+		yield return new WaitForSeconds(destructionTimer);
 		DestroyBulletEffect();
 	}
 	private void Start() {
 		StartCoroutine(DelayedDestroy());
+
+		if (firePrefab != null) {
+			spawnedFlame = Instantiate(firePrefab, transform.position, transform.rotation);
+		}
 	}
 	virtual protected void Update() {
 		transform.Translate(speed * Time.deltaTime * Vector3.forward);

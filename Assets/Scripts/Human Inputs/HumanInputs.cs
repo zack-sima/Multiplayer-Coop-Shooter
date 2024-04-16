@@ -30,6 +30,9 @@ public class HumanInputs : MonoBehaviour {
 	private bool playerShooting = false;
 	public bool GetPlayerShooting() { return playerShooting; }
 
+	//set to true until fire released or ammo is full
+	private bool stopAutoShooting = false;
+
 	//mobile semi auto doesn't shoot if dragged for long enough
 	private float mainShootButtonDownTime = 0f;
 
@@ -87,9 +90,16 @@ public class HumanInputs : MonoBehaviour {
 
 				if (fullAutoDelay > 0 && (mag < AIM_DRAG_THRESHOLD || !onTarget)) {
 					fullAutoDelay -= Time.deltaTime;
-				} else {
+				} else if (PlayerInfo.instance.GetAmmoLeft() > 1 && !stopAutoShooting) {
 					playerShooting = true;
 					player.TryFireMainWeapon();
+				} else {
+					if (PlayerInfo.instance.GetAmmoLeft() == PlayerInfo.instance.GetMaxAmmo()) {
+						stopAutoShooting = false;
+					} else {
+						stopAutoShooting = true;
+						playerShooting = false;
+					}
 				}
 			}
 			if (mag > AIM_DRAG_THRESHOLD) {
@@ -99,6 +109,7 @@ public class HumanInputs : MonoBehaviour {
 			}
 			lastMainWeaponJoystickMagnitude = mainWeaponJoystick.GetJoystickMagnitude();
 		} else {
+			stopAutoShooting = false;
 			playerShooting = false;
 			if (player.GetTurret().GetIsFullAuto()) {
 				fullAutoDelay = FULL_AUTO_DELAY;
@@ -112,7 +123,15 @@ public class HumanInputs : MonoBehaviour {
 
 		CombatEntity player = EntityController.player;
 
-		if (player.GetTurret().GetIsFullAuto()) return;
+		if (player.GetTurret().GetIsFullAuto()) {
+			//if player tapped shoot a single bullet
+			if (UIController.GetIsMobile()) {
+				if (Time.time - mainShootButtonDownTime < FULL_AUTO_DELAY) {
+					player.TryFireMainWeapon();
+				}
+			}
+			return;
+		}
 
 		if (UIController.GetIsMobile() && Time.time - mainShootButtonDownTime > 0.5f &&
 			!GetJoystickThresholdIsAiming()) return;
@@ -146,15 +165,23 @@ public class HumanInputs : MonoBehaviour {
 			MainWeaponJoystickReleased();
 		}
 		if (Input.GetMouseButton(0) && player.GetTurret().GetIsFullAuto()) {
-			playerShooting = true;
-			player.TryFireMainWeapon();
+			if (PlayerInfo.instance.GetAmmoLeft() > 1 && !stopAutoShooting) {
+				playerShooting = true;
+				player.TryFireMainWeapon();
+			} else if (PlayerInfo.instance.GetAmmoLeft() == PlayerInfo.instance.GetMaxAmmo()) {
+				stopAutoShooting = false;
+			} else {
+				stopAutoShooting = true;
+				playerShooting = false;
+			}
 		} else {
+			stopAutoShooting = false;
 			playerShooting = false;
 		}
 
 		//point to mouse
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		if (Physics.Raycast(ray, out RaycastHit hit, 100, ~LayerMask.GetMask("In Game UI"))) {
+		if (Physics.Raycast(ray, out RaycastHit hit, 100, LayerMask.GetMask("Ground"))) {
 			mouseWorldPos = hit.point;
 			Vector2 diff = new(hit.point.x - player.transform.position.x,
 				hit.point.z - player.transform.position.z);
