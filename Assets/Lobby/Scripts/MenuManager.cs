@@ -43,6 +43,15 @@ public class MenuManager : MonoBehaviour {
 		//NOTE: this calls the lobby UI loading screen
 		LobbyUI.instance.SetLobbyLoading(true);
 	}
+	
+	public void QuitLobby() {
+		ServerLinker.instance.StopLobby();
+		LobbyUI.instance.SetLobbyUIActive(false);
+
+		Destroy(ServerLinker.instance.gameObject);
+		UnityEngine.SceneManagement.SceneManager.LoadScene(ServerLinker.LOBBY_SCENE);
+	}
+	
 	//NOTE: only call this from the lobby!
 	//TODO for UI: move InitGame stuff to a singleton manager that is called when lobby decides to start game
 	//TODO: NOTE: all players' PlayerPrefs needs to be updated with the right map & wave settings from lobby

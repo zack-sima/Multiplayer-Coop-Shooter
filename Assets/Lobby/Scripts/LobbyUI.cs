@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Lobby;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -22,11 +24,13 @@ public class LobbyUI : MonoBehaviour {
 	[SerializeField] private Button quitButton, readyButton;
 
 	//TODO: replace this with more fancy stuff (currently just a single string that displays everything)
-	[SerializeField] private TMP_Text lobbyTextDisplay;
-
+	[SerializeField] private TMP_Text lobbyTextDisplay, waveTextDisplay, mapTextDisplay;
+	
 	[SerializeField] private RectTransform lobbyLoadingUI, gameStartingUI;
 
 	[SerializeField] private Button joinLobbyButton;
+
+	[SerializeField] private GameObject playersContainer, playerPrefab;
 
 	#endregion
 
@@ -34,49 +38,71 @@ public class LobbyUI : MonoBehaviour {
 
 	//TODO: find a better way to access lobby players than putting them in a UI script!
 	private List<LobbyPlayer> lobbyPlayers = new();
-	public void AddLobbyPlayer(LobbyPlayer p) { if (!lobbyPlayers.Contains(p)) lobbyPlayers.Add(p); }
+
+	public void AddLobbyPlayer(LobbyPlayer p) {
+		if (!lobbyPlayers.Contains(p)) {
+			lobbyPlayers.Add(p);
+			Instantiate(playerPrefab, playersContainer.transform);
+		}
+	}
 	public void RemoveLobbyPlayer(LobbyPlayer p) { if (lobbyPlayers.Contains(p)) lobbyPlayers.Remove(p); }
 	public List<LobbyPlayer> GetLobbyPlayers() { return lobbyPlayers; }
 
 	#endregion
 
+	#region Lifecycle Start & End
+
+		private void Awake() {
+    		instance = this;
+    	}
+    	private void Start() {
+    		SetLobbyUIActive(false);
+    		
+		    SubscribeOnJoinLobby();
+	    }
+
+	    private void OnDestroy() {
+		    UnsubscribeFromAllEvents();
+	    }
+
+	    private void UnsubscribeFromAllEvents() {
+		    UnsubscribeOnJoinLobby();
+		    UnsubscribeAllInfoListeners();
+	    }
+	#endregion
+	
 	#region Functions
+
+	#region OnJoinLobby
+
+	private void OnJoinLobby() {
+		InitLocalSync();
+		SetLobbyUIActive(true);
+	}
+
+	private void SubscribeOnJoinLobby() {
+		LobbyEventsHandler.OnPlayerSpawn += OnJoinLobby;
+	}
+
+	private void UnsubscribeOnJoinLobby() {
+		LobbyEventsHandler.OnPlayerSpawn -= OnJoinLobby;
+	}
+
+	#region Apprentice Methods
 
 	//sends current player information (master client) to LobbyStatsSyncer script
 	public void InitLocalSync() {
 		StartCoroutine(WaitInitData());
 	}
+	
 	private IEnumerator WaitInitData() {
 		yield return new WaitForSeconds(0.2f);
 
+		WaveInputChanged();
 		MapDropdownChanged();
 		PlayerNameInputChanged();
 	}
-	public void WaveInputChanged() {
-		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
-
-		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
-			if (int.TryParse(MenuManager.instance.GetWaveInput().text, out int wave))
-				LobbyStatsSyncer.instance.SetStartingWave(wave);
-		}
-	}
-	public void MapDropdownChanged() {
-		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
-
-		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
-			LobbyStatsSyncer.instance.SetMap(MenuManager.instance.GetMapDropdown().options[
-				MenuManager.instance.GetMapDropdown().value].text);
-		}
-	}
-	public void PlayerNameInputChanged() {
-		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
-
-		if (MenuManager.instance.GetPlayerNameInput().text != "") {
-			LobbyPlayer.playerInstance.SetPlayerName(MenuManager.instance.GetPlayerNameInput().text);
-		} else {
-			LobbyPlayer.playerInstance.SetPlayerName("Player");
-		}
-	}
+	
 	public void SetLobbyUIActive(bool isActive) {
 		if (!isActive) {
 			lobbyTextDisplay.text = "Not currently in a lobby";
@@ -86,18 +112,49 @@ public class LobbyUI : MonoBehaviour {
 		quitButton.gameObject.SetActive(isActive);
 		readyButton.enabled = isActive;
 		joinLobbyButton.enabled = !isActive;
+		
+		//NOTE: activate/deactivate lobby info & their subscriptions
+		if (isActive) SubscribeWaveInfo(); else UnsubscribeWaveInfo();
+		if (isActive) SubscribeMapInfo(); else UnsubscribeMapInfo();
+		if (isActive) SubscribeLobbyId(); else UnsubscribeLobbyId();
+		if (isActive) SubscribeOnPlayerUpdate(); else UnsubscribeOnPlayerUpdate();
 	}
-	//TODO: modify the lobby controls script to give this script actual information instead of one string
-	public void SetLobbyText(string text) {
-		lobbyTextDisplay.text = text;
-	}
-	public void QuitLobby() {
-		ServerLinker.instance.StopLobby();
-		SetLobbyUIActive(false);
 
-		Destroy(ServerLinker.instance.gameObject);
-		UnityEngine.SceneManagement.SceneManager.LoadScene(ServerLinker.LOBBY_SCENE);
-	}
+	#endregion
+
+	#endregion
+
+	#region TMPro Callbacks
+
+		public void WaveInputChanged() {
+    		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
+    
+    		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
+    			if (int.TryParse(MenuManager.instance.GetWaveInput().text, out int wave)) {
+    				LobbyStatsSyncer.instance.SetStartingWave(wave);
+    			}
+    		}
+    	}
+    	public void MapDropdownChanged() {
+    		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
+    
+    		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
+    			LobbyStatsSyncer.instance.SetMap(MenuManager.instance.GetMapDropdown().options[
+    				MenuManager.instance.GetMapDropdown().value].text);
+    		}
+    	}
+    	public void PlayerNameInputChanged() {
+    		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
+    
+    		if (MenuManager.instance.GetPlayerNameInput().text != "") {
+    			LobbyPlayer.playerInstance.SetPlayerName(MenuManager.instance.GetPlayerNameInput().text);
+    		} else {
+    			LobbyPlayer.playerInstance.SetPlayerName("Player");
+    		}
+    	}
+
+	#endregion
+	
 	//NOTE: this calls the singleton lobby player assuming the player exists
 	public void ToggleIsReady() {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
@@ -124,13 +181,6 @@ public class LobbyUI : MonoBehaviour {
 		ui.SetActive(true);
 	}
 
-	private void Awake() {
-		instance = this;
-	}
-	private void Start() {
-		SetLobbyUIActive(false);
-	}
-
 	#endregion
 
 
@@ -144,5 +194,86 @@ public class LobbyUI : MonoBehaviour {
 		screen.SetActive(false);
 	}
 
+	#endregion
+
+	#region Lobby Info
+
+	private void UnsubscribeAllInfoListeners() {
+		UnsubscribeWaveInfo();
+		UnsubscribeMapInfo();
+		UnsubscribeLobbyId();
+		UnsubscribeOnPlayerUpdate();
+	}
+
+	private void SubscribeWaveInfo() {
+		if (MenuManager.instance.GetWaveInput()) MenuManager.instance.GetWaveInput().enabled = true;
+		LobbyEventsHandler.OnWaveChanged += UpdateWaveInfo;
+	}
+	
+	private void UnsubscribeWaveInfo() {
+		if (MenuManager.instance.GetWaveInput()) MenuManager.instance.GetWaveInput().enabled = false;
+		LobbyEventsHandler.OnWaveChanged -= UpdateWaveInfo;
+	}
+	
+	private void UpdateWaveInfo(int waveNum) {
+		waveTextDisplay.text = $"Starting Wave: {waveNum.ToString()}";
+		
+		//NOTE: so that wave is still the same if master client switches
+		if (!LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient)
+			MenuManager.instance.GetWaveInput().text = waveNum.ToString();
+	}
+	
+	
+	private void SubscribeMapInfo() {
+		if (MenuManager.instance.GetWaveInput()) MenuManager.instance.GetWaveInput().enabled = true;
+		LobbyEventsHandler.OnMapChanged += UpdateMapInfo;
+	}
+	
+	private void UnsubscribeMapInfo() {
+		if (MenuManager.instance.GetWaveInput()) MenuManager.instance.GetWaveInput().enabled = false;
+		LobbyEventsHandler.OnMapChanged -= UpdateMapInfo;
+	}
+	
+	private void UpdateMapInfo(string map) {
+		mapTextDisplay.text = $"Selected Map: {map}";
+		
+		//NOTE: so that wave is still the same if master client switches
+		if (!LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient)
+			for (int i = 0; i < MenuManager.instance.GetMapDropdown().options.Count; i++) {
+				if (MenuManager.instance.GetMapDropdown().options[i].text == map) 
+					MenuManager.instance.GetMapDropdown().value = i;
+			}
+	}
+	
+	private void SubscribeLobbyId() {
+		LobbyEventsHandler.OnLobbyIdChanged += UpdateLobbyIdInfo;
+	}
+	
+	private void UnsubscribeLobbyId() {
+		LobbyEventsHandler.OnLobbyIdChanged -= UpdateLobbyIdInfo;
+	}
+	
+	private void UpdateLobbyIdInfo(string id) {
+		lobbyTextDisplay.text = $"Lobby Id: {id}";
+
+		//NOTE: so that wave is still the same if master client switches
+		if (!LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient)
+			MenuManager.instance.GetRoomInput().text = id;
+	}
+
+	private void SubscribeOnPlayerUpdate() {
+		LobbyEventsHandler.OnLobbyIdChanged += UpdateLobbyIdInfo;
+	}
+	
+	private void UnsubscribeOnPlayerUpdate() {
+		LobbyEventsHandler.OnLobbyIdChanged -= UpdateLobbyIdInfo;
+	}
+	
+	private void OnPlayerUpdate(LobbyPlayer player) {
+		if (player == LobbyPlayer.playerInstance) return;
+		lobbyPlayers[lobbyPlayers.IndexOf(player)].SetPlayerName(player.GetPlayerName());
+		lobbyPlayers[lobbyPlayers.IndexOf(player)].SetIsReady(player.GetIsReady());
+	}
+	
 	#endregion
 }
