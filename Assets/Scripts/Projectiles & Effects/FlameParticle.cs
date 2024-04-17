@@ -7,6 +7,6 @@ public class FlameParticle : MonoBehaviour {
 		Destroy(gameObject, 2.5f);
 	}
 	private void Update() {
-		transform.Translate(8f * Time.deltaTime * Vector3.forward);
+		transform.Translate(5f * Time.deltaTime * Vector3.forward);
 	}
 }

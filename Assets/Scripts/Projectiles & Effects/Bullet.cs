@@ -43,7 +43,7 @@ public class Bullet : MonoBehaviour {
 	}
 	//checks layermask (gpt)
 	private bool IsLayerInLayerMask(GameObject obj, LayerMask mask) {
-		return ((mask.value & (1 << obj.layer)) != 0);
+		return (mask.value & (1 << obj.layer)) != 0;
 	}
 	private void OnTriggerEnter(Collider other) {
 		if (alreadyHitTarget) return;

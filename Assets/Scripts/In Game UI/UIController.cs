@@ -9,11 +9,11 @@ public class UIController : MonoBehaviour {
 	#region Statics & Consts
 
 	public static UIController instance;
-	private const bool OVERRIDE_MOBILE = true;
+	private const bool OVERRIDE_MOBILE = false;
 
 	public static bool GetIsMobile() {
 #if UNITY_EDITOR
-		if (OVERRIDE_MOBILE) return false;
+		if (OVERRIDE_MOBILE) return true;
 #endif
 		if (Application.isEditor) return false;
 		return Application.isMobilePlatform;
@@ -53,7 +53,11 @@ public class UIController : MonoBehaviour {
 		optionsUI.gameObject.SetActive(!optionsUI.gameObject.activeInHierarchy);
 	}
 	public void LeaveGame() {
-		ServerLinker.instance.StopGame();
+		if (ServerLinker.instance == null) {
+			UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+		} else {
+			ServerLinker.instance.StopGame();
+		}
 	}
 	public void SetMobileUIEnabled(bool enabled) {
 		mobileUI.gameObject.SetActive(enabled);

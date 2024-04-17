@@ -48,13 +48,17 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7694750776747261333, guid: fdc1978cc2d3b467ca08c2272a851337, type: 3}
+      propertyPath: m_Size.y
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 7848521219120633458, guid: fdc1978cc2d3b467ca08c2272a851337, type: 3}
       propertyPath: damage
       value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 8601614415527540211, guid: fdc1978cc2d3b467ca08c2272a851337, type: 3}
       propertyPath: m_Name
-      value: Player Bullet
+      value: PlayerBullet
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

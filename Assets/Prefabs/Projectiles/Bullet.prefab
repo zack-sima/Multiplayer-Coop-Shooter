@@ -49,10 +49,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 1613248798462547781, guid: 4efaef36f6dfe432f8b144b7723b4c54, type: 3}
+  firePrefab: {fileID: 0}
   speed: 20
   damage: 100
   isExplosion: 0
+  isFlame: 0
   explosionRadius: 0
+  destructionTimer: 5
 --- !u!54 &2229630022482374810
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -149,5 +152,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1, y: 5, z: 1}
   m_Center: {x: 0, y: 0, z: 0}

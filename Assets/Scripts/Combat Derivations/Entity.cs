@@ -104,7 +104,8 @@ public class Entity : MonoBehaviour {
 	}
 	//for respawnable entities (now: only players)
 	public void SetEntityToDead() {
-		SpawnExplosion();
+		if (!networker.GetLocalIsDead())
+			SpawnExplosion();
 		DisableEntity();
 	}
 	public virtual void DisableEntity() {
@@ -117,7 +118,8 @@ public class Entity : MonoBehaviour {
 	}
 	//called by networked entity right before destroying object
 	public virtual void EntityRemoved() {
-		SpawnExplosion();
+		if (!networker.GetLocalIsDead())
+			SpawnExplosion();
 	}
 	protected void SpawnExplosion() {
 		Instantiate(explosionPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);

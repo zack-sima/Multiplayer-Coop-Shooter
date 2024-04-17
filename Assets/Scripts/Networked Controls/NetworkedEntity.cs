@@ -34,7 +34,13 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	[Networked, OnChangedRender(nameof(HealthBarChanged))]
 	private float Health { get; set; } = 999;
-	public float GetHealth() { return Health; }
+	public float GetHealth() {
+		if (!isPlayer && !Runner.IsSharedModeMasterClient && !Runner.IsSinglePlayer) {
+			if (localHealth > Health) localHealth = Health;
+			return Mathf.Min(localHealth, mainEntity.GetMaxHealth());
+		}
+		return Health;
+	}
 
 	//Team: determines whether bullets pass by, health bar color, etc;
 	[Networked, OnChangedRender(nameof(TeamChanged))]
@@ -76,6 +82,24 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	//respawn protection (locally enforced); compares Time.time
 	private float lastRespawnTimestamp = -10f;
+
+	//NOTE: this will always be <Health, used on enemies to pretend they took damage locally
+	private float localHealth = 999;
+	public float GetLocalHealth() { return localHealth; }
+	public void LoseLocalHealth(float damage) {
+		if (isPlayer || Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer) return;
+
+		if (localHealth > Health) localHealth = Health;
+		localHealth -= damage;
+		HealthBarChanged();
+
+		if (localHealth <= 0f) {
+			mainEntity.SetEntityToDead();
+			localIsDead = true;
+		}
+	}
+	private bool localIsDead = false;
+	public bool GetLocalIsDead() { return localIsDead; }
 
 	#endregion
 
@@ -133,6 +157,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		}
 	}
 	private void HealthBarChanged() {
+		if (localHealth > Health) localHealth = Health;
 		mainEntity.UpdateHealthBar();
 	}
 	private void TeamChanged() {
@@ -144,8 +169,11 @@ public class NetworkedEntity : NetworkBehaviour {
 	private void IsDeadChanged() {
 		if (HasSyncAuthority()) return;
 
-		if (!IsDead) mainEntity.RespawnEntity();
-		else mainEntity.SetEntityToDead();
+		if (!IsDead) {
+			mainEntity.RespawnEntity();
+		} else {
+			mainEntity.SetEntityToDead();
+		}
 	}
 
 	#endregion
@@ -163,7 +191,8 @@ public class NetworkedEntity : NetworkBehaviour {
 	//either is player and has state authority or isn't player and is master client/SP
 	public bool HasSyncAuthority() {
 		try {
-			return HasStateAuthority && isPlayer || !isPlayer && (Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer);
+			return HasStateAuthority && isPlayer || !isPlayer &&
+				(Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer);
 		} catch { return false; }
 	}
 	[Rpc(RpcSources.StateAuthority, RpcTargets.Proxies)]
@@ -292,6 +321,8 @@ public class NetworkedEntity : NetworkBehaviour {
 		} else {
 			//non-local entity
 			SyncNonLocal();
+
+			if (localHealth > Health) localHealth = Health;
 		}
 	}
 

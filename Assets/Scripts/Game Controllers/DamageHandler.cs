@@ -25,14 +25,16 @@ public static class DamageHandler {
 				if (e.GetNetworker().GetIsDead() || dist > radius) continue;
 			} catch { continue; }
 
-			e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object,
-				damage * Mathf.Min(1.5f * radius - 1.2f * dist, radius) / radius);
+			float realDmg = damage * Mathf.Min(1.5f * radius - 1.2f * dist, radius) / radius;
+			e.GetNetworker().LoseLocalHealth(realDmg);
+			e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object, realDmg);
 		}
 	}
 	public static void DealDamageToTarget(CombatEntity target, float damage) {
 		NetworkedEntity networker = target.GetNetworker();
 
 		if (!networker.GetInitialized()) return;
+		networker.LoseLocalHealth(damage);
 		networker.RPC_TakeDamage(networker.Object, damage);
 	}
 }
