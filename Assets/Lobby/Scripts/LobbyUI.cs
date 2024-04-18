@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEngine.UI.ProceduralImage;
 
 /// <summary>
 /// Script that just deals with lobby UI. TODO: actually integrate with good visuals, etc
@@ -135,8 +136,10 @@ public class LobbyUI : MonoBehaviour {
 			lobbyTextDisplay.text = "Loading lobby...";
 		}
 		quitButton.gameObject.SetActive(isActive);
-		readyButton.enabled = isActive;
 		joinLobbyButton.enabled = !isActive;
+
+		if (!isActive) readyButton.GetComponentInChildren<TMP_Text>().text = "Solo"; 
+		else readyButton.GetComponentInChildren<TMP_Text>().text = "Ready";
 		
 		//NOTE: activate/deactivate lobby info & their subscriptions
 		if (isActive) SubscribeWaveInfo(); else UnsubscribeWaveInfo();
@@ -183,7 +186,7 @@ public class LobbyUI : MonoBehaviour {
 	//NOTE: this calls the singleton lobby player assuming the player exists
 	public void ToggleIsReady() {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
-
+		
 		LobbyPlayer.playerInstance.ToggleIsReady();
 	}
 	public void SetLobbyLoading(bool loading) {
@@ -311,10 +314,12 @@ public class LobbyUI : MonoBehaviour {
 		if (status) {
 			playerCard.transform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = "Ready";
 			playerCard.transform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().color = Color.green;
+			readyButton.GetComponent<Image>().color = Color.green;
 		}
 		else {
 			playerCard.transform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = "Not Ready";
 			playerCard.transform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().color = Color.red;
+			readyButton.GetComponent<Image>().color = Color.red;
 		}
 	}
 	

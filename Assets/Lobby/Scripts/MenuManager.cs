@@ -77,6 +77,8 @@ public class MenuManager : MonoBehaviour {
 		ServerLinker.instance.StartShared(mapIndex, PlayerPrefs.GetString("room_id") + "_g");
 	}
 	public void StartSingle() {
+		if (LobbyPlayer.playerInstance || LobbyStatsSyncer.instance) return;
+		
 		InitGame();
 		ServerLinker.instance.StartSinglePlayer(mapDropdownSceneIndices[mapDropdown.value]);
 	}

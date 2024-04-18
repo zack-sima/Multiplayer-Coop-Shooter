@@ -89,47 +89,6 @@ public class LobbyPlayer : NetworkBehaviour {
     	}
 
 	#endregion
-	
-	// private void Update() {
-	// 	if (LobbyStatsSyncer.instance == null) return;
-	// 	if (!HasStateAuthority) return; //local player
-	//
-	// 	//update local UI; TODO: change this so it doesn't just send a big chunk of string text to the LobbyUI
-	// 	string lobbyDisplayText = "";
-	//
-	// 	//NOTE: room ID is stored locally through PlayerPrefs
-	// 	// LobbyEventsHandler.RaiseLobbyIdChanged($"Lobby ID: {PlayerPrefs.GetString("room_id")}");
-	// 	
-	// 	LobbyEventsHandler.RaiseMapChanged($"Selected Map: {LobbyStatsSyncer.instance.GetMap()}");
-	// 	LobbyEventsHandler.RaiseWaveChanged(LobbyStatsSyncer.instance.GetStartingWave());
-	// 	
-	// 	//TODO: give LobbyUI all synced information here to actually display it
-	// 	foreach (LobbyPlayer p in LobbyUI.instance.GetLobbyPlayers()) {
-	// 		string readyText = p.GetIsReady() ? "Ready" : "Not Ready";
-	// 		string hostText = p.GetIsMasterClient() ? " (Host)" : "";
-	// 		lobbyDisplayText += $"\n{p.GetPlayerName()}{hostText}: {readyText}";
-	// 	}
-	// 	LobbyUI.instance.SetLobbyText(lobbyDisplayText);
-	//
-	// 	//master client decisions
-	// 	if (Runner.IsSharedModeMasterClient) {
-	// 		if (!IsMasterClient) IsMasterClient = true;
-	//
-	// 		//start game if all players are ready
-	// 		bool allPlayersReady = true;
-	// 		foreach (LobbyPlayer p in LobbyUI.instance.GetLobbyPlayers()) {
-	// 			if (!p.GetIsReady()) {
-	// 				allPlayersReady = false;
-	// 				break;
-	// 			}
-	// 		}
-	// 		//start game!
-	// 		if (allPlayersReady) {
-	// 			Debug.Log("All players ready; starting game...");
-	// 			LobbyStatsSyncer.instance.SetGameStarted();
-	// 		}
-	// 	}
-	// }
 
 	#endregion
 
