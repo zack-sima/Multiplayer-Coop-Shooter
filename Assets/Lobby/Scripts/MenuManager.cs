@@ -46,7 +46,7 @@ public class MenuManager : MonoBehaviour {
 	}
 	
 	public void QuitLobby() {
-		LobbyEventsHandler.RaisePlayerUpdate(LobbyPlayer.playerInstance);
+		// LobbyEventsHandler.RaisePlayerUpdate(LobbyPlayer.playerInstance);
 		ServerLinker.instance.StopLobby();
 		LobbyUI.instance.SetLobbyUIActive(false);
 

@@ -81,7 +81,6 @@ public class LobbyUI : MonoBehaviour {
     		
 		    SubscribeOnJoinLobby();
 		    SubscribeLobbyPlayerSpawn();
-		    SubscribeOnPlayerUpdate();
 		    SubscribeLobbyPlayerQuit();
 	    }
 
@@ -143,6 +142,7 @@ public class LobbyUI : MonoBehaviour {
 		if (isActive) SubscribeWaveInfo(); else UnsubscribeWaveInfo();
 		if (isActive) SubscribeMapInfo(); else UnsubscribeMapInfo();
 		if (isActive) SubscribeLobbyId(); else UnsubscribeLobbyId();
+		if (isActive) SubscribeOnPlayerUpdate(); else UnsubscribeOnPlayerUpdate();
 	}
 
 	#endregion
@@ -176,8 +176,6 @@ public class LobbyUI : MonoBehaviour {
     		} else {
     			LobbyPlayer.playerInstance.SetPlayerName("Player");
     		}
-
-		    LobbyEventsHandler.RaisePlayerUpdate(LobbyPlayer.playerInstance);
 	    }
 
 	#endregion
@@ -187,7 +185,6 @@ public class LobbyUI : MonoBehaviour {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 
 		LobbyPlayer.playerInstance.ToggleIsReady();
-		LobbyEventsHandler.RaisePlayerUpdate(LobbyPlayer.playerInstance);
 	}
 	public void SetLobbyLoading(bool loading) {
 		lobbyLoadingUI.gameObject.SetActive(loading);
@@ -303,8 +300,6 @@ public class LobbyUI : MonoBehaviour {
 		SetPlayerIsHost(lobbyPlayers[player], player.GetIsMasterClient());
 		SetPlayerIsStateAuthority(lobbyPlayers[player], player == LobbyPlayer.playerInstance);
 	}
-	
-	#endregion
 
 	#region Player Cards
 
@@ -332,4 +327,6 @@ public class LobbyUI : MonoBehaviour {
 	}
 
 	#endregion
+	#endregion
+	
 }

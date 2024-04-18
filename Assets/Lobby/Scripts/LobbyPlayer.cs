@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,28 +10,32 @@ public class LobbyPlayer : NetworkBehaviour {
 	#region Const & Statics
 
 	public static LobbyPlayer playerInstance;
-
+	
 	#endregion
 
 	#region Synced
 
 	//TODO: add more parameters you want other players to see, like skins, selected turret, perks, etc
 
-	[Networked]
+	[Networked, OnChangedRender(nameof(SyncPlayer))]
 	private bool IsReady { get; set; } = false;
 	public bool GetIsReady() { return IsReady; }
 
-	[Networked]
+	[Networked, OnChangedRender(nameof(SyncPlayer))]
 	private string PlayerName { get; set; } = "Player";
 	public string GetPlayerName() { return PlayerName; }
 
-	[Networked]
+	[Networked, OnChangedRender(nameof(SyncPlayer))]
 	private bool IsMasterClient { get; set; } = false;
 	public bool GetIsMasterClient() { return IsMasterClient; }
 
 	#endregion
 
 	#region Callbacks
+	
+	private void SyncPlayer() {
+		LobbyEventsHandler.RaisePlayerUpdate(this);
+	}
 
 	#endregion
 
@@ -38,16 +43,13 @@ public class LobbyPlayer : NetworkBehaviour {
 
 	//NOTE: the following setters must be called by local playerInstance!
 	public void ToggleIsReady() {
-		IsReady = !IsReady;
-	}
-
-	public void SetIsReady(bool isReady) {
-		IsReady = isReady;
+		if (HasStateAuthority)
+			IsReady = !IsReady;
 	}
 	
 	public void SetPlayerName(string name) {
-		PlayerName = name;
-		LobbyEventsHandler.RaisePlayerUpdate(this);
+		if (HasStateAuthority)
+			PlayerName = name;
 	}
 
 	#region Photon Lifecycle
@@ -65,11 +67,7 @@ public class LobbyPlayer : NetworkBehaviour {
     
     			StartCoroutine(CheckForUIUpdate());
     			
-    			if (Runner.IsSharedModeMasterClient) {
-    				IsMasterClient = true;
-				    StartCoroutine(CheckForAllPlayersReady());
-			    }
-    		}
+		    }
     
     		//TODO: this adds player reference to the LobbyUI script, which is a little bit scuffed.
     		//  See TODO in Lobby about re-formatting this
@@ -78,12 +76,12 @@ public class LobbyPlayer : NetworkBehaviour {
 		    LobbyEventsHandler.RaisePlayerUpdate(this);
 	    }
     	public override void Despawned(NetworkRunner runner, bool hasState) {
+		    Debug.Log("Despawned");
     		//TODO: same thing as the spawned function
     		// LobbyUI.instance.RemoveLobbyPlayer(this);
 		    LobbyEventsHandler.RaisePlayerQuit(this);
     		
     		StopCoroutine(CheckForUIUpdate());
-		    Debug.Log("Stopped coroutine"); 
 
 		    if (IsMasterClient) {
 			    StopCoroutine(CheckForAllPlayersReady());
@@ -135,12 +133,16 @@ public class LobbyPlayer : NetworkBehaviour {
 
 	#endregion
 
-	#region Periodic Checks
+	#region Periodic Check
 
 		private IEnumerator CheckForUIUpdate() {
 			Debug.Log("Started coroutine");
     		while (true) {
     			if (!HasStateAuthority) break;
+			    if (Runner.IsSharedModeMasterClient && !IsMasterClient) {
+				    IsMasterClient = true;
+					StartCoroutine(CheckForAllPlayersReady());
+			    }
 			    
 			    // wait for LobbyStatsSyncer to set to an instance
 			    while (LobbyStatsSyncer.instance == null) {
@@ -192,7 +194,6 @@ public class LobbyPlayer : NetworkBehaviour {
 	    #region Apprentice Methods
 
 	    private void UpdateLobbyDisplay() {
-		    Debug.Log("Synced UI Changes");
 		    LobbyEventsHandler.RaiseMapChanged(LobbyStatsSyncer.instance.GetMap());
 		    LobbyEventsHandler.RaiseWaveChanged(LobbyStatsSyncer.instance.GetStartingWave());
 	    }
