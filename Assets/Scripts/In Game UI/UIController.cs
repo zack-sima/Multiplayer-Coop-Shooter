@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using CandyCoded.HapticFeedback;
 using TMPro;
 
 public class UIController : MonoBehaviour {
@@ -40,6 +41,19 @@ public class UIController : MonoBehaviour {
 
 	#region Functions
 
+	/// <summary>
+	/// Haptic feedback
+	/// </summary>
+	/// <param name="nudgeMode">0 for light, 1 for medium, 2 for heavy</param>
+	public static void NudgePhone(int nudgeMode) {
+		if (nudgeMode == 0) {
+			HapticFeedback.LightFeedback();
+		} else if (nudgeMode == 1) {
+			HapticFeedback.MediumFeedback();
+		} else {
+			HapticFeedback.HeavyFeedback();
+		}
+	}
 	public bool InOptions() {
 		if (Time.time - closedOptionsTimestamp < 0.07f) return true;
 		return optionsUI.gameObject.activeInHierarchy;

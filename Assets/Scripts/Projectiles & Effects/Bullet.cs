@@ -63,6 +63,9 @@ public class Bullet : MonoBehaviour {
 				try {
 					DamageHandler.DealDamageToTarget(e, damage);
 				} catch { return; }
+
+				if (senderEntity != null && senderEntity.GetNetworker().GetIsPlayer())
+					UIController.NudgePhone(isFlame ? 0 : 1);
 			}
 		}
 		if (senderIsLocal && isExplosion) {

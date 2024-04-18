@@ -13,6 +13,8 @@ public static class DamageHandler {
 	public static void DealExplosiveDamage(Vector3 position, float radius,
 		float damage, bool canDamageTeam, CombatEntity self = null) {
 
+		bool successfullyDamaged = false;
+
 		foreach (CombatEntity e in new List<CombatEntity>(EntityController.instance.GetCombatEntities())) {
 			if (e == null || e == self || !e.GetNetworker().GetInitialized()) continue;
 
@@ -28,6 +30,12 @@ public static class DamageHandler {
 			float realDmg = damage * Mathf.Min(1.5f * radius - 1.2f * dist, radius) / radius;
 			e.GetNetworker().LoseLocalHealth(realDmg);
 			e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object, realDmg);
+
+			successfullyDamaged = true;
+		}
+		if (successfullyDamaged) {
+			if (self != null && self.GetNetworker().GetIsPlayer())
+				UIController.NudgePhone(2);
 		}
 	}
 	public static void DealDamageToTarget(CombatEntity target, float damage) {

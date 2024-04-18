@@ -56,7 +56,7 @@ public class EnemySpawner : NetworkBehaviour {
 			int spawnCount = (int)Mathf.Pow(currWave, 1.5f) + 5;
 
 			//TODO: TEMP EASY MODE
-			spawnCount /= 5;
+			//spawnCount /= 5;
 
 			for (int i = 0; i < spawnCount; i++) {
 				spawnEnemyLater = true;
