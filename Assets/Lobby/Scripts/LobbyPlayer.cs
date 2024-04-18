@@ -47,7 +47,7 @@ public class LobbyPlayer : NetworkBehaviour {
 	
 	public void SetPlayerName(string name) {
 		PlayerName = name;
-		LobbyEventsHandler.UpdateLobbyPlayer(this);
+		LobbyEventsHandler.RaisePlayerUpdate(this);
 	}
 
 	#region Photon Lifecycle
@@ -56,7 +56,7 @@ public class LobbyPlayer : NetworkBehaviour {
     	public override void Spawned() {
     		if (HasStateAuthority) {
     			playerInstance = this;
-    			LobbyEventsHandler.InvokePlayerSpawn();
+    			LobbyEventsHandler.InvokePlayerJoinLobby();
     			
     			// LobbyUI.instance.InitLocalSync();
     			// LobbyUI.instance.SetLobbyUIActive(true);
@@ -73,11 +73,14 @@ public class LobbyPlayer : NetworkBehaviour {
     
     		//TODO: this adds player reference to the LobbyUI script, which is a little bit scuffed.
     		//  See TODO in Lobby about re-formatting this
-    		LobbyUI.instance.AddLobbyPlayer(this);
-    	}
+    		// LobbyUI.instance.AddLobbyPlayer(this);
+		    LobbyEventsHandler.RaisePlayerSpawn(this);
+		    LobbyEventsHandler.RaisePlayerUpdate(this);
+	    }
     	public override void Despawned(NetworkRunner runner, bool hasState) {
     		//TODO: same thing as the spawned function
-    		LobbyUI.instance.RemoveLobbyPlayer(this);
+    		// LobbyUI.instance.RemoveLobbyPlayer(this);
+		    LobbyEventsHandler.RaisePlayerQuit(this);
     		
     		StopCoroutine(CheckForUIUpdate());
 		    Debug.Log("Stopped coroutine"); 
@@ -201,7 +204,7 @@ public class LobbyPlayer : NetworkBehaviour {
 
 			    //start game if all players are ready
 			    bool allPlayersReady = true;
-			    foreach (LobbyPlayer p in LobbyUI.instance.GetLobbyPlayers()) {
+			    foreach (LobbyPlayer p in LobbyUI.instance.GetLobbyPlayers().Keys) {
 				    if (!p.GetIsReady()) {
 					    allPlayersReady = false;
 					    break;

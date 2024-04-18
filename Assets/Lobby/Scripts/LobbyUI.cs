@@ -5,6 +5,7 @@ using Lobby;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 /// <summary>
 /// Script that just deals with lobby UI. TODO: actually integrate with good visuals, etc
@@ -37,16 +38,36 @@ public class LobbyUI : MonoBehaviour {
 	#region Members
 
 	//TODO: find a better way to access lobby players than putting them in a UI script!
-	private List<LobbyPlayer> lobbyPlayers = new();
+	private Dictionary<LobbyPlayer, GameObject> lobbyPlayers = new();
 
 	public void AddLobbyPlayer(LobbyPlayer p) {
-		if (!lobbyPlayers.Contains(p)) {
-			lobbyPlayers.Add(p);
-			Instantiate(playerPrefab, playersContainer.transform);
+		if (!lobbyPlayers.ContainsKey(p)) {
+			lobbyPlayers.Add(p, Instantiate(playerPrefab, playersContainer.transform));
 		}
 	}
-	public void RemoveLobbyPlayer(LobbyPlayer p) { if (lobbyPlayers.Contains(p)) lobbyPlayers.Remove(p); }
-	public List<LobbyPlayer> GetLobbyPlayers() { return lobbyPlayers; }
+	
+	private void SubscribeLobbyPlayerSpawn() {
+		LobbyEventsHandler.OnPlayerSpawn += AddLobbyPlayer;
+	}
+	private void UnsubscribeLobbyPlayerSpawn() {
+		LobbyEventsHandler.OnPlayerSpawn -= AddLobbyPlayer;
+	}
+
+	public void RemoveLobbyPlayer(LobbyPlayer p) {
+		if (lobbyPlayers.ContainsKey(p)) {
+			Destroy(lobbyPlayers[p]);
+			lobbyPlayers.Remove(p);
+		}
+	}
+
+	private void SubscribeLobbyPlayerQuit() {
+		LobbyEventsHandler.OnPlayerQuit += RemoveLobbyPlayer;
+	}
+	private void UnsubscribeLobbyPlayerQuit() {
+		LobbyEventsHandler.OnPlayerQuit -= RemoveLobbyPlayer;
+	}
+	
+	public Dictionary<LobbyPlayer, GameObject> GetLobbyPlayers() { return lobbyPlayers; }
 
 	#endregion
 
@@ -59,6 +80,9 @@ public class LobbyUI : MonoBehaviour {
     		SetLobbyUIActive(false);
     		
 		    SubscribeOnJoinLobby();
+		    SubscribeLobbyPlayerSpawn();
+		    SubscribeOnPlayerUpdate();
+		    SubscribeLobbyPlayerQuit();
 	    }
 
 	    private void OnDestroy() {
@@ -67,6 +91,8 @@ public class LobbyUI : MonoBehaviour {
 
 	    private void UnsubscribeFromAllEvents() {
 		    UnsubscribeOnJoinLobby();
+		    UnsubscribeLobbyPlayerSpawn();
+		    UnsubscribeLobbyPlayerQuit();
 		    UnsubscribeAllInfoListeners();
 	    }
 	#endregion
@@ -81,11 +107,11 @@ public class LobbyUI : MonoBehaviour {
 	}
 
 	private void SubscribeOnJoinLobby() {
-		LobbyEventsHandler.OnPlayerSpawn += OnJoinLobby;
+		LobbyEventsHandler.OnJoinLobby += OnJoinLobby;
 	}
 
 	private void UnsubscribeOnJoinLobby() {
-		LobbyEventsHandler.OnPlayerSpawn -= OnJoinLobby;
+		LobbyEventsHandler.OnJoinLobby -= OnJoinLobby;
 	}
 
 	#region Apprentice Methods
@@ -117,7 +143,6 @@ public class LobbyUI : MonoBehaviour {
 		if (isActive) SubscribeWaveInfo(); else UnsubscribeWaveInfo();
 		if (isActive) SubscribeMapInfo(); else UnsubscribeMapInfo();
 		if (isActive) SubscribeLobbyId(); else UnsubscribeLobbyId();
-		if (isActive) SubscribeOnPlayerUpdate(); else UnsubscribeOnPlayerUpdate();
 	}
 
 	#endregion
@@ -151,7 +176,9 @@ public class LobbyUI : MonoBehaviour {
     		} else {
     			LobbyPlayer.playerInstance.SetPlayerName("Player");
     		}
-    	}
+
+		    LobbyEventsHandler.RaisePlayerUpdate(LobbyPlayer.playerInstance);
+	    }
 
 	#endregion
 	
@@ -160,6 +187,7 @@ public class LobbyUI : MonoBehaviour {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 
 		LobbyPlayer.playerInstance.ToggleIsReady();
+		LobbyEventsHandler.RaisePlayerUpdate(LobbyPlayer.playerInstance);
 	}
 	public void SetLobbyLoading(bool loading) {
 		lobbyLoadingUI.gameObject.SetActive(loading);
@@ -262,18 +290,46 @@ public class LobbyUI : MonoBehaviour {
 	}
 
 	private void SubscribeOnPlayerUpdate() {
-		LobbyEventsHandler.OnLobbyIdChanged += UpdateLobbyIdInfo;
+		LobbyEventsHandler.OnPlayerUpdate += OnPlayerUpdate;
 	}
 	
 	private void UnsubscribeOnPlayerUpdate() {
-		LobbyEventsHandler.OnLobbyIdChanged -= UpdateLobbyIdInfo;
+		LobbyEventsHandler.OnPlayerUpdate -= OnPlayerUpdate;
 	}
 	
 	private void OnPlayerUpdate(LobbyPlayer player) {
-		if (player == LobbyPlayer.playerInstance) return;
-		lobbyPlayers[lobbyPlayers.IndexOf(player)].SetPlayerName(player.GetPlayerName());
-		lobbyPlayers[lobbyPlayers.IndexOf(player)].SetIsReady(player.GetIsReady());
+		SetPlayerName(lobbyPlayers[player], player.GetPlayerName());
+		SetPlayerStatus(lobbyPlayers[player], player.GetIsReady());
+		SetPlayerIsHost(lobbyPlayers[player], player.GetIsMasterClient());
+		SetPlayerIsStateAuthority(lobbyPlayers[player], player == LobbyPlayer.playerInstance);
 	}
 	
+	#endregion
+
+	#region Player Cards
+
+	private void SetPlayerName(GameObject playerCard, string name) {
+		playerCard.transform.GetChild(0).GetChild(2).GetComponent<TMP_Text>().text = name;
+	}
+	
+	private void SetPlayerStatus(GameObject playerCard, bool status) {
+		if (status) {
+			playerCard.transform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = "Ready";
+			playerCard.transform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().color = Color.green;
+		}
+		else {
+			playerCard.transform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().text = "Not Ready";
+			playerCard.transform.GetChild(0).GetChild(1).GetComponent<TMP_Text>().color = Color.red;
+		}
+	}
+	
+	private void SetPlayerIsHost(GameObject playerCard, bool isHost) {
+		playerCard.transform.GetChild(0).GetChild(0).GetChild(0).gameObject.SetActive(isHost);
+	}
+	
+	private void SetPlayerIsStateAuthority(GameObject playerCard, bool isAuthority) {
+		playerCard.transform.GetChild(0).GetChild(0).GetChild(1).gameObject.SetActive(isAuthority);
+	}
+
 	#endregion
 }

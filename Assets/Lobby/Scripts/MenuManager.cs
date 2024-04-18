@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Lobby;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -45,6 +46,7 @@ public class MenuManager : MonoBehaviour {
 	}
 	
 	public void QuitLobby() {
+		LobbyEventsHandler.RaisePlayerUpdate(LobbyPlayer.playerInstance);
 		ServerLinker.instance.StopLobby();
 		LobbyUI.instance.SetLobbyUIActive(false);
 
