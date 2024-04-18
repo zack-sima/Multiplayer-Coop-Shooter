@@ -86,7 +86,9 @@ public class LobbyPlayer : NetworkBehaviour {
 		    if (IsMasterClient) {
 			    StopCoroutine(CheckForAllPlayersReady());
 		    }
-    	}
+
+		    playerInstance = null;
+	    }
 
 	#endregion
 

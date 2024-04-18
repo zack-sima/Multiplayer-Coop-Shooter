@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using DG.Tweening;
 using Lobby;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI.ProceduralImage;
 
 /// <summary>
@@ -22,45 +25,62 @@ public class LobbyUI : MonoBehaviour {
 
 	#region References
 
-	//disable this if not in a lobby
-	[SerializeField] private Button quitButton, readyButton;
+	[Header("Lobby Buttons")]
+	[SerializeField] private Button quitButton;
+	[SerializeField] private Button readyButton;
 
 	//TODO: replace this with more fancy stuff (currently just a single string that displays everything)
-	[SerializeField] private TMP_Text lobbyTextDisplay, waveTextDisplay, mapTextDisplay;
+	[Header("Display Info Fields")]
+	[SerializeField] private TMP_Text lobbyTextDisplay;
+	[SerializeField] private TMP_Text waveTextDisplay, mapTextDisplay;
+
+	[Header("Loading UI's")] 
+	[SerializeField] private RectTransform lobbyLoadingUI;
+	[SerializeField] private RectTransform gameStartingUI;
 	
-	[SerializeField] private RectTransform lobbyLoadingUI, gameStartingUI;
+	
+	[Header("Lobby Screen")]
+	[SerializeField] private Button createRoomButton;
+	[SerializeField] private TMP_Text roomText;
 
+
+	[Header("Join Lobby")] [SerializeField]
+	private TMP_InputField joinLobbyInput;
 	[SerializeField] private Button joinLobbyButton;
+	
+	[Header("Player Cards")]
+	[SerializeField] private GameObject playersContainer;
+	[SerializeField] private GameObject playerPrefab;
 
-	[SerializeField] private GameObject playersContainer, playerPrefab;
-
+	[Header("Error Messages")]
+	[SerializeField] private GameObject errorMessageContainer;
+	[SerializeField] private GameObject errorMessagePrefab;
+	
 	#endregion
 
-	#region Members
-
+	#region Lobby Players
+	/* Lobby Players Dictionary */
 	//TODO: find a better way to access lobby players than putting them in a UI script!
-	private Dictionary<LobbyPlayer, GameObject> lobbyPlayers = new();
 
-	public void AddLobbyPlayer(LobbyPlayer p) {
-		if (!lobbyPlayers.ContainsKey(p)) {
-			lobbyPlayers.Add(p, Instantiate(playerPrefab, playersContainer.transform));
-		}
-	}
+	private Dictionary<LobbyPlayer, GameObject> lobbyPlayers = new();
+	public Dictionary<LobbyPlayer, GameObject> GetLobbyPlayers() { return lobbyPlayers; }
 	
+	/* On Player Joining */
+
 	private void SubscribeLobbyPlayerSpawn() {
 		LobbyEventsHandler.OnPlayerSpawn += AddLobbyPlayer;
 	}
 	private void UnsubscribeLobbyPlayerSpawn() {
 		LobbyEventsHandler.OnPlayerSpawn -= AddLobbyPlayer;
 	}
-
-	public void RemoveLobbyPlayer(LobbyPlayer p) {
-		if (lobbyPlayers.ContainsKey(p)) {
-			Destroy(lobbyPlayers[p]);
-			lobbyPlayers.Remove(p);
+	
+	private void AddLobbyPlayer(LobbyPlayer p) {
+		if (!lobbyPlayers.ContainsKey(p)) {
+			lobbyPlayers.Add(p, Instantiate(playerPrefab, playersContainer.transform));
 		}
 	}
 
+	/* On Player Quitting */
 	private void SubscribeLobbyPlayerQuit() {
 		LobbyEventsHandler.OnPlayerQuit += RemoveLobbyPlayer;
 	}
@@ -68,7 +88,12 @@ public class LobbyUI : MonoBehaviour {
 		LobbyEventsHandler.OnPlayerQuit -= RemoveLobbyPlayer;
 	}
 	
-	public Dictionary<LobbyPlayer, GameObject> GetLobbyPlayers() { return lobbyPlayers; }
+	private void RemoveLobbyPlayer(LobbyPlayer p) {
+		if (lobbyPlayers.ContainsKey(p)) {
+			Destroy(lobbyPlayers[p]);
+			lobbyPlayers.Remove(p);
+		}
+	}
 
 	#endregion
 
@@ -79,7 +104,7 @@ public class LobbyUI : MonoBehaviour {
     	}
     	private void Start() {
     		SetLobbyUIActive(false);
-    		
+		    
 		    SubscribeOnJoinLobby();
 		    SubscribeLobbyPlayerSpawn();
 		    SubscribeLobbyPlayerQuit();
@@ -136,7 +161,11 @@ public class LobbyUI : MonoBehaviour {
 			lobbyTextDisplay.text = "Loading lobby...";
 		}
 		quitButton.gameObject.SetActive(isActive);
-		joinLobbyButton.enabled = !isActive;
+		// joinLobbyButton.enabled = !isActive;
+		
+		//NOTE: on room creation
+		createRoomButton.gameObject.SetActive(!isActive);
+		roomText.gameObject.SetActive(isActive);
 
 		if (!isActive) readyButton.GetComponentInChildren<TMP_Text>().text = "Solo"; 
 		else readyButton.GetComponentInChildren<TMP_Text>().text = "Ready";
@@ -212,17 +241,7 @@ public class LobbyUI : MonoBehaviour {
 	#endregion
 
 
-	#region Button Methods
-
-	public void ActivateScreen(GameObject screen) {
-		screen.SetActive(true);
-	}
-
-	public void DeactivateScreen(GameObject screen) {
-		screen.SetActive(false);
-	}
-
-	#endregion
+	
 
 	#region Lobby Info
 
@@ -334,4 +353,92 @@ public class LobbyUI : MonoBehaviour {
 	#endregion
 	#endregion
 	
+	#region Button Methods
+    
+    	public void ActivateScreen(GameObject screen) {
+    		screen.SetActive(true);
+    	}
+    
+    	public void DeactivateScreen(GameObject screen) {
+    		screen.SetActive(false);
+    	}
+
+	    public void CreateRoom(TMP_Text text) {
+		    //NOTE: generates random 8 char code
+		    System.Random random = new System.Random();
+		    const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		    string roomCode = new string(Enumerable.Repeat(chars, 8)
+			    .Select(s => s[random.Next(s.Length)]).ToArray());
+		    
+		    //NOTE: lobbies directly use room_id; games have _g appended to it to distinguish it from lobby rooms
+		    PlayerPrefs.SetString("room_id", roomCode);
+		    ServerLinker.instance.StartLobby(roomCode);
+
+		    //NOTE: this calls the lobby UI loading screen
+		    SetLobbyLoading(true);
+		    
+		    //NOTE: turn button into text
+		    text.text = $"Room:\n{roomCode}";
+	    }
+	    
+	    public void JoinLobby() {
+		    if (joinLobbyInput.text == "") return;
+		    if (LobbyPlayer.playerInstance) return;
+		    
+		    //NOTE: lobbies directly use room_id; games have _g appended to it to distinguish it from lobby rooms
+		    PlayerPrefs.SetString("room_id", joinLobbyInput.text);
+		    ServerLinker.instance.StartLobby(joinLobbyInput.text);
+
+		    roomText.text = $"Room:\n{joinLobbyInput.text}";
+		    
+		    //NOTE: this calls the lobby UI loading screen
+		    SetLobbyLoading(true);
+
+		    StartCoroutine(WaitCheckLobbyEmpty());
+	    }
+
+	    private IEnumerator WaitCheckLobbyEmpty() {
+		    yield return new WaitUntil(() => LobbyPlayer.playerInstance != null);
+            		    
+		    if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
+			    QuitLobby();
+			    
+			    ThrowErrorMessage("Invalid Lobby Code!");
+		    }
+	    }
+	    
+	    public void QuitLobby() {
+		    // LobbyEventsHandler.RaisePlayerUpdate(LobbyPlayer.playerInstance);
+		    ServerLinker.instance.StopLobby();
+		    SetLobbyUIActive(false);
+
+		    Destroy(ServerLinker.instance.gameObject);
+		    
+		    if (SceneManager.GetActiveScene() != SceneManager.GetSceneAt(ServerLinker.LOBBY_SCENE))
+				SceneManager.LoadScene(ServerLinker.LOBBY_SCENE);
+	    }
+    
+    	#endregion
+
+
+	    #region Debugging
+
+	    private void ThrowErrorMessage(string message) {
+		    GameObject newMessage = Instantiate(errorMessagePrefab, errorMessageContainer.transform);
+		    newMessage.GetComponentInChildren<TMP_Text>().text = message;
+
+		    StartCoroutine(WaitToDestroyMessage(newMessage));
+	    }
+
+	    private IEnumerator WaitToDestroyMessage(GameObject message) {
+		    yield return new WaitForSeconds(2f);
+
+		    message.GetComponent<SpriteRenderer>().DOFade(0, 1f);
+
+		    yield return new WaitForSeconds(1f);
+		    
+		    Destroy(message);
+	    }
+
+	    #endregion
 }

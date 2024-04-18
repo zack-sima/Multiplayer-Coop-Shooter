@@ -73,6 +73,8 @@ public class ServerLinker : MonoBehaviour {
 		if (!TryFindBootstrap()) return;
 
 		bootstrap.ShutdownAll(changeScene: false);
+		
+		
 	}
 	public void StopGame() {
 		try {
