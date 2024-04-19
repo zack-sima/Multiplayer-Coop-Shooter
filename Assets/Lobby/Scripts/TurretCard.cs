@@ -9,11 +9,14 @@ using UnityEngine.UI.ProceduralImage;
 public class TurretCard : MonoBehaviour {
     [SerializeField] private int TurretIndex;
     [SerializeField] private string TurretName;
-    [SerializeField] private ProceduralImage outline;
+    private ProceduralImage outline;
 
-    private void OnEnable() {
+
+    private void Start() {
+        outline = transform.GetChild(0).GetComponent<ProceduralImage>();
+
         LobbyEventsHandler.OnTurretSelect += OnDeselect;
-        
+
         if (PlayerPrefs.GetInt("turret_index") == TurretIndex) OnSelect();
     }
 

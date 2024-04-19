@@ -42,6 +42,7 @@ public class LobbyUI : MonoBehaviour {
 	[Header("Lobby Screen")]
 	[SerializeField] private Button createRoomButton;
 	[SerializeField] private TMP_Text roomText;
+	[SerializeField] private GameObject lobbySettings;
 
 
 	[Header("Join Lobby")] [SerializeField]
@@ -166,6 +167,9 @@ public class LobbyUI : MonoBehaviour {
 		//NOTE: on room creation
 		createRoomButton.gameObject.SetActive(!isActive);
 		roomText.gameObject.SetActive(isActive);
+		
+		lobbySettings.SetActive(isActive && LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient);
+		LayoutRebuilder.ForceRebuildLayoutImmediate(lobbySettings.transform.parent.GetComponent<RectTransform>());
 
 		if (!isActive) readyButton.GetComponentInChildren<TMP_Text>().text = "Solo"; 
 		else readyButton.GetComponentInChildren<TMP_Text>().text = "Ready";
