@@ -6,27 +6,27 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UI.ProceduralImage;
 
-public class TurretCard : SelectionCard {
-    [SerializeField] private string TurretName;
-    public override string uid { get => TurretName; }
+public class HullCard : SelectionCard {
+    [SerializeField] private string HullName;
+    public override string uid { get => HullName; }
     
     [SerializeField]
     private ProceduralImage outline;
     
     private void Start() {
-        LobbyEventsHandler.OnTurretSelect += OnDeselect;
+        LobbyEventsHandler.OnHullSelect += OnDeselect;
 
-        if (PlayerPrefs.GetString("turret_name") == uid) OnSelect();
+        if (PlayerPrefs.GetString("hull_name") == uid) OnSelect();
     }
 
     private void OnDestroy() {
-        LobbyEventsHandler.OnTurretSelect -= OnDeselect;
+        LobbyEventsHandler.OnHullSelect -= OnDeselect;
     }
 
     public override void OnSelect() {
-        LobbyEventsHandler.RaiseTurretSelect();
+        LobbyEventsHandler.RaiseHullSelect();
         outline.color = Color.white;
-        PlayerPrefs.SetString("turret_name", TurretName);
+        PlayerPrefs.SetString("hull_name", HullName);
     }
 
     public override void OnDeselect() {

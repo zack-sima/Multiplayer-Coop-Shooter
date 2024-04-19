@@ -26,7 +26,7 @@ public class LobbyUI : MonoBehaviour {
 	#region References
 
 	[Header("Lobby Buttons")]
-	[SerializeField] private Button quitButton;
+	[SerializeField] private GameObject quitButton;
 	[SerializeField] private Button readyButton;
 
 	//TODO: replace this with more fancy stuff (currently just a single string that displays everything)

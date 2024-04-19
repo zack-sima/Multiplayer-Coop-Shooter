@@ -53,11 +53,17 @@ namespace Lobby {
         }
         
         
-        /* Turret Cards */
+        /* Selection Cards */
         public static event Action OnTurretSelect;
 
         public static void RaiseTurretSelect() {
             OnTurretSelect?.Invoke();
+        }
+
+        public static event Action OnHullSelect;
+
+        public static void RaiseHullSelect() {
+            OnHullSelect?.Invoke();
         }
     }
 }
