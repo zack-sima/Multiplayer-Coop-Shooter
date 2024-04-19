@@ -49,6 +49,9 @@ public class HumanInputs : MonoBehaviour {
 	private Vector3 mouseWorldPos = Vector3.zero;
 	public Vector3 GetMouseWorldPos() { return mouseWorldPos; }
 
+	//PC tank drive
+	private float tankRotation = 0f;
+
 	#endregion
 
 	#region Functions
@@ -205,7 +208,33 @@ public class HumanInputs : MonoBehaviour {
 			moveVector += Vector3.right;
 		}
 		moveVector = moveVector.normalized;
-		player.GetHull().Move(moveVector);
+
+		//NOTE: PC-only tank drive
+		if (player.GetNetworker().GetHullName() == "Tank") {
+			float moveMagnitude = 0f;
+			float moveDir = 0f;
+			if (Input.GetKey(KeyCode.W)) {
+				moveMagnitude++;
+			}
+			//if (Input.GetKey(KeyCode.S)) { //TODO: make driving backwards possible? Is it necessary?
+			//	moveMagnitude--;
+			//}
+			if (Input.GetKey(KeyCode.A)) {
+				moveDir += Time.deltaTime * 150f;
+			}
+			if (Input.GetKey(KeyCode.D)) {
+				moveDir -= Time.deltaTime * 150f;
+			}
+			if (moveDir != 0 && moveMagnitude == 0) moveMagnitude = 0.05f;
+
+			tankRotation += moveDir;
+			player.GetHull().Move(moveMagnitude * new Vector3(
+				Mathf.Cos((tankRotation + 90) * Mathf.Deg2Rad), 0,
+				Mathf.Sin((tankRotation + 90) * Mathf.Deg2Rad)
+			));
+		} else {
+			player.GetHull().Move(moveVector);
+		}
 	}
 
 	private void Start() {

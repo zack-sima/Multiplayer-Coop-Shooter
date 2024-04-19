@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5528947131811420450}
   - component: {fileID: 7694750776747261333}
   m_Layer: 7
-  m_Name: Bullet
+  m_Name: EnemyGatlingBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 1613248798462547781, guid: 4efaef36f6dfe432f8b144b7723b4c54, type: 3}
   firePrefab: {fileID: 0}
   speed: 20
-  damage: 100
+  damage: 15
   isExplosion: 0
   isFlame: 0
   explosionRadius: 0
@@ -152,5 +152,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 5, z: 1}
+  m_Size: {x: 1, y: 8, z: 1}
   m_Center: {x: 0, y: 0, z: 0}

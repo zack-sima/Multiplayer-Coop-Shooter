@@ -1618,25 +1618,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51de46ffa7b1b476c903a0c06b8cc350, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hullPrefabs:
+  - hull: {fileID: 3968374540305798568, guid: 8876c1e093c8d440db0d31a59fdbfa66, type: 3}
+    hullName: Spider
+    localPositionOffset: {x: 0, y: 1.29, z: 0}
+  - hull: {fileID: 3968374540305798568, guid: 01d2a72fad62a4acab79661aa0493348, type: 3}
+    hullName: Tank
+    localPositionOffset: {x: 0, y: 1.29, z: 0}
   turretPrefabs:
   - turret: {fileID: 8306412023698569218, guid: 7affb4ce29449426eabe2ae4c4637b4e, type: 3}
     turretName: Autocannon
-    localPositionOffset: {x: 0, y: 1.29, z: 0}
+    localPositionOffset: {x: 0, y: 0, z: 0}
   - turret: {fileID: 8306412023698569218, guid: c1265b1ee98774bfd98e1347ffb7cf8a, type: 3}
     turretName: Explosive Cannon
-    localPositionOffset: {x: 0, y: 1.29, z: 0}
+    localPositionOffset: {x: 0, y: 0, z: 0}
   - turret: {fileID: 2400704804962253976, guid: a33be31fbf5b642bc87c4c1cb1d8d725, type: 3}
     turretName: Mortar
-    localPositionOffset: {x: 0, y: 1.29, z: 0}
+    localPositionOffset: {x: 0, y: 0, z: 0}
   - turret: {fileID: 8306412023698569218, guid: 74d102caca7cf40c6a6f7d5335157f53, type: 3}
     turretName: Gatling
-    localPositionOffset: {x: 0, y: 1.29, z: 0}
+    localPositionOffset: {x: 0, y: 0, z: 0}
   - turret: {fileID: 8306412023698569218, guid: 692f3a17f023b471e90e43cef9635c4b, type: 3}
     turretName: Double Cannon
-    localPositionOffset: {x: 0, y: 1.29, z: 0}
+    localPositionOffset: {x: 0, y: 0, z: 0}
   - turret: {fileID: 8306412023698569218, guid: 81647acf7fd274e03a3bf4245c173d50, type: 3}
     turretName: Flamethrower
-    localPositionOffset: {x: 0, y: 1.29, z: 0}
+    localPositionOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &4836627643148608670
 MonoBehaviour:
   m_ObjectHideFlags: 0

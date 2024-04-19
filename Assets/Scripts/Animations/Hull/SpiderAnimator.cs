@@ -38,10 +38,6 @@ public class SpiderAnimator : HullAnimatorBase {
 	//seconds before allowed to move again (set to LEG_STOP_TIME)
 	private float movedLegCountdown = 0f;
 
-	//spider legs pre-move based on velocity
-	private Vector3 velocity = Vector3.zero;
-	private Vector3 lastPosition = Vector3.zero;
-
 	#endregion
 
 	#region Functions
@@ -56,12 +52,13 @@ public class SpiderAnimator : HullAnimatorBase {
 		}
 	}
 
-	private void Start() {
+	protected override void Start() {
+		base.Start();
+
 		legPositions = new();
 		targetLegPositions = new();
 		standardLegDistances = new();
 		legMoveTimestamps = new();
-		lastPosition = transform.position;
 
 		foreach (Transform t in legs) {
 			legMoveTimestamps.Add(Time.time);
@@ -72,7 +69,9 @@ public class SpiderAnimator : HullAnimatorBase {
 		}
 	}
 
-	private void Update() {
+	protected override void Update() {
+		base.Update();
+
 		if (movedLegCountdown > 0) movedLegCountdown -= Time.deltaTime;
 
 		//leg that hasn't moved for the longest time gets to be moved first to prevent dragging
@@ -100,11 +99,11 @@ public class SpiderAnimator : HullAnimatorBase {
 			float threshold = 0.52f;
 
 			//move out/move in leg
-			if (rawMovement > threshold * BODY_SIZE && Vector3.Dot(velocity, newLegDifference) < 0 &&
+			if (rawMovement > threshold * BODY_SIZE && Vector3.Dot(GetVelocity(), newLegDifference) < 0 &&
 				movedLegCountdown <= 0) {
 
 				Vector3 newPosition = transform.position + standardLegDistances[i] +
-					threshold * 0.8f * BODY_SIZE * velocity.normalized;
+					threshold * 0.8f * BODY_SIZE * GetVelocity().normalized;
 
 				newPosition.y = 0;
 
@@ -125,10 +124,6 @@ public class SpiderAnimator : HullAnimatorBase {
 			legMoveTimestamps[priorityIndex] = Time.time;
 			movedLegCountdown = LEG_STOP_TIME;
 		}
-
-		//v = dx/dt, non-zero
-		velocity = (transform.position - lastPosition) / Time.deltaTime;
-		lastPosition = transform.position;
 	}
 
 	#endregion

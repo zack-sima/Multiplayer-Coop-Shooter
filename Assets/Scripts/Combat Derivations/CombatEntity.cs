@@ -53,6 +53,7 @@ public class CombatEntity : Entity {
 
 	//spawned in when instantiated; when a player switches turrets after enable/disable here
 	List<PlayerInfo.TurretInfo> spawnedTurrets = new();
+	List<PlayerInfo.HullInfo> spawnedHulls = new();
 
 	//to track mortar/other projectile predictions
 	private Vector3 velocity = Vector3.zero;
@@ -77,10 +78,31 @@ public class CombatEntity : Entity {
 	#endregion
 
 	//callback from networker
+	public void HullChanged(string newHullName) {
+		foreach (PlayerInfo.HullInfo h in spawnedHulls) {
+			if (h.hullName == newHullName) {
+				h.hull.gameObject.SetActive(true);
+				hull = h.hull;
+			} else {
+				h.hull.gameObject.SetActive(false);
+			}
+		}
+		//reset offsets
+		foreach (PlayerInfo.TurretInfo t in spawnedTurrets) {
+			if (t.turretName == GetNetworker().GetTurretName()) {
+				turret.transform.position = hull.GetTurretAnchorPosition() + t.localPositionOffset;
+				break;
+			}
+		}
+
+		hull.GetAnimator().SetTeamMaterial(GetTeamMaterials().GetTeamColor(GetTeam()));
+	}
+	//callback from networker
 	public void TurretChanged(string newTurretName) {
 		foreach (PlayerInfo.TurretInfo t in spawnedTurrets) {
 			if (t.turretName == newTurretName) {
 				t.turret.gameObject.SetActive(true);
+				t.turret.gameObject.transform.position = hull.GetTurretAnchorPosition() + t.localPositionOffset;
 				turret = t.turret;
 			} else {
 				t.turret.gameObject.SetActive(false);
@@ -88,6 +110,7 @@ public class CombatEntity : Entity {
 		}
 		turret.GetAnimator().SetTeamMaterial(GetTeamMaterials().GetTeamColor(GetTeam()));
 
+		//player callback (put in hull/turret change as long as it's definitely called on sync)
 		if (GetIsPlayer()) {
 			if (GetNetworker().HasSyncAuthority()) {
 				GetHealthCanvas().UpdateAmmoTickerCount(turret.GetIsFullAuto() ? 0 : turret.GetMaxAmmo() - 1);
@@ -174,29 +197,53 @@ public class CombatEntity : Entity {
 		EntityController.instance.RemoveFromCombatEntities(this);
 	}
 	protected override void Start() {
+		//NOTE: NPCs don't get to change hull/turret
 		if (!GetIsPlayer()) {
 			base.Start();
 			return;
 		}
-		//spawn in all the required turrets
+		//spawn in all the required hulls/turrets
 		List<PlayerInfo.TurretInfo> turrets = PlayerInfo.instance.GetTurrets();
+		List<PlayerInfo.HullInfo> hulls = PlayerInfo.instance.GetHulls();
 
-		//clear current turret
-		if (turret != null) {
-			Destroy(turret.gameObject);
+		//clear current hull/turret
+		if (hull != null) Destroy(hull.gameObject);
+		if (turret != null) Destroy(turret.gameObject);
+
+		foreach (PlayerInfo.HullInfo h in hulls) {
+			GameObject g = Instantiate(h.hull.gameObject, transform);
+			g.transform.SetLocalPositionAndRotation(h.localPositionOffset, Quaternion.identity);
+
+			g.GetComponent<Hull>().SetRigidbody(GetComponent<Rigidbody>());
+			g.GetComponent<Hull>().SetRootTransform(transform);
+
+			g.SetActive(false);
+
+			PlayerInfo.HullInfo localInfo = new() {
+				hull = g.GetComponent<Hull>(), //NOTE: actually a reference, not a prefab 
+				hullName = h.hullName
+			};
+			spawnedHulls.Add(localInfo);
 		}
+
+		hull = spawnedHulls[0].hull;
+		hull.gameObject.SetActive(true);
+
 		foreach (PlayerInfo.TurretInfo t in turrets) {
 			GameObject g = Instantiate(t.turret.gameObject, transform);
-			g.transform.SetLocalPositionAndRotation(t.localPositionOffset, Quaternion.identity);
+			g.transform.SetPositionAndRotation(
+				hull.GetTurretAnchorPosition() + t.localPositionOffset, Quaternion.identity);
+
 			g.SetActive(false);
 
 			PlayerInfo.TurretInfo localInfo = new() {
-				turret = g.GetComponent<Turret>(), //NOTE: actually a reference, not a prefab 
+				turret = g.GetComponent<Turret>(),
 				turretName = t.turretName
 			};
 			spawnedTurrets.Add(localInfo);
 		}
-		//fallback to first turret if none actually given
+
+		//fallback to first hull/turret if none actually given
 		turret = spawnedTurrets[0].turret;
 		turret.gameObject.SetActive(true);
 

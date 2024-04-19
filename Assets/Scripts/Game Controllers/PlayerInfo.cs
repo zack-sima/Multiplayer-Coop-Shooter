@@ -13,7 +13,13 @@ public class PlayerInfo : MonoBehaviour {
 	public class TurretInfo {
 		public Turret turret;
 		public string turretName;
-		public Vector3 localPositionOffset; //for most turrets, ~y=1.2
+		public Vector3 localPositionOffset; //in addition to the anchor
+	}
+	[System.Serializable]
+	public class HullInfo {
+		public Hull hull;
+		public string hullName;
+		public Vector3 localPositionOffset;
 	}
 
 	#region Statics
@@ -25,6 +31,7 @@ public class PlayerInfo : MonoBehaviour {
 	#region Prefabs
 
 	//uses turret name to query for turret (fallback to first turret)
+	[SerializeField] private List<HullInfo> hullPrefabs;
 	[SerializeField] private List<TurretInfo> turretPrefabs;
 
 	#endregion
@@ -85,6 +92,24 @@ public class PlayerInfo : MonoBehaviour {
 	}
 	public List<TurretInfo> GetTurrets() {
 		return turretPrefabs;
+	}
+	public HullInfo GetHullPrefab(string hullName) {
+		foreach (HullInfo h in hullPrefabs) {
+			if (h.hullName == hullName) return h;
+		}
+		return hullPrefabs[0];
+	}
+	public List<HullInfo> GetHulls() {
+		return hullPrefabs;
+	}
+	public string GetLocalPlayerName() {
+		return PlayerPrefs.GetString("player_name");
+	}
+	public string GetLocalPlayerHullName() {
+		//TODO: temporary testing before UI is set up for hull
+		return "Tank";
+
+		return PlayerPrefs.GetString("hull_name");
 	}
 	public string GetLocalPlayerTurretName() {
 		return PlayerPrefs.GetString("turret_name");

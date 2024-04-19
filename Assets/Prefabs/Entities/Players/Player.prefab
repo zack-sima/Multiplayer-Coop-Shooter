@@ -320,9 +320,9 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1602239594331588331}
   - {fileID: 936484765817066058}
   - {fileID: 6587280347032705868}
-  - {fileID: 1602239594331588331}
   - {fileID: 9042495348164500606}
   - {fileID: 747168800691588733}
   - {fileID: 4301405775318760930}
@@ -3130,6 +3130,10 @@ PrefabInstance:
     - target: {fileID: 7646715291038655174, guid: 8876c1e093c8d440db0d31a59fdbfa66, type: 3}
       propertyPath: m_Name
       value: SpiderHull
+      objectReference: {fileID: 0}
+    - target: {fileID: 7646715291038655174, guid: 8876c1e093c8d440db0d31a59fdbfa66, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8333612591805476251, guid: 8876c1e093c8d440db0d31a59fdbfa66, type: 3}
       propertyPath: m_LocalRotation.w

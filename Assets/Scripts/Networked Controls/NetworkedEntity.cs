@@ -52,9 +52,15 @@ public class NetworkedEntity : NetworkBehaviour {
 	public bool GetIsDead() { try { return IsDead; } catch { return true; } }
 	public bool GetIsDeadUncaught() { return IsDead; } //for game over don't return true when error
 
+	[Networked, OnChangedRender(nameof(HullChanged))]
+	private string HullName { get; set; } = "Tank";
+	public void SetHullName(string hullName) { HullName = hullName; } //only by local
+	public string GetHullName() { return HullName; }
+
 	[Networked, OnChangedRender(nameof(TurretChanged))]
 	private string TurretName { get; set; } = "Autocannon";
 	public void SetTurretName(string turretName) { TurretName = turretName; } //only by local
+	public string GetTurretName() { return TurretName; }
 
 	[Networked, OnChangedRender(nameof(PlayerNameChanged))]
 	private string PlayerName { get; set; } = "Player";
@@ -145,6 +151,11 @@ public class NetworkedEntity : NetworkBehaviour {
 			PlayerInfo.instance.TurretChanged(TurretName);
 		}
 	}
+	private void HullChanged() {
+		if (optionalCombatEntity == null || !isPlayer) return;
+
+		optionalCombatEntity.HullChanged(HullName);
+	}
 	//NOTE: only applies to CombatEntities
 	private void TurretRotationChanged() {
 		if (optionalCombatEntity == null) return;
@@ -233,9 +244,10 @@ public class NetworkedEntity : NetworkBehaviour {
 				playerInstance = this;
 				EntityController.player = optionalCombatEntity;
 
+				HullName = PlayerInfo.instance.GetLocalPlayerHullName();
 				TurretName = PlayerInfo.instance.GetLocalPlayerTurretName();
+				PlayerName = PlayerInfo.instance.GetLocalPlayerName();
 
-				PlayerName = PlayerPrefs.GetString("player_name");
 				if (PlayerName == "") PlayerName = "Player";
 
 				GetComponent<AudioListener>().enabled = true;
@@ -261,12 +273,14 @@ public class NetworkedEntity : NetworkBehaviour {
 		yield return new WaitForEndOfFrame();
 		initialized = true;
 		TurretChanged();
+		HullChanged();
 	}
 	//wait a few frames for networking to fully sync
 	private IEnumerator StartupDelay() {
 		yield return new WaitForSeconds(0.1f);
 		if (!IsDead) mainEntity.RespawnEntity();
 		TurretChanged();
+		HullChanged();
 	}
 	public override void FixedUpdateNetwork() {
 		if (!initialized) return;
