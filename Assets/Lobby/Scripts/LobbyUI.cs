@@ -210,6 +210,10 @@ public class LobbyUI : MonoBehaviour {
     		}
 	    }
 
+	    public void UpperRoomCodeInput() {
+		    joinLobbyInput.text = joinLobbyInput.text.ToUpper();
+	    }
+
 	#endregion
 	
 	//NOTE: this calls the singleton lobby player assuming the player exists
@@ -401,9 +405,9 @@ public class LobbyUI : MonoBehaviour {
 		    yield return new WaitUntil(() => LobbyPlayer.playerInstance != null);
             		    
 		    if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
+			    ThrowErrorMessage("Invalid Lobby Code!");
 			    QuitLobby();
 			    
-			    ThrowErrorMessage("Invalid Lobby Code!");
 		    }
 	    }
 	    
@@ -414,8 +418,7 @@ public class LobbyUI : MonoBehaviour {
 
 		    Destroy(ServerLinker.instance.gameObject);
 		    
-		    if (SceneManager.GetActiveScene() != SceneManager.GetSceneAt(ServerLinker.LOBBY_SCENE))
-				SceneManager.LoadScene(ServerLinker.LOBBY_SCENE);
+		    SceneManager.LoadScene(ServerLinker.LOBBY_SCENE);
 	    }
     
     	#endregion

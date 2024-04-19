@@ -51,5 +51,13 @@ namespace Lobby {
             OnWaveChanged?.Invoke(waveNum);
             // Debug.Log("Invoked wave change");
         }
+        
+        
+        /* Turret Cards */
+        public static event Action OnTurretSelect;
+
+        public static void RaiseTurretSelect() {
+            OnTurretSelect?.Invoke();
+        }
     }
 }
