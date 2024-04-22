@@ -54,8 +54,9 @@ public class EnemySpawner : NetworkBehaviour {
 		while (totalSpawnCredits >= minCost) {
 			int spawnChoice = rand.Next() % enemyCosts.Count;
 
-			//find another enemy
-			if (enemyCosts[spawnChoice] > totalSpawnCredits) continue;
+			//find another enemy (don't allow expensive enemies if they take up >25% of total cost)
+			if (enemyCosts[spawnChoice] > totalSpawnCredits || enemyCosts[spawnChoice] > minCost &&
+				enemyCosts[spawnChoice] * 4f > totalSpawnCredits) continue;
 
 			totalSpawnCredits -= enemyCosts[spawnChoice];
 			enemySpawns.Add(spawnChoice);
@@ -81,6 +82,8 @@ public class EnemySpawner : NetworkBehaviour {
 			while (SpawnTimer > 0) {
 				SpawnTimer -= Time.deltaTime;
 
+				if (SpawnTimer <= 0) GameStatsSyncer.instance.IncrementWave();
+
 				//if everything was killed only wait 10s max
 				if (EnemiesAreDead() && SpawnTimer > 10f) SpawnTimer = 10f;
 
@@ -92,23 +95,14 @@ public class EnemySpawner : NetworkBehaviour {
 
 			//spawning logic
 			List<int> enemies = DetermineEnemiesForInfiniteWave(currWave);
-			//int spawnCount = (int)Mathf.Pow(currWave, 1.5f) + 5;
 
 			//NOTE: SpawnIndex usually is 0, but if host was migrated this would be a nonzero number
-			for (int i = SpawnIndex; i < /*spawnCount*/ enemies.Count; i++) {
+			for (int i = SpawnIndex; i < enemies.Count; i++) {
+				if (GameStatsSyncer.instance.GetGameOver()) break;
+
 				spawnEnemyLater = true;
 
-				//GameObject spawnPrefab = enemyPrefab;
-				//int randIndex = Random.Range(0, 100);
-
-				//if (randIndex < 15) {
-				//	spawnPrefab = enemy2Prefab;
-				//} else if (randIndex < 30) {
-				//	spawnPrefab = enemy3Prefab;
-				//}
-				//spawnEnemyLaterPrefab = spawnPrefab;
-
-				spawnEnemyLaterPrefab = enemyPrefabs[i];
+				spawnEnemyLaterPrefab = enemyPrefabs[enemies[i]];
 
 				SpawnIndex++;
 				yield return new WaitForSeconds(8f / (currWave + 5f));
@@ -116,9 +110,7 @@ public class EnemySpawner : NetworkBehaviour {
 
 			//end of wave delay
 			SpawnIndex = 0;
-			SpawnTimer = 20;
-
-			GameStatsSyncer.instance.IncrementWave();
+			SpawnTimer = currWave * 2f + 20f;
 		}
 	}
 	//TODO: should only be for the final wave in non-infinite mode
@@ -178,7 +170,7 @@ public class EnemySpawner : NetworkBehaviour {
 						spawnpointDistance = distance;
 				}
 				iterations++;
-			} while (iterations < 10 && spawnpointDistance < 15f);
+			} while (iterations < 20 && spawnpointDistance < 18f);
 
 			Runner.Spawn(spawnPrefab, new Vector3(point.x, 1, point.z), Quaternion.identity);
 		} catch (System.Exception e) { Debug.LogWarning(e); }
