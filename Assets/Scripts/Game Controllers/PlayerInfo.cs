@@ -107,7 +107,7 @@ public class PlayerInfo : MonoBehaviour {
 	}
 	public string GetLocalPlayerHullName() {
 		//TODO: temporary testing before UI is set up for hull
-		return "Tank";
+		// return "Tank";
 
 		return PlayerPrefs.GetString("hull_name");
 	}
