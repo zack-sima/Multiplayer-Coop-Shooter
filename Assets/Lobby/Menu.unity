@@ -345,7 +345,7 @@ GameObject:
   - component: {fileID: 27520364}
   - component: {fileID: 27520367}
   m_Layer: 0
-  m_Name: Mode Select
+  m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -369,7 +369,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.21987364, g: 0.23480651, b: 0.254717, a: 1}
+  m_BackGroundColor: {r: 0.16798684, g: 0.19814782, b: 0.23584908, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -418,8 +418,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 27520363}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.33734164, y: 0, z: 0, w: 0.9413823}
+  m_LocalPosition: {x: 0, y: 10.6, z: -12.84}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10616,7 +10616,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c9247836e9b9c472d9d857da88d1b8db, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 0.4312986
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c9247836e9b9c472d9d857da88d1b8db, type: 3}
       propertyPath: m_LocalRotation.x
@@ -10624,7 +10624,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c9247836e9b9c472d9d857da88d1b8db, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.7071068
+      value: -0.9022093
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c9247836e9b9c472d9d857da88d1b8db, type: 3}
       propertyPath: m_LocalRotation.z
@@ -10636,7 +10636,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c9247836e9b9c472d9d857da88d1b8db, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -90
+      value: -128.9
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: c9247836e9b9c472d9d857da88d1b8db, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -10645,11 +10645,11 @@ PrefabInstance:
     - target: {fileID: -1120989108687609925, guid: c9247836e9b9c472d9d857da88d1b8db, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 225652871ea654735b614c0bf2d92dd2, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
     - target: {fileID: 750769170252757000, guid: c9247836e9b9c472d9d857da88d1b8db, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 225652871ea654735b614c0bf2d92dd2, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
     - target: {fileID: 919132149155446097, guid: c9247836e9b9c472d9d857da88d1b8db, type: 3}
       propertyPath: m_Name
       value: ExplosiveCannonv2
@@ -10657,11 +10657,11 @@ PrefabInstance:
     - target: {fileID: 4951147297611955896, guid: c9247836e9b9c472d9d857da88d1b8db, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 225652871ea654735b614c0bf2d92dd2, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
     - target: {fileID: 4975909760195428704, guid: c9247836e9b9c472d9d857da88d1b8db, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 225652871ea654735b614c0bf2d92dd2, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -15201,15 +15201,15 @@ PrefabInstance:
     - target: {fileID: -6652725513331149018, guid: cb541d5bbc0b946e0aa91717ec3dc144, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 225652871ea654735b614c0bf2d92dd2, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
     - target: {fileID: -5190262413319974450, guid: cb541d5bbc0b946e0aa91717ec3dc144, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 225652871ea654735b614c0bf2d92dd2, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
     - target: {fileID: -4512594622140507577, guid: cb541d5bbc0b946e0aa91717ec3dc144, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 225652871ea654735b614c0bf2d92dd2, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
     - target: {fileID: 919132149155446097, guid: cb541d5bbc0b946e0aa91717ec3dc144, type: 3}
       propertyPath: m_Name
       value: Spider
@@ -15217,11 +15217,11 @@ PrefabInstance:
     - target: {fileID: 4300480572486150605, guid: cb541d5bbc0b946e0aa91717ec3dc144, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 225652871ea654735b614c0bf2d92dd2, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
     - target: {fileID: 6945586052777889667, guid: cb541d5bbc0b946e0aa91717ec3dc144, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 225652871ea654735b614c0bf2d92dd2, type: 2}
+      objectReference: {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

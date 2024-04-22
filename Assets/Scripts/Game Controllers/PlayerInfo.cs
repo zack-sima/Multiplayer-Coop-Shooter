@@ -106,12 +106,11 @@ public class PlayerInfo : MonoBehaviour {
 		return PlayerPrefs.GetString("player_name");
 	}
 	public string GetLocalPlayerHullName() {
-		//TODO: temporary testing before UI is set up for hull
-		// return "Tank";
-
+		if (PlayerPrefs.GetString("hull_name") == "") return "Spider";
 		return PlayerPrefs.GetString("hull_name");
 	}
 	public string GetLocalPlayerTurretName() {
+		if (PlayerPrefs.GetString("turret_name") == "") return "Autocannon";
 		return PlayerPrefs.GetString("turret_name");
 	}
 	private void ReloadAmmoOnce(bool reloadRegardless = false) {
