@@ -21,7 +21,7 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 	[Networked]
 	private int StartingWave { get; set; } = 1;
 	public int GetStartingWave() { return StartingWave; }
-	public void SetStartingWave(int wave) { StartingWave = wave; }
+	public void SetStartingWave(int wave) { StartingWave = wave;}
 
 	[Networked, OnChangedRender(nameof(GameStartedChanged))]
 	private bool GameStarted { get; set; } = false;

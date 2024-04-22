@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Lobby;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -43,6 +44,16 @@ public class MenuManager : MonoBehaviour {
 		//NOTE: this calls the lobby UI loading screen
 		LobbyUI.instance.SetLobbyLoading(true);
 	}
+	
+	public void QuitLobby() {
+		// LobbyEventsHandler.RaisePlayerUpdate(LobbyPlayer.playerInstance);
+		ServerLinker.instance.StopLobby();
+		LobbyUI.instance.SetLobbyUIActive(false);
+
+		Destroy(ServerLinker.instance.gameObject);
+		UnityEngine.SceneManagement.SceneManager.LoadScene(ServerLinker.LOBBY_SCENE);
+	}
+	
 	//NOTE: only call this from the lobby!
 	//TODO for UI: move InitGame stuff to a singleton manager that is called when lobby decides to start game
 	//TODO: NOTE: all players' PlayerPrefs needs to be updated with the right map & wave settings from lobby
@@ -66,12 +77,14 @@ public class MenuManager : MonoBehaviour {
 		ServerLinker.instance.StartShared(mapIndex, PlayerPrefs.GetString("room_id") + "_g");
 	}
 	public void StartSingle() {
+		if (LobbyPlayer.playerInstance || LobbyStatsSyncer.instance) return;
+		
 		InitGame();
 		ServerLinker.instance.StartSinglePlayer(mapDropdownSceneIndices[mapDropdown.value]);
 	}
 	private void InitGame() {
-		PlayerPrefs.SetInt("turret_index", turretDropdown.value);
-		PlayerPrefs.SetString("turret_name", turretDropdown.options[turretDropdown.value].text);
+		// PlayerPrefs.SetInt("turret_index", turretDropdown.value);
+		// PlayerPrefs.SetString("turret_name", turretDropdown.options[turretDropdown.value].text);
 		PlayerPrefs.SetString("player_name", playerNameInput.text);
 
 		if (int.TryParse(waveInput.text, out int wave) && wave > 0) {
