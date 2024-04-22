@@ -99,7 +99,7 @@ MonoBehaviour:
   ServerPort: 0
   DefaultRoomName: 
   AlwaysShowStats: 0
-  InitialScenePath: Assets/Scenes/Menu.unity
+  InitialScenePath: Assets/Lobby/Menu.unity
   _currentStage: 0
 --- !u!1 &8807167496290565229
 GameObject:

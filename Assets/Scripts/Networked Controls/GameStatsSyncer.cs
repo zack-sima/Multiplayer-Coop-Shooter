@@ -19,6 +19,10 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 	#region Synced
 
+	[Networked] //random seed for enemy spawning, determined once by first master client
+	private int RandomSeed { get; set; } = 0;
+	public int GetRandomSeed() { return RandomSeed; }
+
 	[Networked, OnChangedRender(nameof(ScoreOrWaveChanged))]
 	private int Score { get; set; } = 0;
 	public void AddScore(int addition) { Score += addition; } //called by master client only
@@ -98,6 +102,7 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 		if (HasSyncAuthority()) {
 			Wave = Mathf.Max(PlayerPrefs.GetInt("debug_starting_wave") - 1, 0);
+			RandomSeed = Random.Range(0, 1000000);
 		}
 	}
 	private void Update() {

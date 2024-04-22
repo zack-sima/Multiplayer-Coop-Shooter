@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
+using System.Linq;
 
 /// <summary>
 /// This class handles spawning when the local player is the master client. Otherwise, it does nothing.
@@ -17,8 +18,17 @@ public class EnemySpawner : NetworkBehaviour {
 
 	#region Prefabs
 
-	[SerializeField] private GameObject enemyPrefab;
-	[SerializeField] private GameObject enemy2Prefab;
+	[SerializeField] private List<GameObject> enemyPrefabs;
+	[SerializeField] private List<int> enemyCosts; //credit costs
+
+	#endregion
+
+	#region Synced
+
+	[Networked] //for master client (if host migrated, this makes sure spawning is rougly the same)
+	private float SpawnTimer { get; set; } = 0;
+	[Networked]
+	private int SpawnIndex { get; set; } = 0;
 
 	#endregion
 
@@ -26,14 +36,36 @@ public class EnemySpawner : NetworkBehaviour {
 
 	//a hook to FixedUpdateNetwork
 	private bool spawnEnemyLater = false;
+	private GameObject spawnEnemyLaterPrefab = null;
 
 	#endregion
 
 	#region Spawn Logic
 
+	//NOTE: this returns a shuffled list (seeded by wave) of enemy prefab indices
+	private List<int> DetermineEnemiesForInfiniteWave(int waveNum) {
+		//$10 is the standard cost of a normal enemy
+		int totalSpawnCredits = 10 * ((int)Mathf.Pow(waveNum, 1.5f) + 5);
+
+		List<int> enemySpawns = new();
+		System.Random rand = new(GameStatsSyncer.instance.GetRandomSeed() + waveNum);
+
+		int minCost = enemyCosts.Min();
+		while (totalSpawnCredits >= minCost) {
+			int spawnChoice = rand.Next() % enemyCosts.Count;
+
+			//find another enemy
+			if (enemyCosts[spawnChoice] > totalSpawnCredits) continue;
+
+			totalSpawnCredits -= enemyCosts[spawnChoice];
+			enemySpawns.Add(spawnChoice);
+		}
+		return enemySpawns;
+	}
 	private IEnumerator SpawnCycle() {
 		yield return new WaitForSeconds(5f);
 
+		//NOTE: infinite mode
 		while (true) {
 			while (EntityController.player == null || GameStatsSyncer.instance == null ||
 				GameStatsSyncer.instance.GetGameOver())
@@ -46,25 +78,50 @@ public class EnemySpawner : NetworkBehaviour {
 				continue;
 			}
 
-			//if master client is migrated, make sure to wait properly
-			yield return WaitUntilEnemiesDead();
+			while (SpawnTimer > 0) {
+				SpawnTimer -= Time.deltaTime;
+
+				//if everything was killed only wait 10s max
+				if (EnemiesAreDead() && SpawnTimer > 10f) SpawnTimer = 10f;
+
+				yield return new WaitForEndOfFrame();
+			}
 
 			int currWave = GameStatsSyncer.instance.GetWave();
 			Debug.Log($"Spawning wave {currWave + 1}");
 
 			//spawning logic
-			int spawnCount = (int)Mathf.Pow(currWave, 1.5f) + 5;
+			List<int> enemies = DetermineEnemiesForInfiniteWave(currWave);
+			//int spawnCount = (int)Mathf.Pow(currWave, 1.5f) + 5;
 
-			//TODO: TEMP EASY MODE
-			//spawnCount /= 5;
-
-			for (int i = 0; i < spawnCount; i++) {
+			//NOTE: SpawnIndex usually is 0, but if host was migrated this would be a nonzero number
+			for (int i = SpawnIndex; i < /*spawnCount*/ enemies.Count; i++) {
 				spawnEnemyLater = true;
-				yield return new WaitForSeconds(2f / (currWave + 5f) * 5f);
+
+				//GameObject spawnPrefab = enemyPrefab;
+				//int randIndex = Random.Range(0, 100);
+
+				//if (randIndex < 15) {
+				//	spawnPrefab = enemy2Prefab;
+				//} else if (randIndex < 30) {
+				//	spawnPrefab = enemy3Prefab;
+				//}
+				//spawnEnemyLaterPrefab = spawnPrefab;
+
+				spawnEnemyLaterPrefab = enemyPrefabs[i];
+
+				SpawnIndex++;
+				yield return new WaitForSeconds(8f / (currWave + 5f));
 			}
-			yield return WaitUntilEnemiesDead();
+
+			//end of wave delay
+			SpawnIndex = 0;
+			SpawnTimer = 20;
+
+			GameStatsSyncer.instance.IncrementWave();
 		}
 	}
+	//TODO: should only be for the final wave in non-infinite mode
 	private IEnumerator WaitUntilEnemiesDead() {
 		//waits until all enemies are dead
 		bool enemiesAlive;
@@ -82,6 +139,7 @@ public class EnemySpawner : NetworkBehaviour {
 			} catch { }
 		} while (enemiesAlive);
 
+		//TODO: change this code to adapt to level conditions
 		//if waited, means enemies were actually spawned
 		if (waited) {
 			//give players some time after killing all enemies
@@ -89,7 +147,18 @@ public class EnemySpawner : NetworkBehaviour {
 			GameStatsSyncer.instance.IncrementWave();
 		}
 	}
-	private void SpawnEnemy() {
+	private bool EnemiesAreDead() {
+		try {
+			foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
+				if (e == null || e.GetIsPlayer()) continue;
+				return true;
+			}
+			return false;
+		} catch {
+			return false;
+		}
+	}
+	private void SpawnEnemy(GameObject spawnPrefab) {
 		try {
 			//find a point far away enough from players
 			int iterations = 0; //prevent infinite loop
@@ -111,14 +180,15 @@ public class EnemySpawner : NetworkBehaviour {
 				iterations++;
 			} while (iterations < 10 && spawnpointDistance < 15f);
 
-			Runner.Spawn(Random.Range(0, 10) < 2 ? enemy2Prefab : enemyPrefab,
-				new Vector3(point.x, 1, point.z), Quaternion.identity);
+			Runner.Spawn(spawnPrefab, new Vector3(point.x, 1, point.z), Quaternion.identity);
 		} catch (System.Exception e) { Debug.LogWarning(e); }
 	}
 	public override void FixedUpdateNetwork() {
 		if (spawnEnemyLater) {
 			spawnEnemyLater = false;
-			SpawnEnemy();
+
+			if (spawnEnemyLaterPrefab != null)
+				SpawnEnemy(spawnEnemyLaterPrefab);
 		}
 	}
 

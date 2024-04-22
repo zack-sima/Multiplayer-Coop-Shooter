@@ -11,7 +11,7 @@ public class HumanInputs : MonoBehaviour {
 
 	private const float AIM_DRAG_THRESHOLD = 0.5f;
 	private const float DEFAULT_LOB_DISTANCE = 5f;
-	private const float MAX_LOB_DISTANCE = 13.5f;
+	private const float MAX_LOB_DISTANCE = 14.2f;
 	private const float FULL_AUTO_DELAY = 0.15f;
 
 	#endregion
@@ -216,9 +216,9 @@ public class HumanInputs : MonoBehaviour {
 			if (Input.GetKey(KeyCode.W)) {
 				moveMagnitude++;
 			}
-			//if (Input.GetKey(KeyCode.S)) { //TODO: make driving backwards possible? Is it necessary?
-			//	moveMagnitude--;
-			//}
+			if (Input.GetKey(KeyCode.S)) {
+				moveMagnitude--;
+			}
 			if (Input.GetKey(KeyCode.A)) {
 				moveDir += Time.deltaTime * 150f;
 			}
@@ -231,7 +231,7 @@ public class HumanInputs : MonoBehaviour {
 			player.GetHull().Move(moveMagnitude * new Vector3(
 				Mathf.Cos((tankRotation + 90) * Mathf.Deg2Rad), 0,
 				Mathf.Sin((tankRotation + 90) * Mathf.Deg2Rad)
-			));
+			), inReverse: moveMagnitude < 0f ? 1 : 0);
 		} else {
 			player.GetHull().Move(moveVector);
 		}

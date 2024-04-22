@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1670588686106128906, guid: e8c0173dfed5b4631b92752ce61947b6, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.79
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 1670588686106128906, guid: e8c0173dfed5b4631b92752ce61947b6, type: 3}
       propertyPath: m_LocalPosition.z
@@ -87,7 +87,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2105571405753615231, guid: 01d2a72fad62a4acab79661aa0493348, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.3
+      value: 1.39
       objectReference: {fileID: 0}
     - target: {fileID: 2105571405753615231, guid: 01d2a72fad62a4acab79661aa0493348, type: 3}
       propertyPath: m_LocalPosition.z
@@ -281,7 +281,7 @@ PrefabInstance:
       objectReference: {fileID: 6544643494957952980}
     - target: {fileID: 366278136777289315, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: maxHealth
-      value: 750
+      value: 1200
       objectReference: {fileID: 0}
     - target: {fileID: 366278136777289315, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: healthCanvas

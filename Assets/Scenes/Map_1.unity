@@ -1937,7 +1937,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3592028895237161139, guid: 1450ab7166b9240d5a5270dc630a8003, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 75
+      value: 65
       objectReference: {fileID: 0}
     - target: {fileID: 3592028895237161139, guid: 1450ab7166b9240d5a5270dc630a8003, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y

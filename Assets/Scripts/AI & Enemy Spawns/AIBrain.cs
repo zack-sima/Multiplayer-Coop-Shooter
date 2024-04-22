@@ -43,18 +43,18 @@ public class AIBrain : MonoBehaviour {
 		if (!navigator.GetIsNavigable()) return;
 
 		//try finding target
-		if (target == null) {
-			float closestDistance = 999;
-			foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
-				if (!ce.GetNetworker().GetInitialized() ||
-					ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
-				float distance = Vector3.Distance(ce.transform.position, transform.position);
-				if (distance < closestDistance) {
-					closestDistance = distance;
-					target = ce;
-				}
+		//if (target == null) {
+		float closestDistance = 999;
+		foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
+			if (!ce.GetNetworker().GetInitialized() ||
+				ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
+			float distance = Vector3.Distance(ce.transform.position, transform.position);
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				target = ce;
 			}
 		}
+		//}
 		//TODO: enemies should "lose interest" if a direct line of sight can't be established;
 		//  when no target exists, enemy should wander in a random location (when not moving,
 		//  it should try to sample a random position within the map for ~10 times until it founds one)
@@ -66,24 +66,29 @@ public class AIBrain : MonoBehaviour {
 			canShootTarget = false;
 			bool veryCloseToTarget = GroundDistance(transform.position, target.transform.position) < 3f;
 
-			//line of sight to target check; raycast all prevents other AI from blocking line of sight
-			Vector3 directionToPlayer = target.transform.position - transform.position;
-			directionToPlayer.y = 0;
+			if (entity.GetTurret() is Mortar) {
+				//mortar can shoot over obstacles
+				canShootTarget = GroundDistance(transform.position, target.transform.position) < 13.5f;
+			} else {
+				//line of sight to target check; raycast all prevents other AI from blocking line of sight
+				Vector3 directionToPlayer = target.transform.position - transform.position;
+				directionToPlayer.y = 0;
 
-			RaycastHit[] hits = Physics.RaycastAll(transform.position + Vector3.up,
-				directionToPlayer.normalized, maxRange);
+				RaycastHit[] hits = Physics.RaycastAll(transform.position + Vector3.up,
+					directionToPlayer.normalized, maxRange);
 
-			List<RaycastHit> hitsList = hits.ToList();
-			hitsList.Sort((hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
+				List<RaycastHit> hitsList = hits.ToList();
+				hitsList.Sort((hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
 
-			foreach (var hit in hitsList) {
-				if (hit.collider.gameObject == target.gameObject) {
-					canShootTarget = true;
-					break;
-				} else if (hit.collider.GetComponent<CombatEntity>() == null &&
-					hit.collider.GetComponent<Bullet>() == null) {
-					//If hit is not a combat entity, break
-					break;
+				foreach (var hit in hitsList) {
+					if (hit.collider.gameObject == target.gameObject) {
+						canShootTarget = true;
+						break;
+					} else if (hit.collider.GetComponent<CombatEntity>() == null &&
+						hit.collider.GetComponent<Bullet>() == null) {
+						//If hit is not a combat entity, break
+						break;
+					}
 				}
 			}
 			if (entity.GetTurret().GetIsProximityExploder()) canShootTarget = false;
@@ -105,7 +110,7 @@ public class AIBrain : MonoBehaviour {
 				EnemyDecisionTick();
 			} catch (System.Exception e) { Debug.LogWarning(e); }
 
-			yield return new WaitForSeconds(0.15f);
+			yield return new WaitForSeconds(0.35f);
 		}
 	}
 	private void Update() {
@@ -118,7 +123,12 @@ public class AIBrain : MonoBehaviour {
 				target.transform.position.z - transform.position.z) * Mathf.Rad2Deg
 			);
 		}
+
 		navigator.SetActive(true);
+
+		if (entity.GetTurret() is Mortar)
+			((Mortar)entity.GetTurret()).SetDistance(GroundDistance(transform.position, target.transform.position));
+
 		if (!entity.GetTurret().GetIsProximityExploder() && canShootTarget) {
 			entity.TryFireMainWeapon();
 		} else if (entity.GetTurret().GetIsProximityExploder() &&

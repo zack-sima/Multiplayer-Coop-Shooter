@@ -91,7 +91,7 @@ public class HumanCombatEntity : CombatEntity {
 
 					((Mortar)GetTurret()).SetDistance(HumanInputs.instance.GetMobileLobDistance());
 					lobMarker.transform.rotation = Quaternion.Euler(0, GetTurret().transform.eulerAngles.y, 0);
-					lobMarker.transform.localScale = new Vector3(1f, 1f, HumanInputs.instance.GetMobileLobDistance() / 6.5f);
+					lobMarker.transform.localScale = new Vector3(1f, 1f, HumanInputs.instance.GetMobileLobDistance() / 7f);
 				} else {
 					//aim raycast
 					Vector3 direction = GetTurret().transform.forward;

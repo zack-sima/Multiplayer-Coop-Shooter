@@ -30,7 +30,7 @@ public class Hull : MonoBehaviour {
 
 	[SerializeField] private float acceleration;
 
-	private float currentSpeed = 0f;
+	private Vector3 currentVelocity = Vector3.zero;
 	private Vector3 lastDirection = Vector3.zero;
 
 	#endregion
@@ -38,21 +38,24 @@ public class Hull : MonoBehaviour {
 	#region Functions
 
 	//NOTE: movement can also be performed by AINavigator for AI combat entities that have a NavMeshAgent
-	public void Move(Vector3 direction) {
+	//NOTE: inReverse is for the local player only so that they reverse properly on PC
+	public void Move(Vector3 direction, int inReverse = -1) {
 		if (rootTransform == null) return;
 
-		if (currentSpeed < speed * direction.magnitude) {
-			currentSpeed = Mathf.Min(currentSpeed + Time.deltaTime * acceleration, speed * direction.magnitude);
+		currentVelocity = Vector3.MoveTowards(currentVelocity, speed * direction, acceleration * Time.deltaTime);
+
+		//if -1 don't set inReverse
+		if (inReverse != -1 && direction != Vector3.zero) {
+			animator.SetInReverse(inReverse == 1);
+			animator.SetTargetDirection(direction);
 		}
-		if (currentSpeed > speed * direction.magnitude) {
-			currentSpeed = Mathf.Max(currentSpeed - Time.deltaTime * acceleration, speed * direction.magnitude);
-		}
-		if (currentSpeed != 0 && direction == Vector3.zero) direction = lastDirection;
+
+		if (currentVelocity != Vector3.zero && direction == Vector3.zero) direction = lastDirection;
 
 		if (optionalRigidbody == null) {
-			rootTransform.Translate(currentSpeed * direction.normalized);
+			rootTransform.Translate(currentVelocity * Time.deltaTime);
 		} else {
-			optionalRigidbody.velocity = currentSpeed * direction.normalized;
+			optionalRigidbody.velocity = currentVelocity;
 		}
 
 		if (direction != Vector3.zero) lastDirection = direction;
