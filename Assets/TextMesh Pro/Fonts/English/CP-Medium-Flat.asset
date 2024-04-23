@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
-  m_Name: CP-Medium SDF
+  m_Name: CP-Medium-Flat
   m_EditorClassIdentifier: 
-  hashCode: -1419145038
+  hashCode: 425241553
   material: {fileID: 8198081878716054600}
-  materialHashCode: -1709259950
+  materialHashCode: -1425605807
   m_Version: 1.1.0
   m_SourceFontFileGUID: 918b3fa538eb743e5a4419c75996a566
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 918b3fa538eb743e5a4419c75996a566, type: 3}
@@ -5409,8 +5409,7 @@ Material:
   m_Shader: {fileID: 4800000, guid: 68e6db2ebdc24f95958faec2be5558d6, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
-  - UNDERLAY_ON
+  m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -5455,7 +5454,7 @@ Material:
     - _ColorMask: 15
     - _CullMode: 0
     - _Diffuse: 0.5
-    - _FaceDilate: 0.42
+    - _FaceDilate: 0.14
     - _FaceUVSpeedX: 0
     - _FaceUVSpeedY: 0
     - _GlowInner: 0.05
@@ -5469,12 +5468,12 @@ Material:
     - _OutlineSoftness: 0
     - _OutlineUVSpeedX: 0
     - _OutlineUVSpeedY: 0
-    - _OutlineWidth: 0.205
+    - _OutlineWidth: 0
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
     - _ScaleRatioA: 0.8333333
-    - _ScaleRatioB: 0.32708335
-    - _ScaleRatioC: 0.32708335
+    - _ScaleRatioB: 0.56041664
+    - _ScaleRatioC: 0.56041664
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
