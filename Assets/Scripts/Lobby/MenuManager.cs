@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour {
 
@@ -80,6 +81,7 @@ public class MenuManager : MonoBehaviour {
 
 				if (ServerLinker.instance.GetIsInLobby()) {
 					ServerLinker.instance.StopLobby();
+					SceneManager.LoadScene(0);
 					return;
 				}
 				SetPlayButtonText("PLAY");
@@ -124,6 +126,7 @@ public class MenuManager : MonoBehaviour {
 		int mapIndex = 1;
 
 		//TODO: change this scuffed map name matching with dropdowns
+		//TODO: have a toggle that overrides the map selection mode and uses this dropdown for debug
 		for (int i = 0; i < mapDropdown.options.Count; i++) {
 			if (mapDropdown.options[i].text == mapName) {
 				mapIndex = mapDropdownSceneIndices[i];
@@ -145,6 +148,8 @@ public class MenuManager : MonoBehaviour {
 		PlayerPrefs.SetInt("hull_index", hullDropdown.value);
 		PlayerPrefs.SetString("hull_name", hullDropdown.options[hullDropdown.value].text);
 
+		PlayerPrefs.SetInt("map_index", mapDropdown.value);
+
 		PlayerPrefs.SetString("player_name", playerNameInput.text);
 
 		if (int.TryParse(waveInput.text, out int wave) && wave > 0) {
@@ -163,6 +168,8 @@ public class MenuManager : MonoBehaviour {
 
 		turretDropdown.value = PlayerPrefs.GetInt("turret_index");
 		hullDropdown.value = PlayerPrefs.GetInt("hull_index");
+
+		mapDropdown.value = PlayerPrefs.GetInt("map_index");
 
 		playerNameInput.text = PlayerPrefs.GetString("player_name");
 

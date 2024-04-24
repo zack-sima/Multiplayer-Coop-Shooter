@@ -110,7 +110,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 60, y: 36}
+  m_SizeDelta: {x: 60, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1292440432470213836
 CanvasRenderer:
@@ -159,6 +159,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1549344893638172980}
+  - component: {fileID: 6605296898720603315}
   m_Layer: 6
   m_Name: MockPlayer
   m_TagString: Untagged
@@ -184,6 +185,18 @@ Transform:
   - {fileID: 6142434852416621629}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &6605296898720603315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4530706753263033114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f77efd46a90c24109a5b407e8243f7c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5084577671290530633
 GameObject:
   m_ObjectHideFlags: 0
@@ -250,7 +263,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Player
+  m_text: 'Player
+
+    (Not Ready)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6ab7d74c3bd674cc4a63cc0ba787cd68, type: 2}
   m_sharedMaterial: {fileID: 8198081878716054600, guid: 6ab7d74c3bd674cc4a63cc0ba787cd68, type: 2}
@@ -372,7 +387,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 50}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9188226182250875637
 CanvasRenderer:
@@ -402,7 +417,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Player
+  m_text: 'Player
+
+    (Not Ready)'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6ab7d74c3bd674cc4a63cc0ba787cd68, type: 2}
   m_sharedMaterial: {fileID: 8198081878716054600, guid: 6ab7d74c3bd674cc4a63cc0ba787cd68, type: 2}
@@ -484,7 +501,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_HorizontalFit: 2
-  m_VerticalFit: 0
+  m_VerticalFit: 2
 --- !u!1 &8298597632858935288
 GameObject:
   m_ObjectHideFlags: 0

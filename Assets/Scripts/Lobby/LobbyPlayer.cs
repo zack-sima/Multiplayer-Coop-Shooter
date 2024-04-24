@@ -50,7 +50,16 @@ public class LobbyPlayer : NetworkBehaviour {
 
 			//quit if is master client when player is trying to join
 			if (PlayerPrefs.GetInt("is_lobby_client") == 1 && Runner.IsSharedModeMasterClient) {
+				PlayerPrefs.SetInt("joining_lobby_failed", 1);
 				ServerLinker.instance.StopLobby();
+				UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+				return;
+			}
+			//quit if exceeded players
+			if (new List<PlayerRef>(Runner.ActivePlayers).Count > 4) {
+				PlayerPrefs.SetInt("joining_lobby_full", 1);
+				ServerLinker.instance.StopLobby();
+				UnityEngine.SceneManagement.SceneManager.LoadScene(0);
 				return;
 			}
 			LobbyUI.instance.JoinedLobby();

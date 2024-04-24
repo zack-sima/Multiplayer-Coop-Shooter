@@ -54,6 +54,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3779011277615858865}
   - component: {fileID: 4463011765522455874}
+  - component: {fileID: 1265457838961787985}
   m_Layer: 0
   m_Name: Required Map Objects
   m_TagString: Untagged
@@ -101,6 +102,18 @@ MonoBehaviour:
   AlwaysShowStats: 0
   InitialScenePath: Assets/Lobby/Menu.unity
   _currentStage: 0
+--- !u!114 &1265457838961787985
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6238837776944811837}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4791d35151ec640cfa82552dce82e169, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8807167496290565229
 GameObject:
   m_ObjectHideFlags: 0

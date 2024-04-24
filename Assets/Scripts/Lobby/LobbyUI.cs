@@ -23,6 +23,9 @@ public class LobbyUI : MonoBehaviour {
 	[SerializeField] private TMP_Text lobbyIdText;
 	[SerializeField] private Button leaveLobbyButton;
 
+	//lobby failed UI
+	[SerializeField] private RectTransform lobbyJoinFailedScreen, lobbyJoinFullScreen;
+
 	////////////////////////////
 
 	//TODO: replace this with more fancy stuff (currently just a single string that displays everything)
@@ -43,11 +46,19 @@ public class LobbyUI : MonoBehaviour {
 
 	#region Functions
 
+	public void DisableLobbyFailedScreen() {
+		lobbyJoinFailedScreen.gameObject.SetActive(false);
+		lobbyJoinFullScreen.gameObject.SetActive(false);
+	}
+
 	//sends current player information (master client) to LobbyStatsSyncer script
 	private IEnumerator WaitInitData() {
 		yield return new WaitForSeconds(0.2f);
 
+		//TODO: make sure debug modes are controlled by toggle after setting up modes
 		MapDropdownChanged();
+		WaveInputChanged();
+
 		PlayerNameInputChanged();
 	}
 	public void WaveInputChanged() {
@@ -149,26 +160,23 @@ public class LobbyUI : MonoBehaviour {
 	}
 	public void SetLobbyLoading(bool loading) {
 		lobbyLoadingUI.gameObject.SetActive(loading);
-		StartCoroutine(LobbyLoadingTimeout(lobbyLoadingUI.gameObject));
 	}
 	public void SetGameStarting() {
 		gameStartingUI.gameObject.SetActive(true);
-		StartCoroutine(LobbyLoadingTimeout(gameStartingUI.gameObject));
-	}
-	//if something fishy happens with the lobby loader, don't leave the UI on forever
-	private IEnumerator LobbyLoadingTimeout(GameObject ui) {
-		for (float t = 0; t < 10f; t += Time.deltaTime) {
-			yield return null;
-			if (!ui.activeInHierarchy) {
-				Debug.Log("lobby load hidden");
-				yield break;
-			}
-		}
-		ui.SetActive(true);
 	}
 
 	private void Awake() {
 		instance = this;
+	}
+	private void Start() {
+		if (PlayerPrefs.GetInt("joining_lobby_failed") == 1) {
+			PlayerPrefs.SetInt("joining_lobby_failed", 0);
+			lobbyJoinFailedScreen.gameObject.SetActive(true);
+		}
+		if (PlayerPrefs.GetInt("joining_lobby_full") == 1) {
+			PlayerPrefs.SetInt("joining_lobby_full", 0);
+			lobbyJoinFullScreen.gameObject.SetActive(true);
+		}
 	}
 
 	#endregion

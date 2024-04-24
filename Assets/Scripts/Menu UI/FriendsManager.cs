@@ -39,14 +39,17 @@ public class FriendsManager : MonoBehaviour {
 	//TODO: a cycle every ~5 seconds pulling data from Jonathan's side
 
 	//called by button callback
-	public void TryJoinLobby(string lobbyId) {
-		MenuManager.instance.StartLobby(lobbyId, true);
+	public void TryJoinLobby() {
+		lobbyIdInput.text = lobbyIdInput.text.ToUpper();
+		MenuManager.instance.StartLobby(lobbyIdInput.text.ToUpper(), true);
 	}
 	public void CloseFriendsTab() {
 		friendsUI.gameObject.SetActive(false);
 	}
 	//NOTE: call this to open the friends tab and set playerId, etc etc
 	public void OpenFriendsTab() {
+		friendsUI.gameObject.SetActive(true);
+
 		//if already in lobby, don't show lobby
 		joinLobbyParent.gameObject.SetActive(!ServerLinker.instance.GetIsInLobby());
 	}

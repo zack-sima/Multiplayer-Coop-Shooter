@@ -2,7 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
+#if UNITY_IOS || UNITY_ANDROID
 using CandyCoded.HapticFeedback;
+#endif
+
 using TMPro;
 
 public class UIController : MonoBehaviour {
@@ -46,6 +50,7 @@ public class UIController : MonoBehaviour {
 	/// </summary>
 	/// <param name="nudgeMode">0 for light, 1 for medium, 2 for heavy</param>
 	public static void NudgePhone(int nudgeMode) {
+#if UNITY_IOS || UNITY_ANDROID
 		if (nudgeMode == 0) {
 			HapticFeedback.LightFeedback();
 		} else if (nudgeMode == 1) {
@@ -53,6 +58,7 @@ public class UIController : MonoBehaviour {
 		} else {
 			HapticFeedback.HeavyFeedback();
 		}
+#endif
 	}
 	public bool InOptions() {
 		if (Time.time - closedOptionsTimestamp < 0.07f) return true;
@@ -92,8 +98,8 @@ public class UIController : MonoBehaviour {
 		gameOverUI.gameObject.SetActive(enabled);
 	}
 	public void SetScoreAndWaveText(int score, int wave) {
-		scoreText.text = $"<color=#dddddd>Score: <color=#aaeeaa>{score}</color>\n" +
-			$"<color=#dddddd>Wave: <color=#eeeeaa>{wave}";
+		scoreText.text = $"<color=#ffffff>Score: <color=#aaeeaa>{score}</color>\n" +
+			$"<color=#ffffff>Wave: <color=#eeeeaa>{wave}";
 	}
 	private void Awake() {
 		instance = this;
