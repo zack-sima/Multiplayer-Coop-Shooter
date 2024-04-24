@@ -6,16 +6,25 @@ using TMPro;
 
 public class MenuManager : MonoBehaviour {
 
-	#region Statics
+	#region Statics & Enums
 
 	public static MenuManager instance;
+
+	public enum GameMode { Singleplayer, Coop }
 
 	#endregion
 
 	#region References
 
-	[SerializeField] private TMP_InputField roomInput, waveInput, playerNameInput;
-	public TMP_InputField GetRoomInput() { return roomInput; }
+	//mode display (button)
+	[SerializeField] private TMP_Text modeDisplayTitle, modeDisplayDescription;
+	[SerializeField] private Image modeDispalyIcon;
+
+	//play button (change text!)
+	[SerializeField] private TMP_Text playButtonText;
+	public void SetPlayButtonText(string text) { playButtonText.text = text; }
+
+	[SerializeField] private TMP_InputField waveInput, playerNameInput;
 	public TMP_InputField GetWaveInput() { return waveInput; }
 	public TMP_InputField GetPlayerNameInput() { return playerNameInput; }
 
@@ -26,27 +35,87 @@ public class MenuManager : MonoBehaviour {
 	//TODO: move this to a separate map scene manager that tracks each map's properties, name, scene index, etc
 	[SerializeField] private List<int> mapDropdownSceneIndices;
 
-	//turret
-	[SerializeField] private TMP_Dropdown turretDropdown;
+	//hull/turret
+	[SerializeField] private TMP_Dropdown hullDropdown, turretDropdown;
+
+	#endregion
+
+	#region Members
+
+	//NOTE: this value determines what game mode the play button goes to
+	private GameMode currentGameMode;
+	public GameMode GetCurrentGameMode() { return currentGameMode; }
 
 	#endregion
 
 	#region Functions
 
-	public void StartLobby() {
-		if (roomInput.text == "") return;
+	//TODO: TEMPORARY SWAP GAMEMODE INSTEAD OF GAME PAGE
+	public void ToggleGameMode() {
+		if (currentGameMode == GameMode.Singleplayer) {
+			SetGameMode(GameMode.Coop);
+		} else {
+			SetGameMode(GameMode.Singleplayer);
+		}
+	}
+
+	//TODO: mode select sets this mode -- this determines whether the play button goes to singleplayer or not
+	public void SetGameMode(GameMode mode) {
+		PlayerPrefs.SetInt("game_mode", (int)mode);
+
+		currentGameMode = mode;
+		GameModeChanged();
+	}
+	public void GameModeChanged() {
+		switch (currentGameMode) {
+			case GameMode.Coop:
+				modeDisplayTitle.text = "SURVIVAL";
+				modeDisplayDescription.text = "COOP";
+
+				LobbyUI.instance.InLobbyUpdated();
+				break;
+			case GameMode.Singleplayer:
+				modeDisplayTitle.text = "SURVIVAL";
+				modeDisplayDescription.text = "SOLO";
+
+				if (ServerLinker.instance.GetIsInLobby()) {
+					ServerLinker.instance.StopLobby();
+					return;
+				}
+				SetPlayButtonText("PLAY");
+				LobbyUI.instance.InLobbyUpdated();
+				break;
+		}
+	}
+
+
+	//NOTE: play button goes to where currentGameMode is set to (SP game, lobby, etc)
+	public void PlayButtonClicked() {
+		switch (currentGameMode) {
+			case GameMode.Singleplayer:
+				StartSingle();
+				break;
+			case GameMode.Coop:
+				if (!ServerLinker.instance.GetIsInLobby()) {
+					PlayerPrefs.SetString("room_id", LobbyUI.GenerateLobbyID());
+					StartLobby(PlayerPrefs.GetString("room_id"), false);
+				} else {
+					LobbyUI.instance.ToggleIsReady();
+				}
+				break;
+		}
+	}
+	public void StartLobby(string lobbyId, bool isJoining) {
+		if (lobbyId == "") return;
 
 		//NOTE: lobbies directly use room_id; games have _g appended to it to distinguish it from lobby rooms
-		PlayerPrefs.SetString("room_id", roomInput.text);
-		ServerLinker.instance.StartLobby(roomInput.text);
+		PlayerPrefs.SetString("room_id", lobbyId);
+		ServerLinker.instance.StartLobby(lobbyId, isJoining);
 
 		//NOTE: this calls the lobby UI loading screen
 		LobbyUI.instance.SetLobbyLoading(true);
 	}
 	//NOTE: only call this from the lobby!
-	//TODO for UI: move InitGame stuff to a singleton manager that is called when lobby decides to start game
-	//TODO: NOTE: all players' PlayerPrefs needs to be updated with the right map & wave settings from lobby
-	//because the lobby host won't necessarily be the master client
 	public void StartShared(string mapName) {
 		InitGame();
 
@@ -72,6 +141,10 @@ public class MenuManager : MonoBehaviour {
 	private void InitGame() {
 		PlayerPrefs.SetInt("turret_index", turretDropdown.value);
 		PlayerPrefs.SetString("turret_name", turretDropdown.options[turretDropdown.value].text);
+
+		PlayerPrefs.SetInt("hull_index", hullDropdown.value);
+		PlayerPrefs.SetString("hull_name", hullDropdown.options[hullDropdown.value].text);
+
 		PlayerPrefs.SetString("player_name", playerNameInput.text);
 
 		if (int.TryParse(waveInput.text, out int wave) && wave > 0) {
@@ -83,14 +156,29 @@ public class MenuManager : MonoBehaviour {
 	private void Awake() {
 		instance = this;
 	}
-	void Start() {
+	private void Start() {
 		Application.targetFrameRate = 90;
 
+		currentGameMode = (GameMode)PlayerPrefs.GetInt("game_mode");
+
 		turretDropdown.value = PlayerPrefs.GetInt("turret_index");
+		hullDropdown.value = PlayerPrefs.GetInt("hull_index");
+
 		playerNameInput.text = PlayerPrefs.GetString("player_name");
 
 		if (PlayerPrefs.GetInt("debug_starting_wave") > 0)
 			waveInput.text = PlayerPrefs.GetInt("debug_starting_wave").ToString();
+
+		GameModeChanged();
+	}
+	private void Update() {
+		PlayerPrefs.SetString("player_name", playerNameInput.text);
+
+		PlayerPrefs.SetInt("turret_index", turretDropdown.value);
+		PlayerPrefs.SetString("turret_name", turretDropdown.options[turretDropdown.value].text);
+
+		PlayerPrefs.SetInt("hull_index", hullDropdown.value);
+		PlayerPrefs.SetString("hull_name", hullDropdown.options[hullDropdown.value].text);
 	}
 
 	#endregion

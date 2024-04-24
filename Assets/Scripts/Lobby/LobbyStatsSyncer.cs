@@ -13,12 +13,12 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 
 	#region Synced
 
-	[Networked]
+	[Networked, OnChangedRender(nameof(MapDropdownChanged))]
 	private string MapName { get; set; } = "[Map]";
 	public string GetMap() { return MapName; }
 	public void SetMap(string map) { MapName = map; }
 
-	[Networked]
+	[Networked, OnChangedRender(nameof(WaveInputChanged))]
 	private int StartingWave { get; set; } = 1;
 	public int GetStartingWave() { return StartingWave; }
 	public void SetStartingWave(int wave) { StartingWave = wave; }
@@ -31,14 +31,14 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 
 	#region Callbacks
 
+	private void MapDropdownChanged() {
+		LobbyUI.instance.SetClientMapDropdown();
+	}
+	private void WaveInputChanged() {
+		LobbyUI.instance.SetClientWaveInput();
+	}
 	private void GameStartedChanged() {
 		if (!GameStarted) return;
-
-		//TODO: set map information, etc through player prefs or by passing in arguments in
-		//  start shared (more secure) -- so that all players going into the same room load the same map,
-		//  game mode, etc
-
-		//TODO: use map name setting here to load correct scene!
 
 		//force all clients (master or not) to go to game scene once this is ever set to true
 		MenuManager.instance.StartShared(MapName);
@@ -51,6 +51,10 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 
 	public override void Spawned() {
 		instance = this;
+
+		MapDropdownChanged();
+		WaveInputChanged();
+		GameStartedChanged();
 	}
 
 	#endregion

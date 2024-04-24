@@ -18,8 +18,12 @@ public class LobbyUI : MonoBehaviour {
 
 	#region References
 
-	//disable this if not in a lobby
-	[SerializeField] private RectTransform lobbyButtons;
+	//////////// NEW ///////////
+
+	[SerializeField] private TMP_Text lobbyIdText;
+	[SerializeField] private Button leaveLobbyButton;
+
+	////////////////////////////
 
 	//TODO: replace this with more fancy stuff (currently just a single string that displays everything)
 	[SerializeField] private TMP_Text lobbyTextDisplay;
@@ -30,8 +34,7 @@ public class LobbyUI : MonoBehaviour {
 
 	#region Members
 
-	//TODO: find a better way to access lobby players than putting them in a UI script!
-	private List<LobbyPlayer> lobbyPlayers = new();
+	private readonly List<LobbyPlayer> lobbyPlayers = new();
 	public void AddLobbyPlayer(LobbyPlayer p) { if (!lobbyPlayers.Contains(p)) lobbyPlayers.Add(p); }
 	public void RemoveLobbyPlayer(LobbyPlayer p) { if (lobbyPlayers.Contains(p)) lobbyPlayers.Remove(p); }
 	public List<LobbyPlayer> GetLobbyPlayers() { return lobbyPlayers; }
@@ -41,9 +44,6 @@ public class LobbyUI : MonoBehaviour {
 	#region Functions
 
 	//sends current player information (master client) to LobbyStatsSyncer script
-	public void InitLocalSync() {
-		StartCoroutine(WaitInitData());
-	}
 	private IEnumerator WaitInitData() {
 		yield return new WaitForSeconds(0.2f);
 
@@ -75,13 +75,61 @@ public class LobbyUI : MonoBehaviour {
 			LobbyPlayer.playerInstance.SetPlayerName("Player");
 		}
 	}
-	public void SetLobbyUIActive(bool isActive) {
-		if (!isActive) {
-			lobbyTextDisplay.text = "Not currently in a lobby";
-		} else {
-			lobbyTextDisplay.text = "Loading lobby...";
+	//if the host changes the wave, change it on client too (still, only for testing)
+	public void SetClientWaveInput() {
+		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
+		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) return;
+
+		MenuManager.instance.GetWaveInput().text = LobbyStatsSyncer.instance.GetStartingWave().ToString();
+		MenuManager.instance.GetWaveInput().interactable = false;
+	}
+	public void SetClientMapDropdown() {
+		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
+		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) return;
+
+		List<TMP_Dropdown.OptionData> options = MenuManager.instance.GetMapDropdown().options;
+		for (int i = 0; i < options.Count; i++) {
+			if (options[i].text == LobbyStatsSyncer.instance.GetMap()) {
+				MenuManager.instance.GetMapDropdown().value = i;
+				MenuManager.instance.GetMapDropdown().RefreshShownValue();
+				break;
+			}
 		}
-		lobbyButtons.gameObject.SetActive(isActive);
+		MenuManager.instance.GetMapDropdown().interactable = false;
+	}
+	public void InLobbyUpdated() {
+		if (MenuManager.instance.GetCurrentGameMode() == MenuManager.GameMode.Singleplayer) {
+			MenuManager.instance.SetPlayButtonText("PLAY");
+		} else {
+			if (ServerLinker.instance.GetIsInLobby()) {
+				MenuManager.instance.SetPlayButtonText("SET READY");
+			} else {
+				MenuManager.instance.SetPlayButtonText("CREATE\nLOBBY");
+			}
+		}
+	}
+	//NOTE: procedurally generates a lobby ID
+	public static string GenerateLobbyID() {
+		string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+		System.Random random = new((int)(Time.time * 10000));
+		char[] id = new char[6];
+
+		// Generate each character randomly
+		for (int i = 0; i < id.Length; i++) {
+			id[i] = chars[random.Next(chars.Length)];
+		}
+
+		return new string(id);
+	}
+	//NOTE: this is the function callback from ServerLinker when a lobby is successfully joined.
+	public void JoinedLobby() {
+		StartCoroutine(WaitInitData());
+
+		leaveLobbyButton.gameObject.SetActive(true);
+		lobbyIdText.text = $"ID: #{PlayerPrefs.GetString("room_id")}";
+
+		FriendsManager.instance.CloseFriendsTab();
+		MenuManager.instance.SetPlayButtonText("SET READY");
 	}
 	//TODO: modify the lobby controls script to give this script actual information instead of one string
 	public void SetLobbyText(string text) {
@@ -89,7 +137,6 @@ public class LobbyUI : MonoBehaviour {
 	}
 	public void QuitLobby() {
 		ServerLinker.instance.StopLobby();
-		SetLobbyUIActive(false);
 
 		Destroy(ServerLinker.instance.gameObject);
 		UnityEngine.SceneManagement.SceneManager.LoadScene(ServerLinker.LOBBY_SCENE);
@@ -122,9 +169,6 @@ public class LobbyUI : MonoBehaviour {
 
 	private void Awake() {
 		instance = this;
-	}
-	private void Start() {
-		SetLobbyUIActive(false);
 	}
 
 	#endregion

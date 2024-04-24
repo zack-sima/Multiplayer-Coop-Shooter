@@ -14,6 +14,17 @@ public class ServerLinker : MonoBehaviour {
 
 	#endregion
 
+	#region Members
+
+	private bool isInLobby = false;
+	public bool GetIsInLobby() { return isInLobby; }
+	public void SetIsInLobby(bool inLobby) {
+		isInLobby = inLobby;
+		if (LobbyUI.instance != null) LobbyUI.instance.InLobbyUpdated();
+	}
+
+	#endregion
+
 	FusionBootstrap bootstrap = null;
 
 	private void Awake() {
@@ -36,8 +47,9 @@ public class ServerLinker : MonoBehaviour {
 		bootstrap = FindObjectOfType<FusionBootstrap>();
 		return bootstrap != null;
 	}
-	//NOTE: starting lobby will stay in the menu scene (should be 0) 
-	public async void StartLobby(string roomId = "") {
+	//NOTE: starting lobby will stay in the menu scene (should be 0)
+	//NOTE: if isJoining but player is master client, leave lobby immediately
+	public async void StartLobby(string roomId, bool isJoining) {
 		// Change to the gameplay scene (if not currently there)
 		if (SceneManager.GetActiveScene().buildIndex != LOBBY_SCENE)
 			await LoadSceneAsync(LOBBY_SCENE);
@@ -47,6 +59,8 @@ public class ServerLinker : MonoBehaviour {
 
 		bootstrap.DefaultRoomName = roomId;
 		bootstrap.StartSharedClient(); // Adjust the client count as necessary
+
+		PlayerPrefs.SetInt("is_lobby_client", isJoining ? 1 : 0);
 	}
 	public async void StartShared(int sceneIndex, string roomId = "") {
 		// Change to the gameplay scene
@@ -57,6 +71,8 @@ public class ServerLinker : MonoBehaviour {
 
 		bootstrap.DefaultRoomName = roomId;
 		bootstrap.StartSharedClient(); // Adjust the client count as necessary
+
+		SetIsInLobby(false);
 	}
 
 	public async void StartSinglePlayer(int sceneIndex) {
@@ -67,12 +83,16 @@ public class ServerLinker : MonoBehaviour {
 
 		// Start the game in single-player mode
 		bootstrap.StartSinglePlayer();
+
+		SetIsInLobby(false);
 	}
 	public void StopLobby() {
 		//NOTE: ShutdownAll was modified with this argument so scene change isn't forced
 		if (!TryFindBootstrap()) return;
 
 		bootstrap.ShutdownAll(changeScene: false);
+
+		SetIsInLobby(false);
 	}
 	public void StopGame() {
 		try {

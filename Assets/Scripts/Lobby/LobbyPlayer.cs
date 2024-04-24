@@ -47,8 +47,14 @@ public class LobbyPlayer : NetworkBehaviour {
 	public override void Spawned() {
 		if (HasStateAuthority) {
 			playerInstance = this;
-			LobbyUI.instance.InitLocalSync();
-			LobbyUI.instance.SetLobbyUIActive(true);
+
+			//quit if is master client when player is trying to join
+			if (PlayerPrefs.GetInt("is_lobby_client") == 1 && Runner.IsSharedModeMasterClient) {
+				ServerLinker.instance.StopLobby();
+				return;
+			}
+			LobbyUI.instance.JoinedLobby();
+			ServerLinker.instance.SetIsInLobby(true);
 
 			if (Runner.IsSharedModeMasterClient) {
 				IsMasterClient = true;
