@@ -46,6 +46,8 @@ public class Mortar : Turret {
 	}
 
 	protected override void Update() {
+		if (MenuManager.instance != null) return;
+
 		base.Update();
 
 		targetHeight = CalculateLaunchAngle(GetBulletPrefab().GetComponent<Lobbing>().GetSpeed(), distance);

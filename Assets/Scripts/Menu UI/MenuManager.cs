@@ -89,7 +89,20 @@ public class MenuManager : MonoBehaviour {
 				break;
 		}
 	}
+	public void PlayerTurretChanged() {
+		//TODO: replace dropdown value pulls with directly setting player prefs for turret/hull
+		PlayerPrefs.SetInt("turret_index", turretDropdown.value);
+		PlayerPrefs.SetString("turret_name", turretDropdown.options[turretDropdown.value].text);
 
+		LobbyUI.instance.SetPlayerTurret();
+	}
+	public void PlayerHullChanged() {
+		//TODO: replace dropdown value pulls with directly setting player prefs for turret/hull
+		PlayerPrefs.SetInt("hull_index", hullDropdown.value);
+		PlayerPrefs.SetString("hull_name", hullDropdown.options[hullDropdown.value].text);
+
+		LobbyUI.instance.SetPlayerHull();
+	}
 
 	//NOTE: play button goes to where currentGameMode is set to (SP game, lobby, etc)
 	public void PlayButtonClicked() {
@@ -125,7 +138,6 @@ public class MenuManager : MonoBehaviour {
 
 		int mapIndex = 1;
 
-		//TODO: change this scuffed map name matching with dropdowns
 		//TODO: have a toggle that overrides the map selection mode and uses this dropdown for debug
 		for (int i = 0; i < mapDropdown.options.Count; i++) {
 			if (mapDropdown.options[i].text == mapName) {
@@ -142,11 +154,11 @@ public class MenuManager : MonoBehaviour {
 		ServerLinker.instance.StartSinglePlayer(mapDropdownSceneIndices[mapDropdown.value]);
 	}
 	private void InitGame() {
-		PlayerPrefs.SetInt("turret_index", turretDropdown.value);
-		PlayerPrefs.SetString("turret_name", turretDropdown.options[turretDropdown.value].text);
+		PlayerTurretChanged();
+		PlayerHullChanged();
 
-		PlayerPrefs.SetInt("hull_index", hullDropdown.value);
-		PlayerPrefs.SetString("hull_name", hullDropdown.options[hullDropdown.value].text);
+		//TODO: remove links to dropdowns in the future/relegate functions to debug only, being replaced
+		//  by actual real UI buttons, etc
 
 		PlayerPrefs.SetInt("map_index", mapDropdown.value);
 

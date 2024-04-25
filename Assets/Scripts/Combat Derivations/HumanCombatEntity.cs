@@ -123,7 +123,7 @@ public class HumanCombatEntity : CombatEntity {
 		} else {
 			//PC
 			if (GetTurret() is Mortar) {
-				((Mortar)GetTurret()).SetDistance(Vector3.Distance(transform.position, HumanInputs.instance.GetMouseWorldPos()));
+				((Mortar)GetTurret()).SetDistance(Vector3.Distance(transform.position, HumanInputs.instance.GetMouseWorldPos()) + 1f);
 			}
 		}
 		//movement marker

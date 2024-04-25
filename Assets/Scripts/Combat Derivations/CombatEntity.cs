@@ -238,7 +238,8 @@ public class CombatEntity : Entity {
 
 			PlayerInfo.TurretInfo localInfo = new() {
 				turret = g.GetComponent<Turret>(),
-				turretName = t.turretName
+				turretName = t.turretName,
+				localPositionOffset = t.localPositionOffset
 			};
 			spawnedTurrets.Add(localInfo);
 		}

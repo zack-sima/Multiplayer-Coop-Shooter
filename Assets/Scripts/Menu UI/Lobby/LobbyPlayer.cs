@@ -24,6 +24,16 @@ public class LobbyPlayer : NetworkBehaviour {
 	public string GetPlayerName() { return PlayerName; }
 
 	[Networked]
+	private string PlayerHullName { get; set; } = "";
+	public string GetHullName() { return PlayerHullName; }
+	public void SetHullName(string hull) { PlayerHullName = hull; } //local only!
+
+	[Networked]
+	private string PlayerTurretName { get; set; } = "";
+	public string GetTurretName() { return PlayerTurretName; }
+	public void SetTurretName(string turret) { PlayerTurretName = turret; } //local only!
+
+	[Networked]
 	private bool IsMasterClient { get; set; } = false;
 	public bool GetIsMasterClient() { return IsMasterClient; }
 

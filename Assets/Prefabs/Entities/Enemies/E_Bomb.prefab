@@ -297,7 +297,7 @@ PrefabInstance:
       objectReference: {fileID: 8617458386861425146}
     - target: {fileID: 366278136777289315, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: maxHealth
-      value: 1000
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 366278136777289315, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: healthCanvas

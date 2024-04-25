@@ -15,6 +15,9 @@ public class TankAnimator : HullAnimatorBase {
 
 	private float targetRotation = 0f;
 
+	//if in menu scene, don't do weird stuff
+	private bool moved = false;
+
 	#endregion
 
 	#region Functions
@@ -27,12 +30,16 @@ public class TankAnimator : HullAnimatorBase {
 		base.Update();
 
 		if (GetVelocity() != Vector3.zero) {
+			moved = true;
+
 			Vector3 velocity = GetVelocity();
 
 			if (GetTargetDirection() != Vector3.zero) velocity = GetTargetDirection();
 
 			targetRotation = Mathf.Atan2(velocity.x, velocity.z) * Mathf.Rad2Deg;
 		}
+
+		if (!moved) return;
 
 		//reversed set separatedly for PC clients
 		bool reversed;

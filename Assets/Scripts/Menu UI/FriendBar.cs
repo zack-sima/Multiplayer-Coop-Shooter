@@ -18,6 +18,10 @@ public class FriendBar : MonoBehaviour {
 	//is this an invite (not a friend yet)?
 	private bool isPending = false;
 
+	private string friendName = "";
+	private string friendId = "";
+	private int statusId = 0;
+
 	#endregion
 
 	#region Functions
@@ -28,8 +32,7 @@ public class FriendBar : MonoBehaviour {
 	//		statusId: 0 -> offline, 1 -> online and can be invited, 2 -> in lobby, 3 -> in match
 	//		localPlayerInLobby: whether the player of this device is actually in a lobby or not
 
-	public void InitializeFriendBar(string friendName, string friendId, bool isPendingFriend,
-		int statusId, bool localPlayerInLobby) {
+	public void InitializeFriendBar(string friendName, string friendId, bool isPendingFriend, int statusId) {
 
 		//sets this button to display friend as pending (with accept/reject button)
 		isPending = isPendingFriend;
@@ -62,8 +65,8 @@ public class FriendBar : MonoBehaviour {
 					break;
 			}
 
-			//can be invited to the lobby! (if in lobby, replaces online text with invite button)
-			if (localPlayerInLobby && statusId == 1) {
+			//can be invited to the lobby! (if not in lobby, replaces online text with invite button)
+			if (!ServerLinker.instance.GetIsInLobby() && statusId == 1) {
 				inviteToLobbyButton.gameObject.SetActive(true);
 				onlineStatusText.gameObject.SetActive(false);
 			}

@@ -134,7 +134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   turretAnchor: {fileID: 2325913016705456889}
   animator: {fileID: 4346554063448639422}
-  speed: 5.5
+  speed: 4.5
   acceleration: 20
 --- !u!114 &4346554063448639422
 MonoBehaviour:

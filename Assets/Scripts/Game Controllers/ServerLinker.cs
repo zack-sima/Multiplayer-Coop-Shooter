@@ -10,8 +10,6 @@ public class ServerLinker : MonoBehaviour {
 
 	public static ServerLinker instance;
 
-	public const int LOBBY_SCENE = 0;
-
 	#endregion
 
 	#region Members
@@ -51,8 +49,8 @@ public class ServerLinker : MonoBehaviour {
 	//NOTE: if isJoining but player is master client, leave lobby immediately
 	public async void StartLobby(string roomId, bool isJoining) {
 		// Change to the gameplay scene (if not currently there)
-		if (SceneManager.GetActiveScene().buildIndex != LOBBY_SCENE)
-			await LoadSceneAsync(LOBBY_SCENE);
+		if (SceneManager.GetActiveScene().buildIndex != 0)
+			await LoadSceneAsync(0);
 
 		// After scene is loaded, start the lobby as shared
 		if (!TryFindBootstrap()) return;
