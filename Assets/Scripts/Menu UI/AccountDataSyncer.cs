@@ -9,10 +9,9 @@ public class AccountDataSyncer : MonoBehaviour {
 	//NOTE: upload class -- what is uploaded to the server every ~2s will always be of this json format
 	[System.Serializable]
 	public class UploadBlob {
-		public string uid;
-
-		//TODO: do not populate if an account exists
-		public List<string> friend_uids;
+		public string uid = "[ERROR]";
+		public string name = "[ERROR]";
+		public int status_id = 0;
 	}
 	//NOTE: download class (parser) for the JSON list of friends that Jonathan returns
 	[System.Serializable]
@@ -32,6 +31,7 @@ public class AccountDataSyncer : MonoBehaviour {
 			public string lobby_invite = "";
 		}
 
+		//NOTE: all player receive their list of friends from the server
 		public List<FriendStatus> friends;
 	}
 
@@ -74,7 +74,6 @@ public class AccountDataSyncer : MonoBehaviour {
 
 		UploadBlob dump = new() {
 			uid = PersistentDict.GetString("user_id"),
-			friend_uids = PersistentDict.GetStringList("user_friends")
 		};
 
 		string dumpJson = MyJsonUtility.ToJson(typeof(UploadBlob), dump);
@@ -90,7 +89,12 @@ public class AccountDataSyncer : MonoBehaviour {
 		downloadedBlob.friends.Add(f3);
 		downloadedBlob.friends.Add(f4);
 
+		Debug.Log("friends updated");
 		FriendsManager.instance.FriendsUpdated(downloadedBlob);
+	}
+	private IEnumerator ProcessedFriendRequest(string uid, string friendUid, bool accepted) {
+		//TODO: make http call to corresponding function
+		yield return null;
 	}
 	private IEnumerator InviteToLobby(string uid, string friendUid) {
 		//TODO: make http call that invites to lobby
@@ -105,6 +109,12 @@ public class AccountDataSyncer : MonoBehaviour {
 	}
 	public void InviteFriendToLobby(string uid, string friendUid) {
 		StartCoroutine(InviteToLobby(uid, friendUid));
+	}
+	public void AcceptedFriendRequest(string friendUid) {
+		StartCoroutine(ProcessedFriendRequest(PersistentDict.GetString("user_id"), friendUid, true));
+	}
+	public void RejectedFriendRequest(string friendUid) {
+		StartCoroutine(ProcessedFriendRequest(PersistentDict.GetString("user_id"), friendUid, false));
 	}
 	private void Awake() {
 		if (instance != null) {

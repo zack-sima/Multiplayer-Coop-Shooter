@@ -43,45 +43,55 @@ public class FriendBar : MonoBehaviour {
 		inviteToLobbyButton.gameObject.SetActive(false);
 
 		friendNameText.text = friendName;
-		friendIDText.text = friendId;
+		friendIDText.text = "#" + friendId;
+
+		this.friendName = friendName;
+		this.friendId = friendId;
+		this.statusId = statusId;
 
 		//actual friend stuff
-		if (!isPending) {
-
-			//statuses display
-			switch (statusId) {
-				case 0:
-					onlineStatusText.text = "<color=red>OFFLINE</color>";
-					break;
-				case 1:
-					//NOTE: the only code where invite is possible
-					onlineStatusText.text = "<color=green>ONLINE</color>";
-					break;
-				case 2:
-					onlineStatusText.text = "<color=yellow>IN LOBBY</color>";
-					break;
-				case 3:
-					onlineStatusText.text = "<color=yellow>IN GAME</color>";
-					break;
-			}
-
-			//can be invited to the lobby! (if not in lobby, replaces online text with invite button)
-			if (!ServerLinker.instance.GetIsInLobby() && statusId == 1) {
-				inviteToLobbyButton.gameObject.SetActive(true);
-				onlineStatusText.gameObject.SetActive(false);
-			}
+		if (!isPending)
+			ProcessFriend();
+	}
+	private void ProcessFriend() {
+		//statuses display
+		switch (statusId) {
+			case 0:
+				onlineStatusText.text = "<color=red>OFFLINE</color>";
+				break;
+			case 1:
+				//NOTE: the only code where invite is possible
+				onlineStatusText.text = "<color=green>ONLINE</color>";
+				break;
+			case 2:
+				onlineStatusText.text = "<color=yellow>IN LOBBY</color>";
+				break;
+			case 3:
+				onlineStatusText.text = "<color=yellow>IN GAME</color>";
+				break;
 		}
 
+		//can be invited to the lobby! (if not in lobby, replaces online text with invite button)
+		if (ServerLinker.instance.GetIsInLobby() && statusId == 1) {
+			inviteToLobbyButton.gameObject.SetActive(true);
+			onlineStatusText.gameObject.SetActive(false);
+		}
 	}
 
 	public void AcceptInvite() {
-		//TODO
+		FriendsManager.instance.AcceptFriendRequest(friendId);
+		ProcessFriend();
+
+		acceptInviteButton.gameObject.SetActive(false);
+		rejectInviteButton.gameObject.SetActive(false);
+		onlineStatusText.gameObject.SetActive(true);
 	}
 	public void RejectInvite() {
-		//TODO
+		FriendsManager.instance.RejectFriendRequest(friendId);
+		Destroy(gameObject, 0.1f);
 	}
 	public void InviteToLobby() {
-		//TODO
+		FriendsManager.instance.InviteFriendToLobby(friendId);
 	}
 
 	private void Awake() { }

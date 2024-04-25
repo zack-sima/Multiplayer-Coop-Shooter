@@ -20,7 +20,7 @@ public class FriendsManager : MonoBehaviour {
 
 	#region References
 
-	[SerializeField] private RectTransform friendsUI;
+	[SerializeField] private RectTransform friendsUI, friendsScrollParent;
 	[SerializeField] private TMP_InputField lobbyIdInput, friendIdInput;
 
 	[SerializeField] private TMP_Text friendsTitleText, playerIdText;
@@ -30,32 +30,104 @@ public class FriendsManager : MonoBehaviour {
 	//  NOTE: only set when friends UI is active, otherwise SetActive() for child won't go through
 	[SerializeField] private RectTransform joinLobbyParent;
 
+	[SerializeField] private RectTransform joinInviteLobbyScreen;
+
 	#endregion
 
 	#region Members
 
+	private readonly List<GameObject> friendBars = new();
+
+	//if a player rejected a friend request, next query's pending friend id matching this will be discarded
+	private readonly List<string> rejectedFriendIDs = new();
+	public bool GetIdInRejectedList(string uid) { return rejectedFriendIDs.Contains(uid); }
+
+	//if id is in here, even if server still may think it is a pending friend, treat as a normal friend
+	private readonly List<string> acceptedFriendIDs = new();
+	public bool GetIdInAcceptedList(string uid) { return acceptedFriendIDs.Contains(uid); }
+
+	//should not be empty if an invite was received
+	private string invitedLobbyId = "";
 
 	#endregion
 
 	#region Functions
 
-	//actually adds the pending friend to the real list of friends
-	public void AddUserToFriendsList(string friend_uid) {
-		List<string> friends = PersistentDict.GetStringList("user_friends");
-		friends.Add(friend_uid);
-		PersistentDict.SetStringList("user_friends", friends);
-	}
 	//NOTE: updates the dropdown of friends to reflect new statuses, etc by creating it again
 	public void FriendsUpdated(AccountDataSyncer.FriendsBlob newFriendsBlob) {
-		//TODO: load friends
+		//load friends
+		friendsTitleText.text = "Friends List";
+
+		foreach (GameObject g in friendBars) {
+			if (g == null) continue;
+			Destroy(g);
+		}
+		friendBars.Clear();
+
+		foreach (AccountDataSyncer.FriendsBlob.FriendStatus f in newFriendsBlob.friends) {
+			//ignore if in rejected list
+			if (rejectedFriendIDs.Contains(f.uid)) continue;
+
+			if (f.lobby_invite != "") {
+				//send player invite
+				LobbyInviteReceived(f.name, f.uid, f.lobby_invite);
+			}
+
+			FriendBar fb = Instantiate(friendBarPrefab, friendsScrollParent).GetComponent<FriendBar>();
+
+			//if accepted, pending should always be false
+			bool pending = acceptedFriendIDs.Contains(f.uid) ? false : f.is_pending;
+			fb.InitializeFriendBar(f.name, f.uid, pending, f.status_id);
+
+			friendBars.Add(fb.gameObject);
+		}
 	}
 	//called by button callback
 	public void TryJoinLobby() {
 		MenuManager.instance.StartLobby(lobbyIdInput.text.ToUpper(), true);
 	}
 	public void TryInviteFriend() {
+		if (friendIdInput.text == "") return;
+
 		AccountDataSyncer.instance.InviteFriendToLobby(PersistentDict.GetString("user_id"),
 			friendIdInput.text.ToUpper());
+
+		friendIdInput.text = "";
+	}
+	public void InviteFriendToLobby(string friendId) {
+		AccountDataSyncer.instance.InviteFriendToLobby(PersistentDict.GetString("user_id"), friendId);
+	}
+	//called from FriendBar
+	public void AcceptFriendRequest(string friendId) {
+		acceptedFriendIDs.Add(friendId);
+		AccountDataSyncer.instance.AcceptedFriendRequest(friendId);
+	}
+	public void RejectFriendRequest(string friendId) {
+		rejectedFriendIDs.Add(friendId);
+		AccountDataSyncer.instance.RejectedFriendRequest(friendId);
+	}
+	//called from FriendsUpdated() callback if server gave an invite code
+	public void LobbyInviteReceived(string friendName, string friendId, string lobbyId) {
+		if (joinInviteLobbyScreen.gameObject.activeInHierarchy) return;
+
+		joinInviteLobbyScreen.gameObject.SetActive(true);
+
+		invitedLobbyId = lobbyId;
+
+		joinInviteLobbyScreen.GetChild(0).GetComponent<TMP_Text>().text =
+			$"{friendName} (#{friendId}) invited you to their lobby.";
+	}
+	public void LobbyInviteAccepted() {
+		joinInviteLobbyScreen.gameObject.SetActive(false);
+
+		if (invitedLobbyId != "") {
+			MenuManager.instance.StartLobby(invitedLobbyId, true);
+			invitedLobbyId = "";
+		}
+	}
+	public void LobbyInviteRejected() {
+		joinInviteLobbyScreen.gameObject.SetActive(false);
+		invitedLobbyId = "";
 	}
 	public void CloseFriendsTab() {
 		friendsUI.gameObject.SetActive(false);
@@ -84,6 +156,12 @@ public class FriendsManager : MonoBehaviour {
 	}
 
 	private void Update() {
+#if UNITY_EDITOR
+		if (Input.GetKeyDown(KeyCode.Q)) {
+			LobbyInviteReceived("skibidi", "toilet", "abcdef");
+		}
+#endif
+
 		if (lobbyIdInput.text != lobbyIdInput.text.ToUpper())
 			lobbyIdInput.text = lobbyIdInput.text.ToUpper();
 		if (friendIdInput.text != friendIdInput.text.ToUpper())
