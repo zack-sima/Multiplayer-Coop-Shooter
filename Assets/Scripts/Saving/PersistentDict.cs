@@ -192,7 +192,10 @@ public class PersistentDict : MonoBehaviour {
 		stream.Close();
 	}
 	public static string GetDataPath() {
+
 		string dataPath = Application.persistentDataPath;
+		if (!Application.isMobilePlatform) dataPath = Application.dataPath;
+
 #if UNITY_EDITOR
 		dataPath = Application.dataPath + "/EditorData";
 #endif

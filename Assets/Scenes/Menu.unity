@@ -1926,7 +1926,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1495738931}
         m_TargetAssemblyTypeName: FriendsManager, Assembly-CSharp
-        m_MethodName: TryInviteFriend
+        m_MethodName: FriendRequest
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

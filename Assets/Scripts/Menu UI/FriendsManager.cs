@@ -66,6 +66,8 @@ public class FriendsManager : MonoBehaviour {
 		}
 		friendBars.Clear();
 
+		if (newFriendsBlob.friends == null) newFriendsBlob.friends = new();
+
 		foreach (AccountDataSyncer.FriendsBlob.FriendStatus f in newFriendsBlob.friends) {
 			//ignore if in rejected list
 			if (rejectedFriendIDs.Contains(f.uid)) continue;
@@ -88,16 +90,15 @@ public class FriendsManager : MonoBehaviour {
 	public void TryJoinLobby() {
 		MenuManager.instance.StartLobby(lobbyIdInput.text.ToUpper(), true);
 	}
-	public void TryInviteFriend() {
+	public void FriendRequest() {
 		if (friendIdInput.text == "") return;
 
-		AccountDataSyncer.instance.InviteFriendToLobby(PersistentDict.GetString("user_id"),
-			friendIdInput.text.ToUpper());
+		AccountDataSyncer.instance.MakeFriendRequest(friendIdInput.text);
 
 		friendIdInput.text = "";
 	}
 	public void InviteFriendToLobby(string friendId) {
-		AccountDataSyncer.instance.InviteFriendToLobby(PersistentDict.GetString("user_id"), friendId);
+		AccountDataSyncer.instance.InviteFriendToLobby(friendId);
 	}
 	//called from FriendBar
 	public void AcceptFriendRequest(string friendId) {

@@ -14,6 +14,12 @@ public class LobbyUI : MonoBehaviour {
 
 	public static LobbyUI instance;
 
+	public static string GetPlayerName() {
+		string name = PlayerPrefs.GetString("player_name");
+		if (name == "") name = "Player";
+		return name;
+	}
+
 	public const int MAX_PLAYERS = 5;
 
 	#endregion
