@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657886, g: 0.49641275, b: 0.5748176, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -13118,7 +13118,7 @@ MonoBehaviour:
   waveInput: {fileID: 440574850}
   playerNameInput: {fileID: 1214677272}
   mapDropdown: {fileID: 2005873604}
-  mapDropdownSceneIndices: 0100000002000000
+  mapDropdownSceneIndices: 010000000200000003000000
   hullDropdown: {fileID: 1374159461}
   turretDropdown: {fileID: 378129317}
 --- !u!1 &1267223362
@@ -20987,6 +20987,8 @@ MonoBehaviour:
     - m_Text: Default Map
       m_Image: {fileID: 0}
     - m_Text: New Map
+      m_Image: {fileID: 0}
+    - m_Text: RailMap1
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:

@@ -175,12 +175,26 @@ public class EnemySpawner : NetworkBehaviour {
 			Runner.Spawn(spawnPrefab, new Vector3(point.x, 1, point.z), Quaternion.identity);
 		} catch (System.Exception e) { Debug.LogWarning(e); }
 	}
+	private int tempInt = 0;
 	public override void FixedUpdateNetwork() {
 		if (spawnEnemyLater) {
 			spawnEnemyLater = false;
 
-			if (spawnEnemyLaterPrefab != null)
-				SpawnEnemy(spawnEnemyLaterPrefab);
+			if (spawnEnemyLaterPrefab != null) {
+				// CombatEntity temp = spawnEnemyLaterPrefab.GetComponent<CombatEntity>();
+				// if (temp != null) {
+				// 	temp.SetTeam(1);
+				// } else {
+				// 	temp = spawnEnemyLaterPrefab.GetComponentInChildren<CombatEntity>();
+				// 	if (temp != null) {
+				// 		temp.SetTeam(1);
+				// 	}
+				// }
+				//.SetTeam(Random.Range(0, 2))
+				tempInt++;
+				//if (tempInt < 1000) 
+					SpawnEnemy(spawnEnemyLaterPrefab);
+			}
 		}
 	}
 
