@@ -89,6 +89,17 @@ public class AccountDataSyncer : MonoBehaviour {
 		downloadedBlob.friends.Add(f3);
 		downloadedBlob.friends.Add(f4);
 
+		/// EXAMPLE DOWNLOADBLOB JSON:
+		/// {"friends":[{"uid":"AAAAAAAA","name":"A","status_id":1,"is_pending":true,"lobby_invite":""},
+		/// {"uid":"BBBBBBBB","name":"B","status_id":1,"is_pending":false,"lobby_invite":""},
+		/// {"uid":"CCCCCCCC","name":"C","status_id":2,"is_pending":false,"lobby_invite":""},
+		/// {"uid":"DDDDDDDD","name":"D","status_id":0,"is_pending":false,"lobby_invite":""}]}
+
+
+
+		Debug.LogWarning(MyJsonUtility.ToJson(typeof(FriendsBlob), downloadedBlob));
+
+
 		Debug.Log("friends updated");
 		FriendsManager.instance.FriendsUpdated(downloadedBlob);
 	}

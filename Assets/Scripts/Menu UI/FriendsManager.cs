@@ -53,6 +53,8 @@ public class FriendsManager : MonoBehaviour {
 
 	#region Functions
 
+	//TODO: FIX READY UP FOR LOCAL PLAYER
+	//TODO: sort so that pending comes on top, and then the rest alphabetically
 	//NOTE: updates the dropdown of friends to reflect new statuses, etc by creating it again
 	public void FriendsUpdated(AccountDataSyncer.FriendsBlob newFriendsBlob) {
 		//load friends
