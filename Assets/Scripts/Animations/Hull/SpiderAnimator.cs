@@ -70,6 +70,8 @@ public class SpiderAnimator : HullAnimatorBase {
 	}
 
 	protected override void Update() {
+		if (MenuManager.instance != null) return;
+
 		base.Update();
 
 		if (movedLegCountdown > 0) movedLegCountdown -= Time.deltaTime;

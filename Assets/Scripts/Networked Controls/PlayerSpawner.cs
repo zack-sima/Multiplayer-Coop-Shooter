@@ -20,4 +20,8 @@ public class PlayerSpawner : SimulationBehaviour, IPlayerJoined {
 			}
 		}
 	}
+	//callback from NetworkEvents
+	public void GameDisconnected() {
+		ServerLinker.instance.StopGame();
+	}
 }

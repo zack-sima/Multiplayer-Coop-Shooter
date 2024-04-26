@@ -35,7 +35,7 @@ public class LobbyPlayerDisplayer : MonoBehaviour {
 
 	#region Members
 
-	//TODO: whenever player calls this function, check if the string was changed.
+	//NOTE: whenever player calls this function, check if the string was changed.
 	//If so, spawn in the corresponding correct hull/turret
 	private string turretName = "", hullName = "";
 
@@ -71,6 +71,16 @@ public class LobbyPlayerDisplayer : MonoBehaviour {
 
 		//change the hull appearance
 		HullChanged(hull);
+	}
+	public void SetTurretRotation(float rotation) {
+		if (turret != null) {
+			turret.transform.eulerAngles = new Vector3(0, rotation + 180, 0);
+		}
+	}
+	public void SetHullRotation(float rotation) {
+		if (hull != null) {
+			hull.transform.eulerAngles = new Vector3(0, rotation + 180, 0);
+		}
 	}
 	private void HullChanged(string newHullName) {
 		foreach (PlayerInfo.HullInfo h in spawnedHulls) {

@@ -28,6 +28,9 @@ public class LobbyUI : MonoBehaviour {
 
 	//////////// NEW ///////////
 
+	//player scroller
+	[SerializeField] private InvisibleScroller playerScroller;
+
 	[SerializeField] private TMP_Text lobbyIdText;
 	[SerializeField] private Button leaveLobbyButton;
 
@@ -54,7 +57,8 @@ public class LobbyUI : MonoBehaviour {
 	public List<LobbyPlayer> GetLobbyPlayers() { return lobbyPlayers; }
 
 	//player turret rotation (locally saved to PlayerPrefs too)
-	private float playerTurretRotation = 0f;
+	private float playerTurretRotation = -20f;
+	private float playerHullRotation = 20f;
 
 	#endregion
 
@@ -179,6 +183,8 @@ public class LobbyUI : MonoBehaviour {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 
 		LobbyPlayer.playerInstance.ToggleIsReady();
+
+		PlayerNameInputChanged();
 	}
 	public void SetLobbyLoading(bool loading) {
 		lobbyLoadingUI.gameObject.SetActive(loading);
@@ -252,12 +258,13 @@ public class LobbyUI : MonoBehaviour {
 					playerDisplayers[index].Initialize();
 					playerDisplayers[index].SetHull(p.GetHullName());
 					playerDisplayers[index].SetTurret(p.GetTurretName());
+					playerDisplayers[index].SetHullRotation(p.GetHullRotation());
+					playerDisplayers[index].SetTurretRotation(p.GetHullRotation() - 20f + p.GetTurretRotation());
 
 					string isReadyText = p.GetIsReady() ? "(Ready)" : "(Not Ready)";
 
 					playerDisplayers[index].SetPlayerNameText(p.GetPlayerName() + "\n" + isReadyText);
 					playerDisplayers[index].SetHostIcon(p.GetIsMasterClient());
-
 				} catch (System.Exception e) {
 					Debug.LogWarning(e);
 				} finally {
@@ -266,9 +273,18 @@ public class LobbyUI : MonoBehaviour {
 			}
 			//local player
 			playerDisplayers[0].SetHostIcon(LobbyPlayer.playerInstance.GetIsMasterClient());
+
+			LobbyPlayer.playerInstance.SetHullRotation(playerHullRotation);
+			LobbyPlayer.playerInstance.SetTurretRotation(playerTurretRotation);
 		} else {
 			playerDisplayers[0].SetHostIcon(false);
 		}
+
+		//local player stuff, regardless of whether in lobby
+		playerDisplayers[0].SetHullRotation(playerHullRotation);
+		playerDisplayers[0].SetTurretRotation(playerHullRotation - 20f + playerTurretRotation);
+
+		playerHullRotation -= playerScroller.GetMouseDelta().x / 3.5f;
 
 		//disable other players
 		for (; index < MAX_PLAYERS; index++) {
