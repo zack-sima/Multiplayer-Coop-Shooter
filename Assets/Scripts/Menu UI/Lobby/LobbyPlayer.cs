@@ -26,12 +26,22 @@ public class LobbyPlayer : NetworkBehaviour {
 	[Networked]
 	private string PlayerHullName { get; set; } = "";
 	public string GetHullName() { return PlayerHullName; }
-	public void SetHullName(string hull) { PlayerHullName = hull; } //local only!
+	public void SetHullName(string hull) { PlayerHullName = hull; }
+
+	[Networked]
+	private float PlayerHullRotation { get; set; } = 20f;
+	public float GetHullRotation() { return PlayerHullRotation; }
+	public void SetHullRotation(float rotation) { PlayerHullRotation = rotation; }
+
+	[Networked]
+	private float PlayerTurretRotation { get; set; } = -20f;
+	public float GetTurretRotation() { return PlayerTurretRotation; }
+	public void SetTurretRotation(float rotation) { PlayerTurretRotation = rotation; }
 
 	[Networked]
 	private string PlayerTurretName { get; set; } = "";
 	public string GetTurretName() { return PlayerTurretName; }
-	public void SetTurretName(string turret) { PlayerTurretName = turret; } //local only!
+	public void SetTurretName(string turret) { PlayerTurretName = turret; }
 
 	[Networked]
 	private bool IsMasterClient { get; set; } = false;

@@ -1,16 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class AccountDataSyncer : MonoBehaviour {
+
+	#region Consts
+
+	public static string baseURL = "http://main.indiewargames.net:22222/";
+
+	#endregion
 
 	#region Serializable Data
 
 	//NOTE: upload class -- what is uploaded to the server every ~2s will always be of this json format
 	[System.Serializable]
 	public class UploadBlob {
-		public string uid = "[ERROR]";
-		public string name = "[ERROR]";
+		public string UID = "[ERROR]";
+		public string username = "[ERROR]";
 		public int status_id = 0;
 	}
 	//NOTE: download class (parser) for the JSON list of friends that Jonathan returns
@@ -54,51 +61,140 @@ public class AccountDataSyncer : MonoBehaviour {
 
 	#region Networking Calls
 
+	public string SanitizeDownloadHandlerText(string input) {
+		if (string.IsNullOrEmpty(input)) return input;
+
+		char firstChar = input[0];
+		char lastChar = input[input.Length - 1];
+
+		if ((firstChar == '"' || firstChar == '\'') && (lastChar == '"' || lastChar == '\'')) {
+			return input.Substring(1, input.Length - 2);
+		}
+
+		return input;
+	}
+
 	//NOTE: only should be called ONCE. Before the user receives their own local ID, no other networking calls
 	//with the server that require user information should be made.
 	private IEnumerator GenerateUserID() {
 		yield return null;
 
-		//TODO: callback to FriendsManager with correct ID
+		string url = $"{baseURL}generate/UID";
 
-		//temporary fake ID generated locally
-		string fakeID = Random.Range(10000000, 100000000).ToString();
-		PersistentDict.SetString("user_id", fakeID);
+		WWWForm form = new();
+		form.AddField("username", LobbyUI.GetPlayerName());
 
-		if (FriendsManager.instance != null) FriendsManager.instance.ReceivedUserId();
+		using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
+		yield return webRequest.SendWebRequest();
+
+		if (webRequest.result == UnityWebRequest.Result.ConnectionError ||
+			webRequest.result == UnityWebRequest.Result.ProtocolError) {
+			Debug.LogError($"Error: {webRequest.error}");
+
+			yield return new WaitForSeconds(2);
+			StartCoroutine(GenerateUserID());
+		} else {
+			Debug.Log($"Received: {webRequest.downloadHandler.text}");
+
+			PersistentDict.SetString("user_id", SanitizeDownloadHandlerText(webRequest.downloadHandler.text));
+			if (FriendsManager.instance != null) FriendsManager.instance.ReceivedUserId();
+		}
 	}
 	//NOTE: posts friends list AFTER having fetched the player's list of friends (if server didn't have guest ID)
 	private IEnumerator UpdateInformation() {
 		//make sure player has been given an ID!
 		if (!PersistentDict.HasKey("user_id")) { yield break; }
 
+		bool canJoinLobby = !ServerLinker.instance.GetIsInLobby() && MenuManager.instance != null;
+
 		UploadBlob dump = new() {
-			uid = PersistentDict.GetString("user_id"),
+			UID = PersistentDict.GetString("user_id"),
+			username = LobbyUI.GetPlayerName(),
+
+			//2 == in lobby, 3 == in game, 1 == online, 0 == offline
+			status_id = canJoinLobby ? 1 : (MenuManager.instance != null ? 2 : 3)
 		};
 
 		string dumpJson = MyJsonUtility.ToJson(typeof(UploadBlob), dump);
 
-		//TODO: make http call with dumpJson as UploadBlob args; this should return FriendsBlob
-		FriendsBlob downloadedBlob = new() { friends = new() };
-		FriendsBlob.FriendStatus f1 = new() { uid = "AAAAAAAA", name = "A", status_id = 1, is_pending = true };
-		FriendsBlob.FriendStatus f2 = new() { uid = "BBBBBBBB", name = "B", status_id = 1, is_pending = false };
-		FriendsBlob.FriendStatus f3 = new() { uid = "CCCCCCCC", name = "C", status_id = 2, is_pending = false };
-		FriendsBlob.FriendStatus f4 = new() { uid = "DDDDDDDD", name = "D", status_id = 0, is_pending = false };
-		downloadedBlob.friends.Add(f1);
-		downloadedBlob.friends.Add(f2);
-		downloadedBlob.friends.Add(f3);
-		downloadedBlob.friends.Add(f4);
+		string url = baseURL + "update/information";
 
-		Debug.Log("friends updated");
-		FriendsManager.instance.FriendsUpdated(downloadedBlob);
+		Debug.Log(url);
+
+		WWWForm form = new();
+		form.AddField("blob", dumpJson);
+
+		using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
+		yield return webRequest.SendWebRequest();
+
+		if (webRequest.result == UnityWebRequest.Result.ConnectionError ||
+			webRequest.result == UnityWebRequest.Result.ProtocolError) {
+			Debug.LogError($"Error: {webRequest.error}");
+		} else {
+			Debug.Log($"Response: {webRequest.downloadHandler.text}");
+
+			string downloadJson = SanitizeDownloadHandlerText(webRequest.downloadHandler.text);
+			Debug.Log(downloadJson);
+			FriendsBlob downloadedBlob = (FriendsBlob)MyJsonUtility.FromJson(typeof(FriendsBlob), downloadJson);
+
+			Debug.Log("friends updated");
+
+			if (FriendsManager.instance != null)
+				FriendsManager.instance.FriendsUpdated(downloadedBlob);
+		}
+
+		//TODO: make http call with dumpJson as UploadBlob args; this should return FriendsBlob
+		//FriendsBlob downloadedBlob = new() { friends = new() };
+		//FriendsBlob.FriendStatus f1 = new() { uid = "AAAAAAAA", name = "A", status_id = 1, is_pending = true };
+		//FriendsBlob.FriendStatus f2 = new() { uid = "BBBBBBBB", name = "B", status_id = 1, is_pending = false };
+		//FriendsBlob.FriendStatus f3 = new() { uid = "CCCCCCCC", name = "C", status_id = 2, is_pending = false };
+		//FriendsBlob.FriendStatus f4 = new() { uid = "DDDDDDDD", name = "D", status_id = 0, is_pending = false };
+		//downloadedBlob.friends.Add(f1);
+		//downloadedBlob.friends.Add(f2);
+		//downloadedBlob.friends.Add(f3);
+		//downloadedBlob.friends.Add(f4);
 	}
 	private IEnumerator ProcessedFriendRequest(string uid, string friendUid, bool accepted) {
-		//TODO: make http call to corresponding function
-		yield return null;
+		WWWForm form = new();
+		form.AddField("selfUID", uid);
+		form.AddField("friendUID", friendUid);
+		form.AddField("username", LobbyUI.GetPlayerName());
+		form.AddField("accepted", (accepted ? 1 : 0).ToString());
+
+		string url = $"{baseURL}friend/process_request";
+
+		using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
+
+		yield return webRequest.SendWebRequest();
+
+		Debug.Log(webRequest.downloadHandler.text);
 	}
 	private IEnumerator InviteToLobby(string uid, string friendUid) {
-		//TODO: make http call that invites to lobby
-		yield return null;
+		WWWForm form = new();
+		form.AddField("selfUID", uid);
+		form.AddField("friendUID", friendUid);
+
+		string url = $"{baseURL}friend/lobby";
+
+		using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
+
+		yield return webRequest.SendWebRequest();
+
+		Debug.Log(webRequest.downloadHandler.text);
+	}
+	private IEnumerator RequestFriend(string uid, string friendUid) {
+		WWWForm form = new();
+		form.AddField("username", LobbyUI.GetPlayerName());
+		form.AddField("selfUID", uid);
+		form.AddField("friendUID", friendUid);
+
+		string url = $"{baseURL}friend/request";
+
+		using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
+
+		yield return webRequest.SendWebRequest();
+
+		Debug.Log(webRequest.downloadHandler.text);
 	}
 
 	#endregion
@@ -107,14 +203,17 @@ public class AccountDataSyncer : MonoBehaviour {
 	public void AskForUserID() {
 		StartCoroutine(GenerateUserID());
 	}
-	public void InviteFriendToLobby(string uid, string friendUid) {
-		StartCoroutine(InviteToLobby(uid, friendUid));
+	public void InviteFriendToLobby(string friendUid) {
+		StartCoroutine(InviteToLobby(PersistentDict.GetString("user_id"), friendUid));
 	}
 	public void AcceptedFriendRequest(string friendUid) {
 		StartCoroutine(ProcessedFriendRequest(PersistentDict.GetString("user_id"), friendUid, true));
 	}
 	public void RejectedFriendRequest(string friendUid) {
 		StartCoroutine(ProcessedFriendRequest(PersistentDict.GetString("user_id"), friendUid, false));
+	}
+	public void MakeFriendRequest(string friendUid) {
+		StartCoroutine(RequestFriend(PersistentDict.GetString("user_id"), friendUid));
 	}
 	private void Awake() {
 		if (instance != null) {

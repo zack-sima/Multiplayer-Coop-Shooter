@@ -53,6 +53,8 @@ public class FriendsManager : MonoBehaviour {
 
 	#region Functions
 
+	//TODO: FIX READY UP FOR LOCAL PLAYER
+	//TODO: sort so that pending comes on top, and then the rest alphabetically
 	//NOTE: updates the dropdown of friends to reflect new statuses, etc by creating it again
 	public void FriendsUpdated(AccountDataSyncer.FriendsBlob newFriendsBlob) {
 		//load friends
@@ -63,6 +65,8 @@ public class FriendsManager : MonoBehaviour {
 			Destroy(g);
 		}
 		friendBars.Clear();
+
+		if (newFriendsBlob.friends == null) newFriendsBlob.friends = new();
 
 		foreach (AccountDataSyncer.FriendsBlob.FriendStatus f in newFriendsBlob.friends) {
 			//ignore if in rejected list
@@ -86,16 +90,15 @@ public class FriendsManager : MonoBehaviour {
 	public void TryJoinLobby() {
 		MenuManager.instance.StartLobby(lobbyIdInput.text.ToUpper(), true);
 	}
-	public void TryInviteFriend() {
+	public void FriendRequest() {
 		if (friendIdInput.text == "") return;
 
-		AccountDataSyncer.instance.InviteFriendToLobby(PersistentDict.GetString("user_id"),
-			friendIdInput.text.ToUpper());
+		AccountDataSyncer.instance.MakeFriendRequest(friendIdInput.text);
 
 		friendIdInput.text = "";
 	}
 	public void InviteFriendToLobby(string friendId) {
-		AccountDataSyncer.instance.InviteFriendToLobby(PersistentDict.GetString("user_id"), friendId);
+		AccountDataSyncer.instance.InviteFriendToLobby(friendId);
 	}
 	//called from FriendBar
 	public void AcceptFriendRequest(string friendId) {
