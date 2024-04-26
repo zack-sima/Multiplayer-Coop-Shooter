@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.IO;
 
 public class MenuManager : MonoBehaviour {
 
@@ -34,7 +35,8 @@ public class MenuManager : MonoBehaviour {
 	public TMP_Dropdown GetMapDropdown() { return mapDropdown; }
 
 	//TODO: move this to a separate map scene manager that tracks each map's properties, name, scene index, etc
-	[SerializeField] private List<int> mapDropdownSceneIndices;
+	[SerializeField] private List<string> mapDropdownSceneNames;
+	public List<string> GetMapSceneNames() { return mapDropdownSceneNames; }
 
 	//hull/turret
 	[SerializeField] private TMP_Dropdown hullDropdown, turretDropdown;
@@ -130,6 +132,17 @@ public class MenuManager : MonoBehaviour {
 		//NOTE: this calls the lobby UI loading screen
 		LobbyUI.instance.SetLobbyLoading(true);
 	}
+	/// <summary>
+	/// Returns -1 if there is no scene with matching name
+	/// </summary>
+	public static int GetSceneIndexByName(string name) {
+		for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++) {
+			string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+			string sceneName = Path.GetFileNameWithoutExtension(scenePath);
+			if (sceneName == name) return i;
+		}
+		return -1;
+	}
 	//NOTE: only call this from the lobby!
 	public void StartShared(string mapName) {
 		InitGame();
@@ -140,18 +153,23 @@ public class MenuManager : MonoBehaviour {
 
 		//TODO: have a toggle that overrides the map selection mode and uses this dropdown for debug
 		for (int i = 0; i < mapDropdown.options.Count; i++) {
-			if (mapDropdown.options[i].text == mapName) {
-				mapIndex = mapDropdownSceneIndices[i];
+			string curMapName = mapDropdownSceneNames[i];
+			if (curMapName == mapName) {
+				mapIndex = GetSceneIndexByName(mapDropdownSceneNames[i]);
 				break;
 			}
 		}
 
 		//saved lobby room ID + "_g" goes to correct game room
-		ServerLinker.instance.StartShared(mapIndex, PlayerPrefs.GetString("room_id") + "_g");
+		if (mapIndex != -1)
+			ServerLinker.instance.StartShared(mapIndex, PlayerPrefs.GetString("room_id") + "_g");
 	}
 	public void StartSingle() {
-		InitGame();
-		ServerLinker.instance.StartSinglePlayer(mapDropdownSceneIndices[mapDropdown.value]);
+		int sceneIndex = GetSceneIndexByName(mapDropdownSceneNames[mapDropdown.value]);
+		if (sceneIndex != -1) {
+			InitGame();
+			ServerLinker.instance.StartSinglePlayer(sceneIndex);
+		}
 	}
 	private void InitGame() {
 		PlayerTurretChanged();

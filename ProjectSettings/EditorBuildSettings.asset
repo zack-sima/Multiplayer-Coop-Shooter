@@ -6,15 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Menu.unity
+    path: Assets/Scenes/Menu/Menu.unity
     guid: 894cccb6aaec247fe83d6a12b5873add
   - enabled: 1
-    path: Assets/Scenes/Map_1.unity
+    path: Assets/Scenes/TestMap/Map_1.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
-    path: Assets/Scenes/Map_2.unity
+    path: Assets/Scenes/TestMap/Map2/Map_2.unity
     guid: 673cb5a9b7fe04e1da01d416acc6accd
   - enabled: 1
-    path: Assets/Scenes/RailWorld/Map1/RailMap_1.unity
+    path: Assets/Scenes/Maps/RailWorld/RailMap_1.unity
     guid: 29b4590108d4d42218a456dde4d2e0c6
   m_configObjects: {}

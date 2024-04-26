@@ -90,12 +90,15 @@ public class LobbyUI : MonoBehaviour {
 				LobbyStatsSyncer.instance.SetStartingWave(wave);
 		}
 	}
+	//TODO: only in debug mode
 	public void MapDropdownChanged() {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 
 		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
-			LobbyStatsSyncer.instance.SetMap(MenuManager.instance.GetMapDropdown().options[
-				MenuManager.instance.GetMapDropdown().value].text);
+			LobbyStatsSyncer.instance.SetMap(
+				MenuManager.instance.GetMapSceneNames()[
+				MenuManager.instance.GetMapDropdown().value]
+			);
 		}
 	}
 	public void PlayerNameInputChanged() {
