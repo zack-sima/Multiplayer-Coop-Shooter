@@ -61,7 +61,7 @@ public class Bullet : MonoBehaviour {
 
 			if (senderIsLocal && !isExplosion) {
 				try {
-					DamageHandler.DealDamageToTarget(e, damage);
+					DamageHandler.DealDamageToTarget(e, damage, senderEntity);
 				} catch { return; }
 
 				if (senderEntity != null && senderEntity.GetNetworker().GetIsPlayer())

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
 public class CombatEntity : Entity {
@@ -76,6 +77,8 @@ public class CombatEntity : Entity {
 	}
 
 	#endregion
+
+	public virtual void IncrementDamageCharge(float dmgDone) { } // used by humancombatentity
 
 	//callback from networker
 	public void HullChanged(string newHullName) {
@@ -252,8 +255,8 @@ public class CombatEntity : Entity {
 	}
 	protected override void Update() {
 		base.Update();
-
 		//v = dx/dt
+
 		velocity = (transform.position - lastPosition) / Time.deltaTime;
 		lastPosition = transform.position;
 	}

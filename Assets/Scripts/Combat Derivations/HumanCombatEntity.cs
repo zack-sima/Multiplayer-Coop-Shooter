@@ -4,6 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using UnityEngine.Rendering;
+using Abilities.Internal;
+using Abilities.Manager;
 
 public class HumanCombatEntity : CombatEntity {
 
@@ -17,6 +20,27 @@ public class HumanCombatEntity : CombatEntity {
 	//autoaim target
 	private CombatEntity target = null;
 	private float targetFindTimer = 0f;
+
+	#region Abilities
+
+	private float totalDmg = 0;
+
+	private List<IAbility> abilities = new();
+
+	public override void IncrementDamageCharge(float dmgDone) { 
+		totalDmg += dmgDone;
+		Debug.Log(totalDmg);
+	}
+
+	
+
+	//public float GetDamageCharge();
+
+	private void UpdateAbilities() {
+		abilities.ManageAbilities(this);
+	}
+	
+	#endregion
 
 	protected override void Update() {
 		if (GetTurretFollowsMovement() && TryGetComponent(out Rigidbody rb)) {

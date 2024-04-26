@@ -31,6 +31,7 @@ public static class DamageHandler {
 			e.GetNetworker().LoseLocalHealth(realDmg);
 			e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object, realDmg);
 
+			self.IncrementDamageCharge(realDmg); //ability damage charge up
 			successfullyDamaged = true;
 		}
 		if (successfullyDamaged) {
@@ -38,11 +39,13 @@ public static class DamageHandler {
 				UIController.NudgePhone(2);
 		}
 	}
-	public static void DealDamageToTarget(CombatEntity target, float damage) {
+	public static void DealDamageToTarget(CombatEntity target, float damage, CombatEntity self = null) {
 		NetworkedEntity networker = target.GetNetworker();
 
 		if (!networker.GetInitialized()) return;
 		networker.LoseLocalHealth(damage);
 		networker.RPC_TakeDamage(networker.Object, damage);
+
+		if (self != null) self.IncrementDamageCharge(damage); //ability damage charge up
 	}
 }

@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
+using Abilities;
+using Abilities.Internal;
 
 public class NetworkedEntity : NetworkBehaviour {
 
@@ -130,6 +132,19 @@ public class NetworkedEntity : NetworkBehaviour {
 		abilityOverclockOn = true;
 		yield return new WaitForSeconds(2f);
 		abilityOverclockOn = false;
+	}
+
+	public void IncrementHealth(float appendedHP) {
+		Health += appendedHP;
+	}
+
+	public void IncrementOverClock() {
+		PlayerInfo.instance.ReloadFaster();
+		optionalCombatEntity.GetTurret().ReloadFaster();
+	}
+	
+	private void UpdateAbility() { // called every frame.
+		
 	}
 
 	#endregion
@@ -316,14 +331,15 @@ public class NetworkedEntity : NetworkBehaviour {
 			if (isPlayer) {
 				//overclock ability
 				if (abilityOverclockOn) {
-					PlayerInfo.instance.ReloadFaster();
-					optionalCombatEntity.GetTurret().ReloadFaster();
+					// PlayerInfo.instance.ReloadFaster();
+					// optionalCombatEntity.GetTurret().ReloadFaster();
 				}
+				UpdateAbility();
 				//healing ability, TODO: scale by ability stats instead
 				if (abilityHealOn) {
-					Health = Mathf.Min(mainEntity.GetMaxHealth(),
-						Health + Time.deltaTime * mainEntity.GetMaxHealth() / 5f);
-					mainEntity.UpdateHealthBar();
+					// Health = Mathf.Min(mainEntity.GetMaxHealth(),
+					// 	Health + Time.deltaTime * mainEntity.GetMaxHealth() / 5f);
+					// mainEntity.UpdateHealthBar();
 				}
 				//natural healing
 				if (Time.time - mainEntity.GetLastDamageTimestamp() > 2.5f) {

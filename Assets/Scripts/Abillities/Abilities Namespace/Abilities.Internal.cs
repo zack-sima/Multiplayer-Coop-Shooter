@@ -7,24 +7,35 @@ namespace Abilities.Internal {
     /// <summary>
     /// Parent Interface
     /// </summary>
-    interface IAbility { }
+    public interface IAbility { }
 
-    interface IActiveAbility : IAbility { }
+    public interface IActiveAbility : IAbility { 
+        /// <summary>
+        /// Called when activated
+        /// </summary>
+        public void Activate();
+    }
 
-    interface IPassiveAbility : IAbility { }
+    public interface IPassiveAbility : IAbility { }
 
-    interface IDamageBased {
+    public interface IDamageBased {
         /// <summary>
         /// Returns the percentage damage charge.
         /// </summary>
         public float GetChargeDamage();
     }
 
-    interface ITimeBased {
+    public interface ITimeBased {
         /// <summary>
-        /// Returns the percentage time charge.
+        /// Returns the max Charge time.
         /// </summary>
         public float GetChargeTime();
+
+        /// <summary>
+        /// Input the deltaTime.
+        /// Returns the percentage charge.
+        /// </summary>
+        public float GetPercentCharged(float time);
     }
 
     //Populate with more callbacks as needed Below.
