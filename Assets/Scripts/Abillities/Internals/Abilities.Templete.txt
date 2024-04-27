@@ -1,20 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+/*=========| BASIC |=========*/
 
-namespace Abilities {
-
-    class RapidFire : IActivatable, ISysTickable, IButtonRechargable {
-    public float cooldownPeriod, remainingCooldownTime, firingPeriod, remainingFiringTime;
+class Foo : IActivatable, ISysTickable, IButtonRechargable {
+    public float cooldownPeriod, remainingCooldownTime, ...
+    private float ---, ...
     private bool isActive = false;
     private UnityEngine.UI.Image outline = null;
     
-    public RapidFire() { this.UpdateAbility(); }
+    public Foo() { this.UpdateAbility(); }
 
     public void Activate() { //reset the timer and activate ability.
         if (isActive || remainingCooldownTime != 0) return;
         remainingCooldownTime = cooldownPeriod;
-        remainingFiringTime = firingPeriod;
+        ...
+        ...
+        ...
         isActive = true;
     }
 
@@ -26,10 +25,10 @@ namespace Abilities {
 
     public void SysTickCall() {
         if (isActive) {
-            remainingFiringTime = Mathf.Max(0, remainingFiringTime - Time.deltaTime);
-            if (remainingFiringTime == 0) isActive = false;
+            "var" = Mathf.Max(0, "var" - Time.deltaTime);
+            if ("var" == 0) isActive = false;
             if (outline != null) { // Show that the ability is currently active + cooldown bar for that.
-                outline.fillAmount = remainingFiringTime / firingPeriod;
+                outline.fillAmount = ...
             }
         } else {
             remainingCooldownTime = Mathf.Max(0, remainingCooldownTime - Time.deltaTime);
@@ -42,5 +41,4 @@ namespace Abilities {
     public void SetButtonOutlineProgressImage(UnityEngine.UI.Image outlineProgress) {
         outline = outlineProgress;
     }
-}
 }

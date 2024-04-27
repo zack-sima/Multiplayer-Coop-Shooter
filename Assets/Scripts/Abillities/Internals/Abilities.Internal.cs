@@ -12,10 +12,14 @@ namespace Abilities {
 
     public interface IActivatable : IAbility { 
         /// <summary>
-        /// Called when activated. Returns
+        /// Called when ability is requested to be activated. 
+        /// NEEDS to self-check whether or not ability CAN OR CANNOT be activated.
         /// </summary>
         public void Activate();
 
+        /// <summary>
+        /// Return whether or not Active ability is, well active.
+        /// </summary>
         public bool GetIsActive();
     }
 
@@ -23,14 +27,14 @@ namespace Abilities {
 
     public interface ISysTickable {
         /// <summary>
-        /// Called every update by networked entity.
+        /// Called every update tick by PlayerInfo.instance. Treat as Update()
         /// </summary>
         public void SysTickCall();
     }
 
     public interface IButtonRechargable {
         /// <summary>
-        /// Called by UIController to Set the Outline for updating.
+        /// Called by UIController to Set the Outline for updating. (!Circular button!)
         /// </summary>
         public void SetButtonOutlineProgressImage(UnityEngine.UI.Image outlineProgress);
     }
@@ -44,12 +48,5 @@ namespace Abilities {
     }
 
     //Populate with more callbacks as needed Above.
-    //Below is redacted interfaces.
-
-    // public interface ICooldownable {
-    //     /// <summary>
-    //     /// Return a float between 0-1 that returns percentage charged. return (cooldownTime - remainingCooldownTime) / cooldownTime;
-    //     /// </summary>
-    //     public float GetCooldownPercentage();
-    // }
+    
 }

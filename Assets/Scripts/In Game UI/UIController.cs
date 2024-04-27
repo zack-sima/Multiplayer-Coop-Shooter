@@ -15,7 +15,7 @@ public class UIController : MonoBehaviour {
 	#region Statics & Consts
 
 	public static UIController instance;
-	private const bool OVERRIDE_MOBILE = true;
+	private const bool OVERRIDE_MOBILE = false;
 
 	public static bool GetIsMobile() {
 #if UNITY_EDITOR
@@ -68,7 +68,7 @@ public class UIController : MonoBehaviour {
 	/// Called by UI Buttons. (Configured in unity editor on a per button basis)
 	/// </summary>
 	public void AbilityButtonCallback(int buttonIndex) {
-		Debug.Log("Button Called");
+		Debug.Log("Button Called " + buttonIndex);
 		PlayerInfo.instance.PushAbilityActivation(buttonIndex);
 	}
 
@@ -78,7 +78,7 @@ public class UIController : MonoBehaviour {
 	public void AbilitiesUpdated() {
 		List<GameObject> buttons = GetIsMobile() ? mobileAbilityButtons : pcAbilityButtons;
 		InitAbilityButtons(); // turn off all the buttons.
-		Debug.Log("UI controller is reached" + PlayerInfo.instance.GetAbilityList().Count + " " + buttons.Count);
+		//Debug.Log("UI controller is reached" + PlayerInfo.instance.GetAbilityList().Count + " " + buttons.Count);
 		for(int i = 0; i < PlayerInfo.instance.GetAbilityList().Count && i < buttons.Count; i++) {
 			//PlayerInfo.instance.GetAbilityList()[i]. /* TODO: Callback for icon, color, shape, etc. */
 
@@ -92,7 +92,7 @@ public class UIController : MonoBehaviour {
 						((IButtonRechargable)PlayerInfo.instance.GetAbilityList()[i].Item1).SetButtonOutlineProgressImage(image);
 				}
 			}
-			Debug.Log("Button is activated");
+			//Debug.Log("Button is activated");
 			buttons[i].SetActive(true);
 		}
 	}

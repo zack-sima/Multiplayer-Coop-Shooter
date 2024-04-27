@@ -8,7 +8,7 @@ public class PlayerSpawner : SimulationBehaviour, IPlayerJoined {
 	public void PlayerJoined(PlayerRef player) {
 		if (player == Runner.LocalPlayer) {
 
-			Debug.Log(PlayerPrefab.name);
+			//Debug.Log(PlayerPrefab.name);
 			Runner.Spawn(PlayerPrefab, MapController.instance.GetPlayerSpawnpoint().position, Quaternion.identity);
 
 			//spawn stats syncer

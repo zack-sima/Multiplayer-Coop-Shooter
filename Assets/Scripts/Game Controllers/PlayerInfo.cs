@@ -83,20 +83,6 @@ public class PlayerInfo : MonoBehaviour {
 		abilities.PushAbilityActivation(index);
 	}
 
-	public IAbility GetAblity(int index) {
-		return abilities[index].ability;
-	}
-
-
-	public void AbilityHealActivated() {
-		//rn just assume ability slot 0.
-		abilities.PushAbilityActivation(0);
-		//NetworkedEntity.playerInstance.AbilityHealCalled();
-	}
-	public void AbilityOverclockActivated() {
-		NetworkedEntity.playerInstance.AbilityOverclockCalled();
-	}
-
 	#endregion
 
 	//NOTE: should only be called at start, but for debug is called by player

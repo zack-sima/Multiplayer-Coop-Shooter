@@ -115,23 +115,17 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	//Note: these should be called on the local player only, and the coroutines called will assume this.
 
-	public void AbilityOverclockCalled() {
-		StartCoroutine(AbilityOverclockCoroutine());
-	}
-
-	private IEnumerator AbilityOverclockCoroutine() {
-		abilityOverclockOn = true;
-		yield return new WaitForSeconds(2f);
-		abilityOverclockOn = false;
-	}
-
 	/// <summary> Needs to be called EVERY frame. </summary>
 	public void OverClockNetworkEntityCall() {
 		PlayerInfo.instance.ReloadFaster();
 		optionalCombatEntity.GetTurret().ReloadFaster();
 	}
 
-	/// <summary> Overrides health to be the newHealth value </summary>
+	/// <summary> 
+	/// Overrides health to be the newHealth value if isIncrement is left default. 
+	/// Otherwise adds newHealth directly on top. Automatically checks for HP bounds.
+	/// (HP will never be less than 0 or greater than Max Health, regardless of the float input)
+	/// </summary>
 	public void HealthNetworkEntityCall(float newHealth, bool isIncrement = false) {
 		if (isIncrement) {
 			Health = Mathf.Min(mainEntity.GetMaxHealth(), Mathf.Max(0, Health + newHealth));
@@ -140,21 +134,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		} 
 		Health = Mathf.Min(mainEntity.GetMaxHealth(), Mathf.Max(0, newHealth));
 		mainEntity.UpdateHealthBar();	
-		/* 	Health = Mathf.Min(mainEntity.GetMaxHealth(),
-				Health + Time.deltaTime * mainEntity.GetMaxHealth() / 5f);
-			mainEntity.UpdateHealthBar(); 
-			REDACTED */
 	}
-
-	// public void AbilityHealCalled() {
-	// 	StartCoroutine(AbilityHealCoroutine());
-	// }
-
-	// private IEnumerator AbilityHealCoroutine() {
-	// 	abilityHealOn = true;
-	// 	yield return new WaitForSeconds(2f);
-	// 	abilityHealOn = false;
-	// }
 
 	#endregion
 
@@ -339,17 +319,6 @@ public class NetworkedEntity : NetworkBehaviour {
 		if (HasSyncAuthority()) {
 			//local entity
 			if (isPlayer) {
-				//overclock ability
-				// if (abilityOverclockOn) {
-				// 	PlayerInfo.instance.ReloadFaster();
-				// 	optionalCombatEntity.GetTurret().ReloadFaster();
-				// }
-				// //healing ability, TODO: scale by ability stats instead
-				// if (abilityHealOn) {
-				// 	Health = Mathf.Min(mainEntity.GetMaxHealth(),
-				// 		Health + Time.deltaTime * mainEntity.GetMaxHealth() / 5f);
-				// 	mainEntity.UpdateHealthBar();
-				// }
 				//natural healing
 				if (Time.time - mainEntity.GetLastDamageTimestamp() > 2.5f) {
 					Health = Mathf.Min(mainEntity.GetMaxHealth(),

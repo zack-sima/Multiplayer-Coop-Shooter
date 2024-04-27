@@ -3,31 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Abilities {
-    
+
     public static class AbilityInitExtensions {
+
         public static void UpdateAbilityList(this List<(IAbility, bool)> input) {
-            //Placeholders rn.
+
+            //TODO: Link with garage / in game tech tree.
             if (input.Count > 0) return;
-            Debug.Log("Abilities Updated");
+
             input.Clear();
+            RapidFire f = new RapidFire();
+            input.Add((f, false));
             RapidHeal h = new RapidHeal();
             input.Add((h, false));
-            AbilityUIManagerExtensions.OnAbilityListChange(); // callback for ui update.
+
+            AbilityUIManagerExtensions.OnAbilityListChange(); // callback for ui update. REQUIRED, o.w. no abilities will show.
         }
+
         public static void UpdateAbility(this IAbility i) {
-            //pull from the init list of values.
-            //placeholders rn
-            //float okay = Time.deltaTime;
-            
+
+            //TODO: Link with garage / in game tech tree.
             switch(i) {
                 case RapidHeal:
-                    ((RapidHeal)i).cooldownPeriod = ((RapidHeal)i).remainingCooldownTime = 3f;
+                    ((RapidHeal)i).cooldownPeriod = ((RapidHeal)i).remainingCooldownTime = 10f;
                     ((RapidHeal)i).healAmount = .3f; // percentage heal.
                     ((RapidHeal)i).healDuration = 3f;
                     break;
-                // case RapidFire:
-                //     ((RapidFire)i).SetParameters(10f);
-                //     break;
+                case RapidFire:
+                    ((RapidFire)i).cooldownPeriod = ((RapidFire)i).remainingCooldownTime = 10f;
+                    ((RapidFire)i).firingPeriod = ((RapidFire)i).remainingFiringTime = 3f;
+                    break;
             }
         }
     }

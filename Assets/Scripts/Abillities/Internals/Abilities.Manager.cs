@@ -26,11 +26,10 @@ namespace Abilities {
 
                         } break;
                     case RapidFire:
-                        // if (((RapidFire)a).GetIsActive()) {      
-                        // } else {
-                        //     if (UIController.instance.GetAbilityButton(i) == null) continue;
-                        // } break;
-                        break;
+                        if (((RapidFire)a).GetIsActive()) { 
+                            NetworkedEntity.playerInstance.OverClockNetworkEntityCall();    
+                        } break;
+                        
                 }
 
                 //entity.GetTotalDmgDealt() to determine damage charging!
@@ -38,7 +37,7 @@ namespace Abilities {
                 /*======================| Ability Callbacks |======================*/
 
                 if (a is IActivatable) {
-                    if (abilities[i].isActivated) { Debug.Log("Being activated"); ((IActivatable)a).Activate(); abilities[i] = (a, false); }
+                    if (abilities[i].isActivated) { ((IActivatable)a).Activate(); abilities[i] = (a, false); }
                 }
                 if (a is IPassiveable) {
                     
