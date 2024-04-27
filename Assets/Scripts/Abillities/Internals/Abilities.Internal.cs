@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.Unity.VisualStudio.Editor;
 using UnityEngine;
 
 namespace Abilities {
@@ -44,7 +43,7 @@ namespace Abilities {
         /// <summary>
         /// lmao self explanatory. Might want this to callback on each ability to a instance class that stores all the icons (ability info???)
         /// </summary>
-        public Image GetIcon();
+        public UnityEngine.UI.Image GetIcon();
     }
 
     //Populate with more callbacks as needed Above.
