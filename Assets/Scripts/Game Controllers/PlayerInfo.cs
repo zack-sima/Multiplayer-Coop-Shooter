@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using Abilities;
 using UnityEngine;
+
 
 /// <summary>
 /// Holds the player's info, such as ammunition and battery power; automatically handles reloads & regen.
@@ -59,12 +62,36 @@ public class PlayerInfo : MonoBehaviour {
 
 	#region Functions
 
-	#region Abilities Callback
+	#region Abilities 
 
 	//NOTE: only call on local player!
 
+	//stores ability shit here!
+	private float totalDmgDealt = 0;
+	public float GetTotalDmgDealt() { return totalDmgDealt; }
+
+	private List<(IAbility ability, bool isActivated)> abilities = new();
+
+	public List<(IAbility, bool)> GetAbilityList() { return abilities; }
+
+	public void IncrementDamageCharge(float dmgDone) { 
+		totalDmgDealt += dmgDone;
+		//Debug.Log(totalDmgDealt);
+	}
+
+	public void PushAbilityActivation(int index) { 
+		abilities.PushAbilityActivation(index);
+	}
+
+	public IAbility GetAblity(int index) {
+		return abilities[index].ability;
+	}
+
+
 	public void AbilityHealActivated() {
-		NetworkedEntity.playerInstance.AbilityHealCalled();
+		//rn just assume ability slot 0.
+		abilities.PushAbilityActivation(0);
+		//NetworkedEntity.playerInstance.AbilityHealCalled();
 	}
 	public void AbilityOverclockActivated() {
 		NetworkedEntity.playerInstance.AbilityOverclockCalled();
@@ -124,6 +151,7 @@ public class PlayerInfo : MonoBehaviour {
 	}
 	private void Update() {
 		ReloadAmmoOnce();
+		NetworkedEntity.playerInstance.SysTickAndAbilityHandler(abilities); // for ability Manager.
 	}
 	private void Start() {
 		TurretChanged(GetLocalPlayerTurretName());

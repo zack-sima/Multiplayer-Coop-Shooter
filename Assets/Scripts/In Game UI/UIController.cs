@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Abilities;
 
 #if UNITY_IOS || UNITY_ANDROID
 using CandyCoded.HapticFeedback;
@@ -14,7 +15,7 @@ public class UIController : MonoBehaviour {
 	#region Statics & Consts
 
 	public static UIController instance;
-	private const bool OVERRIDE_MOBILE = false;
+	private const bool OVERRIDE_MOBILE = true;
 
 	public static bool GetIsMobile() {
 #if UNITY_EDITOR
@@ -33,6 +34,105 @@ public class UIController : MonoBehaviour {
 
 	[SerializeField]
 	private RectTransform respawnUI, gameOverUI, mobileUI, pcUI, loadingUI, optionsUI;
+
+	[SerializeField]
+	private List<GameObject> mobileAbilityButtons;
+
+	[SerializeField]
+	private List<GameObject> pcAbilityButtons;
+
+	#region Ability UI
+
+	/// <summary>
+	/// Turns off all ability Buttons for a clean slate.
+	/// </summary>
+	private void InitAbilityButtons() {
+		//turns everything off.
+		foreach(GameObject g in mobileAbilityButtons) {
+			if (g.activeInHierarchy) g.SetActive(false);
+		}
+		foreach(GameObject g in pcAbilityButtons) {
+			if (g.activeInHierarchy) g.SetActive(false);
+		}
+	}
+
+	/// <summary>
+	/// Called by each ability to update certain stuff on a callback basis.
+	/// </summary>
+	public GameObject GetAbilityButton(int index) {
+		if (index !< (GetIsMobile() ? mobileAbilityButtons.Count : pcAbilityButtons.Count)) return null;
+		return GetIsMobile() ? mobileAbilityButtons[index] : pcAbilityButtons[index];
+	}
+
+	/// <summary>
+	/// Called by UI Buttons. (Configured in unity editor on a per button basis)
+	/// </summary>
+	public void AbilityButtonCallback(int buttonIndex) {
+		Debug.Log("Button Called");
+		PlayerInfo.instance.PushAbilityActivation(buttonIndex);
+	}
+
+	/// <summary>
+	/// Called when ability list gets updated/changed.
+	/// </summary>
+	public void AbilitiesUpdated() {
+		List<GameObject> buttons = GetIsMobile() ? mobileAbilityButtons : pcAbilityButtons;
+		InitAbilityButtons(); // turn off all the buttons.
+		Debug.Log("UI controller is reached" + PlayerInfo.instance.GetAbilityList().Count + " " + buttons.Count);
+		for(int i = 0; i < PlayerInfo.instance.GetAbilityList().Count && i < buttons.Count; i++) {
+			//PlayerInfo.instance.GetAbilityList()[i]. /* TODO: Callback for icon, color, shape, etc. */
+
+			//Callback for updating the UI button fill amount.
+			if (PlayerInfo.instance.GetAbilityList()[i].Item1 is IButtonRechargable) {
+				//callback for the image.
+				GameObject g = buttons[i].FindChild("OutlineProgress");
+				if (g != null) {
+					Image image = g.GetComponent<Image>();
+					if (image != null) 
+						((IButtonRechargable)PlayerInfo.instance.GetAbilityList()[i].Item1).SetButtonOutlineProgressImage(image);
+				}
+			}
+			Debug.Log("Button is activated");
+			buttons[i].SetActive(true);
+		}
+	}
+
+
+	// private List<AbilityButton> abilityButtons;
+
+	// private struct AbilityButton {
+	// 	public GameObject realButton;
+	// 	public IAbility ability;
+	// }
+
+
+	// /// <summary>
+	// /// Maps each button to a ability and toggles visibility. Is a CALLBACK from Ability.Manager.AbilityUIManagerExtensions
+	// /// </summary>
+	// public void MapAbilityButtons() {
+	// 	abilityButtons.Clear();
+
+	// 	//Deactivate all the buttons.
+	// 	foreach(GameObject g in GetIsMobile() ? mobileAbilityButtons : pcAbilityButtons) {
+	// 		if (g.activeInHierarchy) g.SetActive(false);
+	// 	} 
+	// 	int i = 0;
+	// 	foreach((IAbility a, bool b) in PlayerInfo.instance.GetAbilityList()) {
+	// 		if ((GetIsMobile() ? mobileAbilityButtons.Count : pcAbilityButtons.Count) !< i) break;
+
+	// 		AbilityButton button = new AbilityButton {
+	// 			realButton = GetIsMobile() ? mobileAbilityButtons[i] : pcAbilityButtons[i],
+	// 			ability = a
+	// 		};
+
+	// 		button.realButton.SetActive(true);
+	// 		//TODO: Update icon.
+	// 		abilityButtons.Add(button);
+	// 		i++;
+	// 	}
+	// }
+
+	#endregion
 
 	#endregion
 

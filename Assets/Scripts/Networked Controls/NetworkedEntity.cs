@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
-using Abilities;
-using Abilities.Internal;
 
 public class NetworkedEntity : NetworkBehaviour {
 
@@ -117,35 +115,46 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	//Note: these should be called on the local player only, and the coroutines called will assume this.
 
-	public void AbilityHealCalled() {
-		StartCoroutine(AbilityHealCoroutine());
-	}
 	public void AbilityOverclockCalled() {
 		StartCoroutine(AbilityOverclockCoroutine());
 	}
-	private IEnumerator AbilityHealCoroutine() {
-		abilityHealOn = true;
-		yield return new WaitForSeconds(2f);
-		abilityHealOn = false;
-	}
+
 	private IEnumerator AbilityOverclockCoroutine() {
 		abilityOverclockOn = true;
 		yield return new WaitForSeconds(2f);
 		abilityOverclockOn = false;
 	}
 
-	public void IncrementHealth(float appendedHP) {
-		Health += appendedHP;
-	}
-
-	public void IncrementOverClock() {
+	/// <summary> Needs to be called EVERY frame. </summary>
+	public void OverClockNetworkEntityCall() {
 		PlayerInfo.instance.ReloadFaster();
 		optionalCombatEntity.GetTurret().ReloadFaster();
 	}
 
-	private void UpdateAbility() { // called every frame.
-
+	/// <summary> Overrides health to be the newHealth value </summary>
+	public void HealthNetworkEntityCall(float newHealth, bool isIncrement = false) {
+		if (isIncrement) {
+			Health = Mathf.Min(mainEntity.GetMaxHealth(), Mathf.Max(0, Health + newHealth));
+			mainEntity.UpdateHealthBar();	
+			return;
+		} 
+		Health = Mathf.Min(mainEntity.GetMaxHealth(), Mathf.Max(0, newHealth));
+		mainEntity.UpdateHealthBar();	
+		/* 	Health = Mathf.Min(mainEntity.GetMaxHealth(),
+				Health + Time.deltaTime * mainEntity.GetMaxHealth() / 5f);
+			mainEntity.UpdateHealthBar(); 
+			REDACTED */
 	}
+
+	// public void AbilityHealCalled() {
+	// 	StartCoroutine(AbilityHealCoroutine());
+	// }
+
+	// private IEnumerator AbilityHealCoroutine() {
+	// 	abilityHealOn = true;
+	// 	yield return new WaitForSeconds(2f);
+	// 	abilityHealOn = false;
+	// }
 
 	#endregion
 
@@ -323,6 +332,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		}
 		TryGetComponent(out optionalRigidbody);
 	}
+
 	private void Update() {
 		if (!initialized) return;
 
@@ -330,17 +340,16 @@ public class NetworkedEntity : NetworkBehaviour {
 			//local entity
 			if (isPlayer) {
 				//overclock ability
-				if (abilityOverclockOn) {
-					PlayerInfo.instance.ReloadFaster();
-					optionalCombatEntity.GetTurret().ReloadFaster();
-				}
-				UpdateAbility();
-				//healing ability, TODO: scale by ability stats instead
-				if (abilityHealOn) {
-					Health = Mathf.Min(mainEntity.GetMaxHealth(),
-						Health + Time.deltaTime * mainEntity.GetMaxHealth() / 5f);
-					mainEntity.UpdateHealthBar();
-				}
+				// if (abilityOverclockOn) {
+				// 	PlayerInfo.instance.ReloadFaster();
+				// 	optionalCombatEntity.GetTurret().ReloadFaster();
+				// }
+				// //healing ability, TODO: scale by ability stats instead
+				// if (abilityHealOn) {
+				// 	Health = Mathf.Min(mainEntity.GetMaxHealth(),
+				// 		Health + Time.deltaTime * mainEntity.GetMaxHealth() / 5f);
+				// 	mainEntity.UpdateHealthBar();
+				// }
 				//natural healing
 				if (Time.time - mainEntity.GetLastDamageTimestamp() > 2.5f) {
 					Health = Mathf.Min(mainEntity.GetMaxHealth(),

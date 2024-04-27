@@ -29,7 +29,7 @@ public class AbilityButton : MonoBehaviour {
 	//TODO: load in abilities from player presets when more are made
 	private float abilityReadiness = 0; //ability charge bar
 
-	[SerializeField] private float abilityCooldown = 2f;
+	//[SerializeField] private float abilityCooldown = 2f;
 
 	#endregion
 
@@ -38,18 +38,18 @@ public class AbilityButton : MonoBehaviour {
 	//TODO: some sort of init function to be called by PlayerInfo
 
 	public void TryUseAbility() {
-		if (abilityReadiness < 1f) return;
+		//if (abilityReadiness < 1f) return;
 
-		abilityReadiness = 0f;
+		//abilityReadiness = 0f;
 		OnAbilityUsed?.Invoke();
 	}
 	private void Update() {
-		if (abilityReadiness < 1f)
-			abilityReadiness += Time.deltaTime / abilityCooldown;
+		// if (abilityReadiness < 1f)
+		// 	abilityReadiness += Time.deltaTime / abilityCooldown;
 
 		if (Input.GetKeyDown(triggerKey)) TryUseAbility();
 
-		progressBar.fillAmount = Mathf.Clamp(abilityReadiness, 0, 1);
+		// progressBar.fillAmount = Mathf.Clamp(abilityReadiness, 0, 1);
 	}
 
 	#endregion

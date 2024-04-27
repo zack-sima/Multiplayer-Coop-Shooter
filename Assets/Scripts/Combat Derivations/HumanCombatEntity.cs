@@ -5,8 +5,6 @@ using UnityEngine.UI;
 using TMPro;
 using System.Linq;
 using UnityEngine.Rendering;
-using Abilities.Internal;
-using Abilities.Manager;
 
 public class HumanCombatEntity : CombatEntity {
 
@@ -23,26 +21,13 @@ public class HumanCombatEntity : CombatEntity {
 
 	#region Abilities
 
-	private float totalDmg = 0;
-
-	private List<IAbility> abilities = new();
-
 	public override void IncrementDamageCharge(float dmgDone) { 
-		totalDmg += dmgDone;
-		Debug.Log(totalDmg);
+		PlayerInfo.instance.IncrementDamageCharge(dmgDone);
 	}
 
-	
+    #endregion
 
-	//public float GetDamageCharge();
-
-	private void UpdateAbilities() {
-		abilities.ManageAbilities(this);
-	}
-	
-	#endregion
-
-	protected override void Update() {
+    protected override void Update() {
 		if (GetTurretFollowsMovement() && TryGetComponent(out Rigidbody rb)) {
 			//try to auto-aim towards nearest target within screen before following hull
 			if (targetFindTimer > 0) {
