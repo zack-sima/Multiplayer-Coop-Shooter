@@ -25,6 +25,7 @@ public class FriendsManager : MonoBehaviour {
 
 	[SerializeField] private TMP_Text friendsTitleText, playerIdText;
 
+	[SerializeField] private RectTransform removeFriendScreen;
 
 	//disabled when player is already in a lobby
 	//  NOTE: only set when friends UI is active, otherwise SetActive() for child won't go through
@@ -49,6 +50,9 @@ public class FriendsManager : MonoBehaviour {
 	//should not be empty if an invite was received
 	private string invitedLobbyId = "";
 
+	//temp variable set my remove friend (before confirmed by button)
+	private string removeFriendId = "";
+
 	#endregion
 
 	#region Functions
@@ -66,25 +70,52 @@ public class FriendsManager : MonoBehaviour {
 		}
 		friendBars.Clear();
 
-		if (newFriendsBlob.friends == null) newFriendsBlob.friends = new();
+		print(newFriendsBlob.friends_list);
 
-		foreach (AccountDataSyncer.FriendsBlob.FriendStatus f in newFriendsBlob.friends) {
-			//ignore if in rejected list
-			if (rejectedFriendIDs.Contains(f.uid)) continue;
+		newFriendsBlob.friends_list ??= new();
 
-			if (f.lobby_invite != "") {
-				//send player invite
-				LobbyInviteReceived(f.name, f.uid, f.lobby_invite);
-			}
+		foreach (Dictionary<string, string> d in newFriendsBlob.friends_list) {
+			try {
+				//ignore if in rejected list
+				if (rejectedFriendIDs.Contains(d["UID"])) continue;
 
-			FriendBar fb = Instantiate(friendBarPrefab, friendsScrollParent).GetComponent<FriendBar>();
+				if (d.TryGetValue("lobby_invite", out string inv) && inv != "") {
+					//send player invite
+					LobbyInviteReceived(d["username"], d["UID"], d["lobby_invite"]);
+				}
 
-			//if accepted, pending should always be false
-			bool pending = acceptedFriendIDs.Contains(f.uid) ? false : f.is_pending;
-			fb.InitializeFriendBar(f.name, f.uid, pending, f.status_id);
+				FriendBar fb = Instantiate(friendBarPrefab, friendsScrollParent).GetComponent<FriendBar>();
+				friendBars.Add(fb.gameObject);
 
-			friendBars.Add(fb.gameObject);
+				//if accepted, pending should always be falsed
+				bool pending = acceptedFriendIDs.Contains(d["UID"]) ? false : (d["is_pending"] == "True");
+				fb.InitializeFriendBar(d["username"], d["UID"], pending, int.Parse(d["status_id"]));
+			} catch (System.Exception e) { Debug.LogWarning(e); }
 		}
+	}
+	public void ConfirmedRemoveFriend() {
+		rejectedFriendIDs.Add(removeFriendId);
+		removeFriendScreen.gameObject.SetActive(false);
+		AccountDataSyncer.instance.RemovedFriend(removeFriendId);
+
+		foreach (GameObject g in friendBars) {
+			if (g == null) return;
+			if (g.GetComponent<FriendBar>().GetFriendId() == removeFriendId) {
+				Destroy(g);
+				break;
+			}
+		}
+		acceptedFriendIDs.Remove(removeFriendId);
+	}
+	public void CancelRemoveFriend() {
+		removeFriendScreen.gameObject.SetActive(false);
+	}
+	public void RemoveFriend(string friendId, string friendName) {
+		removeFriendId = friendId;
+
+		removeFriendScreen.gameObject.SetActive(true);
+		removeFriendScreen.GetChild(0).GetComponent<TMP_Text>().text =
+			$"Remove friend {friendName} (#{friendId})?";
 	}
 	//called by button callback
 	public void TryJoinLobby() {
@@ -97,8 +128,8 @@ public class FriendsManager : MonoBehaviour {
 
 		friendIdInput.text = "";
 	}
-	public void InviteFriendToLobby(string friendId) {
-		AccountDataSyncer.instance.InviteFriendToLobby(friendId);
+	public void InviteFriendToLobby(string friendId, string lobbyId) {
+		AccountDataSyncer.instance.InviteFriendToLobby(friendId, lobbyId);
 	}
 	//called from FriendBar
 	public void AcceptFriendRequest(string friendId) {
@@ -112,7 +143,9 @@ public class FriendsManager : MonoBehaviour {
 	//called from FriendsUpdated() callback if server gave an invite code
 	public void LobbyInviteReceived(string friendName, string friendId, string lobbyId) {
 		if (joinInviteLobbyScreen.gameObject.activeInHierarchy) return;
+		if (LobbyUI.instance.GetLobbyOrGameLoading() || ServerLinker.instance.GetIsInLobby()) return;
 
+		removeFriendScreen.gameObject.SetActive(false);
 		joinInviteLobbyScreen.gameObject.SetActive(true);
 
 		invitedLobbyId = lobbyId;

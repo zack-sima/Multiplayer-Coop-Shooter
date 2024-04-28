@@ -46,6 +46,9 @@ public class LobbyUI : MonoBehaviour {
 	[SerializeField] private TMP_Text lobbyTextDisplay;
 
 	[SerializeField] private RectTransform lobbyLoadingUI, gameStartingUI;
+	public bool GetLobbyOrGameLoading() {
+		return lobbyLoadingUI.gameObject.activeInHierarchy || gameStartingUI.gameObject.activeInHierarchy;
+	}
 
 	#endregion
 

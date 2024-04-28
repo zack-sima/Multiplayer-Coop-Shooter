@@ -9,7 +9,7 @@ public class FriendBar : MonoBehaviour {
 	#region References
 
 	[SerializeField] private TMP_Text friendNameText, friendIDText, onlineStatusText;
-	[SerializeField] private Button acceptInviteButton, rejectInviteButton, inviteToLobbyButton;
+	[SerializeField] private Button acceptInviteButton, rejectInviteButton, inviteToLobbyButton, removeButton;
 
 	#endregion
 
@@ -19,7 +19,10 @@ public class FriendBar : MonoBehaviour {
 	private bool isPending = false;
 
 	private string friendName = "";
+
 	private string friendId = "";
+	public string GetFriendId() { return friendId; }
+
 	private int statusId = 0;
 
 	#endregion
@@ -40,6 +43,7 @@ public class FriendBar : MonoBehaviour {
 		acceptInviteButton.gameObject.SetActive(isPending);
 		rejectInviteButton.gameObject.SetActive(isPending);
 		onlineStatusText.gameObject.SetActive(!isPending);
+		removeButton.gameObject.SetActive(!isPending);
 		inviteToLobbyButton.gameObject.SetActive(false);
 
 		friendNameText.text = friendName;
@@ -90,8 +94,12 @@ public class FriendBar : MonoBehaviour {
 		FriendsManager.instance.RejectFriendRequest(friendId);
 		Destroy(gameObject, 0.1f);
 	}
+	public void RemoveFriend() {
+		FriendsManager.instance.RemoveFriend(friendId, friendName);
+	}
 	public void InviteToLobby() {
-		FriendsManager.instance.InviteFriendToLobby(friendId);
+		if (!ServerLinker.instance.GetIsInLobby()) return;
+		FriendsManager.instance.InviteFriendToLobby(friendId, PlayerPrefs.GetString("room_id"));
 	}
 
 	private void Awake() { }
