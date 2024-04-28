@@ -45,6 +45,7 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 	//everyone displays the same score
 	private void ScoreOrWaveChanged() {
+		UpgradesCatalog.instance.ScoreChanged(Score);
 		UIController.instance.SetScoreAndWaveText(Score, Wave + 1);
 	}
 	private void GameOverChanged() {

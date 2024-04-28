@@ -66,6 +66,12 @@ public class PlayerInfo : MonoBehaviour {
 
 	//NOTE: only call on local player!
 
+	/*======================| Upgrades Callback |======================*/
+
+	public void UpgradeChanged(string newUpgrade) {
+		//TODO: ethan's side
+	}
+
 	/*======================| Abilities |======================*/
 	private float totalDmgDealt = 0;
 	public float GetTotalDmgDealt() { return totalDmgDealt; }
@@ -74,12 +80,12 @@ public class PlayerInfo : MonoBehaviour {
 
 	public List<(IAbility, bool)> GetAbilityList() { return abilities; }
 
-	public void IncrementDamageCharge(float dmgDone) { 
+	public void IncrementDamageCharge(float dmgDone) {
 		totalDmgDealt += dmgDone;
 		//Debug.Log(totalDmgDealt);
 	}
 
-	public void PushAbilityActivation(int index) { 
+	public void PushAbilityActivation(int index) {
 		abilities.PushAbilityActivation(index);
 	}
 
