@@ -16,30 +16,15 @@ public class AccountDataSyncer : MonoBehaviour {
 	//NOTE: upload class -- what is uploaded to the server every ~2s will always be of this json format
 	[System.Serializable]
 	public class UploadBlob {
-		public string UID = "[ERROR]";
-		public string username = "[ERROR]";
-		public int status_id = 0;
+		public string UID;
+		public string username;
+		public int status_id;
 	}
 	//NOTE: download class (parser) for the JSON list of friends that Jonathan returns
 	[System.Serializable]
 	public class FriendsBlob {
-
-		[System.Serializable]
-		public class FriendStatus {
-			//first two MUST be populated
-			public string uid = "[ERROR]";
-			public string name = "[ERROR]";
-
-			public int status_id = 0;
-			public bool is_pending = false;
-
-			//NOTE: this is usually an empty string, but for ONE RETURN should include a lobby ID
-			//  that the friend wants the player to join.
-			public string lobby_invite = "";
-		}
-
 		//NOTE: all player receive their list of friends from the server
-		public List<FriendStatus> friends;
+		public List<Dictionary<string, string>> friends_list;
 	}
 
 	#endregion
@@ -54,6 +39,8 @@ public class AccountDataSyncer : MonoBehaviour {
 
 	//NOTE: don't use infinite coroutines because switching scenes kills them; do these calls in update
 	private float updateInfoTimer = 0f;
+
+	private float lastChangedTimestamp = -20f;
 
 	#endregion
 
@@ -119,8 +106,6 @@ public class AccountDataSyncer : MonoBehaviour {
 
 		string url = baseURL + "update/information";
 
-		Debug.Log(url);
-
 		WWWForm form = new();
 		form.AddField("blob", dumpJson);
 
@@ -169,12 +154,27 @@ public class AccountDataSyncer : MonoBehaviour {
 
 		Debug.Log(webRequest.downloadHandler.text);
 	}
-	private IEnumerator InviteToLobby(string uid, string friendUid) {
+	private IEnumerator InviteToLobby(string uid, string friendUid, string lobbyId) {
+		WWWForm form = new();
+		form.AddField("selfUID", uid);
+		form.AddField("friendUID", friendUid);
+		form.AddField("lobby_invite", lobbyId);
+
+
+		string url = $"{baseURL}friend/lobby";
+
+		using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
+
+		yield return webRequest.SendWebRequest();
+
+		Debug.Log(webRequest.downloadHandler.text);
+	}
+	private IEnumerator RemoveFriend(string uid, string friendUid) {
 		WWWForm form = new();
 		form.AddField("selfUID", uid);
 		form.AddField("friendUID", friendUid);
 
-		string url = $"{baseURL}friend/lobby";
+		string url = $"{baseURL}friend/remove";
 
 		using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
 
@@ -185,10 +185,24 @@ public class AccountDataSyncer : MonoBehaviour {
 	private IEnumerator RequestFriend(string uid, string friendUid) {
 		WWWForm form = new();
 		form.AddField("username", LobbyUI.GetPlayerName());
-		form.AddField("selfUID", uid);
 		form.AddField("friendUID", friendUid);
+		form.AddField("selfUID", uid);
 
 		string url = $"{baseURL}friend/request";
+
+		using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
+
+		yield return webRequest.SendWebRequest();
+
+		Debug.Log(webRequest.downloadHandler.text);
+	}
+	private IEnumerator ChangeUsername(string uid) {
+		WWWForm form = new();
+
+		form.AddField("username", LobbyUI.GetPlayerName());
+		form.AddField("UID", uid);
+
+		string url = $"{baseURL}change/username";
 
 		using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
 
@@ -203,8 +217,8 @@ public class AccountDataSyncer : MonoBehaviour {
 	public void AskForUserID() {
 		StartCoroutine(GenerateUserID());
 	}
-	public void InviteFriendToLobby(string friendUid) {
-		StartCoroutine(InviteToLobby(PersistentDict.GetString("user_id"), friendUid));
+	public void InviteFriendToLobby(string friendUid, string lobbyId) {
+		StartCoroutine(InviteToLobby(PersistentDict.GetString("user_id"), friendUid, lobbyId));
 	}
 	public void AcceptedFriendRequest(string friendUid) {
 		StartCoroutine(ProcessedFriendRequest(PersistentDict.GetString("user_id"), friendUid, true));
@@ -212,8 +226,17 @@ public class AccountDataSyncer : MonoBehaviour {
 	public void RejectedFriendRequest(string friendUid) {
 		StartCoroutine(ProcessedFriendRequest(PersistentDict.GetString("user_id"), friendUid, false));
 	}
+	public void RemovedFriend(string friendUid) {
+		StartCoroutine(RemoveFriend(PersistentDict.GetString("user_id"), friendUid));
+	}
 	public void MakeFriendRequest(string friendUid) {
 		StartCoroutine(RequestFriend(PersistentDict.GetString("user_id"), friendUid));
+	}
+	public void ChangedUsername() {
+		if (Time.time - lastChangedTimestamp < 10) return;
+
+		lastChangedTimestamp = Time.time;
+		StartCoroutine(ChangeUsername(PersistentDict.GetString("user_id")));
 	}
 	private void Awake() {
 		if (instance != null) {

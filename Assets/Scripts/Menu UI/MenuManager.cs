@@ -22,6 +22,10 @@ public class MenuManager : MonoBehaviour {
 	[SerializeField] private TMP_Text modeDisplayTitle, modeDisplayDescription;
 	[SerializeField] private Image modeDispalyIcon;
 
+	//debug screen (TODO: add in all other required stuff!)
+	[SerializeField] private RectTransform debugScreen, menuScreen;
+	public void SetMenuScreen(bool active) { menuScreen.gameObject.SetActive(active); }
+
 	//play button (change text!)
 	[SerializeField] private TMP_Text playButtonText;
 	public void SetPlayButtonText(string text) { playButtonText.text = text; }
@@ -38,8 +42,26 @@ public class MenuManager : MonoBehaviour {
 	[SerializeField] private List<string> mapDropdownSceneNames;
 	public List<string> GetMapSceneNames() { return mapDropdownSceneNames; }
 
-	//hull/turret
+	//NOTE: this dropdown is used for actual game but the dropdown itself is usually hidden
 	[SerializeField] private TMP_Dropdown hullDropdown, turretDropdown;
+	public void SetHullDropdown(string val) {
+		for (int i = 0; i < hullDropdown.options.Count; i++) {
+			if (hullDropdown.options[i].text == val) {
+				hullDropdown.value = i;
+				PlayerHullChanged();
+				break;
+			}
+		}
+	}
+	public void SetTurretDropdown(string val) {
+		for (int i = 0; i < turretDropdown.options.Count; i++) {
+			if (turretDropdown.options[i].text == val) {
+				turretDropdown.value = i;
+				PlayerTurretChanged();
+				break;
+			}
+		}
+	}
 
 	#endregion
 
@@ -131,6 +153,9 @@ public class MenuManager : MonoBehaviour {
 
 		//NOTE: this calls the lobby UI loading screen
 		LobbyUI.instance.SetLobbyLoading(true);
+
+		//TODO: when adding more gamemodes make sure this is still correct!
+		SetGameMode(GameMode.Coop);
 	}
 	/// <summary>
 	/// Returns -1 if there is no scene with matching name
@@ -171,6 +196,10 @@ public class MenuManager : MonoBehaviour {
 			ServerLinker.instance.StartSinglePlayer(sceneIndex);
 		}
 	}
+	//NOTE: this button should not be shown to the player in builds
+	public void ToggleDebug() {
+		debugScreen.gameObject.SetActive(!debugScreen.gameObject.activeInHierarchy);
+	}
 	private void InitGame() {
 		PlayerTurretChanged();
 		PlayerHullChanged();
@@ -187,6 +216,15 @@ public class MenuManager : MonoBehaviour {
 		} else {
 			PlayerPrefs.SetInt("debug_starting_wave", 0);
 		}
+	}
+	//don't make networking call until input was finished changing
+	bool waitingChangeNameInput = false;
+	private IEnumerator WaitForNameInputExit() {
+		waitingChangeNameInput = true;
+		while (playerNameInput.isFocused) yield return null;
+		waitingChangeNameInput = false;
+
+		AccountDataSyncer.instance.ChangedUsername();
 	}
 	private void Awake() {
 		instance = this;
@@ -209,7 +247,11 @@ public class MenuManager : MonoBehaviour {
 		GameModeChanged();
 	}
 	private void Update() {
-		PlayerPrefs.SetString("player_name", playerNameInput.text);
+		string inputText = playerNameInput.text;
+		if (PlayerPrefs.GetString("player_name") != inputText) {
+			PlayerPrefs.SetString("player_name", inputText);
+			if (!waitingChangeNameInput) StartCoroutine(WaitForNameInputExit());
+		}
 
 		PlayerPrefs.SetInt("turret_index", turretDropdown.value);
 		PlayerPrefs.SetString("turret_name", turretDropdown.options[turretDropdown.value].text);

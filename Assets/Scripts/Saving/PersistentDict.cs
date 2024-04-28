@@ -185,6 +185,7 @@ public class PersistentDict : MonoBehaviour {
 	}
 	private void SaveBackupData(PersistentDictData data) {
 		BinaryFormatter bf = new();
+
 		FileStream stream = new(GetDataPath() + "/persistentDictBackup.sav", FileMode.Create);
 
 		bf.Serialize(stream, data);
@@ -192,9 +193,9 @@ public class PersistentDict : MonoBehaviour {
 		stream.Close();
 	}
 	public static string GetDataPath() {
-
 		string dataPath = Application.persistentDataPath;
-		if (!Application.isMobilePlatform) dataPath = Application.dataPath;
+
+		//if (!Application.isMobilePlatform) dataPath = Application.dataPath;
 
 #if UNITY_EDITOR
 		dataPath = Application.dataPath + "/EditorData";
