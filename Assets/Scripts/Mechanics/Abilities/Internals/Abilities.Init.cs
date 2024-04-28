@@ -25,7 +25,7 @@ namespace Abilities {
             //TODO: Link with garage / in game tech tree.
             switch(i) {
                 case Heal:
-                    ((Heal)i).cooldownPeriod = ((Heal)i).remainingCooldownTime = 2f;
+                    ((Heal)i).cooldownPeriod = ((Heal)i).remainingCooldownTime = 10f;
                     ((Heal)i).healAmount = .8f; // percentage heal.
                     ((Heal)i).healDuration = 3f;
                     break;
