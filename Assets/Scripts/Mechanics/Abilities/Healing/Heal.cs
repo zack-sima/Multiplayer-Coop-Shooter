@@ -4,19 +4,20 @@ using UnityEngine;
 
 namespace Abilities {
 
-     class RapidHeal : IActivatable, ISysTickable, IButtonRechargable {
+     class Heal : IActivatable, ISysTickable, IButtonRechargable {
         public float cooldownPeriod, healAmount, healDuration, remainingCooldownTime; 
         private float remainingHealTime = 0;
         private bool isActive = false;
         private UnityEngine.UI.Image outline = null;
         
-        public RapidHeal() { this.UpdateAbility(); }
+        public Heal() { this.UpdateAbility(); }
 
-        public void Activate() { //reset the timer and activate ability.
+        public void Activate(NetworkedEntity entity) { //reset the timer and activate ability.
             if (isActive || remainingCooldownTime != 0) return;
             remainingCooldownTime = cooldownPeriod;
             remainingHealTime = healDuration;
             isActive = true;
+            
         }
 
         public bool GetIsActive() { return isActive; }

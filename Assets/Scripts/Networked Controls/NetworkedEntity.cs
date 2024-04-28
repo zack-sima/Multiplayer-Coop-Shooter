@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
+using Abilities;
 
 public class NetworkedEntity : NetworkBehaviour {
 
@@ -113,8 +114,11 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	#region Ability Effects
 
+	private float flatHpModifier = 0f, percentHpModifier = 1f;
+
 	//Note: these should be called on the local player only, and the coroutines called will assume this.
 
+	/*======================| StatHandlers |======================*/
 	/// <summary> Needs to be called EVERY frame. </summary>
 	public void OverClockNetworkEntityCall() {
 		PlayerInfo.instance.ReloadFaster();
@@ -126,15 +130,38 @@ public class NetworkedEntity : NetworkBehaviour {
 	/// Otherwise adds newHealth directly on top. Automatically checks for HP bounds.
 	/// (HP will never be less than 0 or greater than Max Health, regardless of the float input)
 	/// </summary>
-	public void HealthNetworkEntityCall(float newHealth, bool isIncrement = false) {
-		if (isIncrement) {
-			Health = Mathf.Min(mainEntity.GetMaxHealth(), Mathf.Max(0, Health + newHealth));
-			mainEntity.UpdateHealthBar();	
-			return;
-		} 
-		Health = Mathf.Min(mainEntity.GetMaxHealth(), Mathf.Max(0, newHealth));
+	public void HealthFlatNetworkEntityCall(float newHealth) {
+		Health = Mathf.Min(mainEntity.GetMaxHealth(), Mathf.Max(0, Health + newHealth));
+		mainEntity.UpdateHealthBar();	
+		// Health = Mathf.Min(mainEntity.GetMaxHealth(), Mathf.Max(0, newHealth));
+		// mainEntity.UpdateHealthBar();	
+	}
+
+	public void HealthPercentNetworkEntityCall(float healthPercentModifier) {
+		if (healthPercentModifier < 0) return; 
+		Health = Mathf.Min(mainEntity.GetMaxHealth(), healthPercentModifier * Health);
 		mainEntity.UpdateHealthBar();	
 	}
+
+	/*======================| Inflictions |======================*/
+
+	private List<(InflictionType type, float param, float time)> inflictions = new();
+
+	public void LocalApplyInfliction(InflictionType type, float param, float time) {
+		Debug.Log("Local is applied");
+		inflictions.InitInfliction(type, param, time);
+	}
+
+	/// <summary>
+	/// rpc the type of infliction.
+	/// </summary>
+	[Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+	public void RPCApplyInfliction(InflictionType type, float param, float time) {
+		Debug.Log("Rpc is applied");
+		inflictions.InitInfliction(type, param, time);
+	}
+
+	//[Rpc()]
 
 	#endregion
 
@@ -315,8 +342,9 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	private void Update() {
 		if (!initialized) return;
-
+		this.InflictionHandlerSysTick(inflictions); // handles inflictions
 		if (HasSyncAuthority()) {
+			
 			//local entity
 			if (isPlayer) {
 				//natural healing

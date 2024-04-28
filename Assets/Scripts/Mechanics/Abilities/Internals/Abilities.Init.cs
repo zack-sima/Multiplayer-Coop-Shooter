@@ -14,7 +14,7 @@ namespace Abilities {
             input.Clear();
             RapidFire f = new RapidFire();
             input.Add((f, false));
-            RapidHeal h = new RapidHeal();
+            Heal h = new Heal();
             input.Add((h, false));
 
             AbilityUIManagerExtensions.OnAbilityListChange(); // callback for ui update. REQUIRED, o.w. no abilities will show.
@@ -24,10 +24,10 @@ namespace Abilities {
 
             //TODO: Link with garage / in game tech tree.
             switch(i) {
-                case RapidHeal:
-                    ((RapidHeal)i).cooldownPeriod = ((RapidHeal)i).remainingCooldownTime = 10f;
-                    ((RapidHeal)i).healAmount = .3f; // percentage heal.
-                    ((RapidHeal)i).healDuration = 3f;
+                case Heal:
+                    ((Heal)i).cooldownPeriod = ((Heal)i).remainingCooldownTime = 2f;
+                    ((Heal)i).healAmount = .8f; // percentage heal.
+                    ((Heal)i).healDuration = 3f;
                     break;
                 case RapidFire:
                     ((RapidFire)i).cooldownPeriod = ((RapidFire)i).remainingCooldownTime = 10f;

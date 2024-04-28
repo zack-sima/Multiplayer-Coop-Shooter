@@ -14,7 +14,7 @@ namespace Abilities {
         /// Called when ability is requested to be activated. 
         /// NEEDS to self-check whether or not ability CAN OR CANNOT be activated.
         /// </summary>
-        public void Activate();
+        public void Activate(NetworkedEntity entity);
 
         /// <summary>
         /// Return whether or not Active ability is, well active.
@@ -36,6 +36,10 @@ namespace Abilities {
         /// Called by UIController to Set the Outline for updating. (!Circular button!)
         /// </summary>
         public void SetButtonOutlineProgressImage(UnityEngine.UI.Image outlineProgress);
+    }
+
+    public interface IInflictable {
+
     }
 
     public interface IIconable {

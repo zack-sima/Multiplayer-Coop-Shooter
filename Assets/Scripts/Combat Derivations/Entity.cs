@@ -54,6 +54,7 @@ public class Entity : MonoBehaviour {
 	//set in inspector; TODO: change via upgrades, etc & set at init function
 	[SerializeField] private float maxHealth;
 	public float GetMaxHealth() { return maxHealth; }
+	public void SetMaxHealth(float maxHealth) { this.maxHealth = maxHealth; }
 
 	[SerializeField] private HealthBarType healthBarType;
 

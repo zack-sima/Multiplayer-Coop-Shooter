@@ -11,7 +11,7 @@ namespace Abilities {
     
     public RapidFire() { this.UpdateAbility(); }
 
-    public void Activate() { //reset the timer and activate ability.
+    public void Activate(NetworkedEntity entity) { //reset the timer and activate ability.
         if (isActive || remainingCooldownTime != 0) return;
         remainingCooldownTime = cooldownPeriod;
         remainingFiringTime = firingPeriod;

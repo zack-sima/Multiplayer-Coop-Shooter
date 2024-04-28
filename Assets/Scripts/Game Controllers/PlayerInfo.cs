@@ -62,11 +62,11 @@ public class PlayerInfo : MonoBehaviour {
 
 	#region Functions
 
-	#region Abilities 
+	#region Upgrades
 
 	//NOTE: only call on local player!
 
-	//stores ability shit here!
+	/*======================| Abilities |======================*/
 	private float totalDmgDealt = 0;
 	public float GetTotalDmgDealt() { return totalDmgDealt; }
 
@@ -82,6 +82,10 @@ public class PlayerInfo : MonoBehaviour {
 	public void PushAbilityActivation(int index) { 
 		abilities.PushAbilityActivation(index);
 	}
+
+	/*======================| Inflictions |======================*/
+
+	//types of inflictions.
 
 	#endregion
 
