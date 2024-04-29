@@ -27,6 +27,8 @@ public class EnemySpawner : NetworkBehaviour {
 
 	[Networked] //for master client (if host migrated, this makes sure spawning is rougly the same)
 	private float SpawnTimer { get; set; } = 0;
+	public float GetSpawnTimer() { return SpawnTimer; }
+
 	[Networked]
 	private int SpawnIndex { get; set; } = 0;
 
@@ -72,20 +74,19 @@ public class EnemySpawner : NetworkBehaviour {
 				GameStatsSyncer.instance.GetGameOver())
 				yield return null;
 
-			//NOTE: Only proceed 
 			if (NetworkedEntity.playerInstance == null || !NetworkedEntity.playerInstance.
 				Runner.IsSharedModeMasterClient && !NetworkedEntity.playerInstance.Runner.IsSinglePlayer) {
 				yield return new WaitForSeconds(1f);
 				continue;
 			}
 
+			if (SpawnIndex == 0) {
+				yield return StartCoroutine(WaitUntilEnemiesDead());
+			}
 			while (SpawnTimer > 0) {
 				SpawnTimer -= Time.deltaTime;
 
 				if (SpawnTimer <= 0) GameStatsSyncer.instance.IncrementWave();
-
-				//if everything was killed only wait 10s max
-				if (EnemiesAreDead() && SpawnTimer > 10f) SpawnTimer = 10f;
 
 				yield return new WaitForEndOfFrame();
 			}
@@ -110,42 +111,27 @@ public class EnemySpawner : NetworkBehaviour {
 
 			//end of wave delay
 			SpawnIndex = 0;
-			SpawnTimer = currWave * 2f + 20f;
+			SpawnTimer = currWave < 10 ? 10 : 15;
 		}
 	}
-	//TODO: should only be for the final wave in non-infinite mode
 	private IEnumerator WaitUntilEnemiesDead() {
 		//waits until all enemies are dead
 		bool enemiesAlive;
-		bool waited = false;
 		do {
 			yield return null;
 			enemiesAlive = false;
 			try {
-				foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
-					if (e == null || e.GetIsPlayer()) continue;
-					enemiesAlive = true;
-					waited = true;
-					break;
-				}
+				enemiesAlive = !EnemiesAreDead();
 			} catch { }
 		} while (enemiesAlive);
-
-		//TODO: change this code to adapt to level conditions
-		//if waited, means enemies were actually spawned
-		if (waited) {
-			//give players some time after killing all enemies
-			yield return new WaitForSeconds(10f);
-			GameStatsSyncer.instance.IncrementWave();
-		}
 	}
 	private bool EnemiesAreDead() {
 		try {
 			foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
 				if (e == null || e.GetIsPlayer()) continue;
-				return true;
+				return false;
 			}
-			return false;
+			return true;
 		} catch {
 			return false;
 		}
@@ -175,7 +161,7 @@ public class EnemySpawner : NetworkBehaviour {
 			Runner.Spawn(spawnPrefab, new Vector3(point.x, 1, point.z), Quaternion.identity);
 		} catch (System.Exception e) { Debug.LogWarning(e); }
 	}
-	
+
 	public override void FixedUpdateNetwork() {
 		if (spawnEnemyLater) {
 			spawnEnemyLater = false;
