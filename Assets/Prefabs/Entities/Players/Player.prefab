@@ -342,6 +342,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainEntity: {fileID: 5931193942257798054}
+  effectPrefabs: {fileID: 11400000, guid: d09ac29cb14874b14ae8f5d6efd45caa, type: 2}
   isPlayer: 1
 --- !u!114 &5931193942257798054
 MonoBehaviour:

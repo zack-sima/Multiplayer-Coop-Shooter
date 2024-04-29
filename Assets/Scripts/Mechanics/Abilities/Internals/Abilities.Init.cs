@@ -12,10 +12,10 @@ namespace Abilities {
             if (input.Count > 0) return;
 
             input.Clear();
-            // RapidFire f = new RapidFire();
-            // input.Add((f, false));
-            // Heal h = new Heal();
-            // input.Add((h, false));
+            RapidFire f = new RapidFire();
+            input.Add((f, false));
+            Heal h = new Heal();
+            input.Add((h, false));
 
             AbilityUIManagerExtensions.OnAbilityListChange(); // callback for ui update. REQUIRED, o.w. no abilities will show.
         }
@@ -26,9 +26,9 @@ namespace Abilities {
             switch(i) {
                 //==== HEALING ====//
                 case Heal:
-                    ((Heal)i).cooldownPeriod = ((Heal)i).remainingCooldownTime = 10f;
+                    ((Heal)i).cooldownPeriod = ((Heal)i).remainingCooldownTime = .5f;
                     ((Heal)i).healAmount = .8f; // percentage heal.
-                    ((Heal)i).healDuration = 5f;
+                    ((Heal)i).healDuration = 1f;
                     break;
                 case AreaHeal:
                     ((AreaHeal)i).cooldownPeriod = 10f;
@@ -50,7 +50,7 @@ namespace Abilities {
 
                 //==== DAMAGE ====//
                 case RapidFire:
-                    ((RapidFire)i).cooldownPeriod = ((RapidFire)i).remainingCooldownTime = 10f;
+                    ((RapidFire)i).cooldownPeriod = ((RapidFire)i).remainingCooldownTime = .5f;
                     ((RapidFire)i).firingPeriod = ((RapidFire)i).remainingFiringTime = 3f;
                     break;
             }

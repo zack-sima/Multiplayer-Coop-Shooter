@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Effects;
 using UnityEngine;
 
 namespace Abilities {
@@ -17,7 +18,16 @@ namespace Abilities {
             remainingCooldownTime = cooldownPeriod;
             remainingHealTime = healDuration;
             isActive = true;
-            
+
+            //Effect
+            GameObject healEffect = entity.InitEffect(entity.effectPrefabs.healEffectPrefab);
+            healEffect.transform.position += new Vector3(0, .1f, 0);
+            if (healEffect.TryGetComponent(out Effect e)) {
+                e.EnableDestroy(healDuration);
+            }
+            if (healEffect.TryGetComponent(out ParticleSystem p)) {
+                //For Particle effects.
+            }
         }
 
         public bool GetIsActive() { return isActive; }

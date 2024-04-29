@@ -81,7 +81,10 @@ namespace Abilities {
                 /*======================| Ability Callbacks |======================*/
 
                 if (a is IActivatable) {
-                    if (abilities[i].isActivated) { ((IActivatable)a).Activate(entity); abilities[i] = (a, false); }
+                    if (abilities[i].isActivated) { 
+                        ((IActivatable)a).Activate(entity); 
+                        abilities[i] = (a, false); 
+                    }
                 }
                 if (a is IPassiveable) {
                     

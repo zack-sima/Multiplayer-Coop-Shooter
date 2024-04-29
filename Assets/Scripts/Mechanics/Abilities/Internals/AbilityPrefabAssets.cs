@@ -6,12 +6,15 @@ using UnityEngine;
 //[CreateAssetMenu(menuName = "Ability Prefab Assets")]
 public class AbilityPrefabAssets : ScriptableObject {
 
-    [Serializable]
-    public class AreaHealPrefab {
-        public float tempPlaceholder;
-    }
+    //[Tooltip("baka")]
 
-    [SerializeField] 
-    public AreaHealPrefab areaHealPrefab;
+    [Header("Healing Based")]
+    
+    [SerializeField] public GameObject healEffectPrefab;
+    [SerializeField] public GameObject areaHealEffectPrefab;
+
+    [Header("Basic")]
+
+    [SerializeField] public GameObject fireEffectPrefab;
 
 }

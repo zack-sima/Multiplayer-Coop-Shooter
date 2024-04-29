@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Effects;
 
 namespace Abilities {
 
@@ -16,6 +17,14 @@ namespace Abilities {
         remainingCooldownTime = cooldownPeriod;
         remainingFiringTime = firingPeriod;
         isActive = true;
+                    //Effect
+        GameObject fireEffect = entity.InitEffect(entity.effectPrefabs.fireEffectPrefab);
+        fireEffect.transform.position += new Vector3(0, .3f, 0);
+        if (fireEffect.TryGetComponent(out Effect e)) {
+            e.EnableDestroy(firingPeriod + 3f);
+            e.EnableEarlyDestruct(5f);
+        }
+        
     }
 
     public bool GetIsActive() { return isActive; }

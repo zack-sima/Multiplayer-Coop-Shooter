@@ -49,7 +49,7 @@ namespace Abilities {
 
         public void IncrementTier();
     }
-
+    
     public interface IIconable {
         // TODO: Callback returning ability Icon for the ability Button
         /// <summary>
