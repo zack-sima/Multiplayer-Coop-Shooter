@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2381ffb27e014cd7ba2ea16dc8f7b68, type: 3}
+  m_Name: Ability Prefab Assets
+  m_EditorClassIdentifier: 
+  healEffectPrefab: {fileID: 8301208436968944004, guid: 095d6d6a1de2a4a6cbb3bea2940b2fb1, type: 3}
+  areaHealEffectPrefab: {fileID: 0}
+  fireEffectPrefab: {fileID: 5824614856206480720, guid: 8f61d8f96e11447d383d1654e68b808e, type: 3}

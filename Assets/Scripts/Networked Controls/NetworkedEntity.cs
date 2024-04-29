@@ -23,6 +23,9 @@ public class NetworkedEntity : NetworkBehaviour {
 	private CombatEntity optionalCombatEntity = null;
 	public CombatEntity GetCombatEntity() { return optionalCombatEntity; }
 
+	[SerializeField]
+	public AbilityPrefabAssets effectPrefabs;
+
 	#endregion
 
 	#region Synced
@@ -162,6 +165,13 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 
 	//[Rpc()]
+
+	/*======================| Effects |======================*/
+
+	public GameObject InitEffect(GameObject effectPrefab) {
+		//Apply both local and RPC the effect change!
+		return Instantiate(effectPrefab, transform);
+	}
 
 	#endregion
 

@@ -38,10 +38,18 @@ namespace Abilities {
         public void SetButtonOutlineProgressImage(UnityEngine.UI.Image outlineProgress);
     }
 
-    public interface IInflictable {
+    public interface ITierable {
+        /// <summary>
+        /// Returns the current tier of the ability.
+        /// </summary>
+        public uint GetTier();
 
+        
+        public void SetTier(uint tier);
+
+        public void IncrementTier();
     }
-
+    
     public interface IIconable {
         // TODO: Callback returning ability Icon for the ability Button
         /// <summary>
