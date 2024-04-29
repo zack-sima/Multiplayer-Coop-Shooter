@@ -1,21 +1,30 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using Abilities.StatHandler;
 
 namespace Abilities {
+
+    public class StatModifier {
+        public float healthPercentModifier = 1f;
+        public float healthFlatModifier = 0f;
+        public float maxHealthPercentModifier = 1f;
+        public float maxHealthFlatModifier = 0f;
+        //speed
+            //armor
+            //damage
+            //etc.
+    }
 
     public static class AbilityManagerExtensions { 
         /// <summary>
         /// For HUMANS only. Called every tick.
-        /// </summary>
+        /// </summary> //TODO: Rename this method.
         public static void SysTickAndAbilityHandler(this NetworkedEntity entity, List<(IAbility ability, bool isActivated)> abilities) {
             abilities.UpdateAbilityList();
             if (entity == null) return;
-            float healthPercentModifier = 1f, healthFlatModifier = 0, maxHealthPercentModifier = 1f, maxHealthFlatModifier = 0;
-            //speed
-            //armor
-            //damage
-            //etc.
+            StatModifier stats = new StatModifier();
+            
 
             for(int i = 0; i < abilities.Count; i++) {
                 IAbility a = abilities[i].ability;
@@ -26,10 +35,10 @@ namespace Abilities {
                 /*======================| Abilities |======================*/
 
                 switch(a) {
-                    //====HEALING====//
+                    //==== HEALING ====//
                     case Heal:
                         if (((Heal)a).GetIsActive()) { 
-                            healthFlatModifier += ((Heal)a).healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / ((Heal)a).healDuration; 
+                            stats.healthFlatModifier += ((Heal)a).healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / ((Heal)a).healDuration; 
                             //maxHealthFlatModifier += 100f * Time.deltaTime;      
                             //maxHealthFlatModifier += 100f * Time.deltaTime;
                             //heal entities around u
@@ -45,7 +54,21 @@ namespace Abilities {
                             //     //e.GetNetworker().HealthFlatNetworkEntityCall(((Heal)a).healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / ((Heal)a).healDuration);
                             // }
                         } break;
+                    case AreaHeal:
+                        if (((AreaHeal)a).GetIsActive()) {
+                            stats.healthFlatModifier += ((AreaHeal)a).healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / ((AreaHeal)a).healPeriod; 
+                        } break;
+                    case InfiHeal:
+                        if (((InfiHeal)a).GetIsActive()) {
+                            stats.healthFlatModifier += ((InfiHeal)a).healPerSec * Time.deltaTime;
+                        } break;
+                    case HPSteal:
+                        if (((HPSteal)a).GetIsActive()) {
+                            stats.healthFlatModifier += ((HPSteal)a).totalHPStolen * Time.deltaTime;
+                            ((HPSteal)a).totalHPStolen -= ((HPSteal)a).totalHPStolen * Time.deltaTime;
+                        } break;
                     
+                    //==== DAMAGE ====//
                     case RapidFire:
                         if (((RapidFire)a).GetIsActive()) { 
                             NetworkedEntity.playerInstance.OverClockNetworkEntityCall();    
@@ -65,13 +88,11 @@ namespace Abilities {
                     //apply passive buffs & changes
                 }
 		    } 
+            //Run this to the upgrade stats < 
+            //stats.UpgradeStatChanges()
 
-            // apply buffs and stuff. TODO: Infliction Handler for local player here.
-            NetworkedEntity.playerInstance.HealthPercentNetworkEntityCall(healthPercentModifier);
-            NetworkedEntity.playerInstance.HealthFlatNetworkEntityCall(healthFlatModifier);
-    
-            entity.GetEntity().SetMaxHealth(maxHealthPercentModifier * entity.GetEntity().GetMaxHealth());
-            entity.GetEntity().SetMaxHealth(entity.GetEntity().GetMaxHealth() + maxHealthFlatModifier);
+            //Apply stat values.
+            entity.ApplyStatChanges(stats);
         }
 
         public static void PushAbilityActivation(this List<(IAbility ability, bool isActivated)> abilities, int index) {
