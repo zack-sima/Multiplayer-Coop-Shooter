@@ -81,6 +81,12 @@ namespace Abilities {
                 /*======================| Ability Callbacks |======================*/
 
                 if (a is IActivatable) {
+#if UNITY_EDITOR
+                    if (Input.GetKeyDown(KeyCode.LeftShift)) {
+                        ((IActivatable)a).Activate(entity, true); 
+                        abilities[i] = (a, false); 
+                    }
+#endif
                     if (abilities[i].isActivated) { 
                         ((IActivatable)a).Activate(entity); 
                         abilities[i] = (a, false); 

@@ -12,8 +12,8 @@ namespace Abilities {
         
         public InfiHeal() { this.UpdateAbility(); }
 
-        public void Activate(NetworkedEntity entity) { //reset the timer and activate ability.
-            if (isActive || remainingCooldownTime != 0) return;
+        public void Activate(NetworkedEntity entity, bool isOverride = false) { //reset the timer and activate ability.
+            if (!isOverride && (isActive || remainingCooldownTime != 0)) return;
             remainingCooldownTime = cooldownPeriod;
             remainingHealTime = healDuration;
             isActive = true;

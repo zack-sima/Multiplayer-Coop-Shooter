@@ -26,7 +26,7 @@ namespace Abilities {
             switch(i) {
                 //==== HEALING ====//
                 case Heal:
-                    ((Heal)i).cooldownPeriod = ((Heal)i).remainingCooldownTime = .5f;
+                    ((Heal)i).cooldownPeriod = ((Heal)i).remainingCooldownTime = 15f;
                     ((Heal)i).healAmount = .8f; // percentage heal.
                     ((Heal)i).healDuration = 1f;
                     break;
@@ -37,7 +37,7 @@ namespace Abilities {
                     ((AreaHeal)i).healRadius = 5f;
                     break;
                 case InfiHeal:
-                    ((InfiHeal)i).cooldownPeriod = ((InfiHeal)i).remainingCooldownTime = 10f; 
+                    ((InfiHeal)i).cooldownPeriod = ((InfiHeal)i).remainingCooldownTime = 15f; 
                     ((InfiHeal)i).healPerSec = 300f;
                     ((InfiHeal)i).healDuration = 15f;
                     break;
@@ -50,8 +50,8 @@ namespace Abilities {
 
                 //==== DAMAGE ====//
                 case RapidFire:
-                    ((RapidFire)i).cooldownPeriod = ((RapidFire)i).remainingCooldownTime = .5f;
-                    ((RapidFire)i).firingPeriod = ((RapidFire)i).remainingFiringTime = 3f;
+                    ((RapidFire)i).cooldownPeriod = ((RapidFire)i).remainingCooldownTime = 15f;
+                    ((RapidFire)i).firingPeriod = ((RapidFire)i).remainingFiringTime = 5f;
                     break;
             }
         }

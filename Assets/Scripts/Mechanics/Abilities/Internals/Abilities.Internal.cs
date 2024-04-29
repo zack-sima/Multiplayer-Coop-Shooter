@@ -14,7 +14,7 @@ namespace Abilities {
         /// Called when ability is requested to be activated. 
         /// NEEDS to self-check whether or not ability CAN OR CANNOT be activated.
         /// </summary>
-        public void Activate(NetworkedEntity entity);
+        public void Activate(NetworkedEntity entity, bool isOverride = false);
 
         /// <summary>
         /// Return whether or not Active ability is, well active.
