@@ -4,6 +4,7 @@ using UnityEngine;
 using Fusion;
 using Abilities;
 using Effects;
+using UnityEngine.Video;
 
 public class NetworkedEntity : NetworkBehaviour {
 
@@ -172,10 +173,12 @@ public class NetworkedEntity : NetworkBehaviour {
 	public GameObject InitEffect(GameObject effectPrefab, float duration, float earlyDestruct, EffectIndex i) {
 		//Apply both local and RPC the effect change!
 		RPCInitEffect(i, duration, earlyDestruct);
-		return Instantiate(effectPrefab, transform);
+		GameObject g = Instantiate(effectPrefab, transform);
+		g.transform.Translate(Vector3.up * 0.1f);
+		return g;
 	}
 
-	[Rpc(RpcSources.All, RpcTargets.All)]
+	[Rpc(RpcSources.All, RpcTargets.Proxies)]
 	private void RPCInitEffect(EffectIndex i, float duration, float earlyDestruct) {
 		
 		GameObject g = this.GetEffect(i);

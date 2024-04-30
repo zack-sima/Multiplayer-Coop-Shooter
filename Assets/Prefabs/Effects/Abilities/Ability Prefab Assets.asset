@@ -13,5 +13,7 @@ MonoBehaviour:
   m_Name: Ability Prefab Assets
   m_EditorClassIdentifier: 
   healEffectPrefab: {fileID: 8301208436968944004, guid: 095d6d6a1de2a4a6cbb3bea2940b2fb1, type: 3}
-  areaHealEffectPrefab: {fileID: 0}
+  areaHealEffectPrefab: {fileID: 8783893285912058362, guid: 23bbb7c4f2c484b13aed87863965c5de, type: 3}
+  infiHealEffectPrefab: {fileID: 7672674973976317775, guid: bd55b296acca94bfabfe9c46d732cfb3, type: 3}
+  hpStealEffectPrefab: {fileID: 1104784749894489985, guid: cd2d3708de6de42dc98ce328405240e0, type: 3}
   fireEffectPrefab: {fileID: 5824614856206480720, guid: 8f61d8f96e11447d383d1654e68b808e, type: 3}

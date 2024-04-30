@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Effects;
 
 namespace Abilities {
 
      class AreaHeal : IActivatable, ISysTickable, IButtonRechargable {
-        public float cooldownPeriod, healAmount, healPeriod, healRadius; 
-        private float remainingHealTime = 0, remainingCooldownTime = 0;
+        public float cooldownPeriod, healAmount, healPeriod, healRadius, remainingCooldownTime; 
+        private float remainingHealTime = 0;
         private bool isActive = false;
         private UnityEngine.UI.Image outline = null;
         
@@ -31,7 +32,15 @@ namespace Abilities {
                 //e.GetNetworker().HealthFlatNetworkEntityCall(((Heal)a).healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / ((Heal)a).healDuration);
             }
 
-            //TODO: Heal Animation.
+            //Effect
+            GameObject healEffect = entity.InitEffect(entity.GetEffect(EffectIndex.AreaHeal), healPeriod + 2f, 5f, EffectIndex.AreaHeal);
+            if (healEffect.TryGetComponent(out Effect effect)) {
+                effect.EnableDestroy(healPeriod);
+                effect.EnableEarlyDestruct(5f);
+            }
+            if (healEffect.TryGetComponent(out ParticleSystem p)) {
+                //For Particle effects.
+            }
         }
 
         public bool GetIsActive() { return isActive; }

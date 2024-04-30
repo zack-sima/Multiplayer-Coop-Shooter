@@ -21,7 +21,6 @@ namespace Abilities {
             isActive = true;
 
             //Effect
-            entity.effectPrefabs.healEffectPrefab.transform.position = new Vector3(0, .1f, 0);
             GameObject healEffect = entity.InitEffect(entity.effectPrefabs.healEffectPrefab, healDuration, 0f, EffectIndex.Heal);
            
             if (healEffect.TryGetComponent(out Effect e)) {

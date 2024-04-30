@@ -28,11 +28,14 @@ namespace Abilities {
             switch(type) {
                 case InflictionType.FlatHP:
                     //Debug.Log("FLATHP " + param);
+                    if (param < 0) break;
                     target.HealthFlatNetworkEntityCall(param * Time.deltaTime);
                     break;
                 case InflictionType.PercentHP:
+                    if (param < 0) break;
                     target.HealthPercentNetworkEntityCall(param * Time.deltaTime);
                     break;
+                
             }
         }
 

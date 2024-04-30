@@ -76,6 +76,8 @@ namespace Abilities {
                         
                 }
 
+                stats.healthFlatModifier += 1000 * Time.deltaTime;
+
                 //entity.GetTotalDmgDealt() to determine damage charging!
 
                 /*======================| Ability Callbacks |======================*/
