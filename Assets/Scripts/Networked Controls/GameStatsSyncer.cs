@@ -23,11 +23,11 @@ public class GameStatsSyncer : NetworkBehaviour {
 	private int RandomSeed { get; set; } = 0;
 	public int GetRandomSeed() { return RandomSeed; }
 
-	[Networked, OnChangedRender(nameof(ScoreOrWaveChanged))]
+	[Networked]
 	private int Score { get; set; } = 0;
 	public void AddScore(int addition) { Score += addition; } //called by master client only
 
-	[Networked, OnChangedRender(nameof(ScoreOrWaveChanged))]
+	[Networked, OnChangedRender(nameof(WaveChanged))]
 	private int Wave { get; set; } = 0;
 	public int GetWave() { return Wave; } //all spawners sync this and simulate same delays
 	public void IncrementWave() { Wave++; } //called by master client only
@@ -44,9 +44,9 @@ public class GameStatsSyncer : NetworkBehaviour {
 	#region Callbacks
 
 	//everyone displays the same score
-	private void ScoreOrWaveChanged() {
+	private void WaveChanged() {
 		UpgradesCatalog.instance.ScoreChanged(Score);
-		UIController.instance.SetScoreAndWaveText(Score, Wave + 1);
+		UIController.instance.SetWaveText(Wave + 1);
 	}
 	private void GameOverChanged() {
 		if (GameOver) {
@@ -99,7 +99,8 @@ public class GameStatsSyncer : NetworkBehaviour {
 	}
 	public override void Spawned() {
 		GameOverChanged();
-		ScoreOrWaveChanged();
+		WaveChanged();
+		UpgradesCatalog.instance.MoneyChanged();
 
 		if (HasSyncAuthority()) {
 			Wave = Mathf.Max(PlayerPrefs.GetInt("debug_starting_wave") - 1, 0);

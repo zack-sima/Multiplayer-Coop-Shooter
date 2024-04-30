@@ -25,7 +25,8 @@ public class EnemySpawner : NetworkBehaviour {
 
 	#region Synced
 
-	[Networked] //for master client (if host migrated, this makes sure spawning is rougly the same)
+	//for master client (if host migrated, this makes sure spawning is rougly the same)
+	[Networked, OnChangedRender(nameof(WaveStartTimerChanged))]
 	private float SpawnTimer { get; set; } = 0;
 	public float GetSpawnTimer() { return SpawnTimer; }
 
@@ -145,8 +146,17 @@ public class EnemySpawner : NetworkBehaviour {
 		}
 	}
 
+	//disable UI
+	private void WaveStartTimerChanged() {
+		if (SpawnTimer > 0) {
+			UpgradesCatalog.instance.SetTimerText(Mathf.CeilToInt(SpawnTimer).ToString() + "s");
+		} else {
+			UpgradesCatalog.instance.DisableUpgradeUI();
+		}
+	}
+
 	//called so that all players get the shop scene
-	public void WaveChanged() {
+	private void WaveChanged() {
 		UpgradesCatalog.instance.ShowPossibleUpgrades();
 	}
 

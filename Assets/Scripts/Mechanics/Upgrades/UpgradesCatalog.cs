@@ -124,9 +124,22 @@ public class UpgradesCatalog : MonoBehaviour {
 	#region References
 
 	[SerializeField] private RectTransform waveUpgradeUI;
+	public bool UpgradeUIOn() {
+		if (Time.time - closedUpgradeTimestamp < 0.07f) return true;
+		return waveUpgradeUI.gameObject.activeInHierarchy;
+	}
+	public void DisableUpgradeUI() {
+		if (waveUpgradeUI.gameObject.activeInHierarchy) {
+			waveUpgradeUI.gameObject.SetActive(false);
+			closedUpgradeTimestamp = Time.time;
+		}
+	}
 
 	//actually shows the player upgrade stuff
 	[SerializeField] private List<UpgradeCardButton> waveUpgradeCards;
+
+	[SerializeField] private TMP_Text timerText;
+	public void SetTimerText(string text) { timerText.text = text; }
 
 	#endregion
 
@@ -139,12 +152,14 @@ public class UpgradesCatalog : MonoBehaviour {
 	//the real list
 	private Dictionary<string, UpgradeNode> playerUpgrades;
 
-	//player money
+	//NOTE: player money
 	private int playerMoney = 0;
 	public int GetPlayerMoney() { return playerMoney; }
 
 	//whenever score changes, compare with this to see how much money player should get
 	private int lastScore = 0;
+
+	private float closedUpgradeTimestamp = 0f;
 
 	#endregion
 
@@ -159,13 +174,14 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		List<string> totalUpgradableList = new();
 		foreach (UpgradeNode n in playerUpgrades.Values) {
-			if (n.CanUnlock(playerUpgrades)) totalUpgradableList.Add(n.GetUpgradeId());
+			if (n.CanUnlock(playerUpgrades) && !n.unlocked) totalUpgradableList.Add(n.GetUpgradeId());
 		}
 
 		List<string> upgradableList = new();
 
 		//pick up to 4 random upgradable cards
-		for (int i = 0; i < Mathf.Min(totalUpgradableList.Count, 4); i++) {
+		for (int i = 0; i < 4; i++) {
+			if (totalUpgradableList.Count == 0) break;
 			int addIndex = Random.Range(0, totalUpgradableList.Count);
 			upgradableList.Add(totalUpgradableList[addIndex]);
 			totalUpgradableList.RemoveAt(addIndex);
@@ -180,7 +196,7 @@ public class UpgradesCatalog : MonoBehaviour {
 			waveUpgradeCards[i].gameObject.SetActive(true);
 
 			//setup button callbacks
-			waveUpgradeCards[i].Init(n.upgradeName, n.level, n.cost, n.icon);
+			waveUpgradeCards[i].Init(n);
 		}
 		//turn off unused
 		for (int i = upgradableList.Count; i < waveUpgradeCards.Count; i++) {
@@ -188,15 +204,21 @@ public class UpgradesCatalog : MonoBehaviour {
 		}
 	}
 	public void CloseUpgrades() {
-		waveUpgradeUI.gameObject.SetActive(false);
+		DisableUpgradeUI();
 	}
 	public void ScoreChanged(int newScore) {
 		if (newScore > lastScore) {
 			playerMoney += newScore - lastScore;
+			MoneyChanged();
 		}
 		lastScore = newScore;
 	}
-	public void PurchaseUpgrade(string upgradeName) {
+	public void MoneyChanged() {
+		UIController.instance.SetMoneyText(playerMoney);
+	}
+	public void PurchaseUpgrade(UpgradeCardButton sender, string upgradeName) {
+		print($"tried to purchase {upgradeName}");
+
 		//can't upgrade for one reason or another
 		if (!playerUpgrades.ContainsKey(upgradeName) || playerUpgrades[upgradeName].unlocked ||
 			playerUpgrades[upgradeName].cost > playerMoney) return;
@@ -207,6 +229,9 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		//call PlayerInfo callback
 		PlayerInfo.instance.UpgradeChanged(upgradeName, playerUpgrades[upgradeName].level);
+
+		sender.PurchaseSuccessful();
+		MoneyChanged();
 	}
 	private void AddUpgrade(string name, int cost, int level = 0, bool unlocked = false, List<string> mutuallyExclusiveUpgrades = null,
 		List<string> hardRequirements = null, List<string> softRequirements = null) {
@@ -238,7 +263,7 @@ public class UpgradesCatalog : MonoBehaviour {
 		AddUpgrade("Rapid Fire", 0, unlocked: true);
 		AddUpgrade("Heal", 0, unlocked: true);
 
-		for (int i = 0; i < 100; i++) AddUpgrade($"Camp", 10 + i, level: i + 1);
+		for (int i = 0; i < 10; i++) AddUpgrade($"Camp", 10 + i, level: i + 1);
 	}
 
 	private void Start() {
@@ -251,7 +276,11 @@ public class UpgradesCatalog : MonoBehaviour {
 	}
 
 	private void Update() {
-		if (Input.GetKeyDown(KeyCode.U)) ShowPossibleUpgrades();
+		if (Input.GetKeyDown(KeyCode.U)) {
+			playerMoney += 1000;
+			MoneyChanged();
+			ShowPossibleUpgrades();
+		}
 	}
 
 	#endregion

@@ -30,7 +30,7 @@ public class UIController : MonoBehaviour {
 	#region References
 
 	[SerializeField]
-	private TMP_Text respawnTimerText, gameOverTimerText, scoreText;
+	private TMP_Text respawnTimerText, gameOverTimerText, moneyText, waveText;
 
 	[SerializeField]
 	private RectTransform respawnUI, gameOverUI, mobileUI, pcUI, loadingUI, optionsUI;
@@ -48,10 +48,10 @@ public class UIController : MonoBehaviour {
 	/// </summary>
 	private void InitAbilityButtons() {
 		//turns everything off.
-		foreach(GameObject g in mobileAbilityButtons) {
+		foreach (GameObject g in mobileAbilityButtons) {
 			if (g.activeInHierarchy) g.SetActive(false);
 		}
-		foreach(GameObject g in pcAbilityButtons) {
+		foreach (GameObject g in pcAbilityButtons) {
 			if (g.activeInHierarchy) g.SetActive(false);
 		}
 	}
@@ -60,7 +60,7 @@ public class UIController : MonoBehaviour {
 	/// Called by each ability to update certain stuff on a callback basis.
 	/// </summary>
 	public GameObject GetAbilityButton(int index) {
-		if (index !< (GetIsMobile() ? mobileAbilityButtons.Count : pcAbilityButtons.Count)) return null;
+		if (index! < (GetIsMobile() ? mobileAbilityButtons.Count : pcAbilityButtons.Count)) return null;
 		return GetIsMobile() ? mobileAbilityButtons[index] : pcAbilityButtons[index];
 	}
 
@@ -78,8 +78,8 @@ public class UIController : MonoBehaviour {
 	public void AbilitiesUpdated() {
 		List<GameObject> buttons = GetIsMobile() ? mobileAbilityButtons : pcAbilityButtons;
 		InitAbilityButtons(); // turn off all the buttons.
-		//Debug.Log("UI controller is reached" + PlayerInfo.instance.GetAbilityList().Count + " " + buttons.Count);
-		for(int i = 0; i < PlayerInfo.instance.GetAbilityList().Count && i < buttons.Count; i++) {
+							  //Debug.Log("UI controller is reached" + PlayerInfo.instance.GetAbilityList().Count + " " + buttons.Count);
+		for (int i = 0; i < PlayerInfo.instance.GetAbilityList().Count && i < buttons.Count; i++) {
 			//PlayerInfo.instance.GetAbilityList()[i]. /* TODO: Callback for icon, color, shape, etc. */
 
 			//Callback for updating the UI button fill amount.
@@ -88,7 +88,7 @@ public class UIController : MonoBehaviour {
 				GameObject g = buttons[i].FindChild("OutlineProgress");
 				if (g != null) {
 					Image image = g.GetComponent<Image>();
-					if (image != null) 
+					if (image != null)
 						((IButtonRechargable)PlayerInfo.instance.GetAbilityList()[i].Item1).SetButtonOutlineProgressImage(image);
 				}
 			}
@@ -162,7 +162,7 @@ public class UIController : MonoBehaviour {
 	}
 	public bool InOptions() {
 		if (Time.time - closedOptionsTimestamp < 0.07f) return true;
-		return optionsUI.gameObject.activeInHierarchy;
+		return optionsUI.gameObject.activeInHierarchy || UpgradesCatalog.instance.UpgradeUIOn();
 	}
 	public void ResumeGame() {
 		closedOptionsTimestamp = Time.time;
@@ -197,9 +197,11 @@ public class UIController : MonoBehaviour {
 	public void SetGameOverUIEnabled(bool enabled) {
 		gameOverUI.gameObject.SetActive(enabled);
 	}
-	public void SetScoreAndWaveText(int score, int wave) {
-		scoreText.text = $"<color=#ffffff>Score: <color=#aaeeaa>{score}</color>\n" +
-			$"<color=#ffffff>Wave: <color=#eeeeaa>{wave}";
+	public void SetMoneyText(int money) {
+		moneyText.text = $"<color=#ffffff>Cash: <color=#aaeeaa>${money}</color>\n";
+	}
+	public void SetWaveText(int wave) {
+		waveText.text = $"<color=#ffffff>Wave: <color=#eeeeaa>{wave}";
 	}
 	private void Awake() {
 		instance = this;

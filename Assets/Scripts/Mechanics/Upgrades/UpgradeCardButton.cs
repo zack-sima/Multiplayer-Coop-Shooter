@@ -8,22 +8,28 @@ public class UpgradeCardButton : MonoBehaviour {
 	[SerializeField] private Image image;
 	[SerializeField] private TMP_Text nameText, costText;
 
-	private string upgradeName;
-	private int upgradeLevel;
+	private bool purchased;
 
-	public void Init(string upgradeName, int upgradeLevel, int cost, Sprite imageSprite) {
-		this.upgradeName = upgradeName;
-		this.upgradeLevel = upgradeLevel;
+	private UpgradesCatalog.UpgradeNode node;
 
-		nameText.text = upgradeName;
-		if (upgradeLevel > 0) nameText.text += " " + UpgradesCatalog.ToRoman(upgradeLevel);
+	public void PurchaseSuccessful() {
+		purchased = true;
+		costText.text = "Purchased";
+	}
+	public void Init(UpgradesCatalog.UpgradeNode node) {
+		this.node = node;
 
-		costText.text = cost.ToString();
-		image.sprite = imageSprite;
+		nameText.text = node.upgradeName;
+		if (node.level > 0) nameText.text += " " + UpgradesCatalog.ToRoman(node.level);
+
+		costText.text = "$" + node.cost.ToString();
+		image.sprite = node.icon;
+		purchased = false;
 	}
 
 	public void ButtonClicked() {
-		string levelText = upgradeLevel == 0 ? "" : $"_{upgradeLevel}";
-		UpgradesCatalog.instance.PurchaseUpgrade(upgradeName + levelText);
+		if (purchased) return;
+
+		UpgradesCatalog.instance.PurchaseUpgrade(this, node.GetUpgradeId());
 	}
 }
