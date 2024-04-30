@@ -39,20 +39,6 @@ namespace Abilities {
                     case Heal:
                         if (((Heal)a).GetIsActive()) { 
                             stats.healthFlatModifier += ((Heal)a).healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / ((Heal)a).healDuration; 
-                            //maxHealthFlatModifier += 100f * Time.deltaTime;      
-                            //maxHealthFlatModifier += 100f * Time.deltaTime;
-                            //heal entities around u
-                            // foreach(CombatEntity e in EntityController.instance.GetCombatEntities()) {
-                            //     Debug.Log("Pulling");
-                            //     if (e.GetNetworker() == null) continue;
-                            //     if (e.GetNetworker() == entity) continue;
-                            //     Debug.Log("Applying");
-                            //    //e.GetNetworker().HealthFlatNetworkEntityCall(500f * Time.deltaTime);
-                            //     e.GetNetworker().LocalApplyInfliction(InflictionType.FlatHP, ((Heal)a).healAmount * entity.GetEntity().GetMaxHealth() / ((Heal)a).healDuration, ((Heal)a).healDuration);
-                            //     e.GetNetworker().RPCApplyInfliction(InflictionType.FlatHP, ((Heal)a).healAmount * entity.GetEntity().GetMaxHealth() / ((Heal)a).healDuration, ((Heal)a).healDuration);
-                    
-                            //     //e.GetNetworker().HealthFlatNetworkEntityCall(((Heal)a).healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / ((Heal)a).healDuration);
-                            // }
                         } break;
                     case AreaHeal:
                         if (((AreaHeal)a).GetIsActive()) {
@@ -76,7 +62,7 @@ namespace Abilities {
                         
                 }
 
-                stats.healthFlatModifier += 1000 * Time.deltaTime;
+                //stats.healthFlatModifier += 1000 * Time.deltaTime;
 
                 //entity.GetTotalDmgDealt() to determine damage charging!
 
