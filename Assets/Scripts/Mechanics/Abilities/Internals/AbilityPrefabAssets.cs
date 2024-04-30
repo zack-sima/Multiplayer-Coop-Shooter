@@ -3,18 +3,38 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//[CreateAssetMenu(menuName = "Ability Prefab Assets")]
-public class AbilityPrefabAssets : ScriptableObject {
+namespace Effects {
+    public enum EffectIndex {
+        Heal, RapidFire
+    }
 
-    //[Tooltip("baka")]
+    //[CreateAssetMenu(menuName = "Ability Prefab Assets")]
+    public class AbilityPrefabAssets : ScriptableObject {
 
-    [Header("Healing Based")]
-    
-    [SerializeField] public GameObject healEffectPrefab;
-    [SerializeField] public GameObject areaHealEffectPrefab;
+        //[Tooltip("baka")]
 
-    [Header("Basic")]
+        
 
-    [SerializeField] public GameObject fireEffectPrefab;
+        [Header("Healing Based")]
+        
+        [SerializeField] public GameObject healEffectPrefab;
+        [SerializeField] public GameObject areaHealEffectPrefab;
 
+        [Header("Basic")]
+
+        [SerializeField] public GameObject fireEffectPrefab;
+
+    }
+
+    public static class EffectHandler {
+        public static GameObject GetEffect(this NetworkedEntity entity, EffectIndex i) {
+            switch(i) {
+                case EffectIndex.Heal:
+                    return entity.effectPrefabs.healEffectPrefab;
+                case EffectIndex.RapidFire:
+                    return entity.effectPrefabs.fireEffectPrefab;
+            }
+            return null;  
+        }
+    }
 }

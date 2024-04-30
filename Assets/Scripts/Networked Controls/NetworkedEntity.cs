@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 using Abilities;
+using Effects;
 
 public class NetworkedEntity : NetworkBehaviour {
 
@@ -168,9 +169,23 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	/*======================| Effects |======================*/
 
-	public GameObject InitEffect(GameObject effectPrefab) {
+	public GameObject InitEffect(GameObject effectPrefab, float duration, float earlyDestruct, EffectIndex i) {
 		//Apply both local and RPC the effect change!
+		RPCInitEffect(i, duration, earlyDestruct);
 		return Instantiate(effectPrefab, transform);
+	}
+
+	[Rpc(RpcSources.All, RpcTargets.All)]
+	private void RPCInitEffect(EffectIndex i, float duration, float earlyDestruct) {
+		
+		GameObject g = this.GetEffect(i);
+		if (g == null) return;
+		
+		GameObject effect = Instantiate(g, transform);
+		if (effect.TryGetComponent(out Effect e)) {
+            e.EnableDestroy(duration);
+            e.EnableEarlyDestruct(earlyDestruct);
+        }
 	}
 
 	#endregion

@@ -11,6 +11,7 @@ namespace Abilities {
         private bool isActive = false;
         private UnityEngine.UI.Image outline = null;
         
+
         public Heal() { this.UpdateAbility(); }
 
         public void Activate(NetworkedEntity entity, bool isOverride = false) { //reset the timer and activate ability.
@@ -20,8 +21,9 @@ namespace Abilities {
             isActive = true;
 
             //Effect
-            GameObject healEffect = entity.InitEffect(entity.effectPrefabs.healEffectPrefab);
-            healEffect.transform.position += new Vector3(0, .1f, 0);
+            entity.effectPrefabs.healEffectPrefab.transform.position = new Vector3(0, .1f, 0);
+            GameObject healEffect = entity.InitEffect(entity.effectPrefabs.healEffectPrefab, healDuration, 0f, EffectIndex.Heal);
+           
             if (healEffect.TryGetComponent(out Effect e)) {
                 e.EnableDestroy(healDuration);
             }

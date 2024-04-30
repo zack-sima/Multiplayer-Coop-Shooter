@@ -18,7 +18,7 @@ namespace Abilities {
         remainingFiringTime = firingPeriod;
         isActive = true;
                     //Effect
-        GameObject fireEffect = entity.InitEffect(entity.effectPrefabs.fireEffectPrefab);
+        GameObject fireEffect = entity.InitEffect(entity.effectPrefabs.fireEffectPrefab, firingPeriod + 3f, 5f, EffectIndex.RapidFire);
         fireEffect.transform.position += new Vector3(0, .3f, 0);
         if (fireEffect.TryGetComponent(out Effect e)) {
             e.EnableDestroy(firingPeriod + 3f);
