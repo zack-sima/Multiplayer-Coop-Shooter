@@ -25,12 +25,16 @@ public class EnemySpawner : NetworkBehaviour {
 
 	#region Synced
 
-	[Networked] //for master client (if host migrated, this makes sure spawning is rougly the same)
+	//for master client (if host migrated, this makes sure spawning is rougly the same)
+	[Networked, OnChangedRender(nameof(WaveStartTimerChanged))]
 	private float SpawnTimer { get; set; } = 0;
 	public float GetSpawnTimer() { return SpawnTimer; }
 
 	[Networked]
 	private int SpawnIndex { get; set; } = 0;
+
+	[Networked, OnChangedRender(nameof(WaveChanged))]
+	private int WaveCallback { get; set; } = 0;
 
 	#endregion
 
@@ -82,6 +86,11 @@ public class EnemySpawner : NetworkBehaviour {
 
 			if (SpawnIndex == 0) {
 				yield return StartCoroutine(WaitUntilEnemiesDead());
+
+				//upgrades if there is a timer
+				if (SpawnTimer > 0) {
+					WaveCallback++;
+				}
 			}
 			while (SpawnTimer > 0) {
 				SpawnTimer -= Time.deltaTime;
@@ -136,6 +145,21 @@ public class EnemySpawner : NetworkBehaviour {
 			return false;
 		}
 	}
+
+	//disable UI
+	private void WaveStartTimerChanged() {
+		if (SpawnTimer > 0) {
+			UpgradesCatalog.instance.SetTimerText(Mathf.CeilToInt(SpawnTimer).ToString() + "s");
+		} else {
+			UpgradesCatalog.instance.DisableUpgradeUI();
+		}
+	}
+
+	//called so that all players get the shop scene
+	private void WaveChanged() {
+		UpgradesCatalog.instance.ShowPossibleUpgrades();
+	}
+
 	private void SpawnEnemy(GameObject spawnPrefab) {
 		try {
 			//find a point far away enough from players

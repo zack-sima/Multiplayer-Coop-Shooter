@@ -70,7 +70,11 @@ public class HumanInputs : MonoBehaviour {
 		return lastMainWeaponJoystickMagnitude > AIM_DRAG_THRESHOLD;
 	}
 
-	private void MobileOnlyUpdate(CombatEntity player) {
+	private void MobileOnlyUpdate(CombatEntity player, bool canInput) {
+		if (!canInput) {
+			player.GetHull().Move(Vector3.zero);
+			return;
+		}
 		player.SetTurretFollowsMovement(true);
 
 		if (movementJoystick.GetButtonIsDown()) {
@@ -147,7 +151,11 @@ public class HumanInputs : MonoBehaviour {
 
 	#endregion
 
-	private void PCOnlyUpdate(CombatEntity player) {
+	private void PCOnlyUpdate(CombatEntity player, bool canInput) {
+		if (!canInput) {
+			player.GetHull().Move(Vector3.zero);
+			return;
+		}
 
 #if UNITY_EDITOR //NOTE: for testing, temporary turret switching
 		if (Input.GetKeyDown(KeyCode.Alpha1)) {
@@ -255,12 +263,11 @@ public class HumanInputs : MonoBehaviour {
 
 		CombatEntity player = EntityController.player;
 
-		if (!UIController.instance.InOptions()) {
-			if (UIController.GetIsMobile()) {
-				MobileOnlyUpdate(player);
-			} else {
-				PCOnlyUpdate(player);
-			}
+		bool canInput = !UIController.instance.InOptions();
+		if (UIController.GetIsMobile()) {
+			MobileOnlyUpdate(player, canInput);
+		} else {
+			PCOnlyUpdate(player, canInput);
 		}
 
 		Camera.main.transform.position = player.transform.position + cameraLocalPosition;

@@ -10,6 +10,14 @@ public class UpgradesCatalog : MonoBehaviour {
 
 	public static UpgradesCatalog instance;
 
+	/// <summary>
+	/// TODO:
+	///  - Pause goes on top of this
+	///  - Prevent shooting when clicking (add one frame of ignore)
+	///  - Button callbacks & actual card change reflects
+	/// </summary>
+	///
+
 	[System.Serializable]
 	public class UpgradeIcon {
 		public string upgradeName;
@@ -19,6 +27,7 @@ public class UpgradesCatalog : MonoBehaviour {
 		public string upgradeName;
 		public Sprite icon;
 		public int cost;
+		public int level;
 		public bool unlocked;
 
 		//if any tech in here was bought, this cannot be bought
@@ -32,7 +41,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		//CONSTRUCTOR
 		public UpgradeNode(
-			string upgradeName, Sprite icon, int cost, bool unlocked = false,
+			string upgradeName, Sprite icon, int cost, int level = 0, bool unlocked = false,
 			List<string> mutuallyExclusiveUpgrades = null,
 			List<string> hardRequirements = null,
 			List<string> softRequirements = null) {
@@ -50,6 +59,12 @@ public class UpgradesCatalog : MonoBehaviour {
 			this.icon = icon;
 			this.cost = cost;
 			this.unlocked = unlocked;
+			this.level = level;
+		}
+
+		public string GetUpgradeId() {
+			if (level == 0) return upgradeName;
+			return upgradeName + "_" + ToRoman(level);
 		}
 
 		//returns whether soft and hard requirements have been met;
@@ -76,20 +91,55 @@ public class UpgradesCatalog : MonoBehaviour {
 					return true;
 				}
 			}
+			//no soft requirements
+			if (softRequirements.Count == 0) return true;
+
 			//failed soft requirement
 			return false;
 		}
+	}
+	//from stackoverflow.com/questions/7040289/converting-integers-to-roman-numerals
+	public static string ToRoman(int number) {
+		if ((number < 0) || (number > 3999)) return "∞";
+		if (number < 1) return string.Empty;
+		//NOTE: don't need large numbers, save computation time this way
+		//if (number >= 1000) return "M" + ToRoman(number - 1000);
+		//if (number >= 900) return "CM" + ToRoman(number - 900);
+		//if (number >= 500) return "D" + ToRoman(number - 500);
+		//if (number >= 400) return "CD" + ToRoman(number - 400);
+		//if (number >= 100) return "C" + ToRoman(number - 100);
+		//if (number >= 90) return "XC" + ToRoman(number - 90);
+		//if (number >= 50) return "L" + ToRoman(number - 50);
+		//if (number >= 40) return "XL" + ToRoman(number - 40);
+		if (number >= 10) return "X" + ToRoman(number - 10);
+		if (number >= 9) return "IX" + ToRoman(number - 9);
+		if (number >= 5) return "V" + ToRoman(number - 5);
+		if (number >= 4) return "IV" + ToRoman(number - 4);
+		if (number >= 1) return "I" + ToRoman(number - 1);
+		return "Unknown";
 	}
 
 	#endregion
 
 	#region References
 
-	//actually shows the player upgrade stuff
 	[SerializeField] private RectTransform waveUpgradeUI;
-	[SerializeField] private List<RectTransform> waveUpgradeCards;
-	[SerializeField] private List<Image> waveUpgradeImages;
-	[SerializeField] private List<TMP_Text> waveUpgradeNameTexts, waveUpgradeCostTexts;
+	public bool UpgradeUIOn() {
+		if (Time.time - closedUpgradeTimestamp < 0.07f) return true;
+		return waveUpgradeUI.gameObject.activeInHierarchy;
+	}
+	public void DisableUpgradeUI() {
+		if (waveUpgradeUI.gameObject.activeInHierarchy) {
+			waveUpgradeUI.gameObject.SetActive(false);
+			closedUpgradeTimestamp = Time.time;
+		}
+	}
+
+	//actually shows the player upgrade stuff
+	[SerializeField] private List<UpgradeCardButton> waveUpgradeCards;
+
+	[SerializeField] private TMP_Text timerText;
+	public void SetTimerText(string text) { timerText.text = text; }
 
 	#endregion
 
@@ -102,12 +152,14 @@ public class UpgradesCatalog : MonoBehaviour {
 	//the real list
 	private Dictionary<string, UpgradeNode> playerUpgrades;
 
-	//player money
+	//NOTE: player money
 	private int playerMoney = 0;
 	public int GetPlayerMoney() { return playerMoney; }
 
 	//whenever score changes, compare with this to see how much money player should get
 	private int lastScore = 0;
+
+	private float closedUpgradeTimestamp = 0f;
 
 	#endregion
 
@@ -118,15 +170,18 @@ public class UpgradesCatalog : MonoBehaviour {
 		//TODO: call this function at the end of the wave, etc
 		//TODO: have a timer show seconds until next wave arrives
 
+		waveUpgradeUI.gameObject.SetActive(true);
+
 		List<string> totalUpgradableList = new();
 		foreach (UpgradeNode n in playerUpgrades.Values) {
-			if (n.CanUnlock(playerUpgrades)) totalUpgradableList.Add(n.upgradeName);
+			if (n.CanUnlock(playerUpgrades) && !n.unlocked) totalUpgradableList.Add(n.GetUpgradeId());
 		}
 
 		List<string> upgradableList = new();
 
 		//pick up to 4 random upgradable cards
-		for (int i = 0; i < Mathf.Min(totalUpgradableList.Count, 4); i++) {
+		for (int i = 0; i < 4; i++) {
+			if (totalUpgradableList.Count == 0) break;
 			int addIndex = Random.Range(0, totalUpgradableList.Count);
 			upgradableList.Add(totalUpgradableList[addIndex]);
 			totalUpgradableList.RemoveAt(addIndex);
@@ -139,22 +194,31 @@ public class UpgradesCatalog : MonoBehaviour {
 				continue;
 			}
 			waveUpgradeCards[i].gameObject.SetActive(true);
-			waveUpgradeCostTexts[i].text = n.cost.ToString();
-			waveUpgradeImages[i].sprite = n.icon;
-			waveUpgradeNameTexts[i].text = n.upgradeName;
+
+			//setup button callbacks
+			waveUpgradeCards[i].Init(n);
 		}
 		//turn off unused
 		for (int i = upgradableList.Count; i < waveUpgradeCards.Count; i++) {
 			waveUpgradeCards[i].gameObject.SetActive(false);
 		}
 	}
+	public void CloseUpgrades() {
+		DisableUpgradeUI();
+	}
 	public void ScoreChanged(int newScore) {
 		if (newScore > lastScore) {
 			playerMoney += newScore - lastScore;
+			MoneyChanged();
 		}
 		lastScore = newScore;
 	}
-	public void PurchaseUpgrade(string upgradeName) {
+	public void MoneyChanged() {
+		UIController.instance.SetMoneyText(playerMoney);
+	}
+	public void PurchaseUpgrade(UpgradeCardButton sender, string upgradeName) {
+		print($"tried to purchase {upgradeName}");
+
 		//can't upgrade for one reason or another
 		if (!playerUpgrades.ContainsKey(upgradeName) || playerUpgrades[upgradeName].unlocked ||
 			playerUpgrades[upgradeName].cost > playerMoney) return;
@@ -162,14 +226,21 @@ public class UpgradesCatalog : MonoBehaviour {
 		//charge player
 		playerMoney -= playerUpgrades[upgradeName].cost;
 		playerUpgrades[upgradeName].unlocked = true;
+
+		//call PlayerInfo callback
+		PlayerInfo.instance.UpgradeChanged(upgradeName, playerUpgrades[upgradeName].level);
+
+		sender.PurchaseSuccessful();
+		MoneyChanged();
 	}
-	private void AddUpgrade(string name, int cost, bool unlocked = false, List<string> mutuallyExclusiveUpgrades = null,
+	private void AddUpgrade(string name, int cost, int level = 0, bool unlocked = false, List<string> mutuallyExclusiveUpgrades = null,
 		List<string> hardRequirements = null, List<string> softRequirements = null) {
 
-		UpgradeNode n = new(name, GetUpgradeIcon(name), cost, unlocked,
+		UpgradeNode n = new(name, GetUpgradeIcon(name), cost, level, unlocked,
 			mutuallyExclusiveUpgrades, hardRequirements, softRequirements);
 
-		playerUpgrades.Add(n.upgradeName, n);
+		//only add _level if level != 0
+		playerUpgrades.Add(n.GetUpgradeId(), n);
 	}
 	private Sprite GetUpgradeIcon(string name) {
 		if (upgradeIconsDict.ContainsKey(name)) return upgradeIconsDict[name];
@@ -191,11 +262,26 @@ public class UpgradesCatalog : MonoBehaviour {
 		//starting upgrades
 		AddUpgrade("Rapid Fire", 0, unlocked: true);
 		AddUpgrade("Heal", 0, unlocked: true);
+
+		for (int i = 0; i < 10; i++) AddUpgrade($"Camp", 10 + i, level: i + 1);
 	}
 
-	private void Start() { }
+	private void Start() {
+		//make sure player starts with these abilities unlocked
+		foreach (UpgradeNode n in playerUpgrades.Values) {
+			if (n.unlocked) {
+				PlayerInfo.instance.UpgradeChanged(n.upgradeName, n.level);
+			}
+		}
+	}
 
-	private void Update() { }
+	private void Update() {
+		if (Input.GetKeyDown(KeyCode.U)) {
+			playerMoney += 1000;
+			MoneyChanged();
+			ShowPossibleUpgrades();
+		}
+	}
 
 	#endregion
 }

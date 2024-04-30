@@ -68,7 +68,7 @@ public class PlayerInfo : MonoBehaviour {
 
 	/*======================| Upgrades Callback |======================*/
 
-	public void UpgradeChanged(string newUpgrade) {
+	public void UpgradeChanged(string newUpgrade, int upgradeLevel) {
 		//TODO: ethan's side
 	}
 
