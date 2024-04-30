@@ -228,12 +228,12 @@ public class UpgradesCatalog : MonoBehaviour {
 		playerUpgrades[upgradeName].unlocked = true;
 
 		//call PlayerInfo callback
-		PlayerInfo.instance.UpgradeChanged(upgradeName, playerUpgrades[upgradeName].level);
+		PlayerInfo.instance.UpgradeChanged(sender.GetNode().upgradeName, playerUpgrades[upgradeName].level);
 
 		sender.PurchaseSuccessful();
 		MoneyChanged();
 	}
-	private void AddUpgrade(string name, int cost, int level = 0, bool unlocked = false, List<string> mutuallyExclusiveUpgrades = null,
+	UpgradeNode AddUpgrade(string name, int cost, int level = 0, bool unlocked = false, List<string> mutuallyExclusiveUpgrades = null,
 		List<string> hardRequirements = null, List<string> softRequirements = null) {
 
 		UpgradeNode n = new(name, GetUpgradeIcon(name), cost, level, unlocked,
@@ -241,6 +241,8 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		//only add _level if level != 0
 		playerUpgrades.Add(n.GetUpgradeId(), n);
+
+		return n;
 	}
 	private Sprite GetUpgradeIcon(string name) {
 		if (upgradeIconsDict.ContainsKey(name)) return upgradeIconsDict[name];
@@ -260,10 +262,16 @@ public class UpgradesCatalog : MonoBehaviour {
 		playerUpgrades = new();
 
 		//starting upgrades
-		AddUpgrade("Rapid Fire", 0, unlocked: true);
-		AddUpgrade("Heal", 0, unlocked: true);
+		UpgradeNode rapid1 = AddUpgrade("Rapid Fire", cost: 0, level: 1, unlocked: true);
+		UpgradeNode heal1 = AddUpgrade("Heal", cost: 0, level: 1, unlocked: true);
 
-		for (int i = 0; i < 10; i++) AddUpgrade($"Camp", 10 + i, level: i + 1);
+		UpgradeNode rapid2 = AddUpgrade("Rapid Fire", cost: 10, level: 2, hardRequirements: new() { rapid1.GetUpgradeId() });
+		UpgradeNode heal2 = AddUpgrade("Heal", cost: 10, level: 2, hardRequirements: new() { heal1.GetUpgradeId() });
+
+		UpgradeNode rapid3 = AddUpgrade("Rapid Fire", cost: 10, level: 3, hardRequirements: new() { rapid2.GetUpgradeId() });
+		UpgradeNode heal3 = AddUpgrade("Heal", cost: 10, level: 3, hardRequirements: new() { heal2.GetUpgradeId() });
+
+		for (int i = 0; i < 10; i++) AddUpgrade($"Camp {i + 1}", 10 + i);
 	}
 
 	private void Start() {

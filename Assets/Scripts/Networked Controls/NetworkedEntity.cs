@@ -170,7 +170,7 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	/*======================| Effects |======================*/
 
-	public GameObject InitEffect(GameObject effectPrefab, float duration, float earlyDestruct, EffectIndex i) {
+	public GameObject InitEffect(GameObject effectPrefab, float duration, float earlyDestruct, UpgradeIndex i) {
 		//Apply both local and RPC the effect change!
 		RPCInitEffect(i, duration, earlyDestruct);
 		GameObject g = Instantiate(effectPrefab, transform);
@@ -179,7 +179,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 
 	[Rpc(RpcSources.All, RpcTargets.Proxies)]
-	private void RPCInitEffect(EffectIndex i, float duration, float earlyDestruct) {
+	private void RPCInitEffect(UpgradeIndex i, float duration, float earlyDestruct) {
 		
 		GameObject g = this.GetEffect(i);
 		if (g == null) return;

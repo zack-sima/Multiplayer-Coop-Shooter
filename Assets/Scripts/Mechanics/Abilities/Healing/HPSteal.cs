@@ -24,7 +24,7 @@ namespace Abilities {
             this.entity = entity;
 
             //Effect
-            GameObject healEffect = entity.InitEffect(entity.GetEffect(EffectIndex.HPSteal), stealPeriod + 2f, 5f, EffectIndex.HPSteal);
+            GameObject healEffect = entity.InitEffect(entity.GetEffect(UpgradeIndex.HPSteal), stealPeriod + 2f, 5f, UpgradeIndex.HPSteal);
             if (healEffect.TryGetComponent(out Effect effect)) {
                 effect.EnableDestroy(stealPeriod);
                 effect.EnableEarlyDestruct(5f);
@@ -52,7 +52,7 @@ namespace Abilities {
                 }
                 //Effect all enemies around u
                 if (tickAmount > 10) {
-                    foreach(CombatEntity e in EntityController.instance.GetCombatEntities()) {
+                    foreach(CombatEntity e in new List<CombatEntity>(EntityController.instance.GetCombatEntities())) {
                         if (e.GetNetworker() == null) continue;
                         if (e.GetNetworker() == entity) continue;
                         if (e.GetNetworker().GetTeam() == entity.GetTeam()) continue;

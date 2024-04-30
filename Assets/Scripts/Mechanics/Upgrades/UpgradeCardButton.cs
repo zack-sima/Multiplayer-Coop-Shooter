@@ -11,6 +11,7 @@ public class UpgradeCardButton : MonoBehaviour {
 	private bool purchased;
 
 	private UpgradesCatalog.UpgradeNode node;
+	public UpgradesCatalog.UpgradeNode GetNode() {return node;}
 
 	public void PurchaseSuccessful() {
 		purchased = true;

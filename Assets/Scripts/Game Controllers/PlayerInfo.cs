@@ -70,6 +70,8 @@ public class PlayerInfo : MonoBehaviour {
 
 	public void UpgradeChanged(string newUpgrade, int upgradeLevel) {
 		//TODO: ethan's side
+		Debug.LogWarning($"Upgrade received: {newUpgrade}, level={upgradeLevel}");
+		abilities.Add((new Heal(), false));
 	}
 
 	/*======================| Abilities |======================*/

@@ -1,12 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Abilities;
 using UnityEngine;
 
 namespace Effects {
-    public enum EffectIndex {
-        Heal, AreaHeal, InfiHeal, HPSteal, RapidFire
-    }
 
     //[CreateAssetMenu(menuName = "Ability Prefab Assets")]
     public class AbilityPrefabAssets : ScriptableObject {
@@ -27,17 +25,17 @@ namespace Effects {
     }
 
     public static class EffectHandler {
-        public static GameObject GetEffect(this NetworkedEntity entity, EffectIndex i) {
+        public static GameObject GetEffect(this NetworkedEntity entity, UpgradeIndex i) {
             switch(i) {
-                case EffectIndex.Heal:
+                case UpgradeIndex.Heal:
                     return entity.effectPrefabs.healEffectPrefab;
-                case EffectIndex.AreaHeal:
+                case UpgradeIndex.AreaHeal:
                     return entity.effectPrefabs.areaHealEffectPrefab;
-                case EffectIndex.InfiHeal:
+                case UpgradeIndex.InfiHeal:
                     return entity.effectPrefabs.infiHealEffectPrefab;
-                case EffectIndex.HPSteal:
+                case UpgradeIndex.HPSteal:
                     return entity.effectPrefabs.hpStealEffectPrefab;
-                case EffectIndex.RapidFire:
+                case UpgradeIndex.RapidFire:
                     return entity.effectPrefabs.fireEffectPrefab;
             }
             return null;  

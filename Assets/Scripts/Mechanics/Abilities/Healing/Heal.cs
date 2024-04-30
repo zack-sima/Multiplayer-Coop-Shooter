@@ -21,7 +21,7 @@ namespace Abilities {
             isActive = true;
 
             //Effect
-            GameObject healEffect = entity.InitEffect(entity.effectPrefabs.healEffectPrefab, healDuration, 0f, EffectIndex.Heal);
+            GameObject healEffect = entity.InitEffect(entity.effectPrefabs.healEffectPrefab, healDuration, 0f, UpgradeIndex.Heal);
            
             if (healEffect.TryGetComponent(out Effect e)) {
                 e.EnableDestroy(healDuration);
