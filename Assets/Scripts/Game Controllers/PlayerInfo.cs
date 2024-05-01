@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using Abilities;
-using CSVParser;
 using UnityEngine;
 
 
@@ -37,7 +36,6 @@ public class PlayerInfo : MonoBehaviour {
 	//uses turret name to query for turret (fallback to first turret)
 	[SerializeField] private List<HullInfo> hullPrefabs;
 	[SerializeField] private List<TurretInfo> turretPrefabs;
-	[SerializeField] public CSVStorage csv;
 
 	#endregion
 

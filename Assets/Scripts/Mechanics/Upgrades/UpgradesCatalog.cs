@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CSVParser;
+using CSVParser.Init;
 
 public class UpgradesCatalog : MonoBehaviour {
 
@@ -18,6 +19,8 @@ public class UpgradesCatalog : MonoBehaviour {
 	///  - Button callbacks & actual card change reflects
 	/// </summary>
 	///
+
+	[SerializeField] public CSVStorage csvStorage;
 
 	[System.Serializable]
 	public class UpgradeIcon {
@@ -237,7 +240,7 @@ public class UpgradesCatalog : MonoBehaviour {
 		sender.PurchaseSuccessful();
 		MoneyChanged();
 	}
-	UpgradeNode AddUpgrade(string name, int cost, int level = 0, bool unlocked = false, List<string> mutuallyExclusiveUpgrades = null,
+	public UpgradeNode AddUpgrade(string name, int cost, int level = 0, bool unlocked = false, List<string> mutuallyExclusiveUpgrades = null,
 		List<string> hardRequirements = null, List<string> softRequirements = null) {
 
 		UpgradeNode n = new(name, GetUpgradeIcon(name), cost, level, unlocked,
@@ -278,6 +281,12 @@ public class UpgradesCatalog : MonoBehaviour {
 		for (int i = 0; i < 10; i++) AddUpgrade($"Camp {i + 1}", 10 + i);
 	}
 
+	/*=================| CSV |=================*/
+	private Dictionary<string, UpgradeInfo> upgradeInfos = new();
+	private void CSVInit() { // TODO: Update with turret info, etc.
+		upgradeInfos.ParseUpgradesFromAllCSV();
+	}
+
 	private void Start() {
 		//make sure player starts with these abilities unlocked
 		foreach (UpgradeNode n in playerUpgrades.Values) {
@@ -285,6 +294,7 @@ public class UpgradesCatalog : MonoBehaviour {
 				PlayerInfo.instance.UpgradeChanged(n.upgradeName, n.level);
 			}
 		}
+		CSVInit();
 	}
 
 	private void Update() {

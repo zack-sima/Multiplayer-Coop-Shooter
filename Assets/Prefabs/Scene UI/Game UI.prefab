@@ -3316,7 +3316,6 @@ MonoBehaviour:
   - turret: {fileID: 8306412023698569218, guid: 81647acf7fd274e03a3bf4245c173d50, type: 3}
     turretName: Flamethrower
     localPositionOffset: {x: 0, y: 0, z: 0}
-  csv: {fileID: 11400000, guid: e776c40385c1f45adb7ba01a84cd5f6f, type: 2}
 --- !u!114 &4836627643148608670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3341,6 +3340,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 450453287dba045748ec91db9b83f30b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  csvStorage: {fileID: 11400000, guid: e776c40385c1f45adb7ba01a84cd5f6f, type: 2}
   waveUpgradeUI: {fileID: 569611671425069798}
   waveUpgradeCards:
   - {fileID: 6321904976387526910}
