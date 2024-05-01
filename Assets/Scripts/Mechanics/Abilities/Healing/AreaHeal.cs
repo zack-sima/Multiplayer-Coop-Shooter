@@ -33,7 +33,7 @@ namespace Abilities {
             }
 
             //Effect
-            GameObject healEffect = entity.InitEffect(entity.GetEffect(EffectIndex.AreaHeal), healPeriod + 2f, 5f, EffectIndex.AreaHeal);
+            GameObject healEffect = entity.InitEffect(entity.GetEffect(UpgradeIndex.AreaHeal), healPeriod + 2f, 5f, UpgradeIndex.AreaHeal);
             if (healEffect.TryGetComponent(out Effect effect)) {
                 effect.EnableDestroy(healPeriod);
                 effect.EnableEarlyDestruct(5f);

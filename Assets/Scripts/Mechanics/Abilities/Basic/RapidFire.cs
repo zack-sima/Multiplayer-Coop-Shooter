@@ -19,7 +19,7 @@ namespace Abilities {
         isActive = true;
         
         //Effect
-        GameObject fireEffect = entity.InitEffect(entity.effectPrefabs.fireEffectPrefab, firingPeriod + 3f, 5f, EffectIndex.RapidFire);
+        GameObject fireEffect = entity.InitEffect(entity.effectPrefabs.fireEffectPrefab, firingPeriod + 3f, 5f, UpgradeIndex.RapidFire);
         if (fireEffect.TryGetComponent(out Effect e)) {
             e.EnableDestroy(firingPeriod + 3f);
             e.EnableEarlyDestruct(5f);
