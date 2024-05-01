@@ -70,28 +70,28 @@ namespace CSVParser.Init {
             }
 
             /*==============| DEPENDENCY INITS |==============*/
-            // rows = dependencies.Split(new char[] { '\n' });
-            // string lastHeader = "";
-            // for(int i = 0; i < rows.Length; i++) {
-            //     string[] depens = rows[i].Split(',');
-            //     string targetId = "";
-            //     for (int j = 0; j < depens.Length; i++) {
-            //         if (depens[j].Contains("[Soft]")) { lastHeader = "[Soft]"; break; }
-            //         else if (depens[j].Contains("[Hard]")) { lastHeader = "[Hard]"; break; }
-            //         else if (depens[j].Contains("[Mutual]")) { lastHeader = "[Mutual]"; break;}
+            rows = dependencies.Split(new char[] { '\n' });
+            string lastHeader = "";
+            for(int i = 0; i < rows.Length; i++) {
+                string[] depens = rows[i].Split(',');
+                string targetId = "";
+                for (int j = 0; j < depens.Length; j++) {
+                    if (depens[j].Contains("[Soft]")) { lastHeader = "[Soft]"; break; }
+                    else if (depens[j].Contains("[Hard]")) { lastHeader = "[Hard]"; break; }
+                    else if (depens[j].Contains("[Mutual]")) { lastHeader = "[Mutual]"; break;}
 
-            //         if (j == 0 && depens[j] == "") continue; // Empty checks
-            //         else if (depens[j] == "") continue;
+                    if (j == 0 && depens[j] == "") continue; // Empty checks
+                    else if (depens[j] == "") continue;
 
-            //         if (j == 0) { targetId = depens[j]; continue; } // Target init
+                    if (j == 0) { targetId = depens[j]; continue; } // Target init
 
-            //         if (dict.TryGetValue(targetId, out UpgradeInfo target) && dict.ContainsKey(depens[j])) {
-            //             if (lastHeader == "[Soft]") target.softRequirements.Add(depens[j]);
-            //             else if (lastHeader == "[Hard]") target.hardRequirements.Add(depens[j]);
-            //             else if (lastHeader == "[Mutual]") target.mutualRequirements.Add(depens[j]);
-            //         }
-            //     }
-            // }
+                    if (dict.TryGetValue(targetId, out UpgradeInfo target) && dict.ContainsKey(depens[j])) {
+                        if (lastHeader == "[Soft]") target.softRequirements.Add(depens[j]);
+                        else if (lastHeader == "[Hard]") target.hardRequirements.Add(depens[j]);
+                        else if (lastHeader == "[Mutual]") target.mutualRequirements.Add(depens[j]);
+                    }
+                }
+            }
 
             /*==============| DESCRIPTION INITS |==============*/
             rows = descriptions.Split(new char[] { '\n' });
@@ -110,26 +110,34 @@ namespace CSVParser.Init {
             }
 
             /*==============| CATALOG INITS |==============*/
-            // foreach(KeyValuePair<string, UpgradeInfo> pair in dict) {
-            //     if (pair.Value.TryGetModi("Cost", out float cost) && pair.Value.TryGetModi("Lvls", out float lvl)) {
-            //         if (lvl <= 1) { // Only one upgrade of it.
-            //             UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost, 
-            //                 softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
-            //                 hardRequirements: pair.Value.hardRequirements.StackDuplicateDependencies(),
-            //                 mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
-            //             continue;
-            //         }
-            //         for(int i = 1; i < lvl + 1; i++) { // Update hard requirements to contain prior one.
-
-            //             List<string> temp = pair.Value.hardRequirements;
-            //             temp.Add(pair.Key + "_" + UpgradesCatalog.ToRoman(i));
-            //             UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost, 
-            //                 softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
-            //                 hardRequirements: temp,
-            //                 mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
-            //         }
-            //     }
-            // }
+            foreach(KeyValuePair<string, UpgradeInfo> pair in dict) {
+                if (pair.Value.TryGetModi("Cost", out float cost) && pair.Value.TryGetModi("Lvls", out float lvl)) {
+                    if (lvl <= 1) { // Only one upgrade of it.
+                        UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost, 
+                            softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
+                            hardRequirements: pair.Value.hardRequirements.StackDuplicateDependencies(),
+                            mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
+                        continue;
+                    }
+                    UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost, level: 1,
+                            softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
+                            hardRequirements: pair.Value.hardRequirements.StackDuplicateDependencies(),
+                            mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
+                    for(int i = 2; i < lvl + 1; i++) { // Update hard requirements to contain prior one.
+                        List<string> temp = pair.Value.hardRequirements;
+                        temp.Add(pair.Key + "_" + UpgradesCatalog.ToRoman(i));
+                        UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost, level: i,
+                            softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
+                            hardRequirements: temp,
+                            mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
+                    }
+                } else {
+                    UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost, 
+                        softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
+                        hardRequirements: pair.Value.hardRequirements.StackDuplicateDependencies(),
+                        mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
+                }
+            }
             //TODO: Test this shit bruh.
         }
 
@@ -148,6 +156,7 @@ namespace CSVParser.Init {
                     depens.Add(s + "_" + UpgradesCatalog.ToRoman(dupeCount));
                 else depens.Add(s);
             }
+            if (depens.Count <= 0) return null;
             return depens;
         }
 

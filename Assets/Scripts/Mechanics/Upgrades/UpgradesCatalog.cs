@@ -269,16 +269,18 @@ public class UpgradesCatalog : MonoBehaviour {
 		playerUpgrades = new();
 
 		//starting upgrades
-		UpgradeNode rapid1 = AddUpgrade("Rapid Fire", cost: 0, level: 1, unlocked: true);
-		UpgradeNode heal1 = AddUpgrade("Heal", cost: 0, level: 1, unlocked: true);
+		// UpgradeNode rapid1 = AddUpgrade("Rapid Fire", cost: 0, level: 1, unlocked: true);
+		// UpgradeNode heal1 = AddUpgrade("Heal", cost: 0, level: 1, unlocked: true);
 
-		UpgradeNode rapid2 = AddUpgrade("Rapid Fire", cost: 10, level: 2, hardRequirements: new() { rapid1.GetUpgradeId() });
-		UpgradeNode heal2 = AddUpgrade("Heal", cost: 10, level: 2, hardRequirements: new() { heal1.GetUpgradeId() });
+		// UpgradeNode rapid2 = AddUpgrade("Rapid Fire", cost: 10, level: 2, hardRequirements: new() { rapid1.GetUpgradeId() });
+		// UpgradeNode heal2 = AddUpgrade("Heal", cost: 10, level: 2, hardRequirements: new() { heal1.GetUpgradeId() });
 
-		UpgradeNode rapid3 = AddUpgrade("Rapid Fire", cost: 10, level: 3, hardRequirements: new() { rapid2.GetUpgradeId() });
-		UpgradeNode heal3 = AddUpgrade("Heal", cost: 10, level: 3, hardRequirements: new() { heal2.GetUpgradeId() });
+		// UpgradeNode rapid3 = AddUpgrade("Rapid Fire", cost: 10, level: 3, hardRequirements: new() { rapid2.GetUpgradeId() });
+		// UpgradeNode heal3 = AddUpgrade("Heal", cost: 10, level: 3, hardRequirements: new() { heal2.GetUpgradeId() });
 
-		for (int i = 0; i < 10; i++) AddUpgrade($"Camp {i + 1}", 10 + i);
+		// for (int i = 0; i < 10; i++) AddUpgrade($"Camp {i + 1}", 10 + i);
+
+		CSVInit();
 	}
 
 	/*=================| CSV |=================*/
@@ -294,7 +296,10 @@ public class UpgradesCatalog : MonoBehaviour {
 				PlayerInfo.instance.UpgradeChanged(n.upgradeName, n.level);
 			}
 		}
-		CSVInit();
+		foreach (string s in playerUpgrades.Keys) {
+			Debug.LogWarning("UpgradeInit : " + s);
+		}
+		
 	}
 
 	private void Update() {

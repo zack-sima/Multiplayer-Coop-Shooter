@@ -12,7 +12,7 @@ Braced Internals,100,4,,,,0.10,,,,,,
 [Special],,,,,,,,,,InvertedDmg%,,
 Exposed Inductor,100,4,,,,,,,5,5.00,,
 [Special],,,,,,,,,,RadDmg%,RadRadius,
-R.T.G.,100,4,,,,,,,,.30,5,
+R.T.G,100,4,,,,,,,,.30,5,
 [Special],,,,,,,,,,RocketChance,RocketDmg%,
 Rocket Pods,100,4,,,,,,,,0.30,2.00,
 [Special],,,,,,,,,,BurnDmg,BurnDuration,Burn Radius
