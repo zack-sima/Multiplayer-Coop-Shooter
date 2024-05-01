@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using CSVParser;
 
 public class UpgradesCatalog : MonoBehaviour {
 
@@ -160,6 +161,9 @@ public class UpgradesCatalog : MonoBehaviour {
 	private int lastScore = 0;
 
 	private float closedUpgradeTimestamp = 0f;
+
+	private List<string> upgradeIds = new();
+	public List<string> GetUpgradeIds() { return upgradeIds; }
 
 	#endregion
 

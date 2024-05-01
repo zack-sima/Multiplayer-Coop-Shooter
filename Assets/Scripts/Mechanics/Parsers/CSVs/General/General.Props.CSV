@@ -1,0 +1,38 @@
+IDString,"Cost",Lvls,DropRate,Dmg,Reload,MaxHP,MoveSpd,Crit%,Cooldown,Misc1,Misc2,Misc3
+,"//flat",//flat,"//per, default = 1",//1 + per,//1 + per,//1 + per,//1 + per,//flat,//secs,//Any,//Any,//Any
+Hardened Ammo,"100",4,,0.05,,,,,,,,
+Dynamic Loader,"100",4,,,0.05,,,,,,,
+Hardened Armor,"100",4,,,,0.10,,,,,,
+Fire Control System,"100",4,,0.05,0.05,,,,,,,
+Polished Trigger,"100",4,,0.10,,,,0.03,,,,
+Improved Optics,"100",4,,,,,,0.04,,,,
+Turbocharger,"100",4,,,,,0.05,,,,,
+Laser Sight,"100",4,,,,,,0.04,,,,
+Braced Internals,"100",4,,,,0.10,,,,,,
+,,,,,,,,,,,,
+[Special],,,,,,,,,,InvertedDmg%,,
+Exposed Inductor,"100",4,,,,,,,5,5.00,,
+[Special],,,,,,,,,,RadDmg%,RadRadius,
+R.T.G.,"100",4,,,,,,,,.30,5,
+[Special],,,,,,,,,,RocketChance,RocketDmg%,
+Rocket Pods,"100",4,,,,,,,,0.30,2.00,
+[Special],,,,,,,,,,BurnDmg,BurnDuration,Burn Radius
+Gas Canister,"100",4,,,,,,,,0.10,2,5
+[Special],,,,,,,,,,ZapDmg%,ZapRange,
+Tesla Pack,"100",4,,,,,,,5,4.00,7,
+[Special],,,,,,,,,,Stick%,Dmg%,
+Sticky Bomb,"100",4,,,,,,,,0.10,.50,
+[Special],,,,,,,,,,BurnDmg%,BurnDuration,BurnChance
+Lighter Fluid,"100",4,,,,,,,,0.25,2,.10
+[Special],,,,,,,,,,MoneyBonus,,
+Scavengers Eye,"100",4,,,,,,,,0.05,,
+[Special],,,,,,,,,,TriggerHP%,,
+Emergency Overclock,"100",4,,0.25,,,,,,0.25,,
+[Special],,,,,,,,,,Chain%,Increment,
+Embracing Bind,"100",4,,,,,,,,0.06,0.03,
+[Special],,,,,,,,,,Stun%,Increment,
+Stun Grenades,"100",4,,,,,,,,0.06,0.03,
+[Special],,,,,,,,,,Dmg%,Increment,
+Optical Battery,"100",4,0.1,,,,,,15,20.00,2.00,
+[Special],,,,,,,,,,HPBound,BonusDmg,
+Advanced Targeting,"100",4,0.1,,,,,,,.80,.2,

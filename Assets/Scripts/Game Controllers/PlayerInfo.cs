@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using Abilities;
+using CSVParser;
 using UnityEngine;
 
 
@@ -36,6 +37,7 @@ public class PlayerInfo : MonoBehaviour {
 	//uses turret name to query for turret (fallback to first turret)
 	[SerializeField] private List<HullInfo> hullPrefabs;
 	[SerializeField] private List<TurretInfo> turretPrefabs;
+	[SerializeField] public CSVStorage csv;
 
 	#endregion
 
@@ -70,8 +72,8 @@ public class PlayerInfo : MonoBehaviour {
 
 	public void UpgradeChanged(string newUpgrade, int upgradeLevel) {
 		//TODO: ethan's side
-		Debug.LogWarning($"Upgrade received: {newUpgrade}, level={upgradeLevel}");
-		abilities.Add((new Heal(), false));
+		//Debug.LogWarning($"Upgrade received: {newUpgrade}, level={upgradeLevel}");
+		//abilities.Add((new Heal(), false));
 	}
 
 	/*======================| Abilities |======================*/
@@ -91,9 +93,11 @@ public class PlayerInfo : MonoBehaviour {
 		abilities.PushAbilityActivation(index);
 	}
 
-	/*======================| Inflictions |======================*/
+	/*======================| Upgrades |======================*/
 
-	//types of inflictions.
+	//Upgrade info.
+
+	//public Dictionary<string, 
 
 	#endregion
 

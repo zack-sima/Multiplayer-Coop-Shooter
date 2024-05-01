@@ -3316,6 +3316,7 @@ MonoBehaviour:
   - turret: {fileID: 8306412023698569218, guid: 81647acf7fd274e03a3bf4245c173d50, type: 3}
     turretName: Flamethrower
     localPositionOffset: {x: 0, y: 0, z: 0}
+  csv: {fileID: 11400000, guid: e776c40385c1f45adb7ba01a84cd5f6f, type: 2}
 --- !u!114 &4836627643148608670
 MonoBehaviour:
   m_ObjectHideFlags: 0
