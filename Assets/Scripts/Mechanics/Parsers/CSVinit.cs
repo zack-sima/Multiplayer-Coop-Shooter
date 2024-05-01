@@ -141,6 +141,7 @@ namespace CSVParser.Init {
             //TODO: Test this shit bruh.
         }
 
+        //TODO: Fix the dependency thing.
         private static List<string> StackDuplicateDependencies(this List<string> depens) {
             List<string> temp = new(depens);
             foreach(string s in temp) {
