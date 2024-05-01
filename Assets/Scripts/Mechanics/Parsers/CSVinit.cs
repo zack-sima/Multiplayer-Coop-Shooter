@@ -68,33 +68,30 @@ namespace CSVParser.Init {
 
                 dict.Add(modi[0], tempUpgrade);
             }
-            foreach(KeyValuePair<string, UpgradeInfo> s in dict) {
-                Debug.LogWarning(s.Key + s.Value.ToString());
-            }
 
             /*==============| DEPENDENCY INITS |==============*/
-            rows = dependencies.Split(new char[] { '\n' });
-            string lastHeader = "";
-            for(int i = 0; i < rows.Length; i++) {
-                string[] depens = rows[i].Split(',');
-                string targetId = "";
-                for (int j = 0; j < depens.Length; i++) {
-                    if (depens[j].Contains("[Soft]")) { lastHeader = "[Soft]"; break; }
-                    else if (depens[j].Contains("[Hard]")) { lastHeader = "[Hard]"; break; }
-                    else if (depens[j].Contains("[Mutual]")) { lastHeader = "[Mutual]"; break;}
+            // rows = dependencies.Split(new char[] { '\n' });
+            // string lastHeader = "";
+            // for(int i = 0; i < rows.Length; i++) {
+            //     string[] depens = rows[i].Split(',');
+            //     string targetId = "";
+            //     for (int j = 0; j < depens.Length; i++) {
+            //         if (depens[j].Contains("[Soft]")) { lastHeader = "[Soft]"; break; }
+            //         else if (depens[j].Contains("[Hard]")) { lastHeader = "[Hard]"; break; }
+            //         else if (depens[j].Contains("[Mutual]")) { lastHeader = "[Mutual]"; break;}
 
-                    if (j == 0 && depens[j] == "") continue; // Empty checks
-                    else if (depens[j] == "") continue;
+            //         if (j == 0 && depens[j] == "") continue; // Empty checks
+            //         else if (depens[j] == "") continue;
 
-                    if (j == 0) { targetId = depens[j]; continue; } // Target init
+            //         if (j == 0) { targetId = depens[j]; continue; } // Target init
 
-                    if (dict.TryGetValue(targetId, out UpgradeInfo target) && dict.ContainsKey(depens[j])) {
-                        if (lastHeader == "[Soft]") target.softRequirements.Add(depens[j]);
-                        else if (lastHeader == "[Hard]") target.hardRequirements.Add(depens[j]);
-                        else if (lastHeader == "[Mutual]") target.mutualRequirements.Add(depens[j]);
-                    }
-                }
-            }
+            //         if (dict.TryGetValue(targetId, out UpgradeInfo target) && dict.ContainsKey(depens[j])) {
+            //             if (lastHeader == "[Soft]") target.softRequirements.Add(depens[j]);
+            //             else if (lastHeader == "[Hard]") target.hardRequirements.Add(depens[j]);
+            //             else if (lastHeader == "[Mutual]") target.mutualRequirements.Add(depens[j]);
+            //         }
+            //     }
+            // }
 
             /*==============| DESCRIPTION INITS |==============*/
             rows = descriptions.Split(new char[] { '\n' });
@@ -106,6 +103,10 @@ namespace CSVParser.Init {
                 if (dict.TryGetValue(descripts[0], out UpgradeInfo target)) {
                     if (descripts.Length > 1) { target.description = descripts[1]; }
                 }
+            }
+
+            foreach(KeyValuePair<string, UpgradeInfo> s in dict) {
+                Debug.LogWarning(s.Key + s.Value.ToString());
             }
 
             /*==============| CATALOG INITS |==============*/
