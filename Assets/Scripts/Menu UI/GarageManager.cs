@@ -23,6 +23,8 @@ public class GarageManager : MonoBehaviour {
 	[SerializeField] private RectTransform garageUI;
 	[SerializeField] private Image garageImage;
 
+	[SerializeField] private GameObject playerHealthCanvas;
+
 	[SerializeField] private RectTransform selectionScreen, selectionContentParent;
 	[SerializeField] private TMP_Text selectionScreenTitle;
 
@@ -98,11 +100,13 @@ public class GarageManager : MonoBehaviour {
 		garageUI.gameObject.SetActive(true);
 		MenuManager.instance.SetMenuScreen(false);
 		garageImage.enabled = true;
+		playerHealthCanvas.SetActive(false);
 	}
 	public void CloseGarageTab() {
 		garageUI.gameObject.SetActive(false);
 		MenuManager.instance.SetMenuScreen(true);
 		garageImage.enabled = false;
+		playerHealthCanvas.SetActive(true);
 	}
 
 	private void Awake() {

@@ -21,6 +21,9 @@ public class NetworkedEntity : NetworkBehaviour {
 	[SerializeField] private Entity mainEntity;
 	public Entity GetEntity() { return mainEntity; }
 
+	//TODO: the split between combat entity and entity here is kind of useless.
+	//  Eventually, clean it up and remove the "optionals"
+
 	//if the entity is a combat entity, this refers to the same class
 	private CombatEntity optionalCombatEntity = null;
 	public CombatEntity GetCombatEntity() { return optionalCombatEntity; }
@@ -39,7 +42,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	private Quaternion TurretRotation { get; set; }
 
 	[Networked, OnChangedRender(nameof(HealthBarChanged))]
-	private float Health { get; set; } = 999;
+	private float Health { get; set; } = 9999;
 	public float GetHealth() {
 		if (!isPlayer && !Runner.IsSharedModeMasterClient && !Runner.IsSinglePlayer) {
 			if (localHealth > Health) localHealth = Health;
@@ -96,7 +99,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	private float lastRespawnTimestamp = -10f;
 
 	//NOTE: this will always be <Health, used on enemies to pretend they took damage locally
-	private float localHealth = 999;
+	private float localHealth = 99999;
 	public float GetLocalHealth() { return localHealth; }
 	public void LoseLocalHealth(float damage) {
 		if (isPlayer || Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer) return;
@@ -137,15 +140,15 @@ public class NetworkedEntity : NetworkBehaviour {
 	/// </summary>
 	public void HealthFlatNetworkEntityCall(float newHealth) {
 		Health = Mathf.Min(mainEntity.GetMaxHealth(), Mathf.Max(0, Health + newHealth));
-		mainEntity.UpdateHealthBar();	
+		mainEntity.UpdateHealthBar();
 		// Health = Mathf.Min(mainEntity.GetMaxHealth(), Mathf.Max(0, newHealth));
 		// mainEntity.UpdateHealthBar();	
 	}
 
 	public void HealthPercentNetworkEntityCall(float healthPercentModifier) {
-		if (healthPercentModifier < 0) return; 
+		if (healthPercentModifier < 0) return;
 		Health = Mathf.Min(mainEntity.GetMaxHealth(), healthPercentModifier * Health);
-		mainEntity.UpdateHealthBar();	
+		mainEntity.UpdateHealthBar();
 	}
 
 	/*======================| Inflictions |======================*/
@@ -180,15 +183,15 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	[Rpc(RpcSources.All, RpcTargets.Proxies)]
 	private void RPCInitEffect(UpgradeIndex i, float duration, float earlyDestruct) {
-		
+
 		GameObject g = this.GetEffect(i);
 		if (g == null) return;
-		
+
 		GameObject effect = Instantiate(g, transform);
 		if (effect.TryGetComponent(out Effect e)) {
-            e.EnableDestroy(duration);
-            e.EnableEarlyDestruct(earlyDestruct);
-        }
+			e.EnableDestroy(duration);
+			e.EnableEarlyDestruct(earlyDestruct);
+		}
 	}
 
 	#endregion
@@ -372,7 +375,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		if (!initialized) return;
 		this.InflictionHandlerSysTick(inflictions); // handles inflictions
 		if (HasSyncAuthority()) {
-			
+
 			//local entity
 			if (isPlayer) {
 				//natural healing

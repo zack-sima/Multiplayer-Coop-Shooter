@@ -56,6 +56,14 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 		WaveInputChanged();
 		GameStartedChanged();
 	}
+	private void Update() {
+		if (Runner.IsSharedModeMasterClient) {
+			if (!MenuManager.instance.GetMapDropdown().interactable) {
+				MenuManager.instance.GetWaveInput().interactable = true;
+				MenuManager.instance.GetMapDropdown().interactable = true;
+			}
+		}
+	}
 
 	#endregion
 

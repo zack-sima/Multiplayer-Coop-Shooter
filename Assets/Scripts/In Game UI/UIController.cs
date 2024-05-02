@@ -198,15 +198,24 @@ public class UIController : MonoBehaviour {
 		gameOverUI.gameObject.SetActive(enabled);
 	}
 	public void SetMoneyText(int money) {
-		moneyText.text = $"<color=#ffffff>Cash: <color=#aaeeaa>${money}</color>\n";
+		moneyText.text = $"${money}";
 	}
 	public void SetWaveText(int wave) {
-		waveText.text = $"<color=#ffffff>Wave: <color=#eeeeaa>{wave}";
+		waveText.text = $"Wave {wave}";
+
+		if (EnemySpawner.instance == null) return;
+		int timer = Mathf.CeilToInt(EnemySpawner.instance.GetSpawnTimer());
+		if (timer != 0) waveText.text = $"Wave {wave} (Next: {timer % 60:00})";
 	}
 	private void Awake() {
 		instance = this;
 		loadingUI.gameObject.SetActive(true);
 		StartCoroutine(WaitStartPlayer());
+	}
+	private void Update() {
+		if (EnemySpawner.instance != null && EnemySpawner.instance.GetWaveEnded()) {
+			SetWaveText(GameStatsSyncer.instance.GetWave() + 1);
+		}
 	}
 	private IEnumerator WaitStartPlayer() {
 		while (NetworkedEntity.playerInstance == null) yield return null;

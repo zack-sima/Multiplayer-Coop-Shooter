@@ -95331,6 +95331,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1711885997}
     m_Modifications:
+    - target: {fileID: 152178445688233387, guid: 64166e215a5df48c8ac28a2715bf917b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2553011054576309641, guid: 64166e215a5df48c8ac28a2715bf917b, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -95411,9 +95415,45 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2653621483612207416, guid: 64166e215a5df48c8ac28a2715bf917b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2742117695188047229, guid: 64166e215a5df48c8ac28a2715bf917b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3151712583401233996, guid: 64166e215a5df48c8ac28a2715bf917b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3243132742402371420, guid: 64166e215a5df48c8ac28a2715bf917b, type: 3}
       propertyPath: m_Name
       value: Game UI
+      objectReference: {fileID: 0}
+    - target: {fileID: 3518875045405130083, guid: 64166e215a5df48c8ac28a2715bf917b, type: 3}
+      propertyPath: triggerKey
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5141198184456856006, guid: 64166e215a5df48c8ac28a2715bf917b, type: 3}
+      propertyPath: triggerKey
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6691747672832500177, guid: 64166e215a5df48c8ac28a2715bf917b, type: 3}
+      propertyPath: triggerKey
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7224504808774861000, guid: 64166e215a5df48c8ac28a2715bf917b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7804287889075980807, guid: 64166e215a5df48c8ac28a2715bf917b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8845146047009690106, guid: 64166e215a5df48c8ac28a2715bf917b, type: 3}
+      propertyPath: triggerKey
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

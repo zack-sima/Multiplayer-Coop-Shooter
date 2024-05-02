@@ -94,6 +94,10 @@ public class ServerLinker : MonoBehaviour {
 	}
 	public void StopGame() {
 		try {
+			//turn off player audio to prevent clipping
+			if (NetworkedEntity.playerInstance != null) {
+				NetworkedEntity.playerInstance.GetComponent<AudioListener>().enabled = false;
+			}
 			bootstrap.ShutdownAll(changeScene: true); // This shuts down the NetworkRunner instances
 		} catch { }
 	}

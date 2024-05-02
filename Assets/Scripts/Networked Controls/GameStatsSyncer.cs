@@ -23,7 +23,7 @@ public class GameStatsSyncer : NetworkBehaviour {
 	private int RandomSeed { get; set; } = 0;
 	public int GetRandomSeed() { return RandomSeed; }
 
-	[Networked]
+	[Networked, OnChangedRender(nameof(ScoreChanged))]
 	private int Score { get; set; } = 0;
 	public void AddScore(int addition) { Score += addition; } //called by master client only
 
@@ -43,9 +43,11 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 	#region Callbacks
 
+	private void ScoreChanged() {
+		UpgradesCatalog.instance.ScoreChanged(Score);
+	}
 	//everyone displays the same score
 	private void WaveChanged() {
-		UpgradesCatalog.instance.ScoreChanged(Score);
 		UIController.instance.SetWaveText(Wave + 1);
 	}
 	private void GameOverChanged() {

@@ -67,7 +67,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 32571a5c27e33453fab2840471c29c45, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 822f13afb463f4a0fb890d741ca01a85, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -272,8 +272,8 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4287749523
-  m_fontColor: {r: 0.5752255, g: 0.8679245, b: 0.5690637, a: 1}
+    rgba: 4292535216
+  m_fontColor: {r: 0.6901961, g: 0.8901961, b: 0.85490197, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:

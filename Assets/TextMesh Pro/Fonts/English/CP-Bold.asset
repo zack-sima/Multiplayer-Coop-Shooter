@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: CP-Bold
   m_EditorClassIdentifier: 
-  hashCode: -1705855935
+  hashCode: -482022373
   material: {fileID: 5504618955688631974}
-  materialHashCode: -564975167
+  materialHashCode: -578871077
   m_Version: 1.1.0
   m_SourceFontFileGUID: 911d6d9e6be074ce8a6817185da8e4c2
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 911d6d9e6be074ce8a6817185da8e4c2, type: 3}
@@ -4589,7 +4589,7 @@ Material:
     - _ColorMask: 15
     - _CullMode: 0
     - _Diffuse: 0.5
-    - _FaceDilate: 0.37
+    - _FaceDilate: 0.28
     - _FaceUVSpeedX: 0
     - _FaceUVSpeedY: 0
     - _GlowInner: 0
@@ -4603,12 +4603,12 @@ Material:
     - _OutlineSoftness: 0
     - _OutlineUVSpeedX: 0
     - _OutlineUVSpeedY: 0
-    - _OutlineWidth: 0.227
+    - _OutlineWidth: 0.19
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
     - _ScaleRatioA: 0.8333333
-    - _ScaleRatioB: 0.36875
-    - _ScaleRatioC: 0.36875
+    - _ScaleRatioB: 0.44375
+    - _ScaleRatioC: 0.18818913
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -4621,10 +4621,10 @@ Material:
     - _StencilWriteMask: 255
     - _TextureHeight: 512
     - _TextureWidth: 1024
-    - _UnderlayDilate: 0
+    - _UnderlayDilate: 1
     - _UnderlayOffsetX: 1
     - _UnderlayOffsetY: -1
-    - _UnderlaySoftness: 0
+    - _UnderlaySoftness: 0.358
     - _VertexOffsetX: 0
     - _VertexOffsetY: 0
     - _WeightBold: 0.75
@@ -4639,5 +4639,5 @@ Material:
     - _ReflectFaceColor: {r: 0, g: 0, b: 0, a: 1}
     - _ReflectOutlineColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
-    - _UnderlayColor: {r: 0, g: 0, b: 0, a: 0.5019608}
+    - _UnderlayColor: {r: 0, g: 0, b: 0, a: 0.6509804}
   m_BuildTextureStacks: []

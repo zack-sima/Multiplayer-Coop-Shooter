@@ -31,6 +31,10 @@ public class EnemySpawner : NetworkBehaviour {
 	public float GetSpawnTimer() { return SpawnTimer; }
 
 	[Networked]
+	private bool WaveEnded { get; set; } = false;
+	public bool GetWaveEnded() { return WaveEnded; }
+
+	[Networked]
 	private int SpawnIndex { get; set; } = 0;
 
 	[Networked, OnChangedRender(nameof(WaveChanged))]
@@ -89,6 +93,7 @@ public class EnemySpawner : NetworkBehaviour {
 
 				//upgrades if there is a timer
 				if (SpawnTimer > 0) {
+					WaveEnded = true;
 					WaveCallback++;
 				}
 			}
@@ -99,6 +104,7 @@ public class EnemySpawner : NetworkBehaviour {
 
 				yield return new WaitForEndOfFrame();
 			}
+			WaveEnded = false;
 
 			int currWave = GameStatsSyncer.instance.GetWave();
 			Debug.Log($"Spawning wave {currWave + 1}");
@@ -157,6 +163,8 @@ public class EnemySpawner : NetworkBehaviour {
 
 	//called so that all players get the shop scene
 	private void WaveChanged() {
+		//TODO: fix before using
+		return;
 		UpgradesCatalog.instance.ShowPossibleUpgrades();
 	}
 
