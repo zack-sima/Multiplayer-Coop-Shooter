@@ -6,9 +6,14 @@ using UnityEngine;
 namespace CSVParser.Init {
     public static class CSVParserInitExtensions {
 
+        // * Important Tag
+        // ! Issue tag
+        // ? Question
+        // TODO: Todos
+
         /// <summary>
         /// Init Upgrade stats and stuff from corresponding CSVs!
-        /// IMPORTANT: ASSOCIATED ATTRIBUTES:
+        /// * IMPORTANT: ASSOCIATED ATTRIBUTES:
         /// [Special] < Used in ---.Props.CSV && .Descriptions.CSV to skip line.
         /// [Soft] < Used in ---.Dependencies.CSV to mark as Soft Requirements.
         /// [Hard] < Used in ---.Dependencies.CSV to mark as Hard Requirements.
@@ -141,7 +146,7 @@ namespace CSVParser.Init {
             //TODO: Test this shit bruh.
         }
 
-        //TODO: Fix the dependency thing.
+        //TODO: Fix the dependency thing. 
         private static List<string> StackDuplicateDependencies(this List<string> depens) {
             List<string> temp = new(depens);
             foreach(string s in temp) {
