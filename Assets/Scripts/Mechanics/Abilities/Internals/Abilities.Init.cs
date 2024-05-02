@@ -9,15 +9,15 @@ namespace Abilities {
         public static void UpdateAbilityList(this List<(IAbility, bool)> input) {
 
             //TODO: Link with garage / in game tech tree.
-            //if (input.Count > 0) return;
+            if (input.Count > 0) return;
 
-            //input.Clear();
-            // RapidFire f = new RapidFire();
-            // input.Add((f, false));
-            //HPSteal h = new HPSteal();
-            //input.Add((h, false));
+            input.Clear();
+            RapidFire f = new RapidFire();
+            input.Add((f, false));
+            Heal h = new Heal();
+            input.Add((h, false));
 
-            //AbilityUIManagerExtensions.OnAbilityListChange(); // callback for ui update. REQUIRED, o.w. no abilities will show.
+            AbilityUIManagerExtensions.OnAbilityListChange(); // callback for ui update. REQUIRED, o.w. no abilities will show.
         }
 
         public static void UpdateAbility(this IAbility i) {
