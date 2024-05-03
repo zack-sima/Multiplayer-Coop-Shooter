@@ -78,7 +78,8 @@ public class HumanInputs : MonoBehaviour {
 		player.SetTurretFollowsMovement(true);
 
 		if (movementJoystick.GetButtonIsDown()) {
-			float mag = movementJoystick.GetJoystickMagnitude();
+			//movement should be more sensitive
+			float mag = Mathf.Min(1f, movementJoystick.GetJoystickMagnitude() * 1.5f);
 			float angleRad = movementJoystick.GetJoystickAngle();
 
 			Vector3 moveVector = mag * new Vector3(Mathf.Cos(angleRad), 0, Mathf.Sin(angleRad));

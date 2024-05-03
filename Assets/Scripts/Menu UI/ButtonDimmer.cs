@@ -42,7 +42,11 @@ public class ButtonDimmer : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
 	private void OnEnable() {
 		ButtonUp();
 	}
-	public void OnPointerClick(PointerEventData eventData) { }
+	public void OnPointerClick(PointerEventData eventData) {
+		if (PersistentDict.instance != null) {
+			PersistentDict.instance.GetComponent<AudioSource>().Play();
+		}
+	}
 	public void OnPointerDown(PointerEventData eventData) {
 		if (self.interactable) {
 			foreach (TMP_Text t in dimTexts)
