@@ -5,11 +5,38 @@ using Abilities.StatHandler;
 
 namespace Abilities {
 
+    /// <summary>
+    /// All values are INCREMENTAL. INCLUDING PERCENTAGES. 
+    /// Input of 0.05 to a % variable results in a 1.05 * targetStat;
+    /// </summary>
     public class StatModifier {
-        public float healthPercentModifier = 1f;
-        public float healthFlatModifier = 0f;
-        public float maxHealthPercentModifier = 1f;
-        public float maxHealthFlatModifier = 0f;
+
+        public static StatModifier operator +(StatModifier a, StatModifier b) {
+            StatModifier c = new() {
+                healthPercentModifier = a.healthPercentModifier + b.healthPercentModifier,
+                healthFlatModifier = a.healthFlatModifier + b.healthFlatModifier,
+
+                baseHealthPercentModifier = a.baseHealthPercentModifier + b.baseHealthPercentModifier,
+                baseHealthFlatModifier = a.baseHealthFlatModifier + b.baseHealthFlatModifier
+            };
+
+            //// maxHealthPercentModifier = a.maxHealthPercentModifier + b.maxHealthPercentModifier;
+            //// maxHealthFlatModifier = a.maxHealthFlatModifier + b.maxHealthFlatModifier;
+            //Populate with more vars...
+
+            return c;
+        }
+
+        public float healthPercentModifier = 0;
+        public float healthFlatModifier = 0;
+        
+        public float baseHealthPercentModifier = 0; // Single frame
+        public float baseHealthFlatModifier = 0; // Single frame
+
+        public float reloadTimePercentModifier = 0;
+
+        ////public float maxHealthPercentModifier = 1f;
+        ////public float maxHealthFlatModifier = 0f;
         //speed
             //armor
             //damage
@@ -23,19 +50,20 @@ namespace Abilities {
         public static void SysTickAndAbilityHandler(this NetworkedEntity entity, List<(IAbility ability, bool isActivated)> abilities) {
             abilities.UpdateAbilityList();
             if (entity == null) return;
-            StatModifier stats = new StatModifier();
+            StatModifier stats = new();
             
-
             for(int i = 0; i < abilities.Count; i++) {
                 IAbility a = abilities[i].ability;
                 if (a is ISysTickable) { // SysTick Callback.
                     ((ISysTickable)a).SysTickCall();
+                } else if (a is IStatSysTickable) {
+                    ((IStatSysTickable)a).SysTickCall(entity, stats);
                 }
 
-                /*======================| Abilities |======================*/
+                //?======================| Abilities |======================?//
 
                 switch(a) {
-                    //==== HEALING ====//
+                    //?=~=~=~=~=| HEALING |=~=~=~=~=?//
                     case Heal:
                         if (((Heal)a).GetIsActive()) { 
                             stats.healthFlatModifier += ((Heal)a).healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / ((Heal)a).healDuration; 
@@ -54,7 +82,7 @@ namespace Abilities {
                             ((HPSteal)a).totalHPStolen -= ((HPSteal)a).totalHPStolen * Time.deltaTime;
                         } break;
                     
-                    //==== DAMAGE ====//
+                    //?=~=~=~=~=| DAMAGE |=~=~=~=~=?//
                     case RapidFire:
                         if (((RapidFire)a).GetIsActive()) { 
                             NetworkedEntity.playerInstance.OverClockNetworkEntityCall();    
@@ -80,16 +108,10 @@ namespace Abilities {
                         abilities[i] = (a, false); 
                     }
                 }
-                if (a is IPassiveable) {
-                    
-                    //apply passive buffs & changes
-                }
-		    } 
-            //Run this to the upgrade stats < 
-            //stats.UpgradeStatChanges()
 
-            //Apply stat values.
-            entity.ApplyStatChanges(stats);
+                //Apply stat values.
+                entity.PushStatChanges(stats);
+            }
         }
 
         public static void PushAbilityActivation(this List<(IAbility ability, bool isActivated)> abilities, int index) {

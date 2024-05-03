@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.UI;
 
 /// <summary>
@@ -53,6 +54,8 @@ public class Entity : MonoBehaviour {
 
 	//set in inspector; TODO: change via upgrades, etc & set at init function
 	[SerializeField] private float maxHealth;
+	private float baseHealth;
+	public float GetBaseHealth() { return baseHealth; }
 	public float GetMaxHealth() { return maxHealth; }
 	public void SetMaxHealth(float maxHealth) { this.maxHealth = maxHealth; }
 
@@ -179,6 +182,7 @@ public class Entity : MonoBehaviour {
 	}
 	protected virtual void Start() {
 		UpdateHealthBar();
+		baseHealth = maxHealth;
 	}
 	protected virtual void Update() {
 		RectTransform healthBar = healthCanvas.GetHealthBar();

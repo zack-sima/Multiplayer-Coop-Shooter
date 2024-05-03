@@ -22,13 +22,19 @@ namespace Abilities {
         public bool GetIsActive();
     }
 
-    public interface IPassiveable : IAbility { }
+    public interface IPassivable : IAbility {
+        
+    }
 
     public interface ISysTickable {
         /// <summary>
         /// Called every update tick by PlayerInfo.instance. Treat as Update()
         /// </summary>
         public void SysTickCall();
+    }
+
+    public interface IStatSysTickable {
+        public void SysTickCall(NetworkedEntity entity, StatModifier stat);
     }
 
     public interface IButtonRechargable {

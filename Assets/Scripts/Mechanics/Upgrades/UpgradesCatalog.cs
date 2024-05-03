@@ -33,6 +33,9 @@ public class UpgradesCatalog : MonoBehaviour {
 		public int cost;
 		public int level;
 		public bool unlocked;
+		public readonly bool replacePrior;
+		public UpgradeInfo info;
+		public UpgradeNode prior;
 
 		//if any tech in here was bought, this cannot be bought
 		private List<string> mutuallyExclusiveUpgrades;
@@ -45,7 +48,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		//CONSTRUCTOR
 		public UpgradeNode(
-			string upgradeName, Sprite icon, int cost, int level = 0, bool unlocked = false,
+			string upgradeName, Sprite icon, int cost,  UpgradeInfo info, int level = 0, bool unlocked = false, bool replacePrior = false,
 			List<string> mutuallyExclusiveUpgrades = null,
 			List<string> hardRequirements = null,
 			List<string> softRequirements = null) {
@@ -53,6 +56,7 @@ public class UpgradesCatalog : MonoBehaviour {
 			this.mutuallyExclusiveUpgrades = mutuallyExclusiveUpgrades;
 			this.hardRequirements = hardRequirements;
 			this.softRequirements = softRequirements;
+			this.info = info;
 
 			//create new if lists are null
 			this.mutuallyExclusiveUpgrades ??= new();
@@ -68,7 +72,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		public string GetUpgradeId() {
 			if (level == 0) return upgradeName;
-			return upgradeName + "_" + ToRoman(level);
+			return upgradeName + " " + ToRoman(level);
 		}
 
 		//returns whether soft and hard requirements have been met;
@@ -101,7 +105,31 @@ public class UpgradesCatalog : MonoBehaviour {
 			//failed soft requirement
 			return false;
 		}
-	}
+
+        public override string ToString() {
+            string returnString = "";
+			returnString += GetUpgradeId();
+			if (softRequirements.Count > 0) {
+				returnString += " Softs: ";
+				foreach(string s in softRequirements) {
+					returnString += s + " ";
+				}
+			}
+			if (hardRequirements.Count > 0) {
+				returnString += " Hards: ";
+				foreach(string s in hardRequirements) {
+					returnString += s + " ";
+				}
+			}
+			if (mutuallyExclusiveUpgrades.Count > 0) {
+				returnString += " Mutuals: ";
+				foreach(string s in mutuallyExclusiveUpgrades) {
+					returnString += s + " ";
+				}
+			}
+			return returnString;
+        }
+    }
 	//from stackoverflow.com/questions/7040289/converting-integers-to-roman-numerals
 	public static string ToRoman(int number) {
 		if ((number < 0) || (number > 3999)) return "∞";
@@ -235,15 +263,16 @@ public class UpgradesCatalog : MonoBehaviour {
 		playerUpgrades[upgradeName].unlocked = true;
 
 		//call PlayerInfo callback
-		PlayerInfo.instance.UpgradeChanged(sender.GetNode().upgradeName, playerUpgrades[upgradeName].level);
+		PlayerInfo.instance.PushUpgradeModi(sender.GetNode());
 
 		sender.PurchaseSuccessful();
 		MoneyChanged();
 	}
-	public UpgradeNode AddUpgrade(string name, int cost, int level = 0, bool unlocked = false, List<string> mutuallyExclusiveUpgrades = null,
+	public UpgradeNode AddUpgrade(string name, int cost, UpgradeInfo info, int level = 0, bool unlocked = false, 
+		bool replacePrior = false, List<string> mutuallyExclusiveUpgrades = null,
 		List<string> hardRequirements = null, List<string> softRequirements = null) {
 
-		UpgradeNode n = new(name, GetUpgradeIcon(name), cost, level, unlocked,
+		UpgradeNode n = new(name, GetUpgradeIcon(name), cost, info, level, unlocked, replacePrior,
 			mutuallyExclusiveUpgrades, hardRequirements, softRequirements);
 
 		//only add _level if level != 0
@@ -280,24 +309,24 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		// for (int i = 0; i < 10; i++) AddUpgrade($"Camp {i + 1}", 10 + i);
 
-		CSVInit();
+		
 	}
 
 	/*=================| CSV |=================*/
-	private Dictionary<string, UpgradeInfo> upgradeInfos = new();
 	private void CSVInit() { // TODO: Update with turret info, etc.
-		upgradeInfos.ParseUpgradesFromAllCSV();
+		this.ParseUpgradesFromAllCSV();
 	}
 
 	private void Start() {
 		//make sure player starts with these abilities unlocked
+		CSVInit();
 		foreach (UpgradeNode n in playerUpgrades.Values) {
 			if (n.unlocked) {
-				PlayerInfo.instance.UpgradeChanged(n.upgradeName, n.level);
+				PlayerInfo.instance.PushUpgradeModi(n);
 			}
 		}
-		foreach (string s in playerUpgrades.Keys) {
-			Debug.LogWarning("UpgradeInit : " + s);
+		foreach (UpgradeNode u in playerUpgrades.Values) {
+			Debug.LogWarning("UpgradeInit : " + u.ToString());
 		}
 		
 	}
