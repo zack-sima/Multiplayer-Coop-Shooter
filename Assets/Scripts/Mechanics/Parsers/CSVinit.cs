@@ -2,9 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Abilities.UpgradeHandler;
 
 
 namespace CSVParser.Init {
+
+    public enum ModiName {
+        Cost, Lvls, DropRate, Dmg, Reload, MaxHP, MoveSpd, CritChance, Cooldown,
+        Misc1, Misc2, Misc3,
+        Null
+    }      
+
     public static class CSVParserInitExtensions {
 
         // * Important Tag
@@ -20,10 +28,10 @@ namespace CSVParser.Init {
         /// [Hard] < Used in ---.Dependencies.CSV to mark as Hard Requirements.
         /// [Mutual] < Used in ---.Dependencies.CSV to mark as Mutual Requirements.
         /// </summary>
-        public static void ParseUpgradesFromAllCSV(this UpgradesCatalog catalog/*TODO: CSV selection for different combos of trees */) {
+        public static void ParseUpgradesFromAllCSV(this UpgradesCatalog catalog) {
             Dictionary<string, UpgradeInfo> dict = new();
 
-            //Grab different CSVs!
+            //GrabGeneral CSVs
             Dictionary<string, string> generalCSVs = UpgradesCatalog.instance.csvStorage.GetGeneralCSV();
             if (generalCSVs.TryGetValue("Props", out string props) 
                     && generalCSVs.TryGetValue("Dependencies", out string dependencies)
@@ -32,18 +40,20 @@ namespace CSVParser.Init {
             }
 
             //TODO: Parse based on turret, hull, abilty selection, etc!
-            //EX: grab from csv parser.
-            
+        
         }
 
         private static void InitCSV(this Dictionary<string, UpgradeInfo> dict, string props, string dependencies, string descriptions) {
-            //Init headers and rows.
-            string[] rows = props.Split(new char[] { '\n' });
+            
+            string[] rows = props.Split(new char[] { '\n' }); //Init headers and rows.
             string[] rawHeaders = rows[0].Split(',');
-            //Init headers
-            List<string> headers = new();
-            for(int i = 0; i < rawHeaders.Length; i++) {
-                if (rawHeaders[i] == "") continue;
+            
+            List<string> headers = new(); 
+            for(int i = 0; i < rawHeaders.Length; i++) { //Init headers
+                if (rawHeaders[i] == "") {
+                    headers.Add(nameof(ModiName.Null));
+                    continue;
+                }
                 headers.Add(rawHeaders[i]);
             }
 
@@ -58,7 +68,8 @@ namespace CSVParser.Init {
 
                 string[] modi = rows[i].Split(',');
                 if (modi.Length < 2) continue;
-                if (modi[0] == "" || modi[0] == "[Special]") continue;
+                if (modi[0] == "" || modi[0] == "[Special]") continue; // Filter out empties or [Special]s
+                if (modi[1] == "") continue;
 
                 UpgradeInfo tempUpgrade = new UpgradeInfo(modi[0]);
                 for(int j = 1; j < modi.Length; j++) {
@@ -66,12 +77,11 @@ namespace CSVParser.Init {
                     
                     if (float.TryParse(modi[j], out float result)) { //TryParse into float for the value. if cant CONTINUE!
                         if (headers.Count > j) {
+                            if (headers[j] == nameof(ModiName.Null)) { continue; }
                             tempUpgrade.PushModi(headers[j], result); //push modi onto tempUpgrade
                         }
                     }
-                    
                 }
-
                 dict.Add(modi[0], tempUpgrade);
             }
 
@@ -97,11 +107,6 @@ namespace CSVParser.Init {
                         else if (lastHeader == "[Mutual]") target.mutualRequirements.Add(depens[j]);
                     }
                 }
-                if(dict.TryGetValue(targetId, out UpgradeInfo t)) {
-                    t.softRequirements.StackDuplicateDependencies();
-                    t.hardRequirements.StackDuplicateDependencies();
-                    t.mutualRequirements.StackDuplicateDependencies();
-                }
             }
 
             /*==============| DESCRIPTION INITS |==============*/
@@ -113,12 +118,8 @@ namespace CSVParser.Init {
 
                 if (dict.TryGetValue(descripts[0], out UpgradeInfo target)) {
                     if (descripts.Length > 1) { target.description = descripts[1]; }
-                    if (descripts.Length > 2) { target.type = descripts[2]; }
+                    //if (descripts.Length > 2) { target.type = descripts[2]; }
                 }
-            }
-
-            foreach(KeyValuePair<string, UpgradeInfo> s in dict) {
-                Debug.LogWarning(s.Key + s.Value.ToString());
             }
 
             /*==============| CATALOG INITS |==============*/
@@ -126,37 +127,40 @@ namespace CSVParser.Init {
                 if (pair.Value.TryGetModi("Cost", out float cost) && pair.Value.TryGetModi("Lvls", out float lvl)) {
                     if (lvl <= 1) { // Only one upgrade of it.
                         UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost, info: pair.Value,
-                            softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
-                            hardRequirements: pair.Value.hardRequirements.StackDuplicateDependencies(),
-                            mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
+                            softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(dict),
+                            hardRequirements: pair.Value.hardRequirements.StackDuplicateDependencies(dict),
+                            mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies(dict));
                         continue;
                     }
                     UpgradesCatalog.UpgradeNode priorNode = UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost,
                         info: pair.Value,level: 1, 
-                        softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
-                        hardRequirements: pair.Value.hardRequirements.StackDuplicateDependencies(),
-                        mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
+                        softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(dict),
+                        hardRequirements: pair.Value.hardRequirements.StackDuplicateDependencies(dict),
+                        mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies(dict));
                     for(int i = 2; i < lvl + 1; i++) {
-                        List<string> hards = pair.Value.hardRequirements.StackDuplicateDependencies();
+                        List<string> hards = pair.Value.hardRequirements.StackDuplicateDependencies(dict);
                         hards.Add(priorNode.GetUpgradeId());
                         UpgradesCatalog.UpgradeNode currentNode = UpgradesCatalog.instance.AddUpgrade(
                             pair.Key, cost: (int)cost, info: pair.Value, level: i, replacePrior: true,
-                            softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
+                            softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(dict),
                             hardRequirements: hards,
-                            mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
+                            mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies(dict));
                         currentNode.prior = priorNode;
                         priorNode = currentNode;
                     }
                 } 
             }
-            //TODO: Test this shit bruh.
+
+            // ? Debug Logging abilities. ?
+            foreach(KeyValuePair<string, UpgradeInfo> s in dict) { 
+                Debug.LogWarning(s.Key + s.Value.ToString());
+            }
         }
 
-        //TODO: Fix the dependency thing. 
-        private static List<string> StackDuplicateDependencies(this List<string> depens) {
+        private static List<string> StackDuplicateDependencies(this List<string> depens, Dictionary<string, UpgradeInfo> dict) {
             List<string> temp = new(depens);
             foreach(string s in temp) {
-                int dupeCount = -1;
+                int dupeCount = 0;
                 for(int i = 0; i < depens.Count; i++) {
                     if (depens[i] == s) { 
                         dupeCount++;
@@ -164,9 +168,9 @@ namespace CSVParser.Init {
                         i--;
                     }
                 }
-                if (dupeCount > 0)
-                    depens.Add(s + " " + UpgradesCatalog.ToRoman(dupeCount));
-                else depens.Add(s);
+                if (dict.TryGetValue(s, out UpgradeInfo value) && value.TryGetModi(nameof(ModiName.Lvls), out float level)) {
+                    if ((int)level > 0) { depens.Add(s + " " + UpgradesCatalog.ToRoman(dupeCount)); }
+                } else depens.Add(s);
             }
             if (depens.Count <= 0) return new();
             return depens;
@@ -182,7 +186,6 @@ namespace CSVParser.Init {
         private List<string> modiIds = new(); 
         public List<string> GetModiIds() { return modiIds; }
         public string description { get; set; } = "";
-        public string type = "";
         public uint count = 1;
 
         public readonly string upgradeId;
@@ -212,10 +215,6 @@ namespace CSVParser.Init {
                 s += " " + p.Key + " : " + p.Value + ";";
             }
             s += " Description: " + description + ";";
-            s += " Softs: ";
-            foreach(string ss in softRequirements) {
-                s += ss + " ";
-            }
             return s;
         }
     }

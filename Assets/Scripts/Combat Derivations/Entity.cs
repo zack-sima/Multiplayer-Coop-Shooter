@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.UI;
 
 /// <summary>
@@ -53,8 +54,18 @@ public class Entity : MonoBehaviour {
 
 	//set in inspector; TODO: change via upgrades, etc & set at init function
 	[SerializeField] private float maxHealth;
+	private float? baseHealth = null;
+	public float GetBaseHealth() { 
+		
+		if (baseHealth == null) baseHealth = maxHealth;
+		Debug.Log("Base health requested " + (float)baseHealth);
+		return (float)baseHealth; 
+	}
 	public float GetMaxHealth() { return maxHealth; }
-	public void SetMaxHealth(float maxHealth) { this.maxHealth = maxHealth; }
+	public void SetMaxHealth(float maxHealth) { 
+		//if (baseHealth == null) baseHealth = this.maxHealth;
+		this.maxHealth = maxHealth; 
+	}
 
 	[SerializeField] private HealthBarType healthBarType;
 

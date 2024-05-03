@@ -6,10 +6,44 @@ using Abilities.StatHandler;
 namespace Abilities {
 
     public class StatModifier {
+        public StatModifier(StatModifier other) {
+            healthPercentModifier = other.healthPercentModifier;
+            healthFlatModifier = other.healthFlatModifier;
+            // maxHealthPercentModifier = other.maxHealthPercentModifier;
+            // maxHealthFlatModifier = other.maxHealthFlatModifier;
+            baseHealthPercentModifier = other.baseHealthPercentModifier;
+            baseHealthFlatModifier = other.baseHealthFlatModifier;
+            //Populate with more vars...
+        }
+
+        public StatModifier(bool isIncremental = false) {
+            if (isIncremental)
+                healthPercentModifier = baseHealthPercentModifier = 0;
+            this.isIncremental = isIncremental;
+        }
+
+        public static StatModifier operator +(StatModifier a, StatModifier b) {
+            StatModifier c = new();
+            if (b.isIncremental != a.isIncremental) { // XOR
+                c.healthPercentModifier = a.healthPercentModifier + b.healthPercentModifier;
+                c.healthFlatModifier = a.healthFlatModifier + b.healthFlatModifier;
+                // c.maxHealthPercentModifier = a.maxHealthPercentModifier + b.maxHealthPercentModifier;
+                // c.maxHealthFlatModifier = a.maxHealthFlatModifier + b.maxHealthFlatModifier;
+                c.baseHealthPercentModifier = a.baseHealthPercentModifier + b.baseHealthPercentModifier;
+                c.baseHealthFlatModifier = a.baseHealthFlatModifier + b.baseHealthFlatModifier;
+                //Populate with more vars...
+            }
+            return c;
+        }
+
+        public bool isIncremental;
+
         public float healthPercentModifier = 1f;
         public float healthFlatModifier = 0f;
-        public float maxHealthPercentModifier = 1f;
-        public float maxHealthFlatModifier = 0f;
+        // public float maxHealthPercentModifier = 1f;
+        // public float maxHealthFlatModifier = 0f;
+        public float baseHealthPercentModifier = 0f; // Single frame
+        public float baseHealthFlatModifier = 0f; // Single frame
         //speed
             //armor
             //damage
@@ -23,19 +57,20 @@ namespace Abilities {
         public static void SysTickAndAbilityHandler(this NetworkedEntity entity, List<(IAbility ability, bool isActivated)> abilities) {
             abilities.UpdateAbilityList();
             if (entity == null) return;
-            StatModifier stats = new StatModifier();
+            StatModifier stats = PlayerInfo.instance.GetUpgradeStatSingleFrameUpgrade(true);
             
-
             for(int i = 0; i < abilities.Count; i++) {
                 IAbility a = abilities[i].ability;
                 if (a is ISysTickable) { // SysTick Callback.
                     ((ISysTickable)a).SysTickCall();
+                } else if (a is IStatSysTickable) {
+                    ((IStatSysTickable)a).SysTickCall(entity, stats);
                 }
 
-                /*======================| Abilities |======================*/
+                //?======================| Abilities |======================?//
 
                 switch(a) {
-                    //==== HEALING ====//
+                    //?=~=~=~=~=| HEALING |=~=~=~=~=?//
                     case Heal:
                         if (((Heal)a).GetIsActive()) { 
                             stats.healthFlatModifier += ((Heal)a).healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / ((Heal)a).healDuration; 
@@ -54,7 +89,7 @@ namespace Abilities {
                             ((HPSteal)a).totalHPStolen -= ((HPSteal)a).totalHPStolen * Time.deltaTime;
                         } break;
                     
-                    //==== DAMAGE ====//
+                    //?=~=~=~=~=| DAMAGE |=~=~=~=~=?//
                     case RapidFire:
                         if (((RapidFire)a).GetIsActive()) { 
                             NetworkedEntity.playerInstance.OverClockNetworkEntityCall();    
@@ -80,12 +115,12 @@ namespace Abilities {
                         abilities[i] = (a, false); 
                     }
                 }
-		    } 
-            //Run this to the upgrade stats < 
-            //stats.UpgradeStatChanges()
+                //Run this to the upgrade stats < 
+                //stats.UpgradeStatChanges()
 
-            //Apply stat values.
-            entity.ApplyStatChanges(stats);
+                //Apply stat values.
+                entity.ApplyStatChanges(stats);
+            }
         }
 
         public static void PushAbilityActivation(this List<(IAbility ability, bool isActivated)> abilities, int index) {

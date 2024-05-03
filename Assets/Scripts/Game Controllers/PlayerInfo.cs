@@ -4,6 +4,7 @@ using System.Data;
 using Abilities;
 using Abilities.UpgradeHandler;
 using CSVParser.Init;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -65,18 +66,32 @@ public class PlayerInfo : MonoBehaviour {
 
 	//NOTE: only call on local player!
 
-	/*======================| Upgrades |======================*/
+	//?======================| Upgrades |======================?//
 
-	//TODO: list of stored stats. Use a callback to manage them.
-	private Dictionary<string, UpgradesCatalog.UpgradeNode> upgradeNodes = new();
+	//list of current Upgrades. Use a callback to manage them.
+	private Dictionary<string, UpgradesCatalog.UpgradeNode> currentUpgrades = new();
 
 	public void PushUpgradeModi(UpgradesCatalog.UpgradeNode n) {
-		upgradeNodes.PushToUpgradeHandler(n);
+		currentUpgrades.PushToUpgradeHandler(n);
 	}
 
-	//should just be a list of floats? i think...
+	private StatModifier upgradeStatSingleFrame = new();
 
-	/*======================| Abilities |======================*/
+	public void SetStatModifier(StatModifier upgradeStatSingleFrame) {
+		this.upgradeStatSingleFrame += upgradeStatSingleFrame;
+	}
+
+	public StatModifier GetUpgradeStatSingleFrameUpgrade(bool getDeepCopy = true) {
+		if (getDeepCopy) {
+			StatModifier returnStat = new StatModifier(upgradeStatSingleFrame);
+			upgradeStatSingleFrame = new();
+			Debug.LogWarning("Flat amount from playerinfo" + returnStat.baseHealthPercentModifier);
+			return returnStat;
+		}
+		return upgradeStatSingleFrame;
+	}
+
+	//?======================| Abilities |======================?//
 	private float totalDmgDealt = 0;
 	public float GetTotalDmgDealt() { return totalDmgDealt; }
 

@@ -11,9 +11,10 @@ namespace Abilities.StatHandler {
              // apply buffs and stuff. TODO: Infliction Handler for local player here.
             NetworkedEntity.playerInstance.HealthPercentNetworkEntityCall(stats.healthPercentModifier);
             NetworkedEntity.playerInstance.HealthFlatNetworkEntityCall(stats.healthFlatModifier);
-    
-            entity.GetEntity().SetMaxHealth(stats.maxHealthPercentModifier * entity.GetEntity().GetMaxHealth());
-            entity.GetEntity().SetMaxHealth(entity.GetEntity().GetMaxHealth() + stats.maxHealthFlatModifier);
+
+            //TODO: Fix stat applications. Also get rid of the bullshit class passing. Do it in a cleaner, better way!
+            entity.GetEntity().SetMaxHealth(stats.baseHealthPercentModifier * entity.GetEntity().GetBaseHealth() +  entity.GetEntity().GetBaseHealth());
+            entity.GetEntity().SetMaxHealth(stats.baseHealthFlatModifier +  entity.GetEntity().GetMaxHealth());
         }
     }
 }

@@ -33,6 +33,10 @@ namespace Abilities {
         public void SysTickCall();
     }
 
+    public interface IStatSysTickable {
+        public void SysTickCall(NetworkedEntity entity, StatModifier stat);
+    }
+
     public interface IButtonRechargable {
         /// <summary>
         /// Called by UIController to Set the Outline for updating. (!Circular button!)

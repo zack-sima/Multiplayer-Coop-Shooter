@@ -56,6 +56,7 @@ public class UpgradesCatalog : MonoBehaviour {
 			this.mutuallyExclusiveUpgrades = mutuallyExclusiveUpgrades;
 			this.hardRequirements = hardRequirements;
 			this.softRequirements = softRequirements;
+			this.info = info;
 
 			//create new if lists are null
 			this.mutuallyExclusiveUpgrades ??= new();
