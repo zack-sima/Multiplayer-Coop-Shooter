@@ -75,6 +75,19 @@ public class Turret : MonoBehaviour {
 
 	#region Functions
 
+	//*======================| Stats |======================*//
+
+	private float baseShootSpeed = 1;
+
+	public float GetBaseShootSpeed() { return baseShootSpeed; }
+	public void SetShootSpeed(float shootSpeed) {
+		this.shootSpeed = shootSpeed;
+	}
+
+	private void SetBaseValues() {
+		baseShootSpeed = shootSpeed;
+	}
+
 	//for non-instant rotations
 	public void SetTargetTurretRotation(float rotation) {
 		targetRotation = rotation;
@@ -125,6 +138,9 @@ public class Turret : MonoBehaviour {
 	//called when overclocked ability is on
 	public void ReloadFaster() {
 		if (shootTimer > 0) shootTimer -= Time.deltaTime;
+	}
+	protected virtual void Awake() {
+		SetBaseValues();
 	}
 	protected virtual void Update() {
 		if (shootTimer > 0) shootTimer -= Time.deltaTime;

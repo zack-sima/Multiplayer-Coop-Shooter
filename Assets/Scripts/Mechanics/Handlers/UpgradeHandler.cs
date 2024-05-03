@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 
 namespace Abilities.UpgradeHandler {
     
-    public static class UpgradeHandler {
+    public static partial class UpgradeHandler {
 
         public static void PushToUpgradeHandler(this Dictionary<string, UpgradesCatalog.UpgradeNode> dict, UpgradesCatalog.UpgradeNode n) {
             // * networkedentity.playerinstance.getturret. < (projectile & turret changes)
@@ -25,15 +25,15 @@ namespace Abilities.UpgradeHandler {
                 //*?=======================| Stat |=======================?*//
                 // * ANYTHING SINGLE-FRAME BASED
                 case "Braced Internals":
-                    if (n.info.TryGetModi(nameof(ModiName.MaxHP), out float BIoutput)) {
-                        StatModifier temp = new StatModifier(true);
-                        temp.baseHealthPercentModifier += BIoutput;
-                        Debug.LogError("Internals Braced " + temp.baseHealthPercentModifier);
-                        PlayerInfo.instance.SetStatModifier(temp);
+                    if (n.info.TryGetModi(nameof(ModiName.MaxHP), out float biMaxHp)) {
+                        NetworkedEntity.playerInstance.GetEntity().SetMaxHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
+                            * biMaxHp + NetworkedEntity.playerInstance.GetEntity().GetMaxHealth());
                     }
                     break;
                 case "Dynamic Loader":
-                    // Add code for Dynamic Loader here
+                    if (n.info.TryGetModi(nameof(ModiName.Reload), out float dlReload) && TryGetTurret(out Turret turret)) {
+                        turret.SetShootSpeed(dlReload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
+                    }
                     break;
                 case "Fire Control System":
                     // Add code for Fire Control System here
@@ -42,7 +42,10 @@ namespace Abilities.UpgradeHandler {
                     // Add code for Hardened Ammo here
                     break;
                 case "Hardened Armor":
-                    // Add code for Hardened Armor here
+                    if (n.info.TryGetModi(nameof(ModiName.MaxHP), out float haMaxHp)) {
+                        NetworkedEntity.playerInstance.GetEntity().SetMaxHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
+                            * haMaxHp + NetworkedEntity.playerInstance.GetEntity().GetMaxHealth());
+                    }
                     break;
                 case "Improved Optics":
                     // Add code for Improved Optics here
@@ -116,6 +119,20 @@ namespace Abilities.UpgradeHandler {
                     return;
             }
             dict.Add(n.GetUpgradeId(), n);
+        }
+
+        private static bool TryGetCombatEntity(out CombatEntity c) {
+            c = NetworkedEntity.playerInstance.GetCombatEntity();
+            if (c == null) return false;
+            else return true;
+        }
+
+        private static bool TryGetTurret(out Turret t) {
+            TryGetCombatEntity(out CombatEntity c);
+            if (c == null) { t = null; return false; }
+            t = c.GetTurret();
+            if (t == null) return false;
+            return true;
         }
     }
 

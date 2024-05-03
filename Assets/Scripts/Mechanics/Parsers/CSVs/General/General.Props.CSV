@@ -1,9 +1,9 @@
 IDString,Add?,Cost,Lvls,DropRate,Dmg,Reload,MaxHP,MoveSpd,CritChance,Cooldown,,Misc1,,Misc2,,Misc3,,Misc4
-[Special],"//Anything not """"",//flat,//flat,"//per, default = 1",//1 + per,//1 + per,//1 + per,//1 + per,//flat,//secs,//Name ->,//Any,//Name ->,//Any,//Name ->,//Any,//Name ->,//Any
+[Special],"//Anything not """"",//flat,//flat,"//per, default = 1",//per,//per,//per,//per,//flat,//secs,//Name ->,//Any,//Name ->,//Any,//Name ->,//Any,//Name ->,//Any
 Hardened Ammo,,100,4,,0.05,,,,,,,,,,,,,
-Dynamic Loader,,100,4,,,0.05,,,,,,,,,,,,
-Hardened Armor,,100,4,,,,0.10,,,,,,,,,,,
-Fire Control System,,100,4,,0.05,0.05,,,,,,,,,,,,
+Dynamic Loader,1,100,4,,,-0.08,,,,,,,,,,,,
+Hardened Armor,1,100,4,,,,0.10,,,,,,,,,,,
+Fire Control System,,100,4,,0.05,-0.05,,,,,,,,,,,,
 Polished Trigger,,100,4,,0.10,,,,0.03,,,,,,,,,
 Improved Optics,,100,4,,,,,,0.04,,,,,,,,,
 Turbocharger,,100,4,,,,,0.05,,,,,,,,,,
@@ -24,5 +24,5 @@ Embracing Bind,,100,4,,,,,,,,Chain%,0.06,Increment,0.03,,,,
 Stun Grenades,,100,4,,,,,,,,Stun%,0.06,Increment,0.03,,,,
 Optical Battery,,100,4,0.1,,,,,,15,Dmg%,20.00,Increment,2.00,,,,
 Advanced Targeting,,100,4,0.1,,,,,,,HPBound,.80,BonusDmg,.2,,,,
-Regenerative Armor,,100,4,,,,,,,,HPPercentPerSec,0.03,,,,,,
+Regenerative Armor,1,100,4,,,,,,,,HPPercentPerSec,0.03,,,,,,
 ,,,,,,,,,,,,,,,,,,

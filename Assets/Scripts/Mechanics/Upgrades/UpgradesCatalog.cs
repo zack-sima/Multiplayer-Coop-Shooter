@@ -309,7 +309,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		// for (int i = 0; i < 10; i++) AddUpgrade($"Camp {i + 1}", 10 + i);
 
-		CSVInit();
+		
 	}
 
 	/*=================| CSV |=================*/
@@ -319,6 +319,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 	private void Start() {
 		//make sure player starts with these abilities unlocked
+		CSVInit();
 		foreach (UpgradeNode n in playerUpgrades.Values) {
 			if (n.unlocked) {
 				PlayerInfo.instance.PushUpgradeModi(n);

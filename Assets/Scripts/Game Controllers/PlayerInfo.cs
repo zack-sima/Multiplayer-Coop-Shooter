@@ -75,22 +75,6 @@ public class PlayerInfo : MonoBehaviour {
 		currentUpgrades.PushToUpgradeHandler(n);
 	}
 
-	private StatModifier upgradeStatSingleFrame = new();
-
-	public void SetStatModifier(StatModifier upgradeStatSingleFrame) {
-		this.upgradeStatSingleFrame += upgradeStatSingleFrame;
-	}
-
-	public StatModifier GetUpgradeStatSingleFrameUpgrade(bool getDeepCopy = true) {
-		if (getDeepCopy) {
-			StatModifier returnStat = new StatModifier(upgradeStatSingleFrame);
-			upgradeStatSingleFrame = new();
-			Debug.LogWarning("Flat amount from playerinfo" + returnStat.baseHealthPercentModifier);
-			return returnStat;
-		}
-		return upgradeStatSingleFrame;
-	}
-
 	//?======================| Abilities |======================?//
 	private float totalDmgDealt = 0;
 	public float GetTotalDmgDealt() { return totalDmgDealt; }

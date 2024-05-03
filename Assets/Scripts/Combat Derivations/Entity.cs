@@ -54,18 +54,10 @@ public class Entity : MonoBehaviour {
 
 	//set in inspector; TODO: change via upgrades, etc & set at init function
 	[SerializeField] private float maxHealth;
-	private float? baseHealth = null;
-	public float GetBaseHealth() { 
-		
-		if (baseHealth == null) baseHealth = maxHealth;
-		Debug.Log("Base health requested " + (float)baseHealth);
-		return (float)baseHealth; 
-	}
+	private float baseHealth;
+	public float GetBaseHealth() { return baseHealth; }
 	public float GetMaxHealth() { return maxHealth; }
-	public void SetMaxHealth(float maxHealth) { 
-		//if (baseHealth == null) baseHealth = this.maxHealth;
-		this.maxHealth = maxHealth; 
-	}
+	public void SetMaxHealth(float maxHealth) { this.maxHealth = maxHealth; }
 
 	[SerializeField] private HealthBarType healthBarType;
 
@@ -190,6 +182,7 @@ public class Entity : MonoBehaviour {
 	}
 	protected virtual void Start() {
 		UpdateHealthBar();
+		baseHealth = maxHealth;
 	}
 	protected virtual void Update() {
 		RectTransform healthBar = healthCanvas.GetHealthBar();

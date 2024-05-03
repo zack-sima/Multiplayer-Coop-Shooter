@@ -5,6 +5,7 @@ using Fusion;
 using Abilities;
 using Effects;
 using UnityEngine.Video;
+using Abilities.StatHandler;
 
 public class NetworkedEntity : NetworkBehaviour {
 
@@ -148,7 +149,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		mainEntity.UpdateHealthBar();	
 	}
 
-	/*======================| Inflictions |======================*/
+	//*======================| Inflictions |======================*//
 
 	private List<(InflictionType type, float param, float time)> inflictions = new();
 
@@ -157,18 +158,13 @@ public class NetworkedEntity : NetworkBehaviour {
 		inflictions.InitInfliction(type, param, time);
 	}
 
-	/// <summary>
-	/// rpc the type of infliction.
-	/// </summary>
 	[Rpc(RpcSources.All, RpcTargets.StateAuthority)]
 	public void RPCApplyInfliction(InflictionType type, float param, float time) {
 		Debug.Log("Rpc is applied");
 		inflictions.InitInfliction(type, param, time);
 	}
 
-	//[Rpc()]
-
-	/*======================| Effects |======================*/
+	//*======================| Effects |======================*//
 
 	public GameObject InitEffect(GameObject effectPrefab, float duration, float earlyDestruct, UpgradeIndex i) {
 		//Apply both local and RPC the effect change!
@@ -190,6 +186,12 @@ public class NetworkedEntity : NetworkBehaviour {
             e.EnableEarlyDestruct(earlyDestruct);
         }
 	}
+
+	//*======================| Stats |======================*//
+
+	public StatModifier stats = new();
+
+	public void PushStatChanges(StatModifier m) { stats += m; }
 
 	#endregion
 
@@ -371,6 +373,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	private void Update() {
 		if (!initialized) return;
 		this.InflictionHandlerSysTick(inflictions); // handles inflictions
+		//UpdateStatModifier(); // Handle stat changes
 		if (HasSyncAuthority()) {
 			
 			//local entity
@@ -388,6 +391,12 @@ public class NetworkedEntity : NetworkBehaviour {
 
 			if (localHealth > Health) localHealth = Health;
 		}
+	}
+
+	private void LateUpdate() {
+		if (!initialized) return;
+		this.ApplyStatChanges(stats);
+		stats = new();
 	}
 
 	#endregion

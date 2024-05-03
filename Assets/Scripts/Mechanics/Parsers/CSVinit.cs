@@ -52,9 +52,7 @@ namespace CSVParser.Init {
             for(int i = 0; i < rawHeaders.Length; i++) { //Init headers
                 if (rawHeaders[i] == "") {
                     headers.Add(nameof(ModiName.Null));
-                    continue;
-                }
-                headers.Add(rawHeaders[i]);
+                } else headers.Add(rawHeaders[i]);
             }
 
             /*==============| PROPERTY INITS |==============*/
@@ -69,15 +67,15 @@ namespace CSVParser.Init {
                 string[] modi = rows[i].Split(',');
                 if (modi.Length < 2) continue;
                 if (modi[0] == "" || modi[0] == "[Special]") continue; // Filter out empties or [Special]s
-                if (modi[1] == "") continue;
+                if (modi[1] == "") continue; // Add? Check
 
                 UpgradeInfo tempUpgrade = new UpgradeInfo(modi[0]);
                 for(int j = 1; j < modi.Length; j++) {
                     if (modi[j] == "") continue;
                     
-                    if (float.TryParse(modi[j], out float result)) { //TryParse into float for the value. if cant CONTINUE!
+                    if (float.TryParse(modi[j], out float result)) { 
                         if (headers.Count > j) {
-                            if (headers[j] == nameof(ModiName.Null)) { continue; }
+                            if (headers[j] == nameof(ModiName.Null)) { continue; } // No header
                             tempUpgrade.PushModi(headers[j], result); //push modi onto tempUpgrade
                         }
                     }
@@ -187,12 +185,9 @@ namespace CSVParser.Init {
         public List<string> GetModiIds() { return modiIds; }
         public string description { get; set; } = "";
         public uint count = 1;
-
         public readonly string upgradeId;
-
         public UpgradeInfo(string id) { upgradeId = id; }
         
-
         public List<string> softRequirements = new(), hardRequirements = new(), mutualRequirements = new();
 
         public void PushModi(string id, float input) {

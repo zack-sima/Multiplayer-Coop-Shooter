@@ -5,45 +5,38 @@ using Abilities.StatHandler;
 
 namespace Abilities {
 
+    /// <summary>
+    /// All values are INCREMENTAL. INCLUDING PERCENTAGES. 
+    /// Input of 0.05 to a % variable results in a 1.05 * targetStat;
+    /// </summary>
     public class StatModifier {
-        public StatModifier(StatModifier other) {
-            healthPercentModifier = other.healthPercentModifier;
-            healthFlatModifier = other.healthFlatModifier;
-            // maxHealthPercentModifier = other.maxHealthPercentModifier;
-            // maxHealthFlatModifier = other.maxHealthFlatModifier;
-            baseHealthPercentModifier = other.baseHealthPercentModifier;
-            baseHealthFlatModifier = other.baseHealthFlatModifier;
-            //Populate with more vars...
-        }
-
-        public StatModifier(bool isIncremental = false) {
-            if (isIncremental)
-                healthPercentModifier = baseHealthPercentModifier = 0;
-            this.isIncremental = isIncremental;
-        }
 
         public static StatModifier operator +(StatModifier a, StatModifier b) {
-            StatModifier c = new();
-            if (b.isIncremental != a.isIncremental) { // XOR
-                c.healthPercentModifier = a.healthPercentModifier + b.healthPercentModifier;
-                c.healthFlatModifier = a.healthFlatModifier + b.healthFlatModifier;
-                // c.maxHealthPercentModifier = a.maxHealthPercentModifier + b.maxHealthPercentModifier;
-                // c.maxHealthFlatModifier = a.maxHealthFlatModifier + b.maxHealthFlatModifier;
-                c.baseHealthPercentModifier = a.baseHealthPercentModifier + b.baseHealthPercentModifier;
-                c.baseHealthFlatModifier = a.baseHealthFlatModifier + b.baseHealthFlatModifier;
-                //Populate with more vars...
-            }
+            StatModifier c = new() {
+                healthPercentModifier = a.healthPercentModifier + b.healthPercentModifier,
+                healthFlatModifier = a.healthFlatModifier + b.healthFlatModifier,
+
+                baseHealthPercentModifier = a.baseHealthPercentModifier + b.baseHealthPercentModifier,
+                baseHealthFlatModifier = a.baseHealthFlatModifier + b.baseHealthFlatModifier
+            };
+
+            //// maxHealthPercentModifier = a.maxHealthPercentModifier + b.maxHealthPercentModifier;
+            //// maxHealthFlatModifier = a.maxHealthFlatModifier + b.maxHealthFlatModifier;
+            //Populate with more vars...
+
             return c;
         }
 
-        public bool isIncremental;
+        public float healthPercentModifier = 0;
+        public float healthFlatModifier = 0;
+        
+        public float baseHealthPercentModifier = 0; // Single frame
+        public float baseHealthFlatModifier = 0; // Single frame
 
-        public float healthPercentModifier = 1f;
-        public float healthFlatModifier = 0f;
-        // public float maxHealthPercentModifier = 1f;
-        // public float maxHealthFlatModifier = 0f;
-        public float baseHealthPercentModifier = 0f; // Single frame
-        public float baseHealthFlatModifier = 0f; // Single frame
+        public float reloadTimePercentModifier = 0;
+
+        ////public float maxHealthPercentModifier = 1f;
+        ////public float maxHealthFlatModifier = 0f;
         //speed
             //armor
             //damage
@@ -57,7 +50,7 @@ namespace Abilities {
         public static void SysTickAndAbilityHandler(this NetworkedEntity entity, List<(IAbility ability, bool isActivated)> abilities) {
             abilities.UpdateAbilityList();
             if (entity == null) return;
-            StatModifier stats = PlayerInfo.instance.GetUpgradeStatSingleFrameUpgrade(true);
+            StatModifier stats = new();
             
             for(int i = 0; i < abilities.Count; i++) {
                 IAbility a = abilities[i].ability;
@@ -115,11 +108,9 @@ namespace Abilities {
                         abilities[i] = (a, false); 
                     }
                 }
-                //Run this to the upgrade stats < 
-                //stats.UpgradeStatChanges()
 
                 //Apply stat values.
-                entity.ApplyStatChanges(stats);
+                entity.PushStatChanges(stats);
             }
         }
 
