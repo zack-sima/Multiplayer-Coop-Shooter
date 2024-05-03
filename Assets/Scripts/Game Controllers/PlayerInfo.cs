@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using Abilities;
+using Abilities.UpgradeHandler;
+using CSVParser.Init;
 using UnityEngine;
 
 
@@ -55,9 +57,6 @@ public class PlayerInfo : MonoBehaviour {
 	public float GetAmmoLeft() { return Mathf.Clamp(ammoLeft, 0, maxAmmo); }
 	public void ConsumeAmmo() { ammoLeft--; }
 
-	//TODO: add
-	//private int energyLeft = 30;
-
 	#endregion
 
 	#region Functions
@@ -66,13 +65,16 @@ public class PlayerInfo : MonoBehaviour {
 
 	//NOTE: only call on local player!
 
-	/*======================| Upgrades Callback |======================*/
+	/*======================| Upgrades |======================*/
 
-	public void UpgradeChanged(string newUpgrade, int upgradeLevel) {
-		//TODO: ethan's side
-		//Debug.LogWarning($"Upgrade received: {newUpgrade}, level={upgradeLevel}");
-		//abilities.Add((new Heal(), false));
+	//TODO: list of stored stats. Use a callback to manage them.
+	private Dictionary<string, UpgradesCatalog.UpgradeNode> upgradeNodes = new();
+
+	public void PushUpgradeModi(UpgradesCatalog.UpgradeNode n) {
+		upgradeNodes.PushToUpgradeHandler(n);
 	}
+
+	//should just be a list of floats? i think...
 
 	/*======================| Abilities |======================*/
 	private float totalDmgDealt = 0;
@@ -90,12 +92,6 @@ public class PlayerInfo : MonoBehaviour {
 	public void PushAbilityActivation(int index) {
 		abilities.PushAbilityActivation(index);
 	}
-
-	/*======================| Upgrades |======================*/
-
-	//Upgrade info.
-
-	//public Dictionary<string, 
 
 	#endregion
 

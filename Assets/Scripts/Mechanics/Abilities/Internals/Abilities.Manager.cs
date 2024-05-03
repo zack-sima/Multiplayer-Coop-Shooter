@@ -80,10 +80,6 @@ namespace Abilities {
                         abilities[i] = (a, false); 
                     }
                 }
-                if (a is IPassiveable) {
-                    
-                    //apply passive buffs & changes
-                }
 		    } 
             //Run this to the upgrade stats < 
             //stats.UpgradeStatChanges()

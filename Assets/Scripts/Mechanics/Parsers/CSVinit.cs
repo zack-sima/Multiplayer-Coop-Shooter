@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+
 namespace CSVParser.Init {
     public static class CSVParserInitExtensions {
 
@@ -19,8 +20,8 @@ namespace CSVParser.Init {
         /// [Hard] < Used in ---.Dependencies.CSV to mark as Hard Requirements.
         /// [Mutual] < Used in ---.Dependencies.CSV to mark as Mutual Requirements.
         /// </summary>
-        public static void ParseUpgradesFromAllCSV(this Dictionary<string, UpgradeInfo> dict /*TODO: CSV selection for different combos of trees */) {
-            dict.Clear();
+        public static void ParseUpgradesFromAllCSV(this UpgradesCatalog catalog/*TODO: CSV selection for different combos of trees */) {
+            Dictionary<string, UpgradeInfo> dict = new();
 
             //Grab different CSVs!
             Dictionary<string, string> generalCSVs = UpgradesCatalog.instance.csvStorage.GetGeneralCSV();
@@ -96,6 +97,11 @@ namespace CSVParser.Init {
                         else if (lastHeader == "[Mutual]") target.mutualRequirements.Add(depens[j]);
                     }
                 }
+                if(dict.TryGetValue(targetId, out UpgradeInfo t)) {
+                    t.softRequirements.StackDuplicateDependencies();
+                    t.hardRequirements.StackDuplicateDependencies();
+                    t.mutualRequirements.StackDuplicateDependencies();
+                }
             }
 
             /*==============| DESCRIPTION INITS |==============*/
@@ -107,6 +113,7 @@ namespace CSVParser.Init {
 
                 if (dict.TryGetValue(descripts[0], out UpgradeInfo target)) {
                     if (descripts.Length > 1) { target.description = descripts[1]; }
+                    if (descripts.Length > 2) { target.type = descripts[2]; }
                 }
             }
 
@@ -118,30 +125,29 @@ namespace CSVParser.Init {
             foreach(KeyValuePair<string, UpgradeInfo> pair in dict) {
                 if (pair.Value.TryGetModi("Cost", out float cost) && pair.Value.TryGetModi("Lvls", out float lvl)) {
                     if (lvl <= 1) { // Only one upgrade of it.
-                        UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost, 
+                        UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost, info: pair.Value,
                             softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
                             hardRequirements: pair.Value.hardRequirements.StackDuplicateDependencies(),
                             mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
                         continue;
                     }
-                    UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost, level: 1,
-                            softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
-                            hardRequirements: pair.Value.hardRequirements.StackDuplicateDependencies(),
-                            mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
-                    for(int i = 2; i < lvl + 1; i++) { // Update hard requirements to contain prior one.
-                        List<string> temp = pair.Value.hardRequirements;
-                        temp.Add(pair.Key + "_" + UpgradesCatalog.ToRoman(i));
-                        UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost, level: i,
-                            softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
-                            hardRequirements: temp,
-                            mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
-                    }
-                } else {
-                    UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost, 
+                    UpgradesCatalog.UpgradeNode priorNode = UpgradesCatalog.instance.AddUpgrade(pair.Key, cost: (int)cost,
+                        info: pair.Value,level: 1, 
                         softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
                         hardRequirements: pair.Value.hardRequirements.StackDuplicateDependencies(),
                         mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
-                }
+                    for(int i = 2; i < lvl + 1; i++) {
+                        List<string> hards = pair.Value.hardRequirements.StackDuplicateDependencies();
+                        hards.Add(priorNode.GetUpgradeId());
+                        UpgradesCatalog.UpgradeNode currentNode = UpgradesCatalog.instance.AddUpgrade(
+                            pair.Key, cost: (int)cost, info: pair.Value, level: i, replacePrior: true,
+                            softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(),
+                            hardRequirements: hards,
+                            mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies());
+                        currentNode.prior = priorNode;
+                        priorNode = currentNode;
+                    }
+                } 
             }
             //TODO: Test this shit bruh.
         }
@@ -159,10 +165,10 @@ namespace CSVParser.Init {
                     }
                 }
                 if (dupeCount > 0)
-                    depens.Add(s + "_" + UpgradesCatalog.ToRoman(dupeCount));
+                    depens.Add(s + " " + UpgradesCatalog.ToRoman(dupeCount));
                 else depens.Add(s);
             }
-            if (depens.Count <= 0) return null;
+            if (depens.Count <= 0) return new();
             return depens;
         }
 
@@ -176,6 +182,7 @@ namespace CSVParser.Init {
         private List<string> modiIds = new(); 
         public List<string> GetModiIds() { return modiIds; }
         public string description { get; set; } = "";
+        public string type = "";
         public uint count = 1;
 
         public readonly string upgradeId;
@@ -204,7 +211,11 @@ namespace CSVParser.Init {
             foreach(KeyValuePair<string, float> p in modi) {
                 s += " " + p.Key + " : " + p.Value + ";";
             }
-            s += " Description: " + description;
+            s += " Description: " + description + ";";
+            s += " Softs: ";
+            foreach(string ss in softRequirements) {
+                s += ss + " ";
+            }
             return s;
         }
     }

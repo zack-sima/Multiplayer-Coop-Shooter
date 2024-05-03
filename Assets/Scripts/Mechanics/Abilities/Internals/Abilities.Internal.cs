@@ -22,7 +22,9 @@ namespace Abilities {
         public bool GetIsActive();
     }
 
-    public interface IPassiveable : IAbility { }
+    public interface IPassivable : IAbility {
+        
+    }
 
     public interface ISysTickable {
         /// <summary>
