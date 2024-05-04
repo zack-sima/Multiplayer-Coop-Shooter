@@ -54,6 +54,7 @@
         "ProjectSettings/": true,
         "UserSettings/": true,
         "temp/": true,
+        "omnisharp.enableEditorConfigSupport": true,
         "Temp/": true
     },
     "dotnet.defaultSolution": "Multiplayer-Coop-Shooter.sln"
