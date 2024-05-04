@@ -131,6 +131,9 @@ public class Entity : MonoBehaviour {
 	public void UpdateHealthBar() {
 		healthCanvas.GetHealthBar().localScale = new Vector2(GetHealth() / maxHealth, 1f);
 	}
+	public void UpdateMaxHealth(float maxHealth) {
+		this.maxHealth = maxHealth;
+	}
 
 	#endregion
 

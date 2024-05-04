@@ -91,6 +91,7 @@ public class AccountDataSyncer : MonoBehaviour {
 	private IEnumerator UpdateInformation() {
 		//make sure player has been given an ID!
 		if (!PersistentDict.HasKey("user_id")) { yield break; }
+		if (ServerLinker.instance == null) yield break;
 
 		bool canJoinLobby = !ServerLinker.instance.GetIsInLobby() && MenuManager.instance != null;
 

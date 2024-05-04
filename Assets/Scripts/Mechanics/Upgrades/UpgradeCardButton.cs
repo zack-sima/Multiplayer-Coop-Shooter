@@ -11,11 +11,19 @@ public class UpgradeCardButton : MonoBehaviour {
 	private bool purchased;
 
 	private UpgradesCatalog.UpgradeNode node;
-	public UpgradesCatalog.UpgradeNode GetNode() {return node;}
+	public UpgradesCatalog.UpgradeNode GetNode() { return node; }
 
 	public void PurchaseSuccessful() {
 		purchased = true;
 		costText.text = "Purchased";
+	}
+	public void UpdateCost(int playerMoney) {
+		if (node == null) return;
+		if (playerMoney >= node.cost) {
+			costText.color = new Color(0.3f, 1f, 0.3f);
+		} else {
+			costText.color = new Color(1f, 0.3f, 0.3f);
+		}
 	}
 	public void Init(UpgradesCatalog.UpgradeNode node) {
 		this.node = node;

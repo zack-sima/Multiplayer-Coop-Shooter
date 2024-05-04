@@ -48,7 +48,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		//CONSTRUCTOR
 		public UpgradeNode(
-			string upgradeName, Sprite icon, int cost,  UpgradeInfo info, int level = 0, bool unlocked = false, bool replacePrior = false,
+			string upgradeName, Sprite icon, int cost, UpgradeInfo info, int level = 0, bool unlocked = false, bool replacePrior = false,
 			List<string> mutuallyExclusiveUpgrades = null,
 			List<string> hardRequirements = null,
 			List<string> softRequirements = null) {
@@ -106,43 +106,36 @@ public class UpgradesCatalog : MonoBehaviour {
 			return false;
 		}
 
-        public override string ToString() {
-            string returnString = "";
+		public override string ToString() {
+			string returnString = "";
 			returnString += GetUpgradeId();
 			if (softRequirements.Count > 0) {
 				returnString += " Softs: ";
-				foreach(string s in softRequirements) {
+				foreach (string s in softRequirements) {
 					returnString += s + " ";
 				}
 			}
 			if (hardRequirements.Count > 0) {
 				returnString += " Hards: ";
-				foreach(string s in hardRequirements) {
+				foreach (string s in hardRequirements) {
 					returnString += s + " ";
 				}
 			}
 			if (mutuallyExclusiveUpgrades.Count > 0) {
 				returnString += " Mutuals: ";
-				foreach(string s in mutuallyExclusiveUpgrades) {
+				foreach (string s in mutuallyExclusiveUpgrades) {
 					returnString += s + " ";
 				}
 			}
 			return returnString;
-        }
-    }
+		}
+	}
 	//from stackoverflow.com/questions/7040289/converting-integers-to-roman-numerals
 	public static string ToRoman(int number) {
 		if ((number < 0) || (number > 3999)) return "∞";
 		if (number < 1) return string.Empty;
-		//NOTE: don't need large numbers, save computation time this way
-		//if (number >= 1000) return "M" + ToRoman(number - 1000);
-		//if (number >= 900) return "CM" + ToRoman(number - 900);
-		//if (number >= 500) return "D" + ToRoman(number - 500);
-		//if (number >= 400) return "CD" + ToRoman(number - 400);
-		//if (number >= 100) return "C" + ToRoman(number - 100);
-		//if (number >= 90) return "XC" + ToRoman(number - 90);
-		//if (number >= 50) return "L" + ToRoman(number - 50);
-		//if (number >= 40) return "XL" + ToRoman(number - 40);
+		if (number >= 50) return "L" + ToRoman(number - 50);
+		if (number >= 40) return "XL" + ToRoman(number - 40);
 		if (number >= 10) return "X" + ToRoman(number - 10);
 		if (number >= 9) return "IX" + ToRoman(number - 9);
 		if (number >= 5) return "V" + ToRoman(number - 5);
@@ -150,6 +143,12 @@ public class UpgradesCatalog : MonoBehaviour {
 		if (number >= 1) return "I" + ToRoman(number - 1);
 		return "Unknown";
 	}
+
+	#endregion
+
+	#region Prefabs
+
+	[SerializeField] private GameObject upgradeDisplayPrefab;
 
 	#endregion
 
@@ -170,8 +169,9 @@ public class UpgradesCatalog : MonoBehaviour {
 	//actually shows the player upgrade stuff
 	[SerializeField] private List<UpgradeCardButton> waveUpgradeCards;
 
-	[SerializeField] private TMP_Text timerText;
-	public void SetTimerText(string text) { timerText.text = text; }
+	[SerializeField] private TMP_Text PCHotkeyText;
+
+	[SerializeField] private RectTransform upgradeDisplayParent;
 
 	#endregion
 
@@ -180,6 +180,9 @@ public class UpgradesCatalog : MonoBehaviour {
 	//get all the icon sprites
 	[SerializeField] private List<UpgradeIcon> upgradeIcons;
 	private Dictionary<string, Sprite> upgradeIconsDict;
+
+	//don't make null so it doesn't look that bad
+	[SerializeField] private Sprite fallbackSprite;
 
 	//the real list
 	private Dictionary<string, UpgradeNode> playerUpgrades;
@@ -196,17 +199,45 @@ public class UpgradesCatalog : MonoBehaviour {
 	private List<string> upgradeIds = new();
 	public List<string> GetUpgradeIds() { return upgradeIds; }
 
+	private List<GameObject> upgradeDisplays = new();
+
 	#endregion
 
 	#region Functions
 
-	//NOTE: called at the end of the wave to return up to 4 random upgrades that can be bought
-	public void ShowPossibleUpgrades() {
-		//TODO: call this function at the end of the wave, etc
-		//TODO: have a timer show seconds until next wave arrives
+	//destroys GameObjects in UI and replaces them with new ones
+	private void RerenderUpgrades() {
+		//clear out old
+		foreach (GameObject g in upgradeDisplays) {
+			if (g != null) Destroy(g);
+		}
+		upgradeDisplays.Clear();
 
-		waveUpgradeUI.gameObject.SetActive(true);
+		//renders them out
+		SortedDictionary<string, int> highestUnlockedUpgrades = new();
+		foreach (UpgradeNode n in playerUpgrades.Values) {
+			if (n == null || !n.unlocked) continue;
+			if (!highestUnlockedUpgrades.ContainsKey(n.upgradeName)) {
+				highestUnlockedUpgrades.Add(n.upgradeName, n.level);
+			} else if (highestUnlockedUpgrades[n.upgradeName] < n.level) {
+				//put highest level in dict
+				highestUnlockedUpgrades[n.upgradeName] = n.level;
+			}
+		}
+		//look through dict
+		foreach (KeyValuePair<string, int> kv in highestUnlockedUpgrades) {
+			string levelText = kv.Value == 0 ? "" : ToRoman(kv.Value);
+			Sprite sprite = GetUpgradeIcon(kv.Key);
 
+			GameObject ins = Instantiate(upgradeDisplayPrefab, upgradeDisplayParent);
+			upgradeDisplays.Add(ins);
+
+			ins.GetComponent<Image>().sprite = sprite;
+			ins.transform.GetChild(0).GetComponent<TMP_Text>().text = levelText;
+		}
+	}
+
+	public void ReRollUpgrades() {
 		List<string> totalUpgradableList = new();
 		foreach (UpgradeNode n in playerUpgrades.Values) {
 			if (n.CanUnlock(playerUpgrades) && !n.unlocked) totalUpgradableList.Add(n.GetUpgradeId());
@@ -232,11 +263,17 @@ public class UpgradesCatalog : MonoBehaviour {
 
 			//setup button callbacks
 			waveUpgradeCards[i].Init(n);
+			waveUpgradeCards[i].UpdateCost(playerMoney);
 		}
 		//turn off unused
 		for (int i = upgradableList.Count; i < waveUpgradeCards.Count; i++) {
 			waveUpgradeCards[i].gameObject.SetActive(false);
 		}
+	}
+
+	//NOTE: called at the end of the wave to return up to 4 random upgrades that can be bought
+	public void ShowPossibleUpgrades() {
+		waveUpgradeUI.gameObject.SetActive(true);
 	}
 	public void CloseUpgrades() {
 		DisableUpgradeUI();
@@ -250,6 +287,10 @@ public class UpgradesCatalog : MonoBehaviour {
 	}
 	public void MoneyChanged() {
 		UIController.instance.SetMoneyText(playerMoney);
+
+		foreach (UpgradeCardButton c in waveUpgradeCards) {
+			c.UpdateCost(playerMoney);
+		}
 	}
 	public void PurchaseUpgrade(UpgradeCardButton sender, string upgradeName) {
 		print($"tried to purchase {upgradeName}");
@@ -267,8 +308,11 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		sender.PurchaseSuccessful();
 		MoneyChanged();
+
+		ReRollUpgrades();
+		RerenderUpgrades();
 	}
-	public UpgradeNode AddUpgrade(string name, int cost, UpgradeInfo info, int level = 0, bool unlocked = false, 
+	public UpgradeNode AddUpgrade(string name, int cost, UpgradeInfo info, int level = 0, bool unlocked = false,
 		bool replacePrior = false, List<string> mutuallyExclusiveUpgrades = null,
 		List<string> hardRequirements = null, List<string> softRequirements = null) {
 
@@ -282,7 +326,8 @@ public class UpgradesCatalog : MonoBehaviour {
 	}
 	private Sprite GetUpgradeIcon(string name) {
 		if (upgradeIconsDict.ContainsKey(name)) return upgradeIconsDict[name];
-		return null;
+		Debug.LogWarning($"need sprite for `{name}`!");
+		return fallbackSprite;
 	}
 	private void Awake() {
 		instance = this;
@@ -309,7 +354,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		// for (int i = 0; i < 10; i++) AddUpgrade($"Camp {i + 1}", 10 + i);
 
-		
+
 	}
 
 	/*=================| CSV |=================*/
@@ -320,23 +365,31 @@ public class UpgradesCatalog : MonoBehaviour {
 	private void Start() {
 		//make sure player starts with these abilities unlocked
 		CSVInit();
+
 		foreach (UpgradeNode n in playerUpgrades.Values) {
 			if (n.unlocked) {
 				PlayerInfo.instance.PushUpgradeModi(n);
 			}
 		}
-		foreach (UpgradeNode u in playerUpgrades.Values) {
-			Debug.LogWarning("UpgradeInit : " + u.ToString());
-		}
-		
+		//foreach (UpgradeNode u in playerUpgrades.Values) {
+		//	Debug.LogWarning("UpgradeInit : " + u.ToString());
+		//}
+		if (UIController.GetIsMobile()) PCHotkeyText.gameObject.SetActive(false);
+
+		ReRollUpgrades();
+		RerenderUpgrades();
 	}
 
 	private void Update() {
 		if (Input.GetKeyDown(KeyCode.U)) {
-			playerMoney += 1000;
-			MoneyChanged();
 			ShowPossibleUpgrades();
 		}
+#if UNITY_EDITOR
+		if (Input.GetKeyDown(KeyCode.P)) {
+			playerMoney += 1000;
+			MoneyChanged();
+		}
+#endif
 	}
 
 	#endregion

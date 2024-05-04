@@ -224,7 +224,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teamColorRenderers:
   - {fileID: 1999363756504401811}
-  fireSound: {fileID: 0}
+  fireSound: {fileID: 2880983561177711098}
 --- !u!82 &2880983561177711098
 AudioSource:
   m_ObjectHideFlags: 0
@@ -232,14 +232,14 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4780522923598946021}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_PlayOnAwake: 0
-  m_Volume: 1
+  m_audioClip: {fileID: 8300000, guid: 9d9ade7829de74ac091244503de300dc, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0
   m_Pitch: 1.25
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -460,7 +460,7 @@ GameObject:
   - component: {fileID: 2886455746837634559}
   - component: {fileID: 640169467962082654}
   - component: {fileID: 1999363756504401811}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Flame
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -547,7 +547,7 @@ GameObject:
   - component: {fileID: 8852490498564344905}
   - component: {fileID: 8852490498564388329}
   - component: {fileID: 8852490498589401293}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: WFXMR_GazFireBig (Blue)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

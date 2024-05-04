@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2067305844212383928}
   - component: {fileID: 800631900194037647}
   - component: {fileID: 4475625711253803300}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Hull
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,7 +164,7 @@ GameObject:
   - component: {fileID: 2325913016705456889}
   - component: {fileID: 1614607043968816922}
   - component: {fileID: 5848830338912782522}
-  m_Layer: 8
+  m_Layer: 6
   m_Name: TurretAnchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}

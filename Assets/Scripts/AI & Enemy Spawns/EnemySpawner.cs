@@ -26,7 +26,7 @@ public class EnemySpawner : NetworkBehaviour {
 	#region Synced
 
 	//for master client (if host migrated, this makes sure spawning is rougly the same)
-	[Networked, OnChangedRender(nameof(WaveStartTimerChanged))]
+	[Networked]
 	private float SpawnTimer { get; set; } = 0;
 	public float GetSpawnTimer() { return SpawnTimer; }
 
@@ -149,15 +149,6 @@ public class EnemySpawner : NetworkBehaviour {
 			return true;
 		} catch {
 			return false;
-		}
-	}
-
-	//disable UI
-	private void WaveStartTimerChanged() {
-		if (SpawnTimer > 0) {
-			UpgradesCatalog.instance.SetTimerText(Mathf.CeilToInt(SpawnTimer).ToString() + "s");
-		} else {
-			UpgradesCatalog.instance.DisableUpgradeUI();
 		}
 	}
 

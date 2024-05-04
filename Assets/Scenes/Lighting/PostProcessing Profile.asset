@@ -18,7 +18,7 @@ MonoBehaviour:
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 1
+    m_Value: 0.89
   intensity:
     m_OverrideState: 1
     m_Value: 1
@@ -61,3 +61,59 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   components:
   - {fileID: -1696733769915567252}
+  - {fileID: 8902868567207843821}
+--- !u!114 &8902868567207843821
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d468b943de483f641a8eb80fcd52e584, type: 3}
+  m_Name: SSCC
+  m_EditorClassIdentifier: 
+  active: 1
+  effectIntensity:
+    m_OverrideState: 1
+    m_Value: 1
+  distanceFade:
+    m_OverrideState: 0
+    m_Value: 0
+  curvaturePixelRadius:
+    m_OverrideState: 0
+    m_Value: 2
+  curvatureBrights:
+    m_OverrideState: 0
+    m_Value: 2
+  curvatureDarks:
+    m_OverrideState: 0
+    m_Value: 3
+  cavitySamples:
+    m_OverrideState: 1
+    m_Value: 0
+  saturateCavity:
+    m_OverrideState: 0
+    m_Value: 0
+  cavityRadius:
+    m_OverrideState: 1
+    m_Value: 0
+  cavityBrights:
+    m_OverrideState: 0
+    m_Value: 3
+  cavityDarks:
+    m_OverrideState: 0
+    m_Value: 2
+  cavityResolution:
+    m_OverrideState: 1
+    m_Value: 2
+  normalsSource:
+    m_OverrideState: 0
+    m_Value: 1
+  debugMode:
+    m_OverrideState: 0
+    m_Value: 0
+  output:
+    m_OverrideState: 0
+    m_Value: 0

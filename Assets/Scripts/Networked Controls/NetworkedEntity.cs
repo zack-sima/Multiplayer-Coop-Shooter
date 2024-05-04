@@ -43,7 +43,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	private Quaternion TurretRotation { get; set; }
 
 	[Networked, OnChangedRender(nameof(HealthBarChanged))]
-	private float Health { get; set; } = 9999;
+	private float Health { get; set; } = 99999;
 	public float GetHealth() {
 		if (!isPlayer && !Runner.IsSharedModeMasterClient && !Runner.IsSinglePlayer) {
 			if (localHealth > Health) localHealth = Health;
@@ -51,6 +51,8 @@ public class NetworkedEntity : NetworkBehaviour {
 		}
 		return Health;
 	}
+	[Networked, OnChangedRender(nameof(MaxHealthBarChanged))]
+	private float MaxHealth { get; set; } = 99999;
 
 	//Team: determines whether bullets pass by, health bar color, etc;
 	[Networked, OnChangedRender(nameof(TeamChanged))]
@@ -235,6 +237,10 @@ public class NetworkedEntity : NetworkBehaviour {
 		if (localHealth > Health) localHealth = Health;
 		mainEntity.UpdateHealthBar();
 	}
+	private void MaxHealthBarChanged() {
+		if (!isPlayer || HasSyncAuthority()) return;
+		mainEntity.UpdateMaxHealth(MaxHealth);
+	}
 	private void TeamChanged() {
 		if (Team != -1) {
 			mainEntity.SetTeam(Team);
@@ -376,9 +382,8 @@ public class NetworkedEntity : NetworkBehaviour {
 	private void Update() {
 		if (!initialized) return;
 		this.InflictionHandlerSysTick(inflictions); // handles inflictions
-		//UpdateStatModifier(); // Handle stat changes
+													//UpdateStatModifier(); // Handle stat changes
 		if (HasSyncAuthority()) {
-
 			//local entity
 			if (isPlayer) {
 				//natural healing
@@ -386,6 +391,10 @@ public class NetworkedEntity : NetworkBehaviour {
 					Health = Mathf.Min(mainEntity.GetMaxHealth(),
 						Health + Time.deltaTime * mainEntity.GetMaxHealth() / 12f);
 					mainEntity.UpdateHealthBar();
+				}
+				//check max health
+				if (mainEntity.GetMaxHealth() != MaxHealth) {
+					MaxHealth = mainEntity.GetMaxHealth();
 				}
 			}
 		} else {

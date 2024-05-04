@@ -9,10 +9,11 @@ public class HumanInputs : MonoBehaviour {
 
 	public static HumanInputs instance;
 
-	private const float AIM_DRAG_THRESHOLD = 0.5f;
+	private const float AIM_DRAG_THRESHOLD = 0.42f;
 	private const float DEFAULT_LOB_DISTANCE = 5f;
 	private const float MAX_LOB_DISTANCE = 14.2f;
 	private const float FULL_AUTO_DELAY = 0.15f;
+	private const float RE_SHOOT_THRESHOLD = 0.1f; //when full auto runs out reload this much
 
 	#endregion
 
@@ -102,7 +103,8 @@ public class HumanInputs : MonoBehaviour {
 					playerShooting = true;
 					player.TryFireMainWeapon();
 				} else {
-					if (PlayerInfo.instance.GetAmmoLeft() == PlayerInfo.instance.GetMaxAmmo()) {
+					if (PlayerInfo.instance.GetAmmoLeft() >= Mathf.CeilToInt(
+						PlayerInfo.instance.GetMaxAmmo() * RE_SHOOT_THRESHOLD)) {
 						stopAutoShooting = false;
 					} else {
 						stopAutoShooting = true;
@@ -157,18 +159,10 @@ public class HumanInputs : MonoBehaviour {
 			player.GetHull().Move(Vector3.zero);
 			return;
 		}
-
-#if UNITY_EDITOR //NOTE: for testing, temporary turret switching
-		if (Input.GetKeyDown(KeyCode.Alpha1)) {
-			player.GetNetworker().SetTurretName(
-				PlayerInfo.instance.GetTurrets()[0].turretName
-			);
-		}
-		if (Input.GetKeyDown(KeyCode.Alpha2)) {
-			player.GetNetworker().SetTurretName(
-				PlayerInfo.instance.GetTurrets()[1].turretName
-			);
-		}
+#if UNITY_EDITOR && false
+		//NOTE: for testing, temporary turret switching
+		if (Input.GetKeyDown(KeyCode.Alpha1))
+			player.GetNetworker().SetTurretName(PlayerInfo.instance.GetTurrets()[0].turretName);
 #endif
 		if (Input.GetKeyDown(KeyCode.Escape)) {
 			UIController.instance.ToggleOptions();
@@ -180,7 +174,8 @@ public class HumanInputs : MonoBehaviour {
 			if (PlayerInfo.instance.GetAmmoLeft() > 1 && !stopAutoShooting) {
 				playerShooting = true;
 				player.TryFireMainWeapon();
-			} else if (PlayerInfo.instance.GetAmmoLeft() == PlayerInfo.instance.GetMaxAmmo()) {
+			} else if (PlayerInfo.instance.GetAmmoLeft() >= Mathf.CeilToInt(
+				PlayerInfo.instance.GetMaxAmmo() * RE_SHOOT_THRESHOLD)) {
 				stopAutoShooting = false;
 			} else {
 				stopAutoShooting = true;

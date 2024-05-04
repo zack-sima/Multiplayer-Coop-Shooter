@@ -205,7 +205,7 @@ public class UIController : MonoBehaviour {
 
 		if (EnemySpawner.instance == null) return;
 		int timer = Mathf.CeilToInt(EnemySpawner.instance.GetSpawnTimer());
-		if (timer != 0) waveText.text = $"Wave {wave} (Next: {timer % 60:00})";
+		if (timer != 0) waveText.text = $"Wave {wave} ({timer % 60:00})";
 	}
 	private void Awake() {
 		instance = this;

@@ -92,13 +92,18 @@ public class ServerLinker : MonoBehaviour {
 
 		SetIsInLobby(false);
 	}
-	public void StopGame() {
+	private IEnumerator DelayedStopGame() {
+		//turn off player audio to prevent clipping
+		if (NetworkedEntity.playerInstance != null) {
+			NetworkedEntity.playerInstance.gameObject.SetActive(false);
+		}
+		yield return new WaitForSeconds(0.1f);
+
 		try {
-			//turn off player audio to prevent clipping
-			if (NetworkedEntity.playerInstance != null) {
-				NetworkedEntity.playerInstance.GetComponent<AudioListener>().enabled = false;
-			}
 			bootstrap.ShutdownAll(changeScene: true); // This shuts down the NetworkRunner instances
 		} catch { }
+	}
+	public void StopGame() {
+		StartCoroutine(DelayedStopGame());
 	}
 }

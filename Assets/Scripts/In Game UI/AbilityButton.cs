@@ -20,7 +20,7 @@ public class AbilityButton : MonoBehaviour {
 
 	#region Members
 
-	[SerializeField] private KeyCode triggerKey;
+	[SerializeField] private string triggerKey;
 
 	//callback (hook to functions, TODO: currently done in PlayerInfo script)
 	public UnityEvent OnAbilityUsed;
@@ -47,10 +47,10 @@ public class AbilityButton : MonoBehaviour {
 		// if (abilityReadiness < 1f)
 		// 	abilityReadiness += Time.deltaTime / abilityCooldown;
 
-		if (Input.GetKeyDown(triggerKey)) TryUseAbility();
-
-		// progressBar.fillAmount = Mathf.Clamp(abilityReadiness, 0, 1);
+		if (Input.GetKeyDown(triggerKey.ToLower())) TryUseAbility();
 	}
+
+	// progressBar.fillAmount = Mathf.Clamp(abilityReadiness, 0, 1);
 
 	#endregion
 

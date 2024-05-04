@@ -129,8 +129,8 @@ MonoBehaviour:
   animator: {fileID: 1943951446142591777}
   bulletAnchor: {fileID: 6843912289746299571}
   bulletPrefab: {fileID: 8601614415527540211, guid: fd4dd429dc1754969adf9b2dd3ae0c8e, type: 3}
-  maxAmmo: 25
-  ammoRegenerationSpeed: 6.2
+  maxAmmo: 20
+  ammoRegenerationSpeed: 5.2
   isFullAuto: 1
   shootSpeed: 0.12
   shootSpread: 5
@@ -181,10 +181,10 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 9eeac7329b2604f5a88b4d9bf48b5a4c, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 35245459a32a64bc08e9f2225f013ee1, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
-  m_Pitch: 1.25
+  m_Volume: 0.62
+  m_Pitch: 0.8
   Loop: 0
   Mute: 0
   Spatialize: 0

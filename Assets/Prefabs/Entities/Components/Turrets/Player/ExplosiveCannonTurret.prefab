@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 16392721673760287}
   - component: {fileID: 639009861355321257}
   - component: {fileID: 1721288869937619514}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: G2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 253801577858774231}
   - component: {fileID: 2319999282502023255}
   - component: {fileID: 6378645316254882642}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: G1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 1411593461791763505}
   - component: {fileID: 2597591211559778841}
   - component: {fileID: 6430711125582963850}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: G3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -299,7 +299,7 @@ GameObject:
   - component: {fileID: 4734072677819138051}
   - component: {fileID: 6336588992765993591}
   - component: {fileID: 9114124785787104493}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BarrelMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -727,7 +727,7 @@ GameObject:
   - component: {fileID: 1141767647603051741}
   - component: {fileID: 592571444441716157}
   - component: {fileID: 3146852957607345761}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Pivot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -810,7 +810,7 @@ GameObject:
   - component: {fileID: 5699340401326031327}
   - component: {fileID: 733515025858580699}
   - component: {fileID: 7924375838070015369}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: TurretGuard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -897,7 +897,7 @@ GameObject:
   - component: {fileID: 4614979032258283747}
   - component: {fileID: 2634598939503921699}
   - component: {fileID: 9199051728807211656}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BarrelGuard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -982,7 +982,7 @@ GameObject:
   - component: {fileID: 3479107646324858544}
   - component: {fileID: 4421637592402542500}
   - component: {fileID: 4229606850998249774}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cylinder.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
