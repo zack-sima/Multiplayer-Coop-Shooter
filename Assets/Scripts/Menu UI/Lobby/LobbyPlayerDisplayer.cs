@@ -98,7 +98,8 @@ public class LobbyPlayerDisplayer : MonoBehaviour {
 				break;
 			}
 		}
-		nameDisplayParent.localPosition = new Vector3(0, 3 + hull.GetTurretAnchorPosition().y, -0.15f);
+		nameDisplayParent.localPosition = new Vector3(0, 2.85f + hull.GetTurretAnchorPosition().y,
+			nameDisplayParent.localPosition.z);
 		hull.GetAnimator().SetTeamMaterial(teamMaterials.GetTeamColor(0));
 	}
 	private void TurretChanged(string newTurretName) {

@@ -28,7 +28,6 @@ public class GarageManager : MonoBehaviour {
 	[SerializeField] private RectTransform selectionScreen, selectionContentParent;
 	[SerializeField] private TMP_Text selectionScreenTitle;
 
-	[SerializeField] private TMP_Text selectedHullTitle, selectedTurretTitle;
 	[SerializeField] private Image selectedHullImage, selectedTurretImage;
 
 	//TODO: temporary storage of hulls and turrets here -> move to centralized location
@@ -44,6 +43,13 @@ public class GarageManager : MonoBehaviour {
 
 	private readonly List<GameObject> spawnedButtons = new();
 
+	private Vector3 normalCameraPosition = Vector3.zero;
+
+	//interpolate to this
+	private Vector3 targetCameraPosition = new(-0.95f, 2.26f, -6.87f);
+
+	private bool hullMode = true;
+
 	#endregion
 
 	#region Functions
@@ -55,14 +61,22 @@ public class GarageManager : MonoBehaviour {
 		spawnedButtons.Clear();
 	}
 	private void SelectHull(string hullName, Sprite hullSprite) {
-		selectedHullTitle.text = hullName;
 		selectedHullImage.sprite = hullSprite;
+
+		CloseSelectionScreen();
 	}
 	private void SelectTurret(string turretName, Sprite turretSprite) {
-		selectedTurretTitle.text = turretName;
 		selectedTurretImage.sprite = turretSprite;
+
+		CloseSelectionScreen();
 	}
 	public void OpenHulls() {
+		if (hullMode && selectionScreen.gameObject.activeInHierarchy) {
+			CloseSelectionScreen();
+			return;
+		}
+
+		hullMode = true;
 		selectionScreenTitle.text = "HULLS";
 		selectionScreen.gameObject.SetActive(true);
 		ClearButtons();
@@ -74,6 +88,12 @@ public class GarageManager : MonoBehaviour {
 		}
 	}
 	public void OpenTurrets() {
+		if (!hullMode && selectionScreen.gameObject.activeInHierarchy) {
+			CloseSelectionScreen();
+			return;
+		}
+
+		hullMode = false;
 		selectionScreenTitle.text = "TURRETS";
 		selectionScreen.gameObject.SetActive(true);
 		ClearButtons();
@@ -103,10 +123,13 @@ public class GarageManager : MonoBehaviour {
 		playerHealthCanvas.SetActive(false);
 	}
 	public void CloseGarageTab() {
+		CloseSelectionScreen();
 		garageUI.gameObject.SetActive(false);
 		MenuManager.instance.SetMenuScreen(true);
 		garageImage.enabled = false;
 		playerHealthCanvas.SetActive(true);
+
+		Camera.main.transform.position = normalCameraPosition;
 	}
 
 	private void Awake() {
@@ -127,9 +150,15 @@ public class GarageManager : MonoBehaviour {
 				break;
 			}
 		}
+		normalCameraPosition = Camera.main.transform.position;
 	}
 
-	private void Update() { }
+	private void Update() {
+		if (garageUI.gameObject.activeInHierarchy) {
+			Camera.main.transform.position = Vector3.MoveTowards(Camera.main.transform.position,
+				targetCameraPosition, Time.deltaTime * 10f);
+		}
+	}
 
 	#endregion
 
