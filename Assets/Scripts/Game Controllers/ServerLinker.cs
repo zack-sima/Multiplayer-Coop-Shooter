@@ -21,6 +21,10 @@ public class ServerLinker : MonoBehaviour {
 		if (LobbyUI.instance != null) LobbyUI.instance.InLobbyUpdated();
 	}
 
+	//prevent audio clipping
+	private bool gameStopped = false;
+	public bool GetGameIsStopped() { return gameStopped; }
+
 	#endregion
 
 	FusionBootstrap bootstrap = null;
@@ -93,15 +97,14 @@ public class ServerLinker : MonoBehaviour {
 		SetIsInLobby(false);
 	}
 	private IEnumerator DelayedStopGame() {
-		//turn off player audio to prevent clipping
-		if (NetworkedEntity.playerInstance != null) {
-			NetworkedEntity.playerInstance.gameObject.SetActive(false);
-		}
+		gameStopped = true;
 		yield return new WaitForSeconds(0.1f);
-
 		try {
 			bootstrap.ShutdownAll(changeScene: true); // This shuts down the NetworkRunner instances
-		} catch { }
+		} catch { } finally {
+			gameStopped = false;
+		}
+
 	}
 	public void StopGame() {
 		StartCoroutine(DelayedStopGame());

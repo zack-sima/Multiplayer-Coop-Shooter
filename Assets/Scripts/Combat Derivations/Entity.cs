@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering.HighDefinition;
 using UnityEngine.UI;
+using UnityEngine.AI;
 
 /// <summary>
 /// The base class for all objects that are spawned in at runtime/can be destroyed (e.g. having HP)
@@ -126,6 +126,7 @@ public class Entity : MonoBehaviour {
 			SpawnExplosion();
 	}
 	protected void SpawnExplosion() {
+		if (ServerLinker.instance.GetGameIsStopped()) return;
 		Instantiate(explosionPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
 	}
 	public void UpdateHealthBar() {
@@ -162,8 +163,23 @@ public class Entity : MonoBehaviour {
 		}
 		UIController.instance.SetRespawnUIEnabled(false);
 
-		//TODO: designate specific player spawns (and when player is first spawned in)
-		transform.position = MapController.instance.GetPlayerSpawnpoint().position;
+		//if single player/only player, spawn at spawnpoint; otherwise, spawn near first other player
+		bool foundOtherPlayer = false;
+		foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
+			if (e == null || !e.isPlayer || e == (CombatEntity)this || e.networker.GetIsDead()) continue;
+
+			Vector2 rc = Random.insideUnitCircle * 2f;
+
+			if (NavMesh.SamplePosition(e.transform.position + new Vector3(rc.x, 0, rc.y),
+					out NavMeshHit h, 2f, NavMesh.AllAreas)) {
+				foundOtherPlayer = true;
+				transform.position = h.position;
+				break;
+			}
+		}
+		if (!foundOtherPlayer) {
+			transform.position = MapController.instance.GetPlayerSpawnpoint();
+		}
 
 		RespawnEntity();
 		networker.EntityRespawned();

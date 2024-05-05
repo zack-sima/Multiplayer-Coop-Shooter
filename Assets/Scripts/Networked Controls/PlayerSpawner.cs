@@ -9,7 +9,7 @@ public class PlayerSpawner : SimulationBehaviour, IPlayerJoined {
 		if (player == Runner.LocalPlayer) {
 
 			//Debug.Log(PlayerPrefab.name);
-			Runner.Spawn(PlayerPrefab, MapController.instance.GetPlayerSpawnpoint().position, Quaternion.identity);
+			Runner.Spawn(PlayerPrefab, MapController.instance.GetPlayerSpawnpoint(), Quaternion.identity);
 
 			//spawn stats syncer
 			if (Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer) {

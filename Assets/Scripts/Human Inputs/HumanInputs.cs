@@ -72,6 +72,7 @@ public class HumanInputs : MonoBehaviour {
 	}
 
 	private void MobileOnlyUpdate(CombatEntity player, bool canInput) {
+		player.GetHull().SquishPhysics(EntityController.instance.GetCombatEntities(), player);
 		if (!canInput) {
 			player.GetHull().Move(Vector3.zero);
 			return;
@@ -155,6 +156,7 @@ public class HumanInputs : MonoBehaviour {
 	#endregion
 
 	private void PCOnlyUpdate(CombatEntity player, bool canInput) {
+		player.GetHull().SquishPhysics(EntityController.instance.GetCombatEntities(), player);
 		if (!canInput) {
 			player.GetHull().Move(Vector3.zero);
 			return;

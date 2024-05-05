@@ -37,6 +37,8 @@ public class GarageManager : MonoBehaviour {
 	[SerializeField] private List<string> turretNames;
 	[SerializeField] private List<Sprite> turretSprites;
 
+	[SerializeField] private Camera playerCamera;
+
 	#endregion
 
 	#region Members
@@ -46,9 +48,12 @@ public class GarageManager : MonoBehaviour {
 	private Vector3 normalCameraPosition = Vector3.zero;
 
 	//interpolate to this
-	private Vector3 targetCameraPosition = new(-0.95f, 2.26f, -6.87f);
+	private Vector3 targetCameraPosition = new(-1f, 1.8f, -5.5f);
 
 	private bool hullMode = true;
+
+	private bool inGarage = false;
+	public bool GetIsInGarage() { return inGarage; }
 
 	#endregion
 
@@ -121,6 +126,7 @@ public class GarageManager : MonoBehaviour {
 		MenuManager.instance.SetMenuScreen(false);
 		garageImage.enabled = true;
 		playerHealthCanvas.SetActive(false);
+		inGarage = true;
 	}
 	public void CloseGarageTab() {
 		CloseSelectionScreen();
@@ -128,8 +134,7 @@ public class GarageManager : MonoBehaviour {
 		MenuManager.instance.SetMenuScreen(true);
 		garageImage.enabled = false;
 		playerHealthCanvas.SetActive(true);
-
-		Camera.main.transform.position = normalCameraPosition;
+		inGarage = false;
 	}
 
 	private void Awake() {
@@ -150,13 +155,16 @@ public class GarageManager : MonoBehaviour {
 				break;
 			}
 		}
-		normalCameraPosition = Camera.main.transform.position;
+		normalCameraPosition = playerCamera.transform.position;
 	}
 
 	private void Update() {
 		if (garageUI.gameObject.activeInHierarchy) {
-			Camera.main.transform.position = Vector3.MoveTowards(Camera.main.transform.position,
+			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
 				targetCameraPosition, Time.deltaTime * 10f);
+		} else {
+			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
+				normalCameraPosition, Time.deltaTime * 10f);
 		}
 	}
 

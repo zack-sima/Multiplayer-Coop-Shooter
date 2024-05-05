@@ -33,6 +33,8 @@ public class Hull : MonoBehaviour {
 	private Vector3 currentVelocity = Vector3.zero;
 	private Vector3 lastDirection = Vector3.zero;
 
+	private Vector3 physicsVelocity = Vector3.zero;
+
 	#endregion
 
 	#region Functions
@@ -55,10 +57,25 @@ public class Hull : MonoBehaviour {
 		if (optionalRigidbody == null) {
 			rootTransform.Translate(currentVelocity * Time.deltaTime);
 		} else {
-			optionalRigidbody.velocity = currentVelocity;
+			optionalRigidbody.velocity = physicsVelocity + currentVelocity;
 		}
 
 		if (direction != Vector3.zero) lastDirection = direction;
+
+		physicsVelocity = Vector3.zero;
+	}
+	//for player squishing (call BEFORE move function, one for each!)
+	public void SquishPhysics(List<CombatEntity> otherEntities, CombatEntity self) {
+		foreach (CombatEntity e in otherEntities) {
+			if (e == null || e == self) continue;
+			TrySimulatePush(e.transform.position);
+		}
+	}
+	private void TrySimulatePush(Vector3 other) {
+		if (other == transform.position) other.x += 0.01f;
+		if (AIBrain.GroundDistance(transform.position, other) < 1.8f)
+			physicsVelocity += (transform.position - other).normalized * 2f;
+		physicsVelocity.y = 0;
 	}
 
 	#endregion

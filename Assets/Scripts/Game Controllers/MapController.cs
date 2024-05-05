@@ -17,7 +17,10 @@ public class MapController : MonoBehaviour {
 
 	//TODO: add more options for teams, etc
 	[SerializeField] private Transform playerSpawnpoint;
-	public Transform GetPlayerSpawnpoint() { return playerSpawnpoint; }
+	public Vector3 GetPlayerSpawnpoint() {
+		Vector2 rc = Random.insideUnitCircle * 2f;
+		return playerSpawnpoint.position + new Vector3(rc.x, 0, rc.y);
+	}
 
 	#endregion
 
