@@ -142,10 +142,13 @@ public class PlayerInfo : MonoBehaviour {
 
 	private bool TryGetAmmoRegen(out float regenSpeed) {
 		regenSpeed = 1f;
-		if (NetworkedEntity.playerInstance.GetCombatEntity() != null && NetworkedEntity.playerInstance.GetCombatEntity().GetTurret() != null) {
+		if (NetworkedEntity.playerInstance != null &&
+			NetworkedEntity.playerInstance.GetCombatEntity() != null &&
+			NetworkedEntity.playerInstance.GetCombatEntity().GetTurret() != null) {
 			regenSpeed = NetworkedEntity.playerInstance.GetCombatEntity().GetTurret().GetAmmoRegenSpeed();
 			return true;
-		} return false;
+		}
+		return false;
 	}
 	//called by overclock ability
 	public void ReloadFaster() {
