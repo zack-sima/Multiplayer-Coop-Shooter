@@ -84,6 +84,10 @@ PrefabInstance:
       propertyPath: maxHealth
       value: 1500
       objectReference: {fileID: 0}
+    - target: {fileID: 7763485335613006241, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
+      propertyPath: killReward
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 8617458386861425146, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
       propertyPath: explosionDamage
       value: 3500

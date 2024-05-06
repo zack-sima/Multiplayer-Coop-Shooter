@@ -65,6 +65,10 @@ public class Entity : MonoBehaviour {
 	private float lastDamageTimestamp = 0f;
 	public float GetLastDamageTimestamp() { return lastDamageTimestamp; }
 
+	//kill cost (enemies)
+	[SerializeField] private int killReward;
+	public int GetKillReward() { return killReward; }
+
 	#endregion
 
 	#region Callback Functions
@@ -96,9 +100,8 @@ public class Entity : MonoBehaviour {
 			networker.EntityDied();
 
 			//add score
-			if (GameStatsSyncer.instance != null) {
-				//TODO: assign dynamic score value based on various rules
-				GameStatsSyncer.instance.AddScore(10);
+			if (GameStatsSyncer.instance != null && !isPlayer) {
+				GameStatsSyncer.instance.AddScore(killReward);
 			}
 		}
 

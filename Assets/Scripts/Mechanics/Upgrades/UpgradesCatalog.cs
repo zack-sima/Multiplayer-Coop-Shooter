@@ -188,7 +188,7 @@ public class UpgradesCatalog : MonoBehaviour {
 	private Dictionary<string, UpgradeNode> playerUpgrades;
 
 	//NOTE: player money
-	private int playerMoney = 0;
+	private int playerMoney = 250;
 	public int GetPlayerMoney() { return playerMoney; }
 
 	//whenever score changes, compare with this to see how much money player should get

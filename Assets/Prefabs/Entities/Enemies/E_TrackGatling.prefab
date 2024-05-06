@@ -284,12 +284,16 @@ PrefabInstance:
       value: 1200
       objectReference: {fileID: 0}
     - target: {fileID: 366278136777289315, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
+      propertyPath: killReward
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 366278136777289315, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: healthCanvas
       value: 
       objectReference: {fileID: 538092186887039076}
     - target: {fileID: 954837698998907771, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: m_Name
-      value: Enemy_3
+      value: E_TrackGatling
       objectReference: {fileID: 0}
     - target: {fileID: 2573626183161891820, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: m_LocalPosition.x
