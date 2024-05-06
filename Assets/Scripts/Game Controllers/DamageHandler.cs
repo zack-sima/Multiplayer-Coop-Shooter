@@ -28,8 +28,12 @@ public static class DamageHandler {
 			} catch { continue; }
 
 			float realDmg = damage * Mathf.Min(1.5f * radius - 1.2f * dist, radius) / radius;
+
 			e.GetNetworker().LoseLocalHealth(realDmg);
-			e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object, realDmg);
+
+			//if exploding bomb blows up another bomb it waits a bit (0.2s rn)
+			e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object, realDmg,
+				(e.GetTurret().GetIsProximityExploder() && canDamageTeam) ? 0.2f : 0f);
 
 			self.IncrementDamageCharge(realDmg); //ability damage charge up
 			successfullyDamaged = true;
@@ -39,12 +43,13 @@ public static class DamageHandler {
 				UIController.NudgePhone(2);
 		}
 	}
+
 	public static void DealDamageToTarget(CombatEntity target, float damage, CombatEntity self = null) {
 		NetworkedEntity networker = target.GetNetworker();
 
 		if (!networker.GetInitialized()) return;
-		
-		if (self != null) { 
+
+		if (self != null) {
 			(float chance, float dmg) crit = self.GetTurret().GetCritValues();
 			if (Random.Range(0, 1f) < crit.chance && crit.dmg > 0) {
 				damage *= crit.dmg;
@@ -59,6 +64,6 @@ public static class DamageHandler {
 		} //ability damage charge up
 
 		networker.LoseLocalHealth(damage);
-		networker.RPC_TakeDamage(networker.Object, damage);
+		networker.RPC_TakeDamage(networker.Object, damage, 0);
 	}
 }

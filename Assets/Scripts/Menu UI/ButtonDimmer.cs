@@ -118,16 +118,19 @@ public class ButtonDimmer : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
 		}
 		deltaInteractable = self.interactable;
 
+		//assume frame rate (delta time can't be used when paused!)
+		float standardDeltaTime = 1f / 60f;
+
 		if (bounceButton) {
 			if (touchInButton) {
 				float threshold = 1f - bounceDegree;
 				if (currentSize > threshold) {
-					currentSize = Mathf.Max(threshold, currentSize - Time.deltaTime * 2f);
+					currentSize = Mathf.Max(threshold, currentSize - standardDeltaTime * 2f);
 					transform.localScale = new Vector2(currentSize, currentSize);
 				}
 			} else {
 				if (currentSize < 1f) {
-					currentSize = Mathf.Min(1f, currentSize + Time.deltaTime * 3.5f);
+					currentSize = Mathf.Min(1f, currentSize + standardDeltaTime * 3.5f);
 					transform.localScale = new Vector2(currentSize, currentSize);
 				}
 			}

@@ -48,6 +48,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	[Networked, OnChangedRender(nameof(HealthBarChanged))]
 	private float Health { get; set; } = 99999;
 	public float GetHealth() {
+		if (localIsDead || stateAuthIsDead) return 0f;
 		if (!isPlayer && !Runner.IsSharedModeMasterClient && !Runner.IsSinglePlayer) {
 			if (localHealth > Health) localHealth = Health;
 			return Mathf.Min(localHealth, mainEntity.GetMaxHealth());
@@ -121,6 +122,9 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 	private bool localIsDead = false;
 	public bool GetLocalIsDead() { return localIsDead; }
+
+	//if marked dead don't try to access HP, etc
+	private bool stateAuthIsDead = false;
 
 	#endregion
 
@@ -271,6 +275,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	public void EntityRespawned() {
 		IsDead = false;
 		lastRespawnTimestamp = Time.time;
+		stateAuthIsDead = false;
 	}
 	//either is player and has state authority or isn't player and is master client/SP
 	public bool HasSyncAuthority() {
@@ -293,17 +298,34 @@ public class NetworkedEntity : NetworkBehaviour {
 		optionalCombatEntity.RemoveBullet(bulletId);
 	}
 	[Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-	public void RPC_TakeDamage(NetworkObject target, float damage) {
+	public void RPC_TakeDamage(NetworkObject target, float damage, float delay) {
 		//NOTE: RPC is called on all objects the player owns (bots, players, etc if master client)
 		// target needs to be checked to make sure THIS object is the actual one being targeted
 		if (target != Object) return;
+		if (stateAuthIsDead) return;
 
 		//within respawn protection
 		if (Time.time - lastRespawnTimestamp < RESPAWN_PROTECTION_TIME) return;
 
+		if (delay > 0) {
+			StartCoroutine(DelayedTakeDamage(damage, delay));
+		} else {
+			Health = Mathf.Max(0f, Health - damage);
+
+			if (Health <= 0f) stateAuthIsDead = true;
+
+			mainEntity.LostHealth();
+		}
+	}
+	private IEnumerator DelayedTakeDamage(float damage, float delay) {
+		for (float i = 0; i < delay; i += Time.deltaTime) {
+			yield return new WaitForEndOfFrame();
+			if (stateAuthIsDead) yield break;
+		}
 		Health = Mathf.Max(0f, Health - damage);
 		mainEntity.LostHealth();
 	}
+
 	public void DeleteEntity() {
 		Runner.Despawn(Object);
 	}

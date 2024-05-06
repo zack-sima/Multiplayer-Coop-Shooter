@@ -133,7 +133,7 @@ public class AIBrain : MonoBehaviour {
 			entity.TryFireMainWeapon();
 		} else if (entity.GetTurret().GetIsProximityExploder() &&
 			GroundDistance(target.transform.position, transform.position) < 2.5f) {
-			entity.GetNetworker().RPC_TakeDamage(entity.GetNetworker().Object, entity.GetMaxHealth());
+			entity.GetNetworker().RPC_TakeDamage(entity.GetNetworker().Object, entity.GetMaxHealth(), 0);
 		} else if (entity.GetTurret().GetIsProximityExploder() && //close enough to walk straight
 			GroundDistance(target.transform.position, transform.position) < 5f) {
 			navigator.SetActive(false);

@@ -231,6 +231,7 @@ public class MenuManager : MonoBehaviour {
 	}
 	private void Start() {
 		Application.targetFrameRate = 90;
+		Time.timeScale = 1f;
 
 		currentGameMode = (GameMode)PlayerPrefs.GetInt("game_mode");
 

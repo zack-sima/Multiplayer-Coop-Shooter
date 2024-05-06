@@ -167,12 +167,18 @@ public class UIController : MonoBehaviour {
 	public void ResumeGame() {
 		closedOptionsTimestamp = Time.time;
 		optionsUI.gameObject.SetActive(false);
+		Time.timeScale = 1f;
 	}
 	public void ToggleOptions() {
 		closedOptionsTimestamp = Time.time;
 		optionsUI.gameObject.SetActive(!optionsUI.gameObject.activeInHierarchy);
+
+		if (optionsUI.gameObject.activeInHierarchy) PauseGame();
+		else ResumeGame();
 	}
 	public void LeaveGame() {
+		Time.timeScale = 1f;
+
 		if (ServerLinker.instance == null) {
 			UnityEngine.SceneManagement.SceneManager.LoadScene(0);
 		} else {
@@ -216,6 +222,11 @@ public class UIController : MonoBehaviour {
 		if (EnemySpawner.instance != null && EnemySpawner.instance.GetWaveEnded()) {
 			SetWaveText(GameStatsSyncer.instance.GetWave() + 1);
 		}
+	}
+	public void PauseGame() {
+		if (NetworkedEntity.playerInstance != null &&
+			!NetworkedEntity.playerInstance.Runner.IsSinglePlayer) return;
+		Time.timeScale = 0.000000000001f;
 	}
 	private IEnumerator WaitStartPlayer() {
 		while (NetworkedEntity.playerInstance == null) yield return null;

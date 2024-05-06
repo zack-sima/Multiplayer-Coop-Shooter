@@ -274,9 +274,15 @@ public class UpgradesCatalog : MonoBehaviour {
 	//NOTE: called at the end of the wave to return up to 4 random upgrades that can be bought
 	public void ShowPossibleUpgrades() {
 		waveUpgradeUI.gameObject.SetActive(true);
+
+		//if single player will pause
+		UIController.instance.PauseGame();
 	}
 	public void CloseUpgrades() {
 		DisableUpgradeUI();
+
+		//if paused, resumes game
+		UIController.instance.ResumeGame();
 	}
 	public void ScoreChanged(int newScore) {
 		if (newScore > lastScore) {

@@ -157,6 +157,9 @@ public class HumanInputs : MonoBehaviour {
 
 	private void PCOnlyUpdate(CombatEntity player, bool canInput) {
 		player.GetHull().SquishPhysics(EntityController.instance.GetCombatEntities(), player);
+
+		if (Input.GetKeyDown(KeyCode.Escape)) UIController.instance.ToggleOptions();
+
 		if (!canInput) {
 			player.GetHull().Move(Vector3.zero);
 			return;
@@ -166,9 +169,6 @@ public class HumanInputs : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Alpha1))
 			player.GetNetworker().SetTurretName(PlayerInfo.instance.GetTurrets()[0].turretName);
 #endif
-		if (Input.GetKeyDown(KeyCode.Escape)) {
-			UIController.instance.ToggleOptions();
-		}
 		if (Input.GetMouseButtonUp(0)) {
 			MainWeaponJoystickReleased();
 		}
