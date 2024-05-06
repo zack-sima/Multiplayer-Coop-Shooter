@@ -21,6 +21,10 @@ public class EnemySpawner : NetworkBehaviour {
 	[SerializeField] private List<GameObject> enemyPrefabs;
 	[SerializeField] private List<int> enemyCosts; //credit costs
 
+	//for every 5th wave
+	[SerializeField] private List<GameObject> enemyBossPrefabs;
+	[SerializeField] private List<int> enemyBossCosts;
+
 	#endregion
 
 	#region Synced
@@ -53,23 +57,41 @@ public class EnemySpawner : NetworkBehaviour {
 	#region Spawn Logic
 
 	//NOTE: this returns a shuffled list (seeded by wave) of enemy prefab indices
-	private List<int> DetermineEnemiesForInfiniteWave(int waveNum) {
+	private List<GameObject> DetermineEnemiesForInfiniteWave(int waveNum) {
 		//$10 is the standard cost of a normal enemy
 		int totalSpawnCredits = 10 * ((int)Mathf.Pow(waveNum, 1.5f) + 5);
 
-		List<int> enemySpawns = new();
+		//bosses
+		bool isBossWave = (waveNum + 1) % 5 == 0;
+		List<int> currEnemyCosts = isBossWave ? enemyBossCosts : enemyCosts;
+		List<GameObject> currEnemyPrefabs = isBossWave ? enemyBossPrefabs : enemyPrefabs;
+
+		List<GameObject> enemySpawns = new();
 		System.Random rand = new(GameStatsSyncer.instance.GetRandomSeed() + waveNum);
 
-		int minCost = enemyCosts.Min();
+		int minCost = currEnemyCosts.Min();
+		int spawned = 0;
+		bool onBoss = isBossWave;
 		while (totalSpawnCredits >= minCost) {
-			int spawnChoice = rand.Next() % enemyCosts.Count;
+			int spawnChoice = rand.Next() % currEnemyCosts.Count;
 
 			//find another enemy (don't allow expensive enemies if they take up >25% of total cost)
-			if (enemyCosts[spawnChoice] > totalSpawnCredits || enemyCosts[spawnChoice] > minCost &&
-				enemyCosts[spawnChoice] * 4f > totalSpawnCredits) continue;
+			if (currEnemyCosts[spawnChoice] > totalSpawnCredits || !isBossWave &&
+				currEnemyCosts[spawnChoice] > minCost && currEnemyCosts[spawnChoice] * 4f > totalSpawnCredits) continue;
 
-			totalSpawnCredits -= enemyCosts[spawnChoice];
-			enemySpawns.Add(spawnChoice);
+			totalSpawnCredits -= currEnemyCosts[spawnChoice];
+			enemySpawns.Add(currEnemyPrefabs[spawnChoice]);
+
+			spawned++;
+
+			//spawn non-bosses after spawning n number of bosses
+			if (onBoss && spawned >= (int)(Mathf.Pow(waveNum, 1.35f) / 10)) {
+				Debug.LogWarning($"switching; currency = {totalSpawnCredits}");
+				currEnemyCosts = enemyCosts;
+				currEnemyPrefabs = enemyPrefabs;
+				minCost = currEnemyCosts.Min();
+				onBoss = false;
+			}
 		}
 		return enemySpawns;
 	}
@@ -89,10 +111,15 @@ public class EnemySpawner : NetworkBehaviour {
 			}
 
 			if (SpawnIndex == 0) {
+				//if spawn timer goes down also comes back
 				yield return StartCoroutine(WaitUntilEnemiesDead());
 
 				//upgrades if there is a timer
 				if (SpawnTimer > 0) {
+
+					//force it back to 10
+					if (SpawnTimer > 10) SpawnTimer = 10;
+
 					WaveEnded = true;
 					WaveCallback++;
 				}
@@ -110,7 +137,7 @@ public class EnemySpawner : NetworkBehaviour {
 			Debug.Log($"Spawning wave {currWave + 1}");
 
 			//spawning logic
-			List<int> enemies = DetermineEnemiesForInfiniteWave(currWave);
+			List<GameObject> enemies = DetermineEnemiesForInfiniteWave(currWave);
 
 			//NOTE: SpawnIndex usually is 0, but if host was migrated this would be a nonzero number
 			for (int i = SpawnIndex; i < enemies.Count; i++) {
@@ -118,7 +145,7 @@ public class EnemySpawner : NetworkBehaviour {
 
 				spawnEnemyLater = true;
 
-				spawnEnemyLaterPrefab = enemyPrefabs[enemies[i]];
+				spawnEnemyLaterPrefab = enemies[i];
 
 				SpawnIndex++;
 				yield return new WaitForSeconds(8f / (currWave + 5f));
@@ -126,19 +153,23 @@ public class EnemySpawner : NetworkBehaviour {
 
 			//end of wave delay
 			SpawnIndex = 0;
-			SpawnTimer = currWave < 10 ? 10 : 15;
+			SpawnTimer = 20 + currWave;
+			if ((currWave + 1) % 5 == 0) SpawnTimer += 10;
 		}
 	}
 	private IEnumerator WaitUntilEnemiesDead() {
 		//waits until all enemies are dead
 		bool enemiesAlive;
 		do {
-			yield return null;
+			yield return new WaitForEndOfFrame();
+
+			SpawnTimer -= Time.deltaTime;
+
 			enemiesAlive = false;
 			try {
 				enemiesAlive = !EnemiesAreDead();
 			} catch { }
-		} while (enemiesAlive);
+		} while (enemiesAlive && SpawnTimer > 10f);
 	}
 	private bool EnemiesAreDead() {
 		try {

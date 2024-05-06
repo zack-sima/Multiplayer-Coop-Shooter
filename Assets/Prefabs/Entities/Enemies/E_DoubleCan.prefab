@@ -48,6 +48,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3968374540305798568, guid: 8876c1e093c8d440db0d31a59fdbfa66, type: 3}
+      propertyPath: speed
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 7646715291038655174, guid: 8876c1e093c8d440db0d31a59fdbfa66, type: 3}
       propertyPath: m_Name
       value: SpiderHull
@@ -250,6 +254,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6434908959136619670, guid: b2528d0fdd9414448b819700dbdece86, type: 3}
+      propertyPath: bulletPrefab
+      value: 
+      objectReference: {fileID: 3380796494621634347, guid: e7690d8a509f14792b7a1a425c592a77, type: 3}
     - target: {fileID: 7520160795615640177, guid: b2528d0fdd9414448b819700dbdece86, type: 3}
       propertyPath: m_Name
       value: EnemyDoubleCannon
@@ -293,7 +301,7 @@ PrefabInstance:
       objectReference: {fileID: 348769736671811054}
     - target: {fileID: 366278136777289315, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: maxHealth
-      value: 1500
+      value: 12000
       objectReference: {fileID: 0}
     - target: {fileID: 366278136777289315, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: healthCanvas

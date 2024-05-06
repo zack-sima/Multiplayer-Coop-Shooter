@@ -9539,7 +9539,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &841951216
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13096,6 +13096,10 @@ PrefabInstance:
     - target: {fileID: -1695386897620489773, guid: a42b240ea63764ef981f0e0dbdb6bbdc, type: 3}
       propertyPath: m_Layer
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: -1695386897620489773, guid: a42b240ea63764ef981f0e0dbdb6bbdc, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -1692364817321561929, guid: a42b240ea63764ef981f0e0dbdb6bbdc, type: 3}
       propertyPath: m_Layer
@@ -18044,8 +18048,7 @@ MonoBehaviour:
   mapDropdown: {fileID: 2005873604}
   mapDropdownSceneNames:
   - RailMap_1
-  - Map_1
-  - Map_2
+  - Military_1
   hullDropdown: {fileID: 1374159461}
   turretDropdown: {fileID: 378129317}
 --- !u!1 &1267223362
@@ -25762,7 +25765,7 @@ MonoBehaviour:
   priority: 0
   blendDistance: 0
   weight: 1
-  sharedProfile: {fileID: 11400000, guid: f3ea4947622b4456185eb4f90a94fd39, type: 2}
+  sharedProfile: {fileID: 11400000, guid: 51ec454e7ed664ff69ffbb5aa60d54e5, type: 2}
 --- !u!4 &1838121243
 Transform:
   m_ObjectHideFlags: 0
@@ -27182,7 +27185,7 @@ Light:
   m_Type: 1
   m_Shape: 0
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0.7
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -27471,9 +27474,7 @@ MonoBehaviour:
     m_Options:
     - m_Text: Rail Map
       m_Image: {fileID: 0}
-    - m_Text: Test Map 1
-      m_Image: {fileID: 0}
-    - m_Text: Test Map 2
+    - m_Text: Military 1
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:

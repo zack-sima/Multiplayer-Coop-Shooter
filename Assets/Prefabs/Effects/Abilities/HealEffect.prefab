@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1756824389039203641}
   - component: {fileID: 637804544076449712}
   - component: {fileID: 4058438877099136876}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: VerticalGlow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +223,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.6981132, b: 0, a: 1}
+      maxColor: {r: 0, g: 0.6981132, b: 0, a: 0.6431373}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4911,7 +4911,7 @@ GameObject:
   - component: {fileID: 677212213598047305}
   - component: {fileID: 5511466813061729911}
   - component: {fileID: 522310534516287894}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: VerticalSpark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5123,7 +5123,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      maxColor: {r: 1, g: 1, b: 1, a: 0.6392157}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -9821,7 +9821,7 @@ GameObject:
   - component: {fileID: 2668981246988762028}
   - component: {fileID: 6108460602556767871}
   - component: {fileID: 1544608362088750491}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: HealEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10035,7 +10035,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 0, g: 0.6226415, b: 0, a: 1}
+      maxColor: {r: 0, g: 0.6226415, b: 0, a: 0.5882353}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}

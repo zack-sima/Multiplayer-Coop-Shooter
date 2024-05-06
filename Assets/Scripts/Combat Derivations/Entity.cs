@@ -126,7 +126,7 @@ public class Entity : MonoBehaviour {
 			SpawnExplosion();
 	}
 	protected void SpawnExplosion() {
-		if (ServerLinker.instance.GetGameIsStopped()) return;
+		if (ServerLinker.instance != null && ServerLinker.instance.GetGameIsStopped()) return;
 		Instantiate(explosionPrefab, transform.position + Vector3.up * 2f, Quaternion.identity);
 	}
 	public void UpdateHealthBar() {

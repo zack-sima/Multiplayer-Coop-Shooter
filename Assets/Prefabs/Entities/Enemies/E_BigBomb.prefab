@@ -12,6 +12,18 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 1.17
       objectReference: {fileID: 0}
+    - target: {fileID: 4518152256472543309, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4518152256472543309, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4518152256472543309, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1.2
+      objectReference: {fileID: 0}
     - target: {fileID: 5557270009005376558, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -56,6 +68,10 @@ PrefabInstance:
       propertyPath: SortKey
       value: 3394511113
       objectReference: {fileID: 0}
+    - target: {fileID: 6598096018604365266, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
+      propertyPath: m_Speed
+      value: 3.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7199139338457447609, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
       propertyPath: m_Name
       value: E_BigBomb
@@ -66,7 +82,15 @@ PrefabInstance:
       objectReference: {fileID: 6325627534410693898}
     - target: {fileID: 7763485335613006241, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
       propertyPath: maxHealth
-      value: 1000
+      value: 1500
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617458386861425146, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
+      propertyPath: explosionDamage
+      value: 3500
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617458386861425146, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
+      propertyPath: explosionRadius
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects:
