@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7547820631637302809}
   - component: {fileID: 7545838000042747563}
   - component: {fileID: 1204138325232617222}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: InfiHeal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4934,7 +4934,7 @@ GameObject:
   - component: {fileID: 7669233914611275793}
   - component: {fileID: 7547975423088726531}
   - component: {fileID: 7546571614849146039}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Glow
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5914237501615927716}
   - component: {fileID: 5915153964784805032}
   - component: {fileID: 1024369059631297448}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: FiringEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -227,7 +227,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.153, b: 0, a: 1}
+      maxColor: {r: 1, g: 0.10849059, b: 0.10849059, a: 0.43137255}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -4981,7 +4981,7 @@ GameObject:
   - component: {fileID: 5819349446759861168}
   - component: {fileID: 5913743036951819516}
   - component: {fileID: 5915185604146457590}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: ChargeParticles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5193,7 +5193,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 1, b: 1, a: 1}
+      maxColor: {r: 1, g: 1, b: 1, a: 0.6392157}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -9890,7 +9890,7 @@ GameObject:
   - component: {fileID: 5819309889657218074}
   - component: {fileID: 5913965832741331790}
   - component: {fileID: 5915122335129710826}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Rings
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -10102,7 +10102,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.153, b: 0, a: 1}
+      maxColor: {r: 1, g: 0.10849059, b: 0.10849059, a: 0.43137255}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}
@@ -14835,7 +14835,7 @@ GameObject:
   - component: {fileID: 5826741040859174242}
   - component: {fileID: 5939355624688906280}
   - component: {fileID: 5913326728308929234}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: RisingClouds
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15047,7 +15047,7 @@ ParticleSystem:
       serializedVersion: 2
       minMaxState: 0
       minColor: {r: 1, g: 1, b: 1, a: 1}
-      maxColor: {r: 1, g: 0.20127597, b: 0, a: 1}
+      maxColor: {r: 1, g: 0.10849059, b: 0.10849059, a: 0.43137255}
       maxGradient:
         serializedVersion: 2
         key0: {r: 1, g: 1, b: 1, a: 1}

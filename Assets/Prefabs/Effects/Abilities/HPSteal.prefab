@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5225128041334726542}
   - component: {fileID: 7868738888022922421}
   - component: {fileID: -4548940801076590980}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: HPSteal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4989,7 +4989,7 @@ GameObject:
   - component: {fileID: 6423047445334829238}
   - component: {fileID: 2453541118738996}
   - component: {fileID: 6142947387058041241}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}

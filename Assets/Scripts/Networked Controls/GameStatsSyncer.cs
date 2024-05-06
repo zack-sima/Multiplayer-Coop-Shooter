@@ -19,7 +19,7 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 	#region Synced
 
-	[Networked] //random seed for enemy spawning, determined once by first master client
+	[Networked] //random seed for enemy spawning, deterministic by map
 	private int RandomSeed { get; set; } = 0;
 	public int GetRandomSeed() { return RandomSeed; }
 
@@ -35,6 +35,15 @@ public class GameStatsSyncer : NetworkBehaviour {
 	[Networked, OnChangedRender(nameof(GameOverChanged))]
 	private bool GameOver { get; set; } = false;
 	public bool GetGameOver() { return GameOver; }
+
+	//NOTE: updated every second
+	[Networked, OnChangedRender(nameof(TimeChanged))]
+	private float ServerTime { get; set; } = 0;
+	public float GetServerTime() { return ServerTime; }
+
+	//NOTE: local time; call this to sync map objects
+	private float localTime = 0;
+	public float GetLocalTime() { return localTime; }
 
 	//local game over called
 	private bool gameOverInvoked = false;
@@ -53,6 +62,13 @@ public class GameStatsSyncer : NetworkBehaviour {
 	private void GameOverChanged() {
 		if (GameOver) {
 			StartCoroutine(GameOverCoroutine());
+		}
+	}
+	private void TimeChanged() {
+		if (HasSyncAuthority()) return;
+
+		if ((int)localTime != (int)ServerTime) {
+			localTime = ServerTime;
 		}
 	}
 
@@ -106,13 +122,18 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 		if (HasSyncAuthority()) {
 			Wave = Mathf.Max(PlayerPrefs.GetInt("debug_starting_wave") - 1, 0);
-			RandomSeed = Random.Range(0, 1000000);
+			RandomSeed = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
 		}
 	}
 	private void Update() {
 		if (GameOver && !gameOverInvoked) {
 			StartCoroutine(GameOverCoroutine());
 		}
+		//every new second time is synced
+		if (HasSyncAuthority() && (int)Time.time > (int)(Time.time - Time.deltaTime)) {
+			ServerTime = localTime;
+		}
+		localTime += Time.deltaTime;
 	}
 	private void Awake() {
 		if (instance != null) {
