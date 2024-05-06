@@ -1,9 +1,6 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CSVParser.Init;
-using System.Runtime.CompilerServices;
 
 namespace Abilities.UpgradeHandler {
     
@@ -24,41 +21,62 @@ namespace Abilities.UpgradeHandler {
 
                 //*?=======================| Stat |=======================?*//
                 // * ANYTHING SINGLE-FRAME BASED
-                case "Braced Internals":
-                    if (n.info.TryGetModi(nameof(ModiName.MaxHP), out float biMaxHp)) {
+                case "Braced Internals": {
+                    if (n.info.TryGetModi(nameof(ModiName.MaxHP), out float maxHp)) {
                         NetworkedEntity.playerInstance.GetEntity().SetMaxHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
-                            * biMaxHp + NetworkedEntity.playerInstance.GetEntity().GetMaxHealth());
+                            * maxHp + NetworkedEntity.playerInstance.GetEntity().GetMaxHealth());
                     }
-                    break;
-                case "Dynamic Loader":
-                    if (n.info.TryGetModi(nameof(ModiName.Reload), out float dlReload) && TryGetTurret(out Turret turret)) {
-                        turret.SetShootSpeed(dlReload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
+                    break; }
+                case "Dynamic Loader": {
+                    if (n.info.TryGetModi(nameof(ModiName.Reload), out float reload) && n.info.TryGetModi(nameof(ModiName.AmmoRegen), out float ammoRegen) && TryGetTurret(out Turret turret)) {
+                        turret.SetShootSpeed(reload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
+                        turret.SetAmmoRegenRate(ammoRegen * turret.GetBaseAmmoRegenRate() + turret.GetAmmoRegenSpeed());
                     }
-                    break;
+                    break; }
                 case "Fire Control System":
                     // Add code for Fire Control System here
                     break;
-                case "Hardened Ammo":
-                    // Add code for Hardened Ammo here
-                    break;
-                case "Hardened Armor":
-                    if (n.info.TryGetModi(nameof(ModiName.MaxHP), out float haMaxHp)) {
-                        NetworkedEntity.playerInstance.GetEntity().SetMaxHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
-                            * haMaxHp + NetworkedEntity.playerInstance.GetEntity().GetMaxHealth());
+                case "Hardened Ammo": {
+                    if (n.info.TryGetModi(nameof(ModiName.Dmg), out float dmgModi) && TryGetTurret(out Turret turret)) {
+                        turret.SetBulletDmgModi(dmgModi += turret.GetBulletModi());
                     }
-                    break;
-                case "Improved Optics":
-                    // Add code for Improved Optics here
-                    break;
-                case "Laser Sight":
-                    // Add code for Laser Sight here
-                    break;
-                case "Polished Trigger":
-                    // Add code for Polished Trigger here
-                    break;
-                case "Turbocharger":
-                    // Add code for Turbocharger here
-                    break;
+                break; }
+                case "Hardened Armor": {
+                    if (n.info.TryGetModi(nameof(ModiName.MaxHP), out float maxHp)) {
+                        NetworkedEntity.playerInstance.GetEntity().SetMaxHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
+                            * maxHp + NetworkedEntity.playerInstance.GetEntity().GetMaxHealth());
+                    }
+                    break; }
+                case "Improved Optics": {
+                    if (n.info.TryGetModi(nameof(ModiName.CritChance), out float critChance) 
+                            && n.info.TryGetModi(nameof(ModiName.CritDmg), out float critDmg) 
+                            && TryGetTurret(out Turret lsTurret)) {
+                        (float chance, float dmg) vals = lsTurret.GetCritValues();
+                        lsTurret.SetCritChance(vals.chance += critChance);
+                        lsTurret.SetCritDamage(critDmg);
+                    }
+                break; }
+                case "Laser Sight": {
+                    if (n.info.TryGetModi(nameof(ModiName.CritChance), out float critChance) 
+                            && n.info.TryGetModi(nameof(ModiName.CritDmg), out float critDmg) 
+                            && TryGetTurret(out Turret lsTurret)) {
+                        (float chance, float dmg) vals = lsTurret.GetCritValues();
+                        lsTurret.SetCritChance(vals.chance += critChance);
+                        lsTurret.SetCritDamage(critDmg);
+                    }
+                    break; }
+                case "Polished Trigger": {
+                    if (n.info.TryGetModi(nameof(ModiName.CritChance), out float critChance) 
+                            && n.info.TryGetModi(nameof(ModiName.CritDmg), out float critDmg) 
+                            && TryGetTurret(out Turret lsTurret)) {
+                        (float chance, float dmg) vals = lsTurret.GetCritValues();
+                        lsTurret.SetCritChance(vals.chance += critChance);
+                        lsTurret.SetCritDamage(critDmg);
+                    }
+                    if (n.info.TryGetModi(nameof(ModiName.Dmg), out float dmgModi) && TryGetTurret(out Turret turret)) {
+                        turret.SetBulletDmgModi(dmgModi += turret.GetBulletModi());
+                    }
+                break; }
 
                 //*?=======================| PAbility |=======================?*//
                 // * ANYTHING PER-FRAME BASE

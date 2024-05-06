@@ -59,6 +59,11 @@ public class Turret : MonoBehaviour {
 	[SerializeField] protected float explosionDamage;
 	public float GetExplosionDamage() { return explosionDamage; }
 
+	protected float critChance = 0, critDamage = 1;
+	public (float critChance, float critDamage) GetCritValues() { return (critChance, critDamage); }
+	public void SetCritChance(float critChance) { this.critChance = critChance; }
+	public void SetCritDamage(float critDamage) { this.critDamage = critDamage; }
+
 	//set to shootSpeed
 	protected float shootTimer = 0;
 
@@ -77,15 +82,21 @@ public class Turret : MonoBehaviour {
 
 	//*======================| Stats |======================*//
 
-	private float baseShootSpeed = 1;
+	private float baseShootSpeed = 1f, baseAmmoRegen = 1f;
+	protected float bulletDmgModi = 1f;
 
 	public float GetBaseShootSpeed() { return baseShootSpeed; }
-	public void SetShootSpeed(float shootSpeed) {
-		this.shootSpeed = shootSpeed;
-	}
+	public void SetShootSpeed(float shootSpeed) { this.shootSpeed = shootSpeed; }
 
+	public float GetBaseAmmoRegenRate() { return baseAmmoRegen; }
+	public void SetAmmoRegenRate(float ammoRegen) { ammoRegenerationSpeed = ammoRegen; }
+
+	public float GetBaseBulletModi() { return 1f; } // Base is always 1f.
+	public float GetBulletModi() { return bulletDmgModi; }
+	public void SetBulletDmgModi(float bulletDmgModi) { this.bulletDmgModi = bulletDmgModi; }
 	private void SetBaseValues() {
 		baseShootSpeed = shootSpeed;
+		baseAmmoRegen = ammoRegenerationSpeed;
 	}
 
 	//for non-instant rotations

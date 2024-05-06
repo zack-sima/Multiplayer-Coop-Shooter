@@ -32,6 +32,9 @@ public class NetworkedEntity : NetworkBehaviour {
 	[SerializeField]
 	public AbilityPrefabAssets effectPrefabs;
 
+	[SerializeField]
+	public AudioSource critSoundEffect;
+
 	#endregion
 
 	#region Synced

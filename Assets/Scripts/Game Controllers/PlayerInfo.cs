@@ -139,6 +139,14 @@ public class PlayerInfo : MonoBehaviour {
 		if (ammoLeft < maxAmmo && (!HumanInputs.instance.GetPlayerShooting() || reloadRegardless))
 			ammoLeft = Mathf.Min(maxAmmo, ammoLeft + Time.deltaTime * ammoReloadSpeed);
 	}
+
+	private bool TryGetAmmoRegen(out float regenSpeed) {
+		regenSpeed = 1f;
+		if (NetworkedEntity.playerInstance.GetCombatEntity() != null && NetworkedEntity.playerInstance.GetCombatEntity().GetTurret() != null) {
+			regenSpeed = NetworkedEntity.playerInstance.GetCombatEntity().GetTurret().GetAmmoRegenSpeed();
+			return true;
+		} return false;
+	}
 	//called by overclock ability
 	public void ReloadFaster() {
 		for (int i = 0; i < 3; i++)
@@ -146,6 +154,9 @@ public class PlayerInfo : MonoBehaviour {
 	}
 	private void Update() {
 		ReloadAmmoOnce();
+		if (TryGetAmmoRegen(out float regenSpeed)) {
+			ammoReloadSpeed = regenSpeed;
+		}
 		NetworkedEntity.playerInstance.SysTickAndAbilityHandler(abilities); // for ability Manager.
 	}
 	private void Start() {

@@ -43,9 +43,22 @@ public static class DamageHandler {
 		NetworkedEntity networker = target.GetNetworker();
 
 		if (!networker.GetInitialized()) return;
+		
+		if (self != null) { 
+			(float chance, float dmg) crit = self.GetTurret().GetCritValues();
+			if (Random.Range(0, 1f) < crit.chance && crit.dmg > 0) {
+				damage *= crit.dmg;
+				//TODO: crit sound.
+				if (self.GetNetworker().GetIsPlayer()) {
+					Debug.LogWarning("Crit hit for : " + damage);
+					NetworkedEntity.playerInstance.critSoundEffect.PlayOneShot(
+						NetworkedEntity.playerInstance.critSoundEffect.clip);
+				}
+			}
+			self.IncrementDamageCharge(damage);
+		} //ability damage charge up
+
 		networker.LoseLocalHealth(damage);
 		networker.RPC_TakeDamage(networker.Object, damage);
-
-		if (self != null) self.IncrementDamageCharge(damage); //ability damage charge up
 	}
 }

@@ -11,7 +11,7 @@ namespace Abilities {
         }
 
         public void SysTickCall(NetworkedEntity entity, StatModifier stat) {
-            stat.healthFlatModifier += hpPercentPerSec * entity.GetEntity().GetMaxHealth() * Time.deltaTime;
+            stat.healthFlatModifier += hpPercentPerSec * entity.GetEntity().GetBaseHealth() * Time.deltaTime;
         }
     }
 }

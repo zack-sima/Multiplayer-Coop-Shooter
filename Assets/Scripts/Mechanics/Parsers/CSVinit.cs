@@ -8,7 +8,7 @@ using Abilities.UpgradeHandler;
 namespace CSVParser.Init {
 
     public enum ModiName {
-        Cost, Lvls, DropRate, Dmg, Reload, MaxHP, MoveSpd, CritChance, Cooldown,
+        Cost, Lvls, DropRate, Dmg, Reload, AmmoRegen, MaxHP, MoveSpd, CritChance, CritDmg, Cooldown,
         Misc1, Misc2, Misc3,
         Null
     }      
@@ -139,7 +139,7 @@ namespace CSVParser.Init {
                         List<string> hards = pair.Value.hardRequirements.StackDuplicateDependencies(dict);
                         hards.Add(priorNode.GetUpgradeId());
                         UpgradesCatalog.UpgradeNode currentNode = UpgradesCatalog.instance.AddUpgrade(
-                            pair.Key, cost: (int)cost, info: pair.Value, level: i, replacePrior: true,
+                            pair.Key, cost: (int)(cost * i), info: pair.Value, level: i, replacePrior: true,
                             softRequirements: pair.Value.softRequirements.StackDuplicateDependencies(dict),
                             hardRequirements: hards,
                             mutuallyExclusiveUpgrades: pair.Value.mutualRequirements.StackDuplicateDependencies(dict));

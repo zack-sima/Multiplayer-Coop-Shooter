@@ -26,6 +26,7 @@ public class Bullet : MonoBehaviour {
 	private int bulletId = -1;
 	private bool senderIsLocal = false;
 	private bool alreadyHitTarget = false;
+	private bool isCrit = false;
 
 	//for flame
 	private readonly List<Collider> hitTargets = new();
@@ -40,6 +41,7 @@ public class Bullet : MonoBehaviour {
 		senderIsLocal = isLocal;
 		senderEntity = sender;
 		this.bulletId = bulletId;
+		Debug.LogWarning(damage *= sender.GetTurret().GetBulletModi());
 	}
 	//checks layermask (gpt)
 	private bool IsLayerInLayerMask(GameObject obj, LayerMask mask) {
