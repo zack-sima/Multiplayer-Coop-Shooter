@@ -210,8 +210,13 @@ public class UIController : MonoBehaviour {
 		waveText.text = $"Wave {wave}";
 
 		if (EnemySpawner.instance == null) return;
+
+		int initTimer = Mathf.CeilToInt(EnemySpawner.instance.GetInitTimer());
 		int timer = Mathf.CeilToInt(EnemySpawner.instance.GetSpawnTimer());
-		if (timer != 0) waveText.text = $"Wave {wave} ({timer % 60:00})";
+
+		if (initTimer > 0) {
+			waveText.text = $"Game begins in {initTimer:00}";
+		} else if (timer != 0) waveText.text = $"Wave {wave} ({timer % 60:00})";
 	}
 	private void Awake() {
 		instance = this;
@@ -219,7 +224,7 @@ public class UIController : MonoBehaviour {
 		StartCoroutine(WaitStartPlayer());
 	}
 	private void Update() {
-		if (EnemySpawner.instance != null && EnemySpawner.instance.GetWaveEnded()) {
+		if (EnemySpawner.instance != null) {
 			SetWaveText(GameStatsSyncer.instance.GetWave() + 1);
 		}
 	}

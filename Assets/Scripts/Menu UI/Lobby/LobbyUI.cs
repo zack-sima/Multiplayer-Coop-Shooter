@@ -259,10 +259,11 @@ public class LobbyUI : MonoBehaviour {
 				try {
 					//update the players' hulls & turrets
 					if (!playerDisplayers[index].gameObject.activeInHierarchy) {
-						if (!GarageManager.instance.GetIsInGarage())
+						if (!GarageManager.instance.GetIsInGarage() && !LevelSelectManager.instance.GetIsInLevelSelect())
 							playerDisplayers[index].gameObject.SetActive(true);
 					}
-					if (GarageManager.instance.GetIsInGarage() && playerDisplayers[index].gameObject.activeInHierarchy) {
+					if ((GarageManager.instance.GetIsInGarage() || LevelSelectManager.instance.GetIsInLevelSelect()) &&
+						playerDisplayers[index].gameObject.activeInHierarchy) {
 						playerDisplayers[index].gameObject.SetActive(false);
 						continue;
 					}

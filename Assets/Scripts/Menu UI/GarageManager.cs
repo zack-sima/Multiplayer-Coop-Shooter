@@ -38,6 +38,7 @@ public class GarageManager : MonoBehaviour {
 	[SerializeField] private Image garageImage;
 
 	[SerializeField] private GameObject playerHealthCanvas;
+	public GameObject GetPlayerHealthCanvas() { return playerHealthCanvas; }
 
 	[SerializeField] private RectTransform selectionScreen, selectionContentParent;
 	[SerializeField] private TMP_Text selectionScreenTitle;

@@ -174,16 +174,10 @@ public class MenuManager : MonoBehaviour {
 
 		ServerLinker.instance.StopLobby();
 
-		int mapIndex = 1;
+		int mapIndex = GetSceneIndexByName(mapName);
 
-		//TODO: have a toggle that overrides the map selection mode and uses this dropdown for debug
-		for (int i = 0; i < mapDropdown.options.Count; i++) {
-			string curMapName = mapDropdownSceneNames[i];
-			if (curMapName == mapName) {
-				mapIndex = GetSceneIndexByName(mapDropdownSceneNames[i]);
-				break;
-			}
-		}
+		//TODO: scale by challenge mode, difficulty, etc
+		PlayerPrefs.SetInt("game_start_delay", 10);
 
 		//saved lobby room ID + "_g" goes to correct game room
 		if (mapIndex != -1)
@@ -191,6 +185,10 @@ public class MenuManager : MonoBehaviour {
 	}
 	public void StartSingle() {
 		int sceneIndex = GetSceneIndexByName(mapDropdownSceneNames[mapDropdown.value]);
+
+		//TODO: scale by challenge mode, difficulty, etc
+		PlayerPrefs.SetInt("game_start_delay", 10);
+
 		if (sceneIndex != -1) {
 			InitGame();
 			ServerLinker.instance.StartSinglePlayer(sceneIndex);

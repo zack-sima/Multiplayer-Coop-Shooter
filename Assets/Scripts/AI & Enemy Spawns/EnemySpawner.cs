@@ -34,6 +34,11 @@ public class EnemySpawner : NetworkBehaviour {
 	private float SpawnTimer { get; set; } = 0;
 	public float GetSpawnTimer() { return SpawnTimer; }
 
+	//for before the game starts, how long players get to prepare
+	[Networked]
+	private float InitTimer { get; set; } = 0;
+	public float GetInitTimer() { return InitTimer; }
+
 	[Networked]
 	private bool WaveEnded { get; set; } = false;
 	public bool GetWaveEnded() { return WaveEnded; }
@@ -96,7 +101,6 @@ public class EnemySpawner : NetworkBehaviour {
 		return enemySpawns;
 	}
 	private IEnumerator SpawnCycle() {
-		yield return new WaitForSeconds(5f);
 
 		//NOTE: infinite mode
 		while (true) {
@@ -109,7 +113,10 @@ public class EnemySpawner : NetworkBehaviour {
 				yield return new WaitForSeconds(1f);
 				continue;
 			}
-
+			while (InitTimer > 0) {
+				yield return new WaitForSeconds(1);
+				InitTimer--;
+			}
 			if (SpawnIndex == 0) {
 				//if spawn timer goes down also comes back
 				yield return StartCoroutine(WaitUntilEnemiesDead());
@@ -224,11 +231,19 @@ public class EnemySpawner : NetworkBehaviour {
 			}
 		}
 	}
+	public bool HasSyncAuthority() {
+		return Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer;
+	}
 
 	#endregion
 
 	#region Initialization
 
+	public override void Spawned() {
+		if (!HasSyncAuthority()) return;
+
+		InitTimer = PlayerPrefs.GetInt("game_start_delay");
+	}
 	private void Awake() {
 		instance = this;
 	}

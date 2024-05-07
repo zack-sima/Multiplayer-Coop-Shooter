@@ -4589,7 +4589,7 @@ Material:
     - _ColorMask: 15
     - _CullMode: 0
     - _Diffuse: 0.5
-    - _FaceDilate: 0.28
+    - _FaceDilate: 0.38
     - _FaceUVSpeedX: 0
     - _FaceUVSpeedY: 0
     - _GlowInner: 0
@@ -4607,8 +4607,8 @@ Material:
     - _PerspectiveFilter: 0.875
     - _Reflectivity: 10
     - _ScaleRatioA: 0.8333333
-    - _ScaleRatioB: 0.44375
-    - _ScaleRatioC: 0.18818913
+    - _ScaleRatioB: 0.36041665
+    - _ScaleRatioC: 0.15284845
     - _ScaleX: 1
     - _ScaleY: 1
     - _ShaderFlags: 0
@@ -4617,8 +4617,8 @@ Material:
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
+    - _StencilReadMask: 3
+    - _StencilWriteMask: 0
     - _TextureHeight: 512
     - _TextureWidth: 1024
     - _UnderlayDilate: 1
