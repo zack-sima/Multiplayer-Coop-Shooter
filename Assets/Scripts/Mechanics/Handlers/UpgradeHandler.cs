@@ -101,13 +101,13 @@ namespace Abilities.UpgradeHandler {
                 case "Optical Battery":
                 
                     break;
-                case "R.T.G":
+                case "R.T.G": 
                 
                     break;
-                case "Regenerative Armor":
-                    if (n.info.TryGetModi(nameof(ModiName.Misc1), out float RAoutput)) {
-                        PlayerInfo.instance.GetAbilityList().Add((new RegenerativeArmor(RAoutput), false)); }
-                    break;
+                case "Regenerative Armor": {
+                    if (n.info.TryGetModi(nameof(ModiName.Misc1), out float Misc1)) {
+                        PlayerInfo.instance.GetAbilityList().Add((new RegenerativeArmor(Misc1), false)); }
+                break; }
                 case "Rocket Pods":
                 
                     break;
