@@ -34,6 +34,7 @@ public class LevelSelectManager : MonoBehaviour {
 	//TODO: eventually, procedurally generate tabs/make tabs be generate-able on remote?
 	public void SetMap(string mapName, bool isSolo) {
 		//TODO: parse
+		CloseLevelSelect();
 	}
 	public void OpenLevelSelect() {
 		levelSelectScreen.gameObject.SetActive(true);
@@ -46,7 +47,23 @@ public class LevelSelectManager : MonoBehaviour {
 		mainPlayerDisplay.SetActive(true);
 	}
 	public void GoToMode(int modeSegment) {
-		levelScroller.horizontalNormalizedPosition = modeNormalizedThresholds[modeSegment];
+		if (modeSegment == 0) {
+			StartCoroutine(JumpMode(0));
+			return;
+		}
+		if (modeSegment == modeNormalizedThresholds.Count - 1) {
+			StartCoroutine(JumpMode(1));
+			return;
+		}
+		StartCoroutine(JumpMode((modeNormalizedThresholds[modeSegment] +
+			modeNormalizedThresholds[modeSegment + 1]) / 2f));
+	}
+	private IEnumerator JumpMode(float targetPos) {
+		for (float i = 0; i < 0.2f; i += Time.deltaTime) {
+			levelScroller.horizontalNormalizedPosition +=
+				(targetPos - levelScroller.horizontalNormalizedPosition) * Time.deltaTime * 30f;
+			yield return new WaitForEndOfFrame();
+		}
 	}
 
 	private void Awake() {
@@ -64,7 +81,7 @@ public class LevelSelectManager : MonoBehaviour {
 			if (levelScroller.horizontalNormalizedPosition >= min && levelScroller.horizontalNormalizedPosition < max) {
 				modeTexts[i].color = new Color(1f, 1f, 1f);
 			} else {
-				modeTexts[i].color = new Color(0.5f, 0.5f, 0.5f);
+				modeTexts[i].color = new Color(0.7f, 0.7f, 0.7f);
 			}
 		}
 	}

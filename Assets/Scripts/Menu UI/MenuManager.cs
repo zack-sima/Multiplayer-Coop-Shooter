@@ -42,6 +42,9 @@ public class MenuManager : MonoBehaviour {
 	[SerializeField] private List<string> mapDropdownSceneNames;
 	public List<string> GetMapSceneNames() { return mapDropdownSceneNames; }
 
+	//what is actually shown to the player
+	[SerializeField] private List<string> mapDisplayNames;
+
 	//NOTE: this dropdown is used for actual game but the dropdown itself is usually hidden
 	[SerializeField] private TMP_Dropdown hullDropdown, turretDropdown;
 	public void SetHullDropdown(string val) {
@@ -75,15 +78,6 @@ public class MenuManager : MonoBehaviour {
 
 	#region Functions
 
-	//TODO: TEMPORARY SWAP GAMEMODE INSTEAD OF GAME PAGE
-	public void ToggleGameMode() {
-		if (currentGameMode == GameMode.Singleplayer) {
-			SetGameMode(GameMode.Coop);
-		} else {
-			SetGameMode(GameMode.Singleplayer);
-		}
-	}
-
 	//TODO: mode select sets this mode -- this determines whether the play button goes to singleplayer or not
 	public void SetGameMode(GameMode mode) {
 		PlayerPrefs.SetInt("game_mode", (int)mode);
@@ -94,8 +88,8 @@ public class MenuManager : MonoBehaviour {
 	public void GameModeChanged() {
 		switch (currentGameMode) {
 			case GameMode.Coop:
-				modeDisplayTitle.text = "SURVIVAL";
-				modeDisplayDescription.text = "COOP";
+				modeDisplayTitle.text = "CO-OP";
+				modeDisplayDescription.text = ;
 
 				LobbyUI.instance.InLobbyUpdated();
 				break;
