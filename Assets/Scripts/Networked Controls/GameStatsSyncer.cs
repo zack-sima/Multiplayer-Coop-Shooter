@@ -121,7 +121,7 @@ public class GameStatsSyncer : NetworkBehaviour {
 		UpgradesCatalog.instance.MoneyChanged();
 
 		if (HasSyncAuthority()) {
-			Wave = Mathf.Max(PlayerPrefs.GetInt("debug_starting_wave") - 1, 0);
+			Wave = Mathf.Max(PlayerPrefs.GetInt("game_start_wave") - 1, 0);
 			RandomSeed = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
 		}
 	}

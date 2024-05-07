@@ -169,10 +169,10 @@ public class GarageManager : MonoBehaviour {
 	public void ScreenButtonClicked(string itemName, Sprite sprite, bool isTurret) {
 		if (!isTurret) {
 			SelectHull(itemName, sprite);
-			MenuManager.instance.SetHullDropdown(itemName);
+			MenuManager.instance.SetHull(itemName);
 		} else {
 			SelectTurret(itemName, sprite);
-			MenuManager.instance.SetTurretDropdown(itemName);
+			MenuManager.instance.SetTurret(itemName);
 		}
 	}
 	public void CloseSelectionScreen() {

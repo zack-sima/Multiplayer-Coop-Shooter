@@ -67,7 +67,7 @@ public class EnemySpawner : NetworkBehaviour {
 		int totalSpawnCredits = 10 * ((int)Mathf.Pow(waveNum, 1.5f) + 5);
 
 		//bosses
-		bool isBossWave = (waveNum + 1) % 5 == 0;
+		bool isBossWave = (waveNum + 1) % 5 == 0 && waveNum >= 9;
 		List<int> currEnemyCosts = isBossWave ? enemyBossCosts : enemyCosts;
 		List<GameObject> currEnemyPrefabs = isBossWave ? enemyBossPrefabs : enemyPrefabs;
 
@@ -90,7 +90,7 @@ public class EnemySpawner : NetworkBehaviour {
 			spawned++;
 
 			//spawn non-bosses after spawning n number of bosses
-			if (onBoss && spawned >= (int)(Mathf.Pow(waveNum, 1.35f) / 10)) {
+			if (onBoss && spawned >= (int)(Mathf.Pow(waveNum, 1.5f) / 35f)) {
 				Debug.LogWarning($"switching; currency = {totalSpawnCredits}");
 				currEnemyCosts = enemyCosts;
 				currEnemyPrefabs = enemyPrefabs;
@@ -113,9 +113,9 @@ public class EnemySpawner : NetworkBehaviour {
 				yield return new WaitForSeconds(1f);
 				continue;
 			}
-			while (InitTimer > 0) {
-				yield return new WaitForSeconds(1);
-				InitTimer--;
+			while (InitTimer >= 0) {
+				yield return new WaitForEndOfFrame();
+				InitTimer -= Time.deltaTime;
 			}
 			if (SpawnIndex == 0) {
 				//if spawn timer goes down also comes back

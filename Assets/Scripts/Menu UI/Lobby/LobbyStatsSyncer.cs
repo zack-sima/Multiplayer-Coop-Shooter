@@ -13,12 +13,12 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 
 	#region Synced
 
-	[Networked, OnChangedRender(nameof(MapDropdownChanged))]
+	[Networked, OnChangedRender(nameof(MapChanged))]
 	private string MapName { get; set; } = "[Map]";
 	public string GetMap() { return MapName; }
 	public void SetMap(string map) { MapName = map; }
 
-	[Networked, OnChangedRender(nameof(WaveInputChanged))]
+	[Networked, OnChangedRender(nameof(WaveChanged))]
 	private int StartingWave { get; set; } = 1;
 	public int GetStartingWave() { return StartingWave; }
 	public void SetStartingWave(int wave) { StartingWave = wave; }
@@ -31,11 +31,11 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 
 	#region Callbacks
 
-	private void MapDropdownChanged() {
-		LobbyUI.instance.SetClientMapDropdown();
+	private void MapChanged() {
+		LobbyUI.instance.SetClientMap();
 	}
-	private void WaveInputChanged() {
-		LobbyUI.instance.SetClientWaveInput();
+	private void WaveChanged() {
+		LobbyUI.instance.SetClientWave();
 	}
 	private void GameStartedChanged() {
 		if (!GameStarted) return;
@@ -52,17 +52,11 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 	public override void Spawned() {
 		instance = this;
 
-		MapDropdownChanged();
-		WaveInputChanged();
+		MapChanged();
+		WaveChanged();
 		GameStartedChanged();
 	}
 	private void Update() {
-		if (Runner.IsSharedModeMasterClient) {
-			if (!MenuManager.instance.GetMapDropdown().interactable) {
-				MenuManager.instance.GetWaveInput().interactable = true;
-				MenuManager.instance.GetMapDropdown().interactable = true;
-			}
-		}
 	}
 
 	#endregion

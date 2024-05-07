@@ -345,7 +345,8 @@ public class NetworkedEntity : NetworkBehaviour {
 
 				if (PlayerName == "") PlayerName = "Player";
 
-				GetComponent<AudioListener>().enabled = true;
+				if (PlayerPrefs.GetInt("mute_audio") == 0)
+					GetComponent<AudioListener>().enabled = true;
 
 				//TODO: add team selection for pvp
 				Team = 0;

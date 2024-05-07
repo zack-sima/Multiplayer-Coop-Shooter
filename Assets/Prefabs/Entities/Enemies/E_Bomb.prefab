@@ -52,6 +52,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BomberTurret
       objectReference: {fileID: 0}
+    - target: {fileID: 8306412023698569218, guid: 7e4895d63ce5448fa92aac7fa1432b8c, type: 3}
+      propertyPath: explosionDamage
+      value: 1500
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

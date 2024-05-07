@@ -30,41 +30,10 @@ public class MenuManager : MonoBehaviour {
 	[SerializeField] private TMP_Text playButtonText;
 	public void SetPlayButtonText(string text) { playButtonText.text = text; }
 
-	[SerializeField] private TMP_InputField waveInput, playerNameInput;
-	public TMP_InputField GetWaveInput() { return waveInput; }
+	[SerializeField] private TMP_InputField playerNameInput;
 	public TMP_InputField GetPlayerNameInput() { return playerNameInput; }
 
-	//map select
-	[SerializeField] private TMP_Dropdown mapDropdown;
-	public TMP_Dropdown GetMapDropdown() { return mapDropdown; }
-
-	//TODO: move this to a separate map scene manager that tracks each map's properties, name, scene index, etc
-	[SerializeField] private List<string> mapDropdownSceneNames;
-	public List<string> GetMapSceneNames() { return mapDropdownSceneNames; }
-
-	//what is actually shown to the player
-	[SerializeField] private List<string> mapDisplayNames;
-
-	//NOTE: this dropdown is used for actual game but the dropdown itself is usually hidden
-	[SerializeField] private TMP_Dropdown hullDropdown, turretDropdown;
-	public void SetHullDropdown(string val) {
-		for (int i = 0; i < hullDropdown.options.Count; i++) {
-			if (hullDropdown.options[i].text == val) {
-				hullDropdown.value = i;
-				PlayerHullChanged();
-				break;
-			}
-		}
-	}
-	public void SetTurretDropdown(string val) {
-		for (int i = 0; i < turretDropdown.options.Count; i++) {
-			if (turretDropdown.options[i].text == val) {
-				turretDropdown.value = i;
-				PlayerTurretChanged();
-				break;
-			}
-		}
-	}
+	[SerializeField] private TMP_InputField waveInput;
 
 	#endregion
 
@@ -73,6 +42,43 @@ public class MenuManager : MonoBehaviour {
 	//NOTE: this value determines what game mode the play button goes to
 	private GameMode currentGameMode;
 	public GameMode GetCurrentGameMode() { return currentGameMode; }
+
+	//NOTE: use this as actual map
+	private string selectedMapName = "Military_1";
+	public string GetSelectedMap() { return selectedMapName; }
+	public void SetSelectedMap(string newMap) { if (newMap != "") selectedMapName = newMap; }
+
+	//maps stuff
+	[SerializeField] private List<string> mapSceneNames;
+	public List<string> GetMapSceneNames() { return mapSceneNames; }
+
+	//what is actually shown to the player
+	[SerializeField] private List<string> mapDisplayNames;
+
+	private Dictionary<string, string> mapNamesToDisplayDict = new();
+	public string GetDisplayedMapName(string internalMapName) {
+		if (!mapNamesToDisplayDict.ContainsKey(internalMapName)) return internalMapName;
+		return mapNamesToDisplayDict[internalMapName];
+	}
+
+	//NOTE: player's chosen hull/turret here (replaced dropdowns)
+	private string currentHull = "Tank", currentTurret = "Autocannon";
+	public string GetPlayerHull() { return currentHull; }
+	public string GetPlayerTurret() { return currentTurret; }
+
+	public void SetHull(string val) {
+		currentHull = val;
+		PlayerHullChanged();
+	}
+	public void SetTurret(string val) {
+		currentTurret = val;
+		PlayerTurretChanged();
+	}
+
+	//NOTE: also set by level select (rapid mode = higher starting waves; TODO: modes, difficulty, etc)
+	private int currentWave = 0;
+	public int GetWave() { return currentWave; }
+	public void SetWave(int wave) { currentWave = wave; }
 
 	#endregion
 
@@ -86,16 +92,21 @@ public class MenuManager : MonoBehaviour {
 		GameModeChanged();
 	}
 	public void GameModeChanged() {
+		modeDisplayDescription.text = GetDisplayedMapName(selectedMapName);
+
 		switch (currentGameMode) {
 			case GameMode.Coop:
-				modeDisplayTitle.text = "CO-OP";
-				modeDisplayDescription.text = ;
+				modeDisplayTitle.text = "COOP";
+
+				if (currentWave > 1) modeDisplayTitle.text += " RAPID";
 
 				LobbyUI.instance.InLobbyUpdated();
+
 				break;
 			case GameMode.Singleplayer:
-				modeDisplayTitle.text = "SURVIVAL";
-				modeDisplayDescription.text = "SOLO";
+				modeDisplayTitle.text = "SOLO";
+
+				if (currentWave > 1) modeDisplayTitle.text += " RAPID";
 
 				if (ServerLinker.instance.GetIsInLobby()) {
 					ServerLinker.instance.StopLobby();
@@ -108,16 +119,12 @@ public class MenuManager : MonoBehaviour {
 		}
 	}
 	public void PlayerTurretChanged() {
-		//TODO: replace dropdown value pulls with directly setting player prefs for turret/hull
-		PlayerPrefs.SetInt("turret_index", turretDropdown.value);
-		PlayerPrefs.SetString("turret_name", turretDropdown.options[turretDropdown.value].text);
+		PlayerPrefs.SetString("turret_name", currentTurret);
 
 		LobbyUI.instance.SetPlayerTurret();
 	}
 	public void PlayerHullChanged() {
-		//TODO: replace dropdown value pulls with directly setting player prefs for turret/hull
-		PlayerPrefs.SetInt("hull_index", hullDropdown.value);
-		PlayerPrefs.SetString("hull_name", hullDropdown.options[hullDropdown.value].text);
+		PlayerPrefs.SetString("hull_name", currentHull);
 
 		LobbyUI.instance.SetPlayerHull();
 	}
@@ -171,20 +178,32 @@ public class MenuManager : MonoBehaviour {
 		int mapIndex = GetSceneIndexByName(mapName);
 
 		//TODO: scale by challenge mode, difficulty, etc
-		PlayerPrefs.SetInt("game_start_delay", 10);
+		PlayerPrefs.SetInt("game_start_delay", currentWave <= 1 ? 5 : 30);
+		PlayerPrefs.SetInt("game_start_cash", currentWave <= 1 ? 250 : 5000);
+		PlayerPrefs.SetInt("game_start_wave", currentWave);
 
 		//saved lobby room ID + "_g" goes to correct game room
 		if (mapIndex != -1)
 			ServerLinker.instance.StartShared(mapIndex, PlayerPrefs.GetString("room_id") + "_g");
 	}
 	public void StartSingle() {
-		int sceneIndex = GetSceneIndexByName(mapDropdownSceneNames[mapDropdown.value]);
+		int sceneIndex = GetSceneIndexByName(selectedMapName);
 
+#if UNITY_EDITOR
+		if (waveInput.text != "" && int.TryParse(waveInput.text, out int wave)) {
+			currentWave = wave;
+		}
+#endif
 		//TODO: scale by challenge mode, difficulty, etc
-		PlayerPrefs.SetInt("game_start_delay", 10);
+		PlayerPrefs.SetInt("game_start_delay", 5);
+		PlayerPrefs.SetInt("game_start_cash", currentWave <= 1 ? 250 : 2500);
+		PlayerPrefs.SetInt("game_start_wave", currentWave);
 
 		if (sceneIndex != -1) {
+			LobbyUI.instance.SetGameStarting();
+
 			InitGame();
+
 			ServerLinker.instance.StartSinglePlayer(sceneIndex);
 		}
 	}
@@ -196,18 +215,9 @@ public class MenuManager : MonoBehaviour {
 		PlayerTurretChanged();
 		PlayerHullChanged();
 
-		//TODO: remove links to dropdowns in the future/relegate functions to debug only, being replaced
-		//  by actual real UI buttons, etc
-
-		PlayerPrefs.SetInt("map_index", mapDropdown.value);
+		PlayerPrefs.SetString("last_map", selectedMapName);
 
 		PlayerPrefs.SetString("player_name", playerNameInput.text);
-
-		if (int.TryParse(waveInput.text, out int wave) && wave > 0) {
-			PlayerPrefs.SetInt("debug_starting_wave", wave);
-		} else {
-			PlayerPrefs.SetInt("debug_starting_wave", 0);
-		}
 	}
 	//don't make networking call until input was finished changing
 	bool waitingChangeNameInput = false;
@@ -220,22 +230,30 @@ public class MenuManager : MonoBehaviour {
 	}
 	private void Awake() {
 		instance = this;
+
+		if (PlayerPrefs.GetString("turret_name") != "")
+			currentTurret = PlayerPrefs.GetString("turret_name");
+
+		if (PlayerPrefs.GetString("hull_name") != "")
+			currentHull = PlayerPrefs.GetString("hull_name");
 	}
 	private void Start() {
 		Application.targetFrameRate = 90;
 		Time.timeScale = 1f;
 
+		for (int i = 0; i < mapSceneNames.Count; i++) {
+			mapNamesToDisplayDict.Add(mapSceneNames[i], mapDisplayNames[i]);
+		}
+
 		currentGameMode = (GameMode)PlayerPrefs.GetInt("game_mode");
 
-		turretDropdown.value = PlayerPrefs.GetInt("turret_index");
-		hullDropdown.value = PlayerPrefs.GetInt("hull_index");
-
-		mapDropdown.value = PlayerPrefs.GetInt("map_index");
+		SetWave(PlayerPrefs.GetInt("game_start_wave"));
+		SetSelectedMap(PlayerPrefs.GetString("last_map"));
 
 		playerNameInput.text = PlayerPrefs.GetString("player_name");
 
-		if (PlayerPrefs.GetInt("debug_starting_wave") > 0)
-			waveInput.text = PlayerPrefs.GetInt("debug_starting_wave").ToString();
+		PlayerTurretChanged();
+		PlayerHullChanged();
 
 		GameModeChanged();
 	}
@@ -245,12 +263,13 @@ public class MenuManager : MonoBehaviour {
 			PlayerPrefs.SetString("player_name", inputText);
 			if (!waitingChangeNameInput) StartCoroutine(WaitForNameInputExit());
 		}
+		PlayerPrefs.SetString("turret_name", currentTurret);
+		PlayerPrefs.SetString("hull_name", currentHull);
 
-		PlayerPrefs.SetInt("turret_index", turretDropdown.value);
-		PlayerPrefs.SetString("turret_name", turretDropdown.options[turretDropdown.value].text);
-
-		PlayerPrefs.SetInt("hull_index", hullDropdown.value);
-		PlayerPrefs.SetString("hull_name", hullDropdown.options[hullDropdown.value].text);
+#if UNITY_EDITOR
+		if (Input.GetKey(KeyCode.LeftAlt) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.D))
+			ToggleDebug();
+#endif
 	}
 
 	#endregion

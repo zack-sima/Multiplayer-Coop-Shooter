@@ -61,11 +61,11 @@ public class FriendBar : MonoBehaviour {
 		//statuses display
 		switch (statusId) {
 			case 0:
-				onlineStatusText.text = "<color=red>OFFLINE</color>";
+				onlineStatusText.text = "<color=#FF5555>OFFLINE</color>";
 				break;
 			case 1:
 				//NOTE: the only code where invite is possible
-				onlineStatusText.text = "<color=green>ONLINE</color>";
+				onlineStatusText.text = "<color=#33FF33>ONLINE</color>";
 				break;
 			case 2:
 				onlineStatusText.text = "<color=yellow>IN LOBBY</color>";

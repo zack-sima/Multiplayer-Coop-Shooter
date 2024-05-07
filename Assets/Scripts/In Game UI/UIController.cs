@@ -29,17 +29,15 @@ public class UIController : MonoBehaviour {
 
 	#region References
 
-	[SerializeField]
-	private TMP_Text respawnTimerText, gameOverTimerText, moneyText, waveText;
+	[SerializeField] private TMP_Text respawnTimerText, gameOverTimerText, moneyText, waveText;
 
-	[SerializeField]
-	private RectTransform respawnUI, gameOverUI, mobileUI, pcUI, loadingUI, optionsUI;
+	[SerializeField] private RectTransform respawnUI, gameOverUI, mobileUI, pcUI, loadingUI, optionsUI;
 
-	[SerializeField]
-	private List<GameObject> mobileAbilityButtons;
+	[SerializeField] private List<GameObject> mobileAbilityButtons;
 
-	[SerializeField]
-	private List<GameObject> pcAbilityButtons;
+	[SerializeField] private List<GameObject> pcAbilityButtons;
+
+	[SerializeField] private AudioSource soundtrack;
 
 	#region Ability UI
 
@@ -179,6 +177,8 @@ public class UIController : MonoBehaviour {
 	public void LeaveGame() {
 		Time.timeScale = 1f;
 
+		SetLoadingTrue();
+
 		if (ServerLinker.instance == null) {
 			UnityEngine.SceneManagement.SceneManager.LoadScene(0);
 		} else {
@@ -215,13 +215,16 @@ public class UIController : MonoBehaviour {
 		int timer = Mathf.CeilToInt(EnemySpawner.instance.GetSpawnTimer());
 
 		if (initTimer > 0) {
-			waveText.text = $"Game begins in {initTimer:00}";
-		} else if (timer != 0) waveText.text = $"Wave {wave} ({timer % 60:00})";
+			waveText.text = $"Wave {wave} ({initTimer})";
+		} else if (timer != 0 && timer < 10) waveText.text = $"Wave {wave} ({timer})";
 	}
+	public void SetLoadingTrue() { loadingUI.gameObject.SetActive(true); }
 	private void Awake() {
 		instance = this;
-		loadingUI.gameObject.SetActive(true);
+		SetLoadingTrue();
 		StartCoroutine(WaitStartPlayer());
+
+		if (PlayerPrefs.GetInt("mute_music") == 0) soundtrack.Play();
 	}
 	private void Update() {
 		if (EnemySpawner.instance != null) {

@@ -32,6 +32,7 @@ public class UpgradesCatalog : MonoBehaviour {
 		public Sprite icon;
 		public int cost;
 		public int level;
+		public string description;
 		public bool unlocked;
 		public readonly bool replacePrior;
 		public UpgradeInfo info;
@@ -48,7 +49,8 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		//CONSTRUCTOR
 		public UpgradeNode(
-			string upgradeName, Sprite icon, int cost, UpgradeInfo info, int level = 0, bool unlocked = false, bool replacePrior = false,
+			string upgradeName, Sprite icon, int cost, UpgradeInfo info, int level = 0,
+			string description = "No description", bool unlocked = false, bool replacePrior = false,
 			List<string> mutuallyExclusiveUpgrades = null,
 			List<string> hardRequirements = null,
 			List<string> softRequirements = null) {
@@ -63,6 +65,7 @@ public class UpgradesCatalog : MonoBehaviour {
 			this.hardRequirements ??= new();
 			this.softRequirements ??= new();
 
+			this.description = description;
 			this.upgradeName = upgradeName;
 			this.icon = icon;
 			this.cost = cost;
@@ -318,11 +321,12 @@ public class UpgradesCatalog : MonoBehaviour {
 		ReRollUpgrades();
 		RerenderUpgrades();
 	}
-	public UpgradeNode AddUpgrade(string name, int cost, UpgradeInfo info, int level = 0, bool unlocked = false,
+	public UpgradeNode AddUpgrade(string name, int cost, UpgradeInfo info, int level = 0,
+		string description = "No description", bool unlocked = false,
 		bool replacePrior = false, List<string> mutuallyExclusiveUpgrades = null,
 		List<string> hardRequirements = null, List<string> softRequirements = null) {
 
-		UpgradeNode n = new(name, GetUpgradeIcon(name), cost, info, level, unlocked, replacePrior,
+		UpgradeNode n = new(name, GetUpgradeIcon(name), cost, info, level, description, unlocked, replacePrior,
 			mutuallyExclusiveUpgrades, hardRequirements, softRequirements);
 
 		//only add _level if level != 0
@@ -384,6 +388,8 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		ReRollUpgrades();
 		RerenderUpgrades();
+
+		playerMoney = PlayerPrefs.GetInt("game_start_cash");
 	}
 
 	private void Update() {

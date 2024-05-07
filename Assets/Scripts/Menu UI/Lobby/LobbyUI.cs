@@ -76,32 +76,26 @@ public class LobbyUI : MonoBehaviour {
 	private IEnumerator WaitInitData() {
 		yield return new WaitForSeconds(0.2f);
 
-		//TODO: make sure debug modes are controlled by toggle after setting up modes
-		MapDropdownChanged();
-		WaveInputChanged();
+		MapChanged();
 
 		MenuManager.instance.PlayerTurretChanged();
 		MenuManager.instance.PlayerHullChanged();
 
 		PlayerNameInputChanged();
 	}
-	public void WaveInputChanged() {
+	//TODO: set this for rapid mode; add difficulty and more modes
+	public void WaveChanged(int newStartingWave) {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 
 		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
-			if (int.TryParse(MenuManager.instance.GetWaveInput().text, out int wave))
-				LobbyStatsSyncer.instance.SetStartingWave(wave);
+			LobbyStatsSyncer.instance.SetStartingWave(newStartingWave);
 		}
 	}
-	//TODO: only in debug mode
-	public void MapDropdownChanged() {
+	public void MapChanged() {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 
 		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
-			LobbyStatsSyncer.instance.SetMap(
-				MenuManager.instance.GetMapSceneNames()[
-				MenuManager.instance.GetMapDropdown().value]
-			);
+			LobbyStatsSyncer.instance.SetMap(MenuManager.instance.GetSelectedMap());
 		}
 	}
 	public void PlayerNameInputChanged() {
@@ -119,26 +113,17 @@ public class LobbyUI : MonoBehaviour {
 		playerDisplayers[0].SetPlayerNameText(text + "\n" + isReadyText);
 	}
 	//if the host changes the wave, change it on client too (still, only for testing)
-	public void SetClientWaveInput() {
+	public void SetClientWave() {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) return;
 
-		MenuManager.instance.GetWaveInput().text = LobbyStatsSyncer.instance.GetStartingWave().ToString();
-		MenuManager.instance.GetWaveInput().interactable = false;
+		MenuManager.instance.SetWave(LobbyStatsSyncer.instance.GetStartingWave());
 	}
-	public void SetClientMapDropdown() {
+	public void SetClientMap() {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) return;
 
-		List<TMP_Dropdown.OptionData> options = MenuManager.instance.GetMapDropdown().options;
-		for (int i = 0; i < options.Count; i++) {
-			if (options[i].text == LobbyStatsSyncer.instance.GetMap()) {
-				MenuManager.instance.GetMapDropdown().value = i;
-				MenuManager.instance.GetMapDropdown().RefreshShownValue();
-				break;
-			}
-		}
-		MenuManager.instance.GetMapDropdown().interactable = false;
+		MenuManager.instance.SetSelectedMap(LobbyStatsSyncer.instance.GetMap());
 	}
 	public void InLobbyUpdated() {
 		if (MenuManager.instance.GetCurrentGameMode() == MenuManager.GameMode.Singleplayer) {

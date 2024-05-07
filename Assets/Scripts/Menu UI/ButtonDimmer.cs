@@ -43,7 +43,7 @@ public class ButtonDimmer : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
 		ButtonUp();
 	}
 	public void OnPointerClick(PointerEventData eventData) {
-		if (PersistentDict.instance != null) {
+		if (PersistentDict.instance != null && PlayerPrefs.GetInt("mute_audio") == 0) {
 			PersistentDict.instance.GetComponent<AudioSource>().Play();
 		}
 	}
