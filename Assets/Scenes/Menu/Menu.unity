@@ -23348,9 +23348,11 @@ MonoBehaviour:
   mapSceneNames:
   - Military_1
   - RailMap_1
+  - Reactor_1
   mapDisplayNames:
   - ARMY BASE
   - RAILYARD
+  - REACTOR
 --- !u!1 &1267223362
 GameObject:
   m_ObjectHideFlags: 0
