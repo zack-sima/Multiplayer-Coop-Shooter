@@ -38544,6 +38544,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MockPlayer
       objectReference: {fileID: 0}
+    - target: {fileID: 4957501250120795229, guid: acbbcf14f3eae4a62853485940a9483b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5670721142422747691, guid: acbbcf14f3eae4a62853485940a9483b, type: 3}
       propertyPath: m_SizeDelta.x
       value: 0
