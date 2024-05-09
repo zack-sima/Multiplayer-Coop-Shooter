@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3751128691678046854}
   - component: {fileID: 3221250275244238900}
   - component: {fileID: 3836348873309602818}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Glow sparkles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4928,7 +4928,7 @@ GameObject:
   - component: {fileID: 8102607346552546329}
   - component: {fileID: 7629067639255131250}
   - component: {fileID: 926296767784468334}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Dot Sparkles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9818,7 +9818,7 @@ GameObject:
   - component: {fileID: 6414327351691547912}
   - component: {fileID: 8057734634435335018}
   - component: {fileID: 2935172712491649485}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14534,7 +14534,7 @@ GameObject:
   - component: {fileID: 6799568209939314216}
   - component: {fileID: 2782254923976055041}
   - component: {fileID: 8904598315878599761}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Dot Sparkles Vertical
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19427,7 +19427,7 @@ GameObject:
   - component: {fileID: 2352577726750930508}
   - component: {fileID: 7324744214448121755}
   - component: {fileID: 5920494578282918464}
-  m_Layer: 9
+  m_Layer: 12
   m_Name: Destruction Explosion
   m_TagString: Untagged
   m_Icon: {fileID: 0}

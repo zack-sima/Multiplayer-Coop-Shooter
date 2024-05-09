@@ -74,6 +74,18 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 	#endregion
 
+	#region Prefabs
+
+	[SerializeField] private GameObject damageTextPrefab;
+
+	#endregion
+
+	#region Members
+
+	private Dictionary<string, DamageText> spawnedDamageTexts = new();
+
+	#endregion
+
 	#region Functions
 
 	public bool HasSyncAuthority() {
@@ -99,6 +111,45 @@ public class GameStatsSyncer : NetworkBehaviour {
 		//it's joever (make sure players were actually initialized and at least one is dead)
 		if (!someoneAlive && someoneDead) {
 			GameOver = true;
+		}
+	}
+	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+	public void RPC_TakeDamageEffect(Vector3 position, NetworkObject target, float damage, string senderTargetId) {
+		SpawnTakeDamageText(position, target, Mathf.CeilToInt(damage), senderTargetId);
+	}
+	//the damage number text that pops up when an entity is hit
+	public void SpawnTakeDamageText(Vector3 position, NetworkObject target, int damage, string senderTargetId) {
+		if (PlayerPrefs.GetInt("is_comp") != 1 && target.gameObject == NetworkedEntity.playerInstance.gameObject) {
+			return;
+		}
+		try {
+			bool noRand = false;
+			Vector3 randOffset = new Vector3(Random.Range(-0.5f, 0.5f),
+				Random.Range(3.5f, 4.5f), Random.Range(-0.5f, 0.5f));
+
+			if (spawnedDamageTexts.ContainsKey(senderTargetId)) {
+				if (spawnedDamageTexts[senderTargetId] != null && spawnedDamageTexts[senderTargetId].CanStack()) {
+					damage += spawnedDamageTexts[senderTargetId].GetDamage();
+					randOffset = spawnedDamageTexts[senderTargetId].GetRandOffset();
+					noRand = true;
+					Destroy(spawnedDamageTexts[senderTargetId].gameObject);
+				}
+			}
+
+			GameObject item = Instantiate(damageTextPrefab, position + randOffset,
+				Camera.main.transform.rotation);
+
+			if (!spawnedDamageTexts.TryAdd(senderTargetId, item.GetComponent<DamageText>())) {
+				spawnedDamageTexts[senderTargetId] = item.GetComponent<DamageText>();
+			}
+
+			float damageScale = Mathf.Clamp(damage / 750f + 0.5f, 1f, 2f);
+
+			item.GetComponent<DamageText>().SetDamageText(damage, target.gameObject == NetworkedEntity.playerInstance.gameObject ?
+				new Color(1f, 0.3f, 0.3f) : Color.white, damageScale, noRand, randOffset);
+
+		} catch (System.Exception e) {
+			Debug.LogWarning(e);
 		}
 	}
 	//called when game over is detected as true

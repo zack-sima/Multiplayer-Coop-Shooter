@@ -51,6 +51,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainEntity: {fileID: 366278136777289315}
+  critSoundEffect: {fileID: 0}
+  effectPrefabs: {fileID: 0}
+  damageTextPrefab: {fileID: 2647337806047256290, guid: 42d34ec910f49477a83497b39ca4092a, type: 3}
   isPlayer: 0
 --- !u!114 &366278136777289315
 MonoBehaviour:
@@ -73,6 +76,7 @@ MonoBehaviour:
   isPlayer: 0
   maxHealth: 100
   healthBarType: 0
+  killReward: 0
   hull: {fileID: 0}
   turret: {fileID: 0}
 --- !u!114 &571877425608476373

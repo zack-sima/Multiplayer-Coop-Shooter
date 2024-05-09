@@ -19,7 +19,7 @@ public class Bullet : MonoBehaviour {
 	[SerializeField] private float damage;
 	[SerializeField] private bool isExplosion, isFlame;
 	[SerializeField] private float explosionRadius;
-	[SerializeField] private float destructionTimer = 5f;
+	[SerializeField] private float maxDistance = 10f;
 
 	private CombatEntity senderEntity = null;
 	private int senderTeam = -1;
@@ -31,6 +31,10 @@ public class Bullet : MonoBehaviour {
 	//for flame
 	private readonly List<Collider> hitTargets = new();
 	private GameObject spawnedFlame = null;
+
+	//self destruction
+	private float distanceTravelled = 0;
+	private bool destroyed = false;
 
 	#endregion
 
@@ -111,19 +115,24 @@ public class Bullet : MonoBehaviour {
 		} catch (System.Exception e) { Debug.LogWarning(e); }
 		DestroyBulletEffect();
 	}
-	private IEnumerator DelayedDestroy() {
-		yield return new WaitForSeconds(destructionTimer);
-		DestroyBulletEffect();
-	}
 	private void Start() {
-		StartCoroutine(DelayedDestroy());
-
 		if (firePrefab != null) {
 			spawnedFlame = Instantiate(firePrefab, transform.position, transform.rotation);
 		}
 	}
 	virtual protected void Update() {
 		transform.Translate(speed * Time.deltaTime * Vector3.forward);
+		distanceTravelled += speed * Time.deltaTime;
+
+		if (distanceTravelled > maxDistance && !destroyed &&
+			senderEntity != null && senderEntity.GetIsPlayer()) {
+			if (senderIsLocal && isExplosion) {
+				DamageHandler.DealExplosiveDamage(transform.position, explosionRadius,
+					damage, false, senderEntity);
+			}
+			DestroyBulletEffect();
+			destroyed = true;
+		}
 	}
 
 	#endregion

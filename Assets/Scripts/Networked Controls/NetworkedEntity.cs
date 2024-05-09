@@ -29,11 +29,13 @@ public class NetworkedEntity : NetworkBehaviour {
 	private CombatEntity optionalCombatEntity = null;
 	public CombatEntity GetCombatEntity() { return optionalCombatEntity; }
 
-	[SerializeField]
-	public AbilityPrefabAssets effectPrefabs;
+	[SerializeField] public AudioSource critSoundEffect;
 
-	[SerializeField]
-	public AudioSource critSoundEffect;
+	#endregion
+
+	#region Prefabs
+
+	[SerializeField] public AbilityPrefabAssets effectPrefabs;
 
 	#endregion
 
@@ -298,7 +300,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		optionalCombatEntity.RemoveBullet(bulletId);
 	}
 	[Rpc(RpcSources.All, RpcTargets.StateAuthority)]
-	public void RPC_TakeDamage(NetworkObject target, float damage, float delay) {
+	public void RPC_TakeDamage(NetworkObject target, NetworkObject sender, float damage, float delay) {
 		//NOTE: RPC is called on all objects the player owns (bots, players, etc if master client)
 		// target needs to be checked to make sure THIS object is the actual one being targeted
 		if (target != Object) return;
@@ -306,6 +308,11 @@ public class NetworkedEntity : NetworkBehaviour {
 
 		//within respawn protection
 		if (Time.time - lastRespawnTimestamp < RESPAWN_PROTECTION_TIME) return;
+
+		//uses unique id to stack damages
+		int senderId = sender == null ? -1 : sender.gameObject.GetInstanceID() % 1000;
+		GameStatsSyncer.instance.RPC_TakeDamageEffect(transform.position, target, damage,
+			$"{target.gameObject.GetInstanceID() % 1000}{senderId}");
 
 		if (delay > 0) {
 			StartCoroutine(DelayedTakeDamage(damage, delay));
@@ -315,6 +322,10 @@ public class NetworkedEntity : NetworkBehaviour {
 			if (Health <= 0f) stateAuthIsDead = true;
 
 			mainEntity.LostHealth();
+
+			if (isPlayer && PlayerPrefs.GetInt("is_comp") == 1) {
+				UIController.NudgePhone(1);
+			}
 		}
 	}
 	private IEnumerator DelayedTakeDamage(float damage, float delay) {

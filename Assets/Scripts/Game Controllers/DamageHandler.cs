@@ -12,10 +12,10 @@ public static class DamageHandler {
 	//  TODO: does not affect normal entities.
 	public static void DealExplosiveDamage(Vector3 position, float radius,
 		float damage, bool canDamageTeam, CombatEntity self = null) {
-			float u1 = 1.0f - UnityEngine.Random.value;
-			float u2 = 1.0f - UnityEngine.Random.value;
-			float randStdNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) * Mathf.Sin(2.0f * Mathf.PI * u2);
-			damage = Mathf.Max(damage + damage * (0.1f * randStdNormal), 0);
+		float u1 = 1.0f - UnityEngine.Random.value;
+		float u2 = 1.0f - UnityEngine.Random.value;
+		float randStdNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) * Mathf.Sin(2.0f * Mathf.PI * u2);
+		damage = Mathf.Max(damage + damage * (0.1f * randStdNormal), 0);
 
 		bool successfullyDamaged = false;
 
@@ -32,11 +32,11 @@ public static class DamageHandler {
 			} catch { continue; }
 
 			float realDmg = damage * Mathf.Min(1.5f * radius - 1.2f * dist, radius) / radius;
-			
+
 			e.GetNetworker().LoseLocalHealth(realDmg);
 
 			//if exploding bomb blows up another bomb it waits a bit (0.2s rn)
-			e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object, realDmg,
+			e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object, e.GetNetworker().Object, realDmg,
 				(e.GetTurret().GetIsProximityExploder() && canDamageTeam) ? 0.2f : 0f);
 
 			self.IncrementDamageCharge(realDmg); //ability damage charge up
@@ -52,7 +52,7 @@ public static class DamageHandler {
 		NetworkedEntity networker = target.GetNetworker();
 
 		if (!networker.GetInitialized()) return;
-		
+
 		float u1 = 1.0f - UnityEngine.Random.value;
 		float u2 = 1.0f - UnityEngine.Random.value;
 		float randStdNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) * Mathf.Sin(2.0f * Mathf.PI * u2);
@@ -72,9 +72,11 @@ public static class DamageHandler {
 			self.IncrementDamageCharge(damage);
 		} //ability damage charge up
 
-		
-		
+		Fusion.NetworkObject selfNetworkObject = null;
+		if (self != null) {
+			selfNetworkObject = self.GetComponent<NetworkedEntity>().Object;
+		}
 		networker.LoseLocalHealth(damage);
-		networker.RPC_TakeDamage(networker.Object, damage, 0);
+		networker.RPC_TakeDamage(networker.Object, selfNetworkObject, damage, 0);
 	}
 }

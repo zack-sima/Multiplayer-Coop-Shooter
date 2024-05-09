@@ -160,7 +160,7 @@ public class EnemySpawner : NetworkBehaviour {
 
 			//end of wave delay
 			SpawnIndex = 0;
-			SpawnTimer = 20 + currWave;
+			SpawnTimer = 10 + currWave / 2f;
 			if ((currWave + 1) % 5 == 0) SpawnTimer += 10;
 		}
 	}

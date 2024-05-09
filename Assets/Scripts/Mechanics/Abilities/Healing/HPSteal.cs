@@ -58,7 +58,7 @@ namespace Abilities {
 						if (e.GetNetworker().GetTeam() == entity.GetTeam()) continue;
 						if (Vector3.Distance(e.GetNetworker().transform.position, entity.transform.position) > stealRadius) continue;
 						totalHPStolen += stealAmount / stealPeriod;
-						e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object, stealAmount * totalDelta / stealPeriod, 0);
+						e.GetNetworker().RPC_TakeDamage(e.GetNetworker().Object, null, stealAmount * totalDelta / stealPeriod, 0);
 					}
 					tickAmount = 0;
 					totalDelta = 0;

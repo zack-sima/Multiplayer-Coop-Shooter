@@ -375,8 +375,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainEntity: {fileID: 5931193942257798054}
-  effectPrefabs: {fileID: 11400000, guid: d09ac29cb14874b14ae8f5d6efd45caa, type: 2}
   critSoundEffect: {fileID: 318313311001861415}
+  effectPrefabs: {fileID: 11400000, guid: d09ac29cb14874b14ae8f5d6efd45caa, type: 2}
+  damageTextPrefab: {fileID: 2647337806047256290, guid: 42d34ec910f49477a83497b39ca4092a, type: 3}
   isPlayer: 1
 --- !u!114 &5931193942257798054
 MonoBehaviour:
@@ -399,6 +400,7 @@ MonoBehaviour:
   isPlayer: 1
   maxHealth: 5000
   healthBarType: 0
+  killReward: 0
   hull: {fileID: 2798158656864830621}
   turret: {fileID: 1528361845630613159}
   movementMarker: {fileID: 747168800691588733}
@@ -451,7 +453,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1.5, y: 2.4, z: 1.5}
-  m_Center: {x: 0, y: 1.2, z: 0}
+  m_Center: {x: 0, y: 1.3, z: 0}
 --- !u!114 &2803977936506851490
 MonoBehaviour:
   m_ObjectHideFlags: 0
