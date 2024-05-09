@@ -77,6 +77,7 @@ public class LobbyUI : MonoBehaviour {
 		yield return new WaitForSeconds(0.2f);
 
 		MapChanged();
+		GameModeChanged();
 
 		MenuManager.instance.PlayerTurretChanged();
 		MenuManager.instance.PlayerHullChanged();
@@ -96,6 +97,13 @@ public class LobbyUI : MonoBehaviour {
 
 		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
 			LobbyStatsSyncer.instance.SetMap(MenuManager.instance.GetSelectedMap());
+		}
+	}
+	public void GameModeChanged() {
+		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
+
+		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
+			LobbyStatsSyncer.instance.SetGameMode((int)MenuManager.instance.GetCurrentGameMode());
 		}
 	}
 	public void PlayerNameInputChanged() {
@@ -124,6 +132,14 @@ public class LobbyUI : MonoBehaviour {
 		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) return;
 
 		MenuManager.instance.SetSelectedMap(LobbyStatsSyncer.instance.GetMap());
+		SetClientGameMode();
+	}
+	public void SetClientGameMode() {
+		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
+		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) return;
+		if ((MenuManager.GameMode)LobbyStatsSyncer.instance.GetGameMode() == MenuManager.GameMode.Singleplayer) return;
+
+		MenuManager.instance.SetGameMode((MenuManager.GameMode)LobbyStatsSyncer.instance.GetGameMode());
 	}
 	public void InLobbyUpdated() {
 		if (MenuManager.instance.GetCurrentGameMode() == MenuManager.GameMode.Singleplayer) {

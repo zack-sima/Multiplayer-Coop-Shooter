@@ -23,6 +23,11 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 	public int GetStartingWave() { return StartingWave; }
 	public void SetStartingWave(int wave) { StartingWave = wave; }
 
+	[Networked, OnChangedRender(nameof(GameModeChanged))]
+	private int GameMode { get; set; } = 1;
+	public int GetGameMode() { return GameMode; }
+	public void SetGameMode(int mode) { GameMode = mode; }
+
 	[Networked, OnChangedRender(nameof(GameStartedChanged))]
 	private bool GameStarted { get; set; } = false;
 	public void SetGameStarted() { GameStarted = true; } //called by master client only
@@ -36,6 +41,10 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 	}
 	private void WaveChanged() {
 		LobbyUI.instance.SetClientWave();
+	}
+	private void GameModeChanged() {
+		if ((MenuManager.GameMode)GameMode != MenuManager.GameMode.Singleplayer)
+			LobbyUI.instance.SetClientGameMode();
 	}
 	private void GameStartedChanged() {
 		if (!GameStarted) return;

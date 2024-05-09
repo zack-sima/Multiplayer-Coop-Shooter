@@ -12,7 +12,7 @@ public class MenuManager : MonoBehaviour {
 
 	public static MenuManager instance;
 
-	public enum GameMode { Singleplayer, Coop }
+	public enum GameMode { Singleplayer, Coop, Comp }
 
 	#endregion
 
@@ -46,7 +46,9 @@ public class MenuManager : MonoBehaviour {
 	//NOTE: use this as actual map
 	private string selectedMapName = "Military_1";
 	public string GetSelectedMap() { return selectedMapName; }
-	public void SetSelectedMap(string newMap) { if (newMap != "") selectedMapName = newMap; }
+	public void SetSelectedMap(string newMap) {
+		if (newMap != "") selectedMapName = newMap;
+	}
 
 	//maps stuff
 	[SerializeField] private List<string> mapSceneNames;
@@ -84,9 +86,9 @@ public class MenuManager : MonoBehaviour {
 
 	#region Functions
 
-	//TODO: mode select sets this mode -- this determines whether the play button goes to singleplayer or not
 	public void SetGameMode(GameMode mode) {
 		PlayerPrefs.SetInt("game_mode", (int)mode);
+		PlayerPrefs.SetString("last_map", selectedMapName);
 
 		currentGameMode = mode;
 		GameModeChanged();
@@ -95,6 +97,12 @@ public class MenuManager : MonoBehaviour {
 		modeDisplayDescription.text = GetDisplayedMapName(selectedMapName);
 
 		switch (currentGameMode) {
+			case GameMode.Comp:
+				modeDisplayTitle.text = "PvP";
+
+				LobbyUI.instance.InLobbyUpdated();
+
+				break;
 			case GameMode.Coop:
 				modeDisplayTitle.text = "COOP";
 
@@ -131,11 +139,16 @@ public class MenuManager : MonoBehaviour {
 
 	//NOTE: play button goes to where currentGameMode is set to (SP game, lobby, etc)
 	public void PlayButtonClicked() {
+		PlayerPrefs.SetInt("is_comp", 0);
+
 		switch (currentGameMode) {
 			case GameMode.Singleplayer:
 				StartSingle();
 				break;
+			case GameMode.Comp:
 			case GameMode.Coop:
+				PlayerPrefs.SetInt("is_comp", currentGameMode == GameMode.Comp ? 1 : 0);
+
 				if (!ServerLinker.instance.GetIsInLobby()) {
 					PlayerPrefs.SetString("room_id", LobbyUI.GenerateLobbyID());
 					StartLobby(PlayerPrefs.GetString("room_id"), false);
@@ -156,7 +169,7 @@ public class MenuManager : MonoBehaviour {
 		LobbyUI.instance.SetLobbyLoading(true);
 
 		//TODO: when adding more gamemodes make sure this is still correct!
-		SetGameMode(GameMode.Coop);
+		SetGameMode(PlayerPrefs.GetInt("is_comp") == 0 ? GameMode.Coop : GameMode.Comp);
 	}
 	/// <summary>
 	/// Returns -1 if there is no scene with matching name

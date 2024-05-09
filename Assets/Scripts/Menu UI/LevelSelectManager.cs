@@ -32,9 +32,10 @@ public class LevelSelectManager : MonoBehaviour {
 	public bool GetIsInLevelSelect() { return levelSelectScreen.gameObject.activeInHierarchy; }
 
 	//TODO: eventually, procedurally generate tabs/make tabs be generate-able on remote?
-	public void SetMap(string mapName, bool isSolo, bool isRapid) {
+	public void SetMap(string mapName, bool isSolo, bool isRapid, bool isComp) {
 		MenuManager.instance.SetSelectedMap(mapName);
 		LobbyUI.instance.MapChanged();
+		LobbyUI.instance.GameModeChanged();
 
 		if (isRapid) {
 			MenuManager.instance.SetWave(isSolo ? 11 : 21);
@@ -42,10 +43,15 @@ public class LevelSelectManager : MonoBehaviour {
 			MenuManager.instance.SetWave(1);
 		}
 
-		MenuManager.instance.SetGameMode(isSolo ? MenuManager.GameMode.Singleplayer : MenuManager.GameMode.Coop);
+		MenuManager.instance.SetGameMode(isSolo ? MenuManager.GameMode.Singleplayer :
+			(isComp ? MenuManager.GameMode.Comp : MenuManager.GameMode.Coop));
+
 		CloseLevelSelect();
 	}
 	public void OpenLevelSelect() {
+		if (LobbyStatsSyncer.instance != null && !LobbyStatsSyncer.instance.Runner.IsSharedModeMasterClient)
+			return;
+
 		levelSelectScreen.gameObject.SetActive(true);
 		MenuManager.instance.SetMenuScreen(false);
 		mainPlayerDisplay.SetActive(false);

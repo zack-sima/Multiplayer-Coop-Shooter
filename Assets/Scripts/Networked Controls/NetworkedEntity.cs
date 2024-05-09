@@ -349,7 +349,16 @@ public class NetworkedEntity : NetworkBehaviour {
 					GetComponent<AudioListener>().enabled = true;
 
 				//TODO: add team selection for pvp
-				Team = 0;
+				if (PlayerPrefs.GetInt("is_comp") == 1) {
+					int playerId = Runner.LocalPlayer.PlayerId;
+
+					Debug.Log(playerId);
+
+					if (playerId < 0) Team = 0;
+					else Team = playerId % 2;
+				} else {
+					Team = 0;
+				}
 			} else {
 				Team = 1;
 			}
@@ -363,6 +372,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		TeamChanged();
 		StartCoroutine(StartupDelay());
 		StartCoroutine(WaitInitialize());
+		PlayerNameChanged();
 	}
 	//sometimes there's a bug where even if initialization is done networking doesn't allow calls
 	private IEnumerator WaitInitialize() {
@@ -377,6 +387,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		if (!IsDead) mainEntity.RespawnEntity();
 		TurretChanged();
 		HullChanged();
+		TeamChanged();
 	}
 	public override void FixedUpdateNetwork() {
 		if (!initialized) return;

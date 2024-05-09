@@ -248,6 +248,8 @@ public class EnemySpawner : NetworkBehaviour {
 		instance = this;
 	}
 	private void Start() {
+		if (PlayerPrefs.GetInt("is_comp") == 1) return;
+
 		StartCoroutine(SpawnCycle());
 	}
 
