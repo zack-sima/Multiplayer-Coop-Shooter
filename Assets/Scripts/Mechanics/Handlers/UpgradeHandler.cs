@@ -45,6 +45,8 @@ namespace Abilities.UpgradeHandler {
                     if (n.info.TryGetModi(nameof(ModiName.MaxHP), out float maxHp)) {
                         NetworkedEntity.playerInstance.GetEntity().SetMaxHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
                             * maxHp + NetworkedEntity.playerInstance.GetEntity().GetMaxHealth());
+                        NetworkedEntity.playerInstance.GetEntity().SetCurrentHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
+                            * maxHp + NetworkedEntity.playerInstance.GetEntity().GetHealth());
                     }
                     break; }
                 case "Improved Optics": {

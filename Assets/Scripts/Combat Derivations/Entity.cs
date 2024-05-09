@@ -58,7 +58,8 @@ public class Entity : MonoBehaviour {
 	public float GetBaseHealth() { return baseHealth; }
 	public float GetMaxHealth() { return maxHealth; }
 	public void SetMaxHealth(float maxHealth) { this.maxHealth = maxHealth; }
-
+	public void SetCurrentHealth(float health) {
+		networker.ChangeLocalHealth(health);}
 	[SerializeField] private HealthBarType healthBarType;
 
 	//for autohealing

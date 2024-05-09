@@ -55,6 +55,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		}
 		return Health;
 	}
+	
 	[Networked, OnChangedRender(nameof(MaxHealthBarChanged))]
 	private float MaxHealth { get; set; } = 99999;
 
@@ -119,6 +120,10 @@ public class NetworkedEntity : NetworkBehaviour {
 			mainEntity.SetEntityToDead();
 			localIsDead = true;
 		}
+	}
+
+	public void ChangeLocalHealth(float newHealth) {
+		Health = newHealth;
 	}
 	private bool localIsDead = false;
 	public bool GetLocalIsDead() { return localIsDead; }
