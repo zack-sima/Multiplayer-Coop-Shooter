@@ -12,6 +12,10 @@ public static class DamageHandler {
 	//  TODO: does not affect normal entities.
 	public static void DealExplosiveDamage(Vector3 position, float radius,
 		float damage, bool canDamageTeam, CombatEntity self = null) {
+			float u1 = 1.0f - UnityEngine.Random.value;
+			float u2 = 1.0f - UnityEngine.Random.value;
+			float randStdNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) * Mathf.Sin(2.0f * Mathf.PI * u2);
+			damage = Mathf.Max(damage + damage * (0.1f * randStdNormal), 0);
 
 		bool successfullyDamaged = false;
 
@@ -28,7 +32,7 @@ public static class DamageHandler {
 			} catch { continue; }
 
 			float realDmg = damage * Mathf.Min(1.5f * radius - 1.2f * dist, radius) / radius;
-
+			
 			e.GetNetworker().LoseLocalHealth(realDmg);
 
 			//if exploding bomb blows up another bomb it waits a bit (0.2s rn)
@@ -48,6 +52,11 @@ public static class DamageHandler {
 		NetworkedEntity networker = target.GetNetworker();
 
 		if (!networker.GetInitialized()) return;
+		
+		float u1 = 1.0f - UnityEngine.Random.value;
+		float u2 = 1.0f - UnityEngine.Random.value;
+		float randStdNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) * Mathf.Sin(2.0f * Mathf.PI * u2);
+		damage = Mathf.Max(damage + damage * (0.2f * randStdNormal), 0);
 
 		if (self != null) {
 			(float chance, float dmg) crit = self.GetTurret().GetCritValues();
@@ -63,6 +72,8 @@ public static class DamageHandler {
 			self.IncrementDamageCharge(damage);
 		} //ability damage charge up
 
+		
+		
 		networker.LoseLocalHealth(damage);
 		networker.RPC_TakeDamage(networker.Object, damage, 0);
 	}
