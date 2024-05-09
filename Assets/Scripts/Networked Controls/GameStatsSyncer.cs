@@ -106,7 +106,7 @@ public class GameStatsSyncer : NetworkBehaviour {
 		UIController.instance.SetRespawnUIEnabled(false);
 		UIController.instance.SetGameOverUIEnabled(true);
 
-		for (float i = 10f - 0.00001f; i > 0f; i -= Time.deltaTime) {
+		for (float i = 3f - 0.00001f; i > 0f; i -= Time.deltaTime) {
 			//UIController screen
 			UIController.instance.SetGameOverTimerText($"Game over. Leaving in:\n{Mathf.CeilToInt(i)}");
 			yield return null;
