@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Abilities.UpgradeHandler;
 using System;
+using Unity.VisualScripting;
 
 
 namespace CSV {
@@ -171,7 +172,7 @@ namespace CSV {
                         turrets[turretName] = currentTurret;
                     }
                 } else if (int.TryParse(cols[0], out int level)) {
-                    if (cols[1] == "[Max]") currentTurret?.SetIsMax(true); // Max level
+                    if (cols[1] == "[Max]") currentTurret?.SetIsMax(level); // Max level
                     float.TryParse(cols[1], out float cost);
                     float.TryParse(cols[2], out float damage);
                     float.TryParse(cols[3], out float fireRate);
@@ -197,7 +198,7 @@ namespace CSV {
                         hulls[hullName] = currentHull;
                     }
                 } else if (int.TryParse(cols[0], out int level)) {
-                    if (cols[1] == "[Max]") currentHull?.SetIsMax(true); // Max level
+                    if (cols[1] == "[Max]") currentHull?.SetIsMax(level); // Max level
                     float.TryParse(cols[1], out float cost);
                     float.TryParse(cols[2], out float health);
                     float.TryParse(cols[3], out float movement);
@@ -236,16 +237,23 @@ namespace CSV {
 
     #region Internal Classes
 
+    [System.Serializable]
     public class GarageInfo {
         private Dictionary<int, Dictionary<string, float>> modiLevels = new();
         private List<string> modiIds = new();
         public List<string> GetModiIds() { return modiIds; }
         public string description { get; set; } = "";
         public readonly string turretId;
-        private bool isMax = false;
-        public void SetIsMax(bool b) { isMax = b; }
-        public bool GetIsMax() { return isMax; }
+        private uint maxLevel = 1;
+        public uint currentLevel = 1;
+        public void SetIsMax(int b) { maxLevel = (uint)b; }
+        public uint GetIsMax() { return maxLevel; }
         public GarageInfo(string id) { turretId = id; }
+
+        public Dictionary<string, float> GetCurrentStats(int level) {
+            if (modiLevels.ContainsKey(level)) return modiLevels[level];
+            else return null;
+        }
 
         public void PushModi(string id, float input, int level) {
             if (modiLevels.ContainsKey(level)) {
@@ -257,7 +265,7 @@ namespace CSV {
             }
         }
 
-        public bool TryGetModi(string id, out float output, int level) {
+        public bool TryGetModi(string id, int level, out float output) {
             output = 0;
             if (modiLevels.ContainsKey(level)) {
                 if (modiLevels[level].ContainsKey(id)) {
@@ -268,7 +276,7 @@ namespace CSV {
             return false;
         }
     }
-
+    [System.Serializable]
     public class UpgradeInfo {
         private Dictionary<string, float> modi = new();
         private List<string> modiIds = new(); 

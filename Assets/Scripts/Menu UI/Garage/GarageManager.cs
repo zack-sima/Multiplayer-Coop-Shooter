@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CSV;
+using JSON;
 
 public class GarageManager : MonoBehaviour {
 
@@ -59,10 +60,12 @@ public class GarageManager : MonoBehaviour {
 	private RectTransform damageDisplay, healthDisplay,
 		speedDisplay, shootRateDisplay, ammoDisplay;
 
+	[SerializeField] private GameObject upgradeMenu;
+
 	[Header("Garage CSVs")]
 	[Tooltip("Requires a .CSV to function. Auto-Parses and generates out-game UI selections.")]
-	[SerializeField] private TextAsset turretCSVProps;
-	[SerializeField] private TextAsset hullCSVProps;
+	[SerializeField] public TextAsset turretCSVProps;
+	[SerializeField] public TextAsset hullCSVProps;
 
 	#endregion
 
@@ -85,7 +88,8 @@ public class GarageManager : MonoBehaviour {
 	private Dictionary<string, HullStats> hullStats;
 	private Dictionary<string, TurretStats> turretStats;
 
-	private Dictionary<string, GarageInfo> turretInfo = new (), hullInfo = new();
+	private Dictionary<string, GarageInfo> turretInfos = new (), hullInfos = new();
+	private Dictionary<string, UpgradeInfo> upgradeInfos = new();
 	private (HullStats, TurretStats) selectedStats;
 
 	//max stats (for bar graph comparisons); TODO: actually use best hull/turret
@@ -203,18 +207,22 @@ public class GarageManager : MonoBehaviour {
 		inGarage = false;
 	}
 
+	public void UpgradeButtonClicked() {
+		
+	}
+
 	private void Awake() {
 		instance = this;
 
-		turretInfo.ParseTurretInfos(turretCSVProps.text); //Just a visual in the garage.
-		hullInfo.ParseHullInfos(hullCSVProps.text);
+		//(turretInfos, hullInfos, upgradeInfos).PullAllInfosFromPersistent(); // Regular Call
+		(turretInfos, hullInfos, upgradeInfos).ForceBlankInfos(); // Force Blank Call * TEMP
 
 		//TODO: temporary hard-coding for stats displays
 		bestHull = new() { hp = 5000, speed = 5.0 };
 		bestTurret = new() { ammo = 50, damage = 650, shootSpeed = 20 };
 
 		HullStats tank = new() {
-			hp = 7000,
+			hp = 5000,
 			speed = 5.0
 		};
 		HullStats spider = new() {
