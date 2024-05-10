@@ -66,6 +66,8 @@ public class NetworkedEntity : NetworkBehaviour {
 	private int Team { get; set; } = -1;
 	public int GetTeam() { try { return Team; } catch { return -1; } }
 
+	public void ChangeLocalHealth(float health) {Health = health;}
+
 	[Networked, OnChangedRender(nameof(IsDeadChanged))]
 	private bool IsDead { get; set; } = false;
 	public bool GetIsDead() { try { return IsDead; } catch { return true; } }
