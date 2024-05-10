@@ -51,7 +51,8 @@ public class NetworkedEntity : NetworkBehaviour {
 	private float Health { get; set; } = 99999;
 	public float GetHealth() {
 		if (localIsDead || stateAuthIsDead) return 0f;
-		if (!isPlayer && !Runner.IsSharedModeMasterClient && !Runner.IsSinglePlayer) {
+		if (!isPlayer && !Runner.IsSharedModeMasterClient && !Runner.IsSinglePlayer &&
+			!PlayerInfo.GetIsPVP()) {
 			if (localHealth > Health) localHealth = Health;
 			return Mathf.Min(localHealth, mainEntity.GetMaxHealth());
 		}

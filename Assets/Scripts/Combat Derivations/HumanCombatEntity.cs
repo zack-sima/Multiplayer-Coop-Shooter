@@ -21,13 +21,13 @@ public class HumanCombatEntity : CombatEntity {
 
 	#region Abilities
 
-	public override void IncrementDamageCharge(float dmgDone) { 
+	public override void IncrementDamageCharge(float dmgDone) {
 		PlayerInfo.instance.IncrementDamageCharge(dmgDone);
 	}
 
-    #endregion
+	#endregion
 
-    protected override void Update() {
+	protected override void Update() {
 		if (GetTurretFollowsMovement() && TryGetComponent(out Rigidbody rb)) {
 			//try to auto-aim towards nearest target within screen before following hull
 			if (targetFindTimer > 0) {
@@ -53,6 +53,9 @@ public class HumanCombatEntity : CombatEntity {
 					}
 				}
 				targetFindTimer = 0;
+			}
+			if (target != null && target.GetNetworker().GetIsDead()) {
+				target = null;
 			}
 			if (target != null) {
 				Vector3 targetPosition = target.transform.position;
