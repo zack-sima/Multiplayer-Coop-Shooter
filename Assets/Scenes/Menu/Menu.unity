@@ -2110,7 +2110,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &142185662
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2618,7 +2618,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &188196917
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9307,6 +9307,7 @@ MonoBehaviour:
   speedDisplay: {fileID: 2012680602}
   shootRateDisplay: {fileID: 512312952}
   ammoDisplay: {fileID: 1780635326}
+  upgradeMenu: {fileID: 0}
   turretCSVProps: {fileID: 4900000, guid: 0b6b164fbec7540a2bfee11f8702c7dc, type: 3}
   hullCSVProps: {fileID: 4900000, guid: c22a9c111db254793bb735a1b81c53c4, type: 3}
 --- !u!4 &517357633

@@ -252,11 +252,11 @@ public class EnemySpawner : NetworkBehaviour {
 
 		for (int i = 0; i < blueBots; i++) {
 			SpawnPVPBot(0);
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(0.1f);
 		}
 		for (int i = 0; i < redBots; i++) {
 			SpawnPVPBot(1);
-			yield return new WaitForSeconds(0.5f);
+			yield return new WaitForSeconds(0.1f);
 		}
 	}
 
@@ -274,7 +274,7 @@ public class EnemySpawner : NetworkBehaviour {
 	}
 	private void Start() {
 		if (PlayerInfo.GetIsPVP()) {
-			StartCoroutine(SpawnPVPBots(2, 3));
+			StartCoroutine(SpawnPVPBots(20, 21));
 			return;
 		}
 
