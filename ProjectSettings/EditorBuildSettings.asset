@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Maps/Reactor/Reactor_1.unity
     guid: 8640c008d555e44f3b724b23057ce619
+  - enabled: 1
+    path: Assets/Scenes/Maps/Orbital/Orbital_1.unity
+    guid: e4cec3a65cbc44189ab32a19625e5f78
   m_configObjects: {}
