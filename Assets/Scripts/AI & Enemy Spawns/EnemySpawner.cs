@@ -274,7 +274,7 @@ public class EnemySpawner : NetworkBehaviour {
 	}
 	private void Start() {
 		if (PlayerInfo.GetIsPVP()) {
-			StartCoroutine(SpawnPVPBots(3, 5));
+			StartCoroutine(SpawnPVPBots(2, 3));
 			return;
 		}
 

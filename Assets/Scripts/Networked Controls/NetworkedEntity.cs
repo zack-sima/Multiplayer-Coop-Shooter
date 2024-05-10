@@ -111,7 +111,8 @@ public class NetworkedEntity : NetworkBehaviour {
 	private float localHealth = 99999;
 	public float GetLocalHealth() { return localHealth; }
 	public void LoseLocalHealth(float damage) {
-		if (isPlayer || Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer) return;
+		if (isPlayer || Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer ||
+			PlayerInfo.GetIsPVP()) return;
 
 		if (localHealth > Health) localHealth = Health;
 		localHealth -= damage;
@@ -159,6 +160,7 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	public void HealthPercentNetworkEntityCall(float healthPercentModifier) {
 		if (healthPercentModifier < 0) return;
+		Debug.LogWarning("healing?");
 		Health = Mathf.Min(mainEntity.GetMaxHealth(), healthPercentModifier * Health);
 		mainEntity.UpdateHealthBar();
 	}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using UnityEngine.AI;
+using Abilities;
 
 /// <summary>
 /// Autonomously decides on an AI enemy's course of action
@@ -24,6 +25,8 @@ public class AIBrain : MonoBehaviour {
 
 	//if is PVP bot, execute a different set of behaviors (at least don't always shoot)
 	[SerializeField] private bool isPVPBot;
+	[SerializeField] private float burstTime = 1f, pauseTime = 0.3f;
+	[SerializeField] private float retreatThreshold = 0.42f;
 
 	//for bot intermittent shooting
 	private bool inPausePhase = false;
@@ -32,6 +35,12 @@ public class AIBrain : MonoBehaviour {
 	//turret rotates towards target and shoots if there is a line of sight in range
 	private CombatEntity target = null;
 	private bool canShootTarget = false;
+
+	//bogo target
+	private Vector3 bogoTarget = Vector3.zero;
+	private Vector3 homeTarget = Vector3.zero;
+
+	IActivatable heal = new Heal();
 
 	#endregion
 
@@ -48,14 +57,11 @@ public class AIBrain : MonoBehaviour {
 			target = null;
 		}
 
-		///TODO: something is wrong here about enemy init search! PRINT OUT LIST OF AVAILABLE ENTITIES
-
 		//wait for NavMeshAgent to initialize
 		if (!navigator.GetIsNavigable()) return;
 
 		//try finding target
-		//if (target == null) {
-		float closestDistance = 999;
+		float closestDistance = isPVPBot ? 20 : 999;
 		foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
 			if (!ce.GetNetworker().GetInitialized() ||
 				ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
@@ -65,14 +71,24 @@ public class AIBrain : MonoBehaviour {
 				target = ce;
 			}
 		}
-		//}
-		//TODO: enemies should "lose interest" if a direct line of sight can't be established;
-		//  when no target exists, enemy should wander in a random location (when not moving,
-		//  it should try to sample a random position within the map for ~10 times until it founds one)
-		//TODO: enemies should not engage in shooting unless the target rotation is within 10˚ of current rotation
-		if (target != null) {
-			navigator.SetTarget(target.transform.position);
+		//if running home, ignore everything else
+		bool runningAway = false;
 
+		if (isPVPBot && entity.GetHealth() < entity.GetMaxHealth() * retreatThreshold) {
+			//try and heal; TODO: wait for abilities & effects
+			Debug.Log("heal");
+			//heal.Activate(entity.GetNetworker(), true);
+			//entity.GetNetworker().HealthPercentNetworkEntityCall(3f);
+
+			navigator.SetStopped(false);
+			if (homeTarget == Vector3.zero || GroundDistance(homeTarget, transform.position) < 5f) {
+				//run home!
+				homeTarget = MapController.instance.GetTeamSpawnpoint(entity.GetTeam() % 2);
+			}
+			navigator.SetTarget(homeTarget);
+			runningAway = true;
+		}
+		if (target != null) {
 			//try raycasting to target
 			canShootTarget = false;
 			bool veryCloseToTarget = GroundDistance(transform.position, target.transform.position) < 3f;
@@ -97,17 +113,35 @@ public class AIBrain : MonoBehaviour {
 						break;
 					} else if (hit.collider.GetComponent<CombatEntity>() == null &&
 						hit.collider.GetComponent<Bullet>() == null) {
+
 						//If hit is not a combat entity, break
 						break;
 					}
 				}
 			}
 			if (entity.GetTurret().GetIsProximityExploder()) canShootTarget = false;
-			navigator.SetStopped(veryCloseToTarget || canShootTarget);
-		} else {
-			if (PlayerInfo.GetIsPVP()) {
-				//go to other side if nothing to do
-				navigator.SetTarget(MapController.instance.GetTeamSpawnpoint((entity.GetTeam() + 1) % 2));
+
+			if (runningAway) {
+			} else if (!veryCloseToTarget && !canShootTarget) {
+				navigator.SetStopped(false);
+				navigator.SetTarget(target.transform.position);
+			} else if (isPVPBot) {
+				if (bogoTarget == Vector3.zero || GroundDistance(bogoTarget, transform.position) < 3.5f) {
+					Vector2 circle = Random.insideUnitCircle * Random.Range(2f, 5f);
+					bogoTarget = target.transform.position + new Vector3(circle.x, 0, circle.y);
+				}
+				navigator.SetStopped(false);
+				navigator.SetTarget(bogoTarget);
+			} else {
+				navigator.SetStopped(true);
+			}
+		} else if (!runningAway) {
+			if (isPVPBot) {
+				if (bogoTarget == Vector3.zero || GroundDistance(bogoTarget, transform.position) < 5f) {
+					//go to other side if nothing to do
+					bogoTarget = MapController.instance.GetTeamSpawnpoint((entity.GetTeam() + 1) % 2);
+				}
+				navigator.SetTarget(bogoTarget);
 			} else {
 				navigator.SetStopped(true);
 			}
@@ -129,29 +163,55 @@ public class AIBrain : MonoBehaviour {
 			yield return new WaitForSeconds(0.35f);
 		}
 	}
+	private void AbilitiesUpdate() {
+		((ISysTickable)heal).SysTickCall();
+	}
 	private void Update() {
 		if (!entity.GetNetworker().HasSyncAuthority()) return;
-		if (entity.GetNetworker().GetIsDead()) { return; }
-		if (target == null) return;
+		if (entity.GetNetworker().GetIsDead()) {
+			bogoTarget = Vector3.zero;
+			canShootTarget = false;
+			return;
+		}
+		if (isPVPBot) {
+			AbilitiesUpdate();
+		}
+		if (target == null) {
+			//turret follows movement
+			if (entity.GetVelocity() != Vector3.zero)
+				entity.GetTurret().SetTargetTurretRotation(Mathf.Atan2(entity.GetVelocity().x,
+					entity.GetVelocity().z) * Mathf.Rad2Deg);
+			return;
+		}
+
+		//target position -- in competitive/smart mode, enemies will try to predict movement
+		Vector3 targetPosition = target.transform.position;
+
+		if (isPVPBot) {
+			float timeToTarget = (entity.GetTurret() is Mortar) ? 2f :
+				GroundDistance(targetPosition, transform.position) / 15f;
+
+			targetPosition += target.GetVelocity() * timeToTarget;
+		}
 
 		if (entity.GetTurret().GetIsRotatable()) {
 			entity.GetTurret().SetTargetTurretRotation(
-				Mathf.Atan2(target.transform.position.x - transform.position.x,
-				target.transform.position.z - transform.position.z) * Mathf.Rad2Deg
+				Mathf.Atan2(targetPosition.x - transform.position.x,
+				targetPosition.z - transform.position.z) * Mathf.Rad2Deg
 			);
 		}
 
 		navigator.SetActive(true);
 
 		if (entity.GetTurret() is Mortar)
-			((Mortar)entity.GetTurret()).SetDistance(GroundDistance(transform.position, target.transform.position));
+			((Mortar)entity.GetTurret()).SetDistance(GroundDistance(transform.position, targetPosition));
 
 		if (!entity.GetTurret().GetIsProximityExploder() && canShootTarget) {
 			//regulate shooting
 			if (isPVPBot) {
 				botPhaseTimer -= Time.deltaTime;
 				if (botPhaseTimer <= 0f) {
-					botPhaseTimer = inPausePhase ? Random.Range(1f, 1.5f) : Random.Range(0.5f, 0.7f);
+					botPhaseTimer = inPausePhase ? Random.Range(burstTime, burstTime + 0.5f) : Random.Range(pauseTime, pauseTime + 0.3f);
 					inPausePhase = !inPausePhase;
 				}
 				if (!inPausePhase) entity.TryFireMainWeapon();
@@ -159,7 +219,7 @@ public class AIBrain : MonoBehaviour {
 				entity.TryFireMainWeapon();
 			}
 		} else if (entity.GetTurret().GetIsProximityExploder() &&
-			GroundDistance(target.transform.position, transform.position) < 2.5f) {
+			GroundDistance(targetPosition, transform.position) < 2.5f) {
 
 			//same sender as target
 			entity.GetNetworker().RPC_TakeDamage(entity.GetNetworker().Object,
@@ -176,7 +236,7 @@ public class AIBrain : MonoBehaviour {
 	}
 	private void Start() {
 		navigator.SetRotatable(false);
-		navigator.SetSpeed(5f);
+		navigator.SetSpeed(entity.GetHull().GetSpeed());
 
 		StartCoroutine(Tick());
 	}

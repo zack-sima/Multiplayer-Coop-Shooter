@@ -16,7 +16,7 @@ public class Entity : MonoBehaviour {
 	public enum HealthBarType { AlwaysShow, HideWhenFull, AlwaysHide };
 
 	public const float COOP_RESPAWN_TIME = 15f;
-	public const float PVP_RESPAWN_TIME = 5f;
+	public const float PVP_RESPAWN_TIME = 10f;
 
 	#endregion
 
@@ -92,6 +92,10 @@ public class Entity : MonoBehaviour {
 	}
 	//invoked on local player or master client enemy
 	private void EntityDied() {
+		//PvP give other team score
+		if (PlayerInfo.GetIsPVP()) {
+			GameStatsSyncer.instance.AddTeamScore((GetTeam() + 1) % 2, 1);
+		}
 		//respawn player/cause game over
 		if (this == EntityController.player || PlayerInfo.GetIsPVP()) {
 			if (networker.GetIsDead()) return;

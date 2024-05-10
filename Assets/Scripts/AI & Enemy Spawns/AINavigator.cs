@@ -11,6 +11,12 @@ public class AINavigator : MonoBehaviour {
 
 	#endregion
 
+	#region Members
+
+	Vector3 currentTarget = Vector3.zero;
+
+	#endregion
+
 	#region Functions
 
 	//set this to false for all spiders
@@ -23,8 +29,13 @@ public class AINavigator : MonoBehaviour {
 	public void TeleportTo(Vector3 targetPosition) {
 		agent.Warp(targetPosition);
 	}
-	public void SetTarget(Vector3 targetPosition) {
-		agent.SetDestination(targetPosition);
+	public void SetTarget(Vector3 targetPosition, bool forceSet = false) {
+		bool isFar = Vector3.Distance(targetPosition, transform.position) > 15f;
+		float distance = Vector3.Distance(currentTarget, targetPosition);
+		if (forceSet || (distance > 5f && isFar) || (distance > 1f && !isFar)) {
+			currentTarget = targetPosition;
+			agent.SetDestination(targetPosition);
+		}
 	}
 	public void SetStopped(bool stopped) {
 		agent.isStopped = stopped;

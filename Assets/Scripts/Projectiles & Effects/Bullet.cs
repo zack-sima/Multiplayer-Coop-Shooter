@@ -45,7 +45,8 @@ public class Bullet : MonoBehaviour {
 		senderIsLocal = isLocal;
 		senderEntity = sender;
 		this.bulletId = bulletId;
-		Debug.LogWarning(damage *= sender.GetTurret().GetBulletModi());
+
+		damage *= sender.GetTurret().GetBulletModi() * (PlayerInfo.GetIsPVP() ? 1.5f : 1f);
 	}
 	//checks layermask (gpt)
 	private bool IsLayerInLayerMask(GameObject obj, LayerMask mask) {

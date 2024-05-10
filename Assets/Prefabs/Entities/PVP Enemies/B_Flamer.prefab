@@ -745,11 +745,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 571877425608476373, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: maxRange
-      value: 9
+      value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 571877425608476373, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
+      propertyPath: burstTime
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 571877425608476373, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
+      propertyPath: pauseTime
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 954837698998907771, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: m_Name
-      value: B_FlameBoss
+      value: B_Flamer
       objectReference: {fileID: 0}
     - target: {fileID: 2573626183161891820, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}
       propertyPath: m_LocalPosition.x

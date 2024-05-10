@@ -32,6 +32,15 @@ public class GameStatsSyncer : NetworkBehaviour {
 	public int GetWave() { return Wave; } //all spawners sync this and simulate same delays
 	public void IncrementWave() { Wave++; } //called by master client only
 
+	[Networked, OnChangedRender(nameof(TeamScoresChanged))]
+	[Capacity(2)]
+	NetworkArray<int> TeamScores { get; } = MakeInitializer(new int[] { 0, 0 });
+	public void AddTeamScore(int team, int score) { TeamScores.Set(team, TeamScores.Get(team) + score); }
+
+	[Networked] //comp only
+	private int WinningTeam { get; set; } = -1;
+	public int GetWinningTeam() { return WinningTeam; }
+
 	[Networked, OnChangedRender(nameof(GameOverChanged))]
 	private bool GameOver { get; set; } = false;
 	public bool GetGameOver() { return GameOver; }
@@ -52,6 +61,9 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 	#region Callbacks
 
+	private void TeamScoresChanged() {
+		UIController.instance.SetTeamScores(TeamScores.ToArray());
+	}
 	private void ScoreChanged() {
 		UpgradesCatalog.instance.ScoreChanged(Score);
 	}
@@ -93,7 +105,21 @@ public class GameStatsSyncer : NetworkBehaviour {
 	}
 	public override void FixedUpdateNetwork() {
 		//NOTE: PVP should have separate handler for score and win/loss, etc
-		if (!HasSyncAuthority() || EntityController.player == null || PlayerInfo.GetIsPVP()) return;
+		if (!HasSyncAuthority() || EntityController.player == null) return;
+
+		//PvP follows other rulesets; TODO: expand for more than TDM
+		if (PlayerInfo.GetIsPVP()) {
+			if (!GameOver) {
+				if (TeamScores[0] >= 40) {
+					GameOver = true;
+					WinningTeam = 0;
+				} else if (TeamScores[1] >= 40) {
+					GameOver = true;
+					WinningTeam = 1;
+				}
+			}
+			return;
+		}
 
 		//check if all players are alive; if not, end game
 		bool someoneAlive = false;
@@ -157,9 +183,15 @@ public class GameStatsSyncer : NetworkBehaviour {
 		UIController.instance.SetRespawnUIEnabled(false);
 		UIController.instance.SetGameOverUIEnabled(true);
 
-		for (float i = 3f - 0.00001f; i > 0f; i -= Time.deltaTime) {
+		for (float i = 10f; i > 0f; i -= Time.deltaTime) {
 			//UIController screen
-			UIController.instance.SetGameOverTimerText($"Game over. Leaving in:\n{Mathf.CeilToInt(i)}");
+			if (PlayerInfo.GetIsPVP()) {
+				string text = WinningTeam == NetworkedEntity.playerInstance.GetTeam() ?
+					"Victory!" : "Defeat.";
+				UIController.instance.SetGameOverTimerText($"{text} Leaving in:\n{Mathf.CeilToInt(i)}");
+			} else {
+				UIController.instance.SetGameOverTimerText($"Game over. Leaving in:\n{Mathf.CeilToInt(i)}");
+			}
 			yield return null;
 		}
 
@@ -169,6 +201,8 @@ public class GameStatsSyncer : NetworkBehaviour {
 	public override void Spawned() {
 		GameOverChanged();
 		WaveChanged();
+		TeamScoresChanged();
+
 		UpgradesCatalog.instance.MoneyChanged();
 
 		if (HasSyncAuthority()) {
