@@ -125,7 +125,7 @@ public class Bullet : MonoBehaviour {
 		distanceTravelled += speed * Time.deltaTime;
 
 		if (distanceTravelled > maxDistance && !destroyed &&
-			senderEntity != null && senderEntity.GetIsPlayer()) {
+			senderEntity != null && (senderEntity.GetIsPlayer() || PlayerInfo.GetIsPVP())) {
 			if (senderIsLocal && isExplosion) {
 				DamageHandler.DealExplosiveDamage(transform.position, explosionRadius,
 					damage, false, senderEntity);

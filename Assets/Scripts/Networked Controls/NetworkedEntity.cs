@@ -13,7 +13,7 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	public static NetworkedEntity playerInstance;
 
-	private const float RESPAWN_PROTECTION_TIME = 3f;
+	private const float RESPAWN_PROTECTION_TIME = 2.5f;
 
 	#endregion
 
@@ -275,6 +275,8 @@ public class NetworkedEntity : NetworkBehaviour {
 		IsDead = true;
 	}
 	public void EntityRespawned() {
+		Health = optionalCombatEntity.GetMaxHealth();
+
 		IsDead = false;
 		lastRespawnTimestamp = Time.time;
 		stateAuthIsDead = false;
@@ -284,7 +286,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		try {
 			return HasStateAuthority && isPlayer || !isPlayer &&
 				(Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer);
-		} catch { return false; }
+		} catch (System.Exception e) { Debug.LogError(e); return false; }
 	}
 	[Rpc(RpcSources.StateAuthority, RpcTargets.Proxies)]
 	public void RPC_FireWeapon(int bulletId) {
@@ -323,7 +325,7 @@ public class NetworkedEntity : NetworkBehaviour {
 
 			mainEntity.LostHealth();
 
-			if (isPlayer && PlayerPrefs.GetInt("is_comp") == 1) {
+			if (isPlayer && PlayerInfo.GetIsPVP()) {
 				UIController.NudgePhone(1);
 			}
 		}
@@ -344,6 +346,9 @@ public class NetworkedEntity : NetworkBehaviour {
 		mainEntity.EntityRemoved();
 		mainEntity.RemoveEntityFromRegistry();
 	}
+	public void SetPVPBotTeam(int team) {
+		Team = team;
+	}
 	public override void Spawned() {
 		if (HasSyncAuthority()) {
 			if (isPlayer) {
@@ -360,17 +365,12 @@ public class NetworkedEntity : NetworkBehaviour {
 					GetComponent<AudioListener>().enabled = true;
 
 				//TODO: add team selection for pvp
-				if (PlayerPrefs.GetInt("is_comp") == 1) {
-					int playerId = Runner.LocalPlayer.PlayerId;
-
-					Debug.Log(playerId);
-
-					if (playerId < 0) Team = 0;
-					else Team = playerId % 2;
+				if (PlayerInfo.GetIsPVP()) {
+					Team = PlayerSpawner.instance.GetPlayerTeam();
 				} else {
 					Team = 0;
 				}
-			} else {
+			} else if (!PlayerInfo.GetIsPVP()) {
 				Team = 1;
 			}
 			Health = optionalCombatEntity.GetMaxHealth();
@@ -417,6 +417,7 @@ public class NetworkedEntity : NetworkBehaviour {
 				optionalCombatEntity.GetHull().GetSpeed() * Time.deltaTime * 1.2f
 			);
 		} else {
+			Debug.Log("teleported");
 			transform.position = targetPosition;
 		}
 	}
@@ -433,7 +434,7 @@ public class NetworkedEntity : NetworkBehaviour {
 													//UpdateStatModifier(); // Handle stat changes
 		if (HasSyncAuthority()) {
 			//local entity
-			if (isPlayer) {
+			if (isPlayer || PlayerInfo.GetIsPVP()) {
 				//natural healing
 				if (Time.time - mainEntity.GetLastDamageTimestamp() > 2.5f) {
 					Health = Mathf.Min(mainEntity.GetMaxHealth(),

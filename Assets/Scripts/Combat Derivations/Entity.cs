@@ -10,10 +10,13 @@ using UnityEngine.AI;
 
 public class Entity : MonoBehaviour {
 
-	#region Type Declarations
+	#region Type Declarations & Consts
 
 	//TODO: implement other two types of healthbars
 	public enum HealthBarType { AlwaysShow, HideWhenFull, AlwaysHide };
+
+	public const float COOP_RESPAWN_TIME = 15f;
+	public const float PVP_RESPAWN_TIME = 5f;
 
 	#endregion
 
@@ -90,11 +93,20 @@ public class Entity : MonoBehaviour {
 	//invoked on local player or master client enemy
 	private void EntityDied() {
 		//respawn player/cause game over
-		if (this == EntityController.player) {
+		if (this == EntityController.player || PlayerInfo.GetIsPVP()) {
 			if (networker.GetIsDead()) return;
+
 			networker.EntityDied();
 			SetEntityToDead();
-			StartCoroutine(PlayerRespawnTimer());
+
+			if (isPlayer) {
+				StartCoroutine(PlayerRespawnTimer());
+			} else {
+				//AI disable pathfinding
+				if (TryGetComponent(out AINavigator nav)) nav.SetStopped(true);
+
+				StartCoroutine(BotRespawnTimer());
+			}
 			return;
 		} else {
 			networker.EntityDied();
@@ -104,8 +116,6 @@ public class Entity : MonoBehaviour {
 				GameStatsSyncer.instance.AddScore(killReward);
 			}
 		}
-
-
 		//remove self from list of entities
 		networker.DeleteEntity();
 	}
@@ -153,10 +163,19 @@ public class Entity : MonoBehaviour {
 
 		if (GetHealth() <= 0) EntityDied();
 	}
+	public static float GetRespawnTime() {
+		return PlayerInfo.GetIsPVP() ? PVP_RESPAWN_TIME : COOP_RESPAWN_TIME;
+	}
+	//NOTE: similar to player, but without the UI calls
+	private IEnumerator BotRespawnTimer() {
+		yield return new WaitForSeconds(GetRespawnTime());
+
+		PVPRespawn();
+	}
 	//local timer to respawn player
 	private IEnumerator PlayerRespawnTimer() {
 		UIController.instance.SetRespawnUIEnabled(true);
-		for (float i = 15f - 0.00001f; i > 0f; i -= Time.deltaTime) {
+		for (float i = GetRespawnTime(); i > 0f; i -= Time.deltaTime) {
 			//if game is over, don't respawn
 			if (GameStatsSyncer.instance.GetGameOver()) yield break;
 
@@ -166,6 +185,25 @@ public class Entity : MonoBehaviour {
 		}
 		UIController.instance.SetRespawnUIEnabled(false);
 
+		if (!PlayerInfo.GetIsPVP()) {
+			CoopRespawn();
+		} else {
+			PVPRespawn();
+		}
+	}
+	private void PVPRespawn() {
+		Vector3 spawnpoint = MapController.instance.GetTeamSpawnpoint(GetTeam());
+		transform.position = spawnpoint;
+
+		//AI reactivate pathfinding
+		if (TryGetComponent(out AINavigator nav)) {
+			nav.SetStopped(false);
+			nav.TeleportTo(spawnpoint);
+		}
+		RespawnEntity();
+		networker.EntityRespawned();
+	}
+	private void CoopRespawn() {
 		//if single player/only player, spawn at spawnpoint; otherwise, spawn near first other player
 		bool foundOtherPlayer = false;
 		foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
@@ -183,7 +221,6 @@ public class Entity : MonoBehaviour {
 		if (!foundOtherPlayer) {
 			transform.position = MapController.instance.GetPlayerSpawnpoint();
 		}
-
 		RespawnEntity();
 		networker.EntityRespawned();
 	}

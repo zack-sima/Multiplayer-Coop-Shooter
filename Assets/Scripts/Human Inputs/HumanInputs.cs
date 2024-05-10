@@ -256,12 +256,11 @@ public class HumanInputs : MonoBehaviour {
 	}
 	//TODO: mobile should still read other inputs here but redirect it
 	private void Update() {
-		if (EntityController.player == null ||
-			EntityController.player.GetNetworker().GetIsDead()) return;
+		if (EntityController.player == null) return;
 
 		CombatEntity player = EntityController.player;
 
-		bool canInput = !UIController.instance.InOptions();
+		bool canInput = !UIController.instance.InOptions() && !EntityController.player.GetNetworker().GetIsDead();
 		if (UIController.GetIsMobile()) {
 			MobileOnlyUpdate(player, canInput);
 		} else {

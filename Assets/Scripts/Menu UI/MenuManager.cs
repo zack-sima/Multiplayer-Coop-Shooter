@@ -169,7 +169,7 @@ public class MenuManager : MonoBehaviour {
 		LobbyUI.instance.SetLobbyLoading(true);
 
 		//TODO: when adding more gamemodes make sure this is still correct!
-		SetGameMode(PlayerPrefs.GetInt("is_comp") == 0 ? GameMode.Coop : GameMode.Comp);
+		SetGameMode((!PlayerInfo.GetIsPVP()) ? GameMode.Coop : GameMode.Comp);
 	}
 	/// <summary>
 	/// Returns -1 if there is no scene with matching name

@@ -32,6 +32,10 @@ public class PlayerInfo : MonoBehaviour {
 
 	public static PlayerInfo instance;
 
+	public static bool GetIsPVP() {
+		return PlayerPrefs.GetInt("is_comp") == 1;
+	}
+
 	#endregion
 
 	#region Prefabs

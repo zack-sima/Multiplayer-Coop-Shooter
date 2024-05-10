@@ -22,6 +22,13 @@ public class AIBrain : MonoBehaviour {
 
 	[SerializeField] private float maxRange;
 
+	//if is PVP bot, execute a different set of behaviors (at least don't always shoot)
+	[SerializeField] private bool isPVPBot;
+
+	//for bot intermittent shooting
+	private bool inPausePhase = false;
+	private float botPhaseTimer = 1f;
+
 	//turret rotates towards target and shoots if there is a line of sight in range
 	private CombatEntity target = null;
 	private bool canShootTarget = false;
@@ -34,10 +41,14 @@ public class AIBrain : MonoBehaviour {
 		return Vector2.Distance(new Vector2(a.x, a.z), new Vector2(b.x, b.z));
 	}
 	private void EnemyDecisionTick() {
+		if (entity.GetNetworker().GetIsDead()) return;
+
 		if (target != null && target.GetNetworker().GetIsDead()) {
 			canShootTarget = false;
 			target = null;
 		}
+
+		///TODO: something is wrong here about enemy init search! PRINT OUT LIST OF AVAILABLE ENTITIES
 
 		//wait for NavMeshAgent to initialize
 		if (!navigator.GetIsNavigable()) return;
@@ -94,7 +105,12 @@ public class AIBrain : MonoBehaviour {
 			if (entity.GetTurret().GetIsProximityExploder()) canShootTarget = false;
 			navigator.SetStopped(veryCloseToTarget || canShootTarget);
 		} else {
-			navigator.SetStopped(true);
+			if (PlayerInfo.GetIsPVP()) {
+				//go to other side if nothing to do
+				navigator.SetTarget(MapController.instance.GetTeamSpawnpoint((entity.GetTeam() + 1) % 2));
+			} else {
+				navigator.SetStopped(true);
+			}
 		}
 	}
 	private IEnumerator Tick() {
@@ -115,6 +131,7 @@ public class AIBrain : MonoBehaviour {
 	}
 	private void Update() {
 		if (!entity.GetNetworker().HasSyncAuthority()) return;
+		if (entity.GetNetworker().GetIsDead()) { return; }
 		if (target == null) return;
 
 		if (entity.GetTurret().GetIsRotatable()) {
@@ -130,7 +147,17 @@ public class AIBrain : MonoBehaviour {
 			((Mortar)entity.GetTurret()).SetDistance(GroundDistance(transform.position, target.transform.position));
 
 		if (!entity.GetTurret().GetIsProximityExploder() && canShootTarget) {
-			entity.TryFireMainWeapon();
+			//regulate shooting
+			if (isPVPBot) {
+				botPhaseTimer -= Time.deltaTime;
+				if (botPhaseTimer <= 0f) {
+					botPhaseTimer = inPausePhase ? Random.Range(1f, 1.5f) : Random.Range(0.5f, 0.7f);
+					inPausePhase = !inPausePhase;
+				}
+				if (!inPausePhase) entity.TryFireMainWeapon();
+			} else {
+				entity.TryFireMainWeapon();
+			}
 		} else if (entity.GetTurret().GetIsProximityExploder() &&
 			GroundDistance(target.transform.position, transform.position) < 2.5f) {
 

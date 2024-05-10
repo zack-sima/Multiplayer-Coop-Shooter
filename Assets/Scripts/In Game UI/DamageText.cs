@@ -13,7 +13,7 @@ public class DamageText : MonoBehaviour {
 
 	float existedFor = 0f;
 	bool noBubble = false;
-	bool enabled = false;
+	new bool enabled = false;
 
 	Vector3 randOffset = Vector3.zero;
 	public Vector3 GetRandOffset() { return randOffset; }
@@ -29,7 +29,7 @@ public class DamageText : MonoBehaviour {
 	}
 	private IEnumerator Timer() {
 		float transparencyOffset = 0.1f;
-		float start = 0.35f;
+		float start = 0.15f;
 		float startPercent = 0f;
 
 		if (noBubble) {
@@ -47,9 +47,9 @@ public class DamageText : MonoBehaviour {
 			1f - transparencyOffset);
 		transform.GetChild(0).localScale = scale * 0.5f * 1.3f * Vector3.one;
 
-		yield return new WaitForSeconds(0.3f);
+		yield return new WaitForSeconds(0.15f);
 
-		float fade = 1f;
+		float fade = 0.6f;
 		for (float i = 0; i < fade; i += Time.deltaTime) {
 			damageText.color = new Color(damageText.color.r, damageText.color.g, damageText.color.b,
 				1f - i / fade - transparencyOffset);
@@ -59,11 +59,13 @@ public class DamageText : MonoBehaviour {
 	}
 	//if damage was recently done stack it to another hit
 	public bool CanStack() {
-		return existedFor < 0.2f;
+		return existedFor < 0.1f;
 	}
 	private void Start() {
 		transform.GetChild(0).localScale = scale * 0.5f * Vector3.one;
 		damageText.color = new Color(damageText.color.r, damageText.color.g, damageText.color.b, 0);
+
+		Destroy(gameObject, 3f);
 		StartCoroutine(Timer());
 	}
 	private void Update() {

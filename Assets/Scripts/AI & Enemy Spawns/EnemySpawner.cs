@@ -18,12 +18,16 @@ public class EnemySpawner : NetworkBehaviour {
 
 	#region Prefabs
 
+	//basic coop enemies
 	[SerializeField] private List<GameObject> enemyPrefabs;
 	[SerializeField] private List<int> enemyCosts; //credit costs
 
 	//for every 5th wave
 	[SerializeField] private List<GameObject> enemyBossPrefabs;
 	[SerializeField] private List<int> enemyBossCosts;
+
+	//PVP bots
+	[SerializeField] private List<GameObject> PVPBotPrefabs;
 
 	#endregion
 
@@ -235,6 +239,27 @@ public class EnemySpawner : NetworkBehaviour {
 		return Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer;
 	}
 
+	private void SpawnPVPBot(int team) {
+		NetworkedEntity spawned = Runner.Spawn(PVPBotPrefabs[Random.Range(0, PVPBotPrefabs.Count)],
+			MapController.instance.GetTeamSpawnpoint(team) +
+			new Vector3(Random.Range(-3f, 3f), 0f, Random.Range(-3f, 3f)),
+			Quaternion.identity).GetComponent<NetworkedEntity>();
+
+		spawned.SetPVPBotTeam(team);
+	}
+	private IEnumerator SpawnPVPBots(int blueBots, int redBots) {
+		yield return new WaitForSeconds(0.1f);
+
+		for (int i = 0; i < blueBots; i++) {
+			SpawnPVPBot(0);
+			yield return new WaitForSeconds(0.5f);
+		}
+		for (int i = 0; i < redBots; i++) {
+			SpawnPVPBot(1);
+			yield return new WaitForSeconds(0.5f);
+		}
+	}
+
 	#endregion
 
 	#region Initialization
@@ -248,7 +273,10 @@ public class EnemySpawner : NetworkBehaviour {
 		instance = this;
 	}
 	private void Start() {
-		if (PlayerPrefs.GetInt("is_comp") == 1) return;
+		if (PlayerInfo.GetIsPVP()) {
+			StartCoroutine(SpawnPVPBots(3, 5));
+			return;
+		}
 
 		StartCoroutine(SpawnCycle());
 	}

@@ -20,6 +20,9 @@ public class AINavigator : MonoBehaviour {
 	public void SetSpeed(float speed) {
 		agent.speed = speed;
 	}
+	public void TeleportTo(Vector3 targetPosition) {
+		agent.Warp(targetPosition);
+	}
 	public void SetTarget(Vector3 targetPosition) {
 		agent.SetDestination(targetPosition);
 	}
@@ -41,6 +44,9 @@ public class AINavigator : MonoBehaviour {
 			agent.enabled = true;
 		}
 		return agent.isOnNavMesh;
+	}
+	private void Start() {
+		agent.autoRepath = true;
 	}
 
 	#endregion

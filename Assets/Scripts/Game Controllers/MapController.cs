@@ -22,6 +22,19 @@ public class MapController : MonoBehaviour {
 		return playerSpawnpoint.position + new Vector3(rc.x, 0, rc.y);
 	}
 
+	[SerializeField] private List<Transform> blueSpawnpoints;
+	[SerializeField] private List<Transform> redSpawnpoints;
+	public Vector3 GetTeamSpawnpoint(int team) {
+		team %= 2;
+		if (team == 0) {
+			if (blueSpawnpoints.Count == 0) return playerSpawnpoint.position;
+			return blueSpawnpoints[Random.Range(0, blueSpawnpoints.Count)].position;
+		} else {
+			if (redSpawnpoints.Count == 0) return playerSpawnpoint.position;
+			return redSpawnpoints[Random.Range(0, redSpawnpoints.Count)].position;
+		}
+	}
+
 	#endregion
 
 	#region Functions

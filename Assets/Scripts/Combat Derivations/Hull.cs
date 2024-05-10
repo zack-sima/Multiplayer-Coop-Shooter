@@ -66,8 +66,9 @@ public class Hull : MonoBehaviour {
 	}
 	//for player squishing (call BEFORE move function, one for each!)
 	public void SquishPhysics(List<CombatEntity> otherEntities, CombatEntity self) {
+		if (self.GetNetworker().GetIsDead()) return;
 		foreach (CombatEntity e in otherEntities) {
-			if (e == null || e == self) continue;
+			if (e == null || e == self || e.GetNetworker().GetIsDead()) continue;
 			TrySimulatePush(e.transform.position);
 		}
 	}

@@ -92,7 +92,8 @@ public class GameStatsSyncer : NetworkBehaviour {
 		return Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer;
 	}
 	public override void FixedUpdateNetwork() {
-		if (!HasSyncAuthority() || EntityController.player == null) return;
+		//NOTE: PVP should have separate handler for score and win/loss, etc
+		if (!HasSyncAuthority() || EntityController.player == null || PlayerInfo.GetIsPVP()) return;
 
 		//check if all players are alive; if not, end game
 		bool someoneAlive = false;
@@ -119,9 +120,8 @@ public class GameStatsSyncer : NetworkBehaviour {
 	}
 	//the damage number text that pops up when an entity is hit
 	public void SpawnTakeDamageText(Vector3 position, NetworkObject target, int damage, string senderTargetId) {
-		if (PlayerPrefs.GetInt("is_comp") != 1 && target.gameObject == NetworkedEntity.playerInstance.gameObject) {
-			return;
-		}
+		if (!PlayerInfo.GetIsPVP() && target.gameObject == NetworkedEntity.playerInstance.gameObject) return;
+
 		try {
 			bool noRand = false;
 			Vector3 randOffset = new Vector3(Random.Range(-0.5f, 0.5f),
