@@ -1,0 +1,9 @@
+IDString,Cost,Health,Movement
+[Special],,,
+[HullId],Tank,,
+1,100,5000,5.0
+2,[Max],4500,5.5
+,,,
+[TurretId],Spider,,
+1,100,5000,5.0
+2,[Max],4500,5.5

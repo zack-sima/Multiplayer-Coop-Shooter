@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using CSV;
 
 public class GarageManager : MonoBehaviour {
 
@@ -58,6 +59,11 @@ public class GarageManager : MonoBehaviour {
 	private RectTransform damageDisplay, healthDisplay,
 		speedDisplay, shootRateDisplay, ammoDisplay;
 
+	[Header("Garage CSVs")]
+	[Tooltip("Requires a .CSV to function. Auto-Parses and generates out-game UI selections.")]
+	[SerializeField] private TextAsset turretCSVProps;
+	[SerializeField] private TextAsset hullCSVProps;
+
 	#endregion
 
 	#region Members
@@ -78,6 +84,9 @@ public class GarageManager : MonoBehaviour {
 	private string selectedHullName = "", selectedTurretName = "";
 	private Dictionary<string, HullStats> hullStats;
 	private Dictionary<string, TurretStats> turretStats;
+
+	private Dictionary<string, GarageInfo> turretInfo = new (), hullInfo = new();
+	private (HullStats, TurretStats) selectedStats;
 
 	//max stats (for bar graph comparisons); TODO: actually use best hull/turret
 	private HullStats bestHull;
@@ -197,12 +206,15 @@ public class GarageManager : MonoBehaviour {
 	private void Awake() {
 		instance = this;
 
+		turretInfo.ParseTurretInfos(turretCSVProps.text); //Just a visual in the garage.
+		hullInfo.ParseHullInfos(hullCSVProps.text);
+
 		//TODO: temporary hard-coding for stats displays
 		bestHull = new() { hp = 5000, speed = 5.0 };
 		bestTurret = new() { ammo = 50, damage = 650, shootSpeed = 20 };
 
 		HullStats tank = new() {
-			hp = 5000,
+			hp = 7000,
 			speed = 5.0
 		};
 		HullStats spider = new() {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using CSVParser.Init;
+using CSV;
 
 namespace Abilities.UpgradeHandler {
     
@@ -18,7 +18,6 @@ namespace Abilities.UpgradeHandler {
             switch(n.upgradeName) {
                 
                 #region //?==| GENERAL.CSV |==?//
-
                 //*?=======================| Stat |=======================?*//
                 // * ANYTHING SINGLE-FRAME BASED
                 case "Braced Internals": {

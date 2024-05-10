@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using CSVParser;
-using CSVParser.Init;
+using CSV;
 
 public class UpgradesCatalog : MonoBehaviour {
 

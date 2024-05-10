@@ -9081,6 +9081,8 @@ MonoBehaviour:
   speedDisplay: {fileID: 2012680602}
   shootRateDisplay: {fileID: 512312952}
   ammoDisplay: {fileID: 1780635326}
+  turretCSVProps: {fileID: 4900000, guid: 0b6b164fbec7540a2bfee11f8702c7dc, type: 3}
+  hullCSVProps: {fileID: 4900000, guid: c22a9c111db254793bb735a1b81c53c4, type: 3}
 --- !u!4 &517357633
 Transform:
   m_ObjectHideFlags: 0
