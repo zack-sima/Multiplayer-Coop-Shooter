@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace CSVParser {
+namespace CSV {
     //[CreateAssetMenu(menuName = "CSVStorage")]
     public class CSVStorage : ScriptableObject {
         [Header("General CSV")]
@@ -18,11 +18,11 @@ namespace CSVParser {
 
         //TODO: Populate with more CSVs for different trees and stuff.
 
-        public Dictionary<string, string> GetGeneralCSV() { 
+        public Dictionary<string, string> GetCSVs() { 
             return new Dictionary<string, string>() { 
-                {"Props", generalCSVProps.text}, 
-                {"Dependencies", generalCSVDependencies.text},
-                {"Descriptions", generalCSVDescriptions.text}
+                {"General.Props", generalCSVProps.text}, 
+                {"General.Dependencies", generalCSVDependencies.text},
+                {"General.Descriptions", generalCSVDescriptions.text}
             };
         }
     }

@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Abilities.UpgradeHandler;
+using System;
+using Unity.VisualScripting;
 
 
-namespace CSVParser.Init {
+namespace CSV {
 
     public enum ModiName {
         Cost, Lvls, DropRate, Dmg, Reload, AmmoRegen, MaxHP, MoveSpd, CritChance, CritDmg, Cooldown,
@@ -15,10 +17,7 @@ namespace CSVParser.Init {
 
     public static class CSVParserInitExtensions {
 
-        // * Important Tag
-        // ! Issue tag
-        // ? Question
-        // TODO: Todos
+        #region Upgrades CSV
 
         /// <summary>
         /// Init Upgrade stats and stuff from corresponding CSVs!
@@ -32,18 +31,18 @@ namespace CSVParser.Init {
             Dictionary<string, UpgradeInfo> dict = new();
 
             //GrabGeneral CSVs
-            Dictionary<string, string> generalCSVs = UpgradesCatalog.instance.csvStorage.GetGeneralCSV();
-            if (generalCSVs.TryGetValue("Props", out string props) 
-                    && generalCSVs.TryGetValue("Dependencies", out string dependencies)
-                    && generalCSVs.TryGetValue("Descriptions", out string descriptions)) {
-                dict.InitCSV(props, dependencies, descriptions);
+            Dictionary<string, string> generalCSVs = UpgradesCatalog.instance.csvStorage.GetCSVs();
+            if (generalCSVs.TryGetValue("General.Props", out string props) 
+                    && generalCSVs.TryGetValue("General.Dependencies", out string dependencies)
+                    && generalCSVs.TryGetValue("General.Descriptions", out string descriptions)) {
+                dict.InitGeneralCSV(props, dependencies, descriptions);
             }
 
             //TODO: Parse based on turret, hull, abilty selection, etc!
         
         }
 
-        private static void InitCSV(this Dictionary<string, UpgradeInfo> dict, string props, string dependencies, string descriptions) {
+        private static void InitGeneralCSV(this Dictionary<string, UpgradeInfo> dict, string props, string dependencies, string descriptions) {
             
             string[] rows = props.Split(new char[] { '\n' }); //Init headers and rows.
             string[] rawHeaders = rows[0].Split(',');
@@ -155,6 +154,63 @@ namespace CSVParser.Init {
             }
         }
 
+        #endregion
+
+        #region GarageInfo Parsing
+        
+        public static void ParseTurretInfos(this Dictionary<string, GarageInfo> turrets, string props) {
+
+            var lines = props.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            GarageInfo currentTurret = null;
+
+            foreach (var line in lines) {
+                var cols = line.Split(',');
+                if (cols[0].StartsWith("[TurretId]")) {
+                    string turretName = cols[1].Trim();
+                    if (!string.IsNullOrEmpty(turretName)) {
+                        currentTurret = new GarageInfo(turretName);
+                        turrets[turretName] = currentTurret;
+                    }
+                } else if (int.TryParse(cols[0], out int level)) {
+                    if (cols[1] == "[Max]") currentTurret?.SetIsMax(level); // Max level
+                    float.TryParse(cols[1], out float cost);
+                    float.TryParse(cols[2], out float damage);
+                    float.TryParse(cols[3], out float fireRate);
+                    float.TryParse(cols[4], out float maxAmmo);
+                    currentTurret?.PushModi("Cost", cost, level);
+                    currentTurret?.PushModi("Damage", damage, level);
+                    currentTurret?.PushModi("FireRate", fireRate, level);
+                    currentTurret?.PushModi("MaxAmmo", maxAmmo, level);
+                }
+            }
+        }
+
+        public static void ParseHullInfos(this Dictionary<string, GarageInfo> hulls, string props) {
+            var lines = props.Split(new[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+            GarageInfo currentHull = null;
+
+            foreach (var line in lines) {
+                var cols = line.Split(',');
+                if (cols[0].StartsWith("[HullId]")) {
+                    string hullName = cols[1].Trim();
+                    if (!string.IsNullOrEmpty(hullName)) {
+                        currentHull = new GarageInfo(hullName);
+                        hulls[hullName] = currentHull;
+                    }
+                } else if (int.TryParse(cols[0], out int level)) {
+                    if (cols[1] == "[Max]") currentHull?.SetIsMax(level); // Max level
+                    float.TryParse(cols[1], out float cost);
+                    float.TryParse(cols[2], out float health);
+                    float.TryParse(cols[3], out float movement);
+                    currentHull?.PushModi("Cost", cost, level);
+                    currentHull?.PushModi("Health", health, level);
+                    currentHull?.PushModi("Movement", movement, level);
+                }
+            }
+        }
+
+        #endregion
+
         private static List<string> StackDuplicateDependencies(this List<string> depens, Dictionary<string, UpgradeInfo> dict) {
             List<string> temp = new(depens);
             foreach(string s in temp) {
@@ -179,6 +235,48 @@ namespace CSVParser.Init {
         // Need a dict of upgrades!
     }
 
+    #region Internal Classes
+
+    [System.Serializable]
+    public class GarageInfo {
+        private Dictionary<int, Dictionary<string, float>> modiLevels = new();
+        private List<string> modiIds = new();
+        public List<string> GetModiIds() { return modiIds; }
+        public string description { get; set; } = "";
+        public readonly string turretId;
+        private uint maxLevel = 1;
+        public uint currentLevel = 1;
+        public void SetIsMax(int b) { maxLevel = (uint)b; }
+        public uint GetIsMax() { return maxLevel; }
+        public GarageInfo(string id) { turretId = id; }
+
+        public Dictionary<string, float> GetCurrentStats(int level) {
+            if (modiLevels.ContainsKey(level)) return modiLevels[level];
+            else return null;
+        }
+
+        public void PushModi(string id, float input, int level) {
+            if (modiLevels.ContainsKey(level)) {
+                if (modiLevels[level].ContainsKey(id)) modiLevels[level][id] = input;
+                else modiLevels[level].Add(id, input);
+            } else {
+                Dictionary<string, float> temp = new() {{id, input}};
+                modiLevels.Add(level, temp);
+            }
+        }
+
+        public bool TryGetModi(string id, int level, out float output) {
+            output = 0;
+            if (modiLevels.ContainsKey(level)) {
+                if (modiLevels[level].ContainsKey(id)) {
+                    output = modiLevels[level][id];
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+    [System.Serializable]
     public class UpgradeInfo {
         private Dictionary<string, float> modi = new();
         private List<string> modiIds = new(); 
@@ -203,7 +301,6 @@ namespace CSVParser.Init {
             } 
             return false;
         }
-
         public override string ToString() {
             string s = "";
             foreach(KeyValuePair<string, float> p in modi) {
@@ -213,4 +310,6 @@ namespace CSVParser.Init {
             return s;
         }
     }
+
+    #endregion
 }

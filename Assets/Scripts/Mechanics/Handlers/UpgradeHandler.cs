@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using CSVParser.Init;
+using CSV;
 
 namespace Abilities.UpgradeHandler {
     
@@ -18,7 +18,6 @@ namespace Abilities.UpgradeHandler {
             switch(n.upgradeName) {
                 
                 #region //?==| GENERAL.CSV |==?//
-
                 //*?=======================| Stat |=======================?*//
                 // * ANYTHING SINGLE-FRAME BASED
                 case "Braced Internals": {
@@ -33,9 +32,11 @@ namespace Abilities.UpgradeHandler {
                         turret.SetAmmoRegenRate(ammoRegen * turret.GetBaseAmmoRegenRate() + turret.GetAmmoRegenSpeed());
                     }
                     break; }
-                case "Fire Control System":
-                    // Add code for Fire Control System here
-                    break;
+                case "Fire Control System": {
+                    if (n.info.TryGetModi(nameof(ModiName.Dmg), out float dmgModi) && TryGetTurret(out Turret turret)) {
+                        turret.SetBulletDmgModi(dmgModi += turret.GetBulletModi());
+                    }
+                    break;}
                 case "Hardened Ammo": {
                     if (n.info.TryGetModi(nameof(ModiName.Dmg), out float dmgModi) && TryGetTurret(out Turret turret)) {
                         turret.SetBulletDmgModi(dmgModi += turret.GetBulletModi());
