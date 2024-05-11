@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using TMPro;
 using CSV;
 using JSON;
+using Unity.VisualScripting;
+using System;
 
 public class GarageManager : MonoBehaviour {
 
@@ -56,9 +58,9 @@ public class GarageManager : MonoBehaviour {
 
 	[SerializeField] private Camera playerCamera;
 
-	[SerializeField] //stat displays; child 0 = text, child 1 = bar
-	private RectTransform damageDisplay, healthDisplay,
-		speedDisplay, shootRateDisplay, ammoDisplay;
+	// [SerializeField] //stat displays; child 0 = text, child 1 = bar
+	// private RectTransform damageDisplay, healthDisplay,
+	// 	speedDisplay, shootRateDisplay, ammoDisplay;
 
 	[SerializeField] private GameObject upgradeMenu;
 
@@ -73,10 +75,10 @@ public class GarageManager : MonoBehaviour {
 
 	private readonly List<GameObject> spawnedButtons = new();
 
-	private Vector3 normalCameraPosition = Vector3.zero;
+	private Vector3 normalCameraPosition;
 
 	//interpolate to this
-	private Vector3 targetCameraPosition = new(-1f, 1.8f, -5.5f);
+	private Vector3 targetGarageCameraPosition = new Vector3(-.3f, 1.4f, -5.7f);//new(-1f, 1.8f, -5.5f);
 
 	private bool hullMode = true;
 
@@ -111,40 +113,41 @@ public class GarageManager : MonoBehaviour {
 		selectedHullName = hullName;
 
 		CloseSelectionScreen();
-		UpdateStats();
+		UpdateStatsDisplayMainGarage(); // Temp
 	}
 	private void SelectTurret(string turretName, Sprite turretSprite) {
 		selectedTurretImage.sprite = turretSprite;
 		selectedTurretName = turretName;
 
 		CloseSelectionScreen();
-		UpdateStats();
+		UpdateStatsDisplayMainGarage(); // Temp
 	}
 	private void UpdateStats() {
-		if (!turretStats.ContainsKey(selectedTurretName) ||
-			!hullStats.ContainsKey(selectedHullName)) return;
+		// if (!turretStats.ContainsKey(selectedTurretName) ||
+		// 	!hullStats.ContainsKey(selectedHullName)) return;
 
-		damageDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-			$"{turretStats[selectedTurretName].damage}";
-		ammoDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-			$"{turretStats[selectedTurretName].ammo}";
-		shootRateDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-			$"{turretStats[selectedTurretName].shootSpeed:0.0}/s";
-		speedDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-			$"{hullStats[selectedHullName].speed:0.0}m/s";
-		healthDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-			$"{hullStats[selectedHullName].hp}";
+		// damageDisplay.GetChild(0).GetComponent<TMP_Text>().text =
+		// 	$"{turretStats[selectedTurretName].damage}";
+		// ammoDisplay.GetChild(0).GetComponent<TMP_Text>().text =
+		// 	$"{turretStats[selectedTurretName].ammo}";
+		// shootRateDisplay.GetChild(0).GetComponent<TMP_Text>().text =
+		// 	$"{turretStats[selectedTurretName].shootSpeed:0.0}/s";
+		// speedDisplay.GetChild(0).GetComponent<TMP_Text>().text =
+		// 	$"{hullStats[selectedHullName].speed:0.0}m/s";
+		// healthDisplay.GetChild(0).GetComponent<TMP_Text>().text =
+		// 	$"{hullStats[selectedHullName].hp}";
 
-		damageDisplay.GetChild(1).localScale = new Vector2(
-			turretStats[selectedTurretName].damage / (float)bestTurret.damage, 1);
-		ammoDisplay.GetChild(1).localScale = new Vector2(
-			turretStats[selectedTurretName].ammo / (float)bestTurret.ammo, 1);
-		shootRateDisplay.GetChild(1).localScale = new Vector2(
-			(float)(turretStats[selectedTurretName].shootSpeed / bestTurret.shootSpeed), 1);
-		speedDisplay.GetChild(1).localScale = new Vector2(
-			(float)(hullStats[selectedHullName].speed / bestHull.speed), 1);
-		healthDisplay.GetChild(1).localScale = new Vector2(
-			(float)hullStats[selectedHullName].hp / bestHull.hp, 1);
+		// damageDisplay.GetChild(1).localScale = new Vector2(
+		// 	turretStats[selectedTurretName].damage / (float)bestTurret.damage, 1);
+		// ammoDisplay.GetChild(1).localScale = new Vector2(
+		// 	turretStats[selectedTurretName].ammo / (float)bestTurret.ammo, 1);
+		// shootRateDisplay.GetChild(1).localScale = new Vector2(
+		// 	(float)(turretStats[selectedTurretName].shootSpeed / bestTurret.shootSpeed), 1);
+		// speedDisplay.GetChild(1).localScale = new Vector2(
+		// 	(float)(hullStats[selectedHullName].speed / bestHull.speed), 1);
+		// healthDisplay.GetChild(1).localScale = new Vector2(
+		// 	(float)hullStats[selectedHullName].hp / bestHull.hp, 1);
+
 	}
 	public void OpenHulls() {
 		if (hullMode && selectionScreen.gameObject.activeInHierarchy) {
@@ -207,15 +210,203 @@ public class GarageManager : MonoBehaviour {
 		inGarage = false;
 	}
 
-	public void UpgradeButtonClicked() {
-		
+	//*============| UICallbacks |===========*//
+
+	//TODO: implement the actual ui lol.
+	[SerializeField] private GameObject catalogScreen, turretScreen, hullScreen, garageScreen;
+
+	public void OpenHullsScreen() {
+		CloseAllScreens();
+		hullScreen.SetActive(true);
 	}
+
+	public void OpenTurretsScreen() {
+		CloseAllScreens();
+		turretScreen.SetActive(true);
+	}
+
+	public void OpenCatalogScreen() { 
+		CloseAllScreens();
+		catalogScreen.SetActive(true);
+	}
+
+	public void OpenGarageScreen() { 
+		CloseAllScreens();
+		garageScreen.SetActive(true);
+	}
+
+	//*============| GarageScreen |===========*//
+
+	[Header("MainGarageUI")]
+	[SerializeField] private TextMeshProUGUI damageStatMainGarage;
+	[SerializeField] private TextMeshProUGUI damageRateMainGarage, fireRateMainGarage, healthStatMainGarage;
+	[SerializeField] private TextMeshProUGUI tempUpgradeButton, tempUpgradeHullButton;
+
+	private void UpdateStatsDisplayMainGarage(bool isHull = false, bool isUpgrade = false) {
+		if(turretInfos.TryGetValue(selectedTurretName, out GarageInfo turretInfo) &&
+			hullInfos.TryGetValue(selectedHullName, out GarageInfo hullInfo)) {
+			var turretStats = turretInfo.GetCurrentStats(turretInfo.currentLevel);
+			var hullStats = hullInfo.GetCurrentStats(hullInfo.currentLevel);
+
+			if (!isHull && turretStats != null && turretStats.TryGetValue(nameof(UpgradeInfo.ModiName.Damage), out float damage) && turretStats.TryGetValue(nameof(UpgradeInfo.ModiName.FireRate), out float fireRate)) {
+				if (isUpgrade) {
+					if (turretInfo.GetCurrentStats(turretInfo.currentLevel - 1).TryGetValue(nameof(UpgradeInfo.ModiName.Damage), out float prevDamage) && turretInfo.GetCurrentStats(turretInfo.currentLevel - 1).TryGetValue(nameof(UpgradeInfo.ModiName.FireRate), out float prevFireRate)) {
+						upgradeAnimations.Add(StartCoroutine(AnimateText((int)prevDamage, (int)damage, 3f, damageStatMainGarage)));
+						upgradeAnimations.Add(StartCoroutine(AnimateText((int)prevFireRate, (int)fireRate, 3f, fireRateMainGarage, true)));
+						upgradeAnimations.Add(StartCoroutine(AnimateText((int)(prevDamage * prevFireRate), (int)(damage * fireRate), 3f, damageRateMainGarage, true)));
+					}
+				} else {
+					damageStatMainGarage.text = damage.ToString();
+					fireRateMainGarage.text = fireRate.ToString() + " /s";
+					damageRateMainGarage.text = (damage * fireRate).ToString() + " /s";
+				}
+			}
+			if (isHull && hullStats != null && hullStats.TryGetValue(nameof(UpgradeInfo.ModiName.Health), out float health)) {
+				if (isUpgrade) {
+					if (hullInfo.GetCurrentStats(hullInfo.currentLevel - 1).TryGetValue(nameof(UpgradeInfo.ModiName.Health), out float prevHealth)) {
+						upgradeAnimations.Add(StartCoroutine(AnimateText((int)prevHealth, (int)health, 3f, healthStatMainGarage)));
+					}
+				} else {
+					healthStatMainGarage.text = health.ToString();
+				} 
+			}
+		}
+	}
+
+	public void UpgradeHullButtonClicked() {
+		if (turretInfos.TryGetValue(selectedTurretName, out GarageInfo turretInfo) &&
+			hullInfos.TryGetValue(selectedHullName, out GarageInfo hullInfo)) {
+			if (hullInfo.GetIsMax() > hullInfo.currentLevel) {
+				hullInfo.currentLevel++;
+				StopAllUpgradeAnimations();
+				UpdateStatsDisplayMainGarage(isHull: true, isUpgrade: true);
+				Debug.LogWarning("Upgraded");
+			}
+			if (hullInfo.GetIsMax() == hullInfo.currentLevel) {
+				Debug.LogWarning("Maxed out");
+				tempUpgradeHullButton.text = "MAXED";
+			}
+		}
+	
+	}
+
+	public void UpgradeButtonClicked() {
+		if (turretInfos.TryGetValue(selectedTurretName, out GarageInfo turretInfo) &&
+			hullInfos.TryGetValue(selectedHullName, out GarageInfo hullInfo)) {
+			//if (turretInfo.) // TODO: when level == 0, locked.
+			if (turretInfo.GetIsMax() > turretInfo.currentLevel) {
+				turretInfo.currentLevel++;
+				StopAllUpgradeAnimations();
+				UpdateStatsDisplayMainGarage(isHull: false, isUpgrade: true);
+				Debug.LogWarning("Upgraded");
+			}
+			if (turretInfo.GetIsMax() == turretInfo.currentLevel) {
+				Debug.LogWarning("Maxed out");
+				tempUpgradeButton.text = "MAXED";
+			}
+		}
+	}
+
+	public void ResetUpgradesButtonClicked() {
+		if (turretInfos.TryGetValue(selectedTurretName, out GarageInfo turretInfo) &&
+			hullInfos.TryGetValue(selectedHullName, out GarageInfo hullInfo)) {
+			turretInfo.currentLevel = 0;
+			hullInfo.currentLevel = 0;
+			UpdateStatsDisplayMainGarage();
+			tempUpgradeButton.text = "UPGRADE";
+			tempUpgradeHullButton.text = "UPGRADE";
+		}
+	}
+
+	//*============| CatalogScreen |===========*//
+
+	//*============| TurretScreen |===========*// 
+	//? IDK if u want these two to be different or not, but I'm just gonna make them the different for now ?
+
+	//*============| HullScreen |===========*//
+
+	//*============| Internals |===========*//
+
+	private void CloseAllScreens() {
+		if (catalogScreen.activeInHierarchy) catalogScreen.SetActive(false);
+		if (turretScreen.activeInHierarchy) turretScreen.SetActive(false);
+		if (hullScreen.activeInHierarchy) hullScreen.SetActive(false);
+		if (garageScreen.activeInHierarchy) garageScreen.SetActive(false);
+	}
+
+	//*============| Backend |===========*//
+
+	//private class temp
+
+	//*============| Animations |===========*//
+
+	private bool finishAnimating = false;
+	private List<Coroutine> upgradeAnimations = new();
+
+	private float LogarithmicLerp(float start, float end, float value) {
+		float scale = end - start;
+		return start + scale * Mathf.Log10(10 * value); // Logarithmic easing
+	}
+
+	private void StopAllUpgradeAnimations() {
+		foreach (Coroutine i in upgradeAnimations) {
+			StopCoroutine(i);
+		}
+		upgradeAnimations.Clear();
+		PushWhiteTextMeshProGUIUpgradeAnimations();
+	}
+
+	private void PushWhiteTextMeshProGUIUpgradeAnimations() {
+		damageRateMainGarage.color = Color.white;
+		damageStatMainGarage.color = Color.white;
+		fireRateMainGarage.color = Color.white;
+		healthStatMainGarage.color = Color.white;
+	}
+
+	private IEnumerator AnimateText(int startValue, int endValue, float duration, TextMeshProUGUI textComponent, bool isPerSec = false) {
+		float currentTime = 0;
+		int currentValue = startValue;
+
+		// Set the initial text value
+		textComponent.text = currentValue.ToString() + (isPerSec ? " /s" : "");
+		textComponent.color = Color.green;
+
+		while (currentValue < endValue) {
+			currentTime += Time.deltaTime;
+			float progress = currentTime / duration;
+			progress = Mathf.Clamp(progress, 0, 1); // Ensure progress does not exceed 1
+
+			currentValue = (int)LogarithmicLerp(startValue, endValue, -.05f / (progress + .06f) + 1.05f);
+
+			// Update the text with the current value
+			textComponent.text = currentValue.ToString() + (isPerSec ? " /s" : "");
+
+			// Yield until the next frame
+			yield return null;
+		}
+
+		// Ensure the final value is set after the loop
+		textComponent.text = endValue.ToString() + (isPerSec ? " /s" : "");
+		textComponent.color = Color.white; // Reset color or set to a new color
+	}
+
+
+
+
+	//TODO: Push and pulling from persistent data, Loadouts, UIUpdating, etc.
 
 	private void Awake() {
 		instance = this;
 
-		//(turretInfos, hullInfos, upgradeInfos).PullAllInfosFromPersistent(); // Regular Call
-		(turretInfos, hullInfos, upgradeInfos).ForceBlankInfos(); // Force Blank Call * TEMP
+		turretInfos = JSONParser.InitBlankTurretInfo();
+		hullInfos = JSONParser.InitBlankHullInfo();
+		//upgradeInfos = JSONParser.InitBlankUpgradesInfo();
+		foreach (KeyValuePair<string, GarageInfo> kvp in turretInfos) {
+			Debug.LogWarning(kvp.Key);
+		}
+		foreach (KeyValuePair<string, GarageInfo> kvp in hullInfos) {
+			Debug.LogWarning(kvp.Key);
+		}
 
 		//TODO: temporary hard-coding for stats displays
 		bestHull = new() { hp = 5000, speed = 5.0 };
@@ -283,16 +474,17 @@ public class GarageManager : MonoBehaviour {
 				break;
 			}
 		}
-		normalCameraPosition = playerCamera.transform.position;
+
+		//normalCameraPosition = playerCamera.transform.position = new Vector3(0.07f, 2f, -8f);
 	}
 
 	private void Update() {
 		if (garageUI.gameObject.activeInHierarchy) {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
-				targetCameraPosition, Time.deltaTime * 10f);
+				targetGarageCameraPosition, Time.deltaTime * 10f);
 		} else {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
-				normalCameraPosition, Time.deltaTime * 10f);
+				new Vector3(0.07f, 2f, -8f), Time.deltaTime * 10f);
 		}
 	}
 

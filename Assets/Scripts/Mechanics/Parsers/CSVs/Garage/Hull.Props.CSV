@@ -4,6 +4,6 @@ IDString,Cost,Health,Movement
 1,100,5000,5.0
 2,[Max],4500,5.5
 ,,,
-[TurretId],Spider,,
+[HullId],Spider,,
 1,100,5000,5.0
 2,[Max],4500,5.5

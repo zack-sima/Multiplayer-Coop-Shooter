@@ -1,8 +1,17 @@
 IDString,Cost,Damage,FireRate,MaxAmmo
-[Special],,,,
-[TurretId],Auto Cannon,,,
-1,100,150,10.0,35
-2,[Max],170,9.5,40
+[Special],//NO FLOATS,//NO FLOATS,//NO FLOATS,//NO FLOATS
+[TurretId],Autocannon,,,
+0,100,150,10,35
+1,120,170,11,40
+2,130,180,12,45
+3,140,190,13,50
+4,150,200,14,55
+5,160,210,15,60
+6,170,220,16,65
+7,180,230,17,70
+8,190,240,18,75
+9,200,250,19,80
+10,[Max],260,20,85
 ,,,,
 [TurretId],Double Cannon,,,
 1,100,250,6.5,20

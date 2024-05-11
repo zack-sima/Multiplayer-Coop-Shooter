@@ -245,13 +245,13 @@ namespace CSV {
         public string description { get; set; } = "";
         public readonly string turretId;
         private uint maxLevel = 1;
-        public uint currentLevel = 1;
+        public uint currentLevel = 0;
         public void SetIsMax(int b) { maxLevel = (uint)b; }
         public uint GetIsMax() { return maxLevel; }
         public GarageInfo(string id) { turretId = id; }
 
-        public Dictionary<string, float> GetCurrentStats(int level) {
-            if (modiLevels.ContainsKey(level)) return modiLevels[level];
+        public Dictionary<string, float> GetCurrentStats(uint level) {
+            if (modiLevels.ContainsKey((int)level)) return modiLevels[(int)level];
             else return null;
         }
 
@@ -275,9 +275,24 @@ namespace CSV {
             }
             return false;
         }
+
+        public override string ToString() {
+            string s = "";
+            foreach(KeyValuePair<int, Dictionary<string, float>> p in modiLevels) {
+                s += " Level: " + p.Key + ";";
+                foreach(KeyValuePair<string, float> p2 in p.Value) {
+                    s += " " + p2.Key + " : " + p2.Value + ";";
+                }
+            }
+            s += " Description: " + description + ";";
+            return s;
+        }
     }
     [System.Serializable]
     public class UpgradeInfo {
+        public enum ModiName {
+            Cost, Damage, FireRate, MaxAmmo, Health, Movement, CritChance
+        }
         private Dictionary<string, float> modi = new();
         private List<string> modiIds = new(); 
         public List<string> GetModiIds() { return modiIds; }
