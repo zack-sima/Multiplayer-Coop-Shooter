@@ -15,6 +15,8 @@ public class AINavigator : MonoBehaviour {
 
 	Vector3 currentTarget = Vector3.zero;
 
+	float lastTargetTimestamp = 0f;
+
 	#endregion
 
 	#region Functions
@@ -32,9 +34,14 @@ public class AINavigator : MonoBehaviour {
 	public void SetTarget(Vector3 targetPosition, bool forceSet = false) {
 		bool isFar = Vector3.Distance(targetPosition, transform.position) > 15f;
 		float distance = Vector3.Distance(currentTarget, targetPosition);
+
+		//at least set once every second
+		if (Time.time - lastTargetTimestamp > 1) forceSet = true;
+
 		if (forceSet || (distance > 5f && isFar) || (distance > 1f && !isFar)) {
 			currentTarget = targetPosition;
 			agent.SetDestination(targetPosition);
+			lastTargetTimestamp = Time.time;
 		}
 	}
 	public void SetStopped(bool stopped) {

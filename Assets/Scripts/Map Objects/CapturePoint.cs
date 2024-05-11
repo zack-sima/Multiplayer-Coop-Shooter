@@ -30,7 +30,8 @@ public class CapturePoint : MonoBehaviour {
 
 	[SerializeField] private float captureRadius;
 	[SerializeField] private float captureSpeed;
-	[SerializeField] private float pointsPerSecond;
+	[SerializeField] private int pointsPerSecond;
+	public int GetPointsPerSecond() { return pointsPerSecond; }
 
 	[SerializeField] private Mode captureMode;
 	public Mode GetCaptureMode() { return captureMode; }
@@ -133,7 +134,6 @@ public class CapturePoint : MonoBehaviour {
 		}
 		if (changedOwnership) storedPoints = 0;
 
-		//reward points to team controlling point
 		if (ownerTeam != -1) {
 			storedPoints += pointsPerSecond * Time.deltaTime;
 		}

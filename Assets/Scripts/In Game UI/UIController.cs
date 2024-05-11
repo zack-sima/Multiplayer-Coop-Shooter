@@ -203,6 +203,11 @@ public class UIController : MonoBehaviour {
 	public void SetGameOverUIEnabled(bool enabled) {
 		gameOverUI.gameObject.SetActive(enabled);
 	}
+	public void SetPointCapScores(int[] scores) {
+		if (!PlayerInfo.GetIsPointCap()) return;
+
+		waveText.text = $"<color=#5555FF>{scores[0]}<color=white> vs <color=#FF5555>{scores[1]}";
+	}
 	public void SetTeamScores(int[] scores) {
 		if (!PlayerInfo.GetIsPVP()) return;
 

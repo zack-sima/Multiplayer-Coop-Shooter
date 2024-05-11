@@ -42,6 +42,10 @@ public class GameStatsSyncer : NetworkBehaviour {
 	[Networked, Capacity(8)]
 	NetworkArray<float> CapturePointValues { get; }
 
+	//NOTE: point capture scores
+	[Networked, Capacity(2), OnChangedRender(nameof(TeamPointCapScoresChanged))]
+	NetworkArray<int> CapturePointScores { get; } = MakeInitializer(new int[] { 200, 200 });
+
 	[Networked] //comp only
 	private int WinningTeam { get; set; } = -1;
 	public int GetWinningTeam() { return WinningTeam; }
@@ -67,9 +71,17 @@ public class GameStatsSyncer : NetworkBehaviour {
 	#region Callbacks
 
 	private void TeamScoresChanged() {
-		UIController.instance.SetTeamScores(TeamScores.ToArray());
+		if (PlayerInfo.GetIsPointCap()) {
+			UpgradesCatalog.instance.ScoreChanged(TeamScores.Get(NetworkedEntity.playerInstance.GetTeam()));
+		} else if (PlayerInfo.GetIsPVP()) {
+			UIController.instance.SetTeamScores(TeamScores.ToArray());
+		}
+	}
+	private void TeamPointCapScoresChanged() {
+		UIController.instance.SetPointCapScores(CapturePointScores.ToArray());
 	}
 	private void ScoreChanged() {
+		if (PlayerInfo.GetIsPointCap()) return;
 		UpgradesCatalog.instance.ScoreChanged(Score);
 	}
 	//everyone displays the same score
@@ -114,13 +126,25 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 		//PvP follows other rulesets; TODO: expand for more than TDM
 		if (PlayerInfo.GetIsPVP()) {
-			if (!GameOver) {
-				if (TeamScores[0] >= 40) {
-					GameOver = true;
-					WinningTeam = 0;
-				} else if (TeamScores[1] >= 40) {
-					GameOver = true;
-					WinningTeam = 1;
+			if (PlayerInfo.GetIsPointCap()) {
+				if (!GameOver) {
+					if (CapturePointScores[0] <= 0) {
+						GameOver = true;
+						WinningTeam = 1;
+					} else if (CapturePointScores[1] <= 0) {
+						GameOver = true;
+						WinningTeam = 0;
+					}
+				}
+			} else {
+				if (!GameOver) {
+					if (TeamScores[0] >= 40) {
+						GameOver = true;
+						WinningTeam = 0;
+					} else if (TeamScores[1] >= 40) {
+						GameOver = true;
+						WinningTeam = 1;
+					}
 				}
 			}
 			return;
@@ -207,6 +231,7 @@ public class GameStatsSyncer : NetworkBehaviour {
 		GameOverChanged();
 		WaveChanged();
 		TeamScoresChanged();
+		TeamPointCapScoresChanged();
 
 		UpgradesCatalog.instance.MoneyChanged();
 
@@ -229,15 +254,44 @@ public class GameStatsSyncer : NetworkBehaviour {
 		if (PlayerInfo.GetIsPointCap()) {
 			if (HasSyncAuthority()) {
 				int i = 0;
+
+				//negative means blue loses points, positive means red loses points
+				int pointBalance = 0;
+
+				bool isFullSecond = ((int)Time.time) - (int)(Time.time - Time.deltaTime) != 0;
+
 				foreach (CapturePoint p in MapController.instance.GetCapturePoints()) {
+					if (!p.gameObject.activeInHierarchy) continue;
+
 					p.UpdateCaptureProgress(EntityController.instance.GetCombatEntities());
+
+					if (p.GetCaptureMode() == CapturePoint.Mode.Points && p.GetPointOwnerTeam() >= 0) {
+						//reduce other team's points
+						if (isFullSecond) {
+							pointBalance += p.GetPointOwnerTeam() == 0 ? p.GetPointsPerSecond() : -p.GetPointsPerSecond();
+						}
+					}
+
+					int val = p.GetPoints();
+					if (val > 0) {
+						if (p.GetCaptureMode() == CapturePoint.Mode.Money) {
+							//give team money through score
+							TeamScores.Set(p.GetPointOwnerTeam(), TeamScores.Get(p.GetPointOwnerTeam()) + val);
+						}
+					}
 					CapturePointValues.Set(i, p.GetCaptureProgress());
 					CapturePointOwners.Set(i, p.GetPointOwnerTeam());
 					i++;
 				}
+				if (pointBalance != 0) {
+					int index = pointBalance < 0 ? 0 : 1;
+					CapturePointScores.Set(index, Mathf.Max(CapturePointScores.Get(index) - Mathf.Abs(pointBalance), 0));
+				}
 			} else {
 				int i = 0;
 				foreach (CapturePoint p in MapController.instance.GetCapturePoints()) {
+					if (!p.gameObject.activeInHierarchy) continue;
+
 					p.SetClientCaptureProgress(CapturePointValues.Get(i), CapturePointOwners.Get(i));
 					i++;
 				}

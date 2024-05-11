@@ -422,6 +422,6 @@ MonoBehaviour:
   neutralMaterial: {fileID: 2100000, guid: dde3962add1ee477583ac6dbda90026d, type: 2}
   teamMaterials: {fileID: 11400000, guid: faa23109d9fc044828b87850367187b7, type: 2}
   captureRadius: 3
-  captureSpeed: 0.1
-  pointsPerSecond: 0.5
+  captureSpeed: 0.3
+  pointsPerSecond: 1
   captureMode: 1
