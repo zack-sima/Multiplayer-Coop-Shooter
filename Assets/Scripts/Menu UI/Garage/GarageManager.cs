@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using CSV;
 using JSON;
+using Unity.VisualScripting;
 
 public class GarageManager : MonoBehaviour {
 
@@ -76,7 +77,7 @@ public class GarageManager : MonoBehaviour {
 	private Vector3 normalCameraPosition = Vector3.zero;
 
 	//interpolate to this
-	private Vector3 targetCameraPosition = new(-1f, 1.8f, -5.5f);
+	private Vector3 targetGarageCameraPosition = new Vector3(-.5f, 1.4f, -5.7f);//new(-1f, 1.8f, -5.5f);
 
 	private bool hullMode = true;
 
@@ -207,15 +208,56 @@ public class GarageManager : MonoBehaviour {
 		inGarage = false;
 	}
 
-	public void UpgradeButtonClicked() {
-		
+	//*============| UICallbacks |===========*//
+
+	//TODO: implement the actual ui lol.
+	[SerializeField] private GameObject catalogScreen, turretScreen, hullScreen, garageScreen;
+
+	public void OpenHullsScreen() {
+		CloseAllScreens();
+		hullScreen.SetActive(true);
 	}
+
+	public void OpenTurretsScreen() {
+		CloseAllScreens();
+		turretScreen.SetActive(true);
+	}
+
+	public void OpenCatalogScreen() { 
+		CloseAllScreens();
+		catalogScreen.SetActive(true);
+	}
+
+	public void OpenGarageScreen() { 
+		CloseAllScreens();
+		garageScreen.SetActive(true);
+	}
+
+	//*============| CatalogScreen |===========*//
+
+	//*============| TurretScreen |===========*// 
+	//? IDK if u want these two to be different or not, but I'm just gonna make them the different for now ?
+
+	//*============| HullScreen |===========*//
+
+	//*============| Internals |===========*//
+
+	private void CloseAllScreens() {
+		if (catalogScreen.activeInHierarchy) catalogScreen.SetActive(false);
+		if (turretScreen.activeInHierarchy) turretScreen.SetActive(false);
+		if (hullScreen.activeInHierarchy) hullScreen.SetActive(false);
+		if (garageScreen.activeInHierarchy) garageScreen.SetActive(false);
+	}
+
+	//*============| Backend |===========*//
+
+	//TODO: Push and pulling from persistent data, Loadouts, UIUpdating, etc.
 
 	private void Awake() {
 		instance = this;
 
 		//(turretInfos, hullInfos, upgradeInfos).PullAllInfosFromPersistent(); // Regular Call
-		(turretInfos, hullInfos, upgradeInfos).ForceBlankInfos(); // Force Blank Call * TEMP
+		//(turretInfos, hullInfos, upgradeInfos).ForceBlankInfos(); // Force Blank Call * TEMP
 
 		//TODO: temporary hard-coding for stats displays
 		bestHull = new() { hp = 5000, speed = 5.0 };
@@ -287,9 +329,10 @@ public class GarageManager : MonoBehaviour {
 	}
 
 	private void Update() {
+		Debug.LogWarning("buh");
 		if (garageUI.gameObject.activeInHierarchy) {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
-				targetCameraPosition, Time.deltaTime * 10f);
+				targetGarageCameraPosition, Time.deltaTime * 10f);
 		} else {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
 				normalCameraPosition, Time.deltaTime * 10f);
