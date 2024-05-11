@@ -40,6 +40,9 @@ public class AIBrain : MonoBehaviour {
 	private Vector3 bogoTarget = Vector3.zero;
 	private Vector3 homeTarget = Vector3.zero;
 
+	//point cap
+	private CapturePoint targetPoint = null;
+
 	IActivatable heal = new Heal();
 
 	#endregion
@@ -126,7 +129,9 @@ public class AIBrain : MonoBehaviour {
 				navigator.SetStopped(false);
 				navigator.SetTarget(target.transform.position);
 			} else if (isPVPBot) {
-				if (bogoTarget == Vector3.zero || GroundDistance(bogoTarget, transform.position) < 3.5f) {
+				if ((bogoTarget == Vector3.zero || GroundDistance(bogoTarget, transform.position) < 3.5f) &&
+					(!PlayerInfo.GetIsPointCap() || targetPoint == null ||
+					GroundDistance(targetPoint.transform.position, transform.position) > 5f)) {
 					Vector2 circle = Random.insideUnitCircle * Random.Range(2f, 5f);
 					bogoTarget = target.transform.position + new Vector3(circle.x, 0, circle.y);
 				}
@@ -137,11 +142,25 @@ public class AIBrain : MonoBehaviour {
 			}
 		} else if (!runningAway) {
 			if (isPVPBot) {
-				if (bogoTarget == Vector3.zero || GroundDistance(bogoTarget, transform.position) < 5f) {
-					//go to other side if nothing to do
-					bogoTarget = MapController.instance.GetTeamSpawnpoint((entity.GetTeam() + 1) % 2);
+				if (PlayerInfo.GetIsPointCap()) {
+					//in point capture, go for point and stay there
+					List<CapturePoint> points = MapController.instance.GetCapturePoints();
+					if (targetPoint == null && points.Count > 0 ||
+						targetPoint != null && (targetPoint.GetCaptureProgress() >= 1 ||
+						GroundDistance(targetPoint.transform.position, bogoTarget) > 3)) {
+
+						targetPoint = points[Random.Range(0, points.Count)];
+
+						Vector2 circle = Random.insideUnitCircle * Random.Range(0f, 2f);
+						bogoTarget = targetPoint.transform.position + new Vector3(circle.x, 0, circle.y);
+					}
+				} else {
+					//in PvP, go to other side if nothing to do
+					if (bogoTarget == Vector3.zero || GroundDistance(bogoTarget, transform.position) < 5f) {
+						bogoTarget = MapController.instance.GetTeamSpawnpoint((entity.GetTeam() + 1) % 2);
+					}
 				}
-				navigator.SetTarget(bogoTarget);
+				if (bogoTarget != Vector3.zero) navigator.SetTarget(bogoTarget);
 			} else {
 				navigator.SetStopped(true);
 			}

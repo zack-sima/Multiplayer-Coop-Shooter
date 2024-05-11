@@ -31,7 +31,19 @@ public class PlayerInfo : MonoBehaviour {
 	public static PlayerInfo instance;
 
 	public static bool GetIsPVP() {
-		return PlayerPrefs.GetInt("is_comp") == 1;
+		switch ((MenuManager.GameMode)PlayerPrefs.GetInt("game_mode")) {
+			case MenuManager.GameMode.Singleplayer:
+			case MenuManager.GameMode.Coop:
+				return false;
+			case MenuManager.GameMode.PointCap:
+			case MenuManager.GameMode.Comp:
+				return true;
+			default:
+				return false;
+		}
+	}
+	public static bool GetIsPointCap() {
+		return (MenuManager.GameMode)PlayerPrefs.GetInt("game_mode") == MenuManager.GameMode.PointCap;
 	}
 
 	#endregion

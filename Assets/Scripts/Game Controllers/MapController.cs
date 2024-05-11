@@ -22,6 +22,9 @@ public class MapController : MonoBehaviour {
 		return playerSpawnpoint.position + new Vector3(rc.x, 0, rc.y);
 	}
 
+	[SerializeField] private List<CapturePoint> capturablePoints;
+	public List<CapturePoint> GetCapturePoints() { return capturablePoints; }
+
 	[SerializeField] private List<Transform> blueSpawnpoints;
 	[SerializeField] private List<Transform> redSpawnpoints;
 	public Vector3 GetTeamSpawnpoint(int team) {
@@ -41,6 +44,14 @@ public class MapController : MonoBehaviour {
 
 	private void Awake() {
 		instance = this;
+	}
+	private void Start() {
+		//disable capture points if not in mode
+		if (!PlayerInfo.GetIsPointCap()) {
+			foreach (CapturePoint p in capturablePoints) {
+				p.gameObject.SetActive(false);
+			}
+		}
 	}
 
 	#endregion

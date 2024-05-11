@@ -11,7 +11,7 @@ using Fusion;
 
 public class GameStatsSyncer : NetworkBehaviour {
 
-	#region Statics
+	#region Statics & Consts
 
 	public static GameStatsSyncer instance;
 
@@ -32,10 +32,15 @@ public class GameStatsSyncer : NetworkBehaviour {
 	public int GetWave() { return Wave; } //all spawners sync this and simulate same delays
 	public void IncrementWave() { Wave++; } //called by master client only
 
-	[Networked, OnChangedRender(nameof(TeamScoresChanged))]
-	[Capacity(2)]
-	NetworkArray<int> TeamScores { get; } = MakeInitializer(new int[] { 0, 0 });
+	[Networked, Capacity(2), OnChangedRender(nameof(TeamScoresChanged))]
+	NetworkArray<int> TeamScores { get; }
 	public void AddTeamScore(int team, int score) { TeamScores.Set(team, TeamScores.Get(team) + score); }
+
+	[Networked, Capacity(8)] //point capture; arbitrary number for points needed
+	NetworkArray<int> CapturePointOwners { get; }
+
+	[Networked, Capacity(8)]
+	NetworkArray<float> CapturePointValues { get; }
 
 	[Networked] //comp only
 	private int WinningTeam { get; set; } = -1;
@@ -219,6 +224,25 @@ public class GameStatsSyncer : NetworkBehaviour {
 			ServerTime = localTime;
 		}
 		localTime += Time.deltaTime;
+
+		//point capture
+		if (PlayerInfo.GetIsPointCap()) {
+			if (HasSyncAuthority()) {
+				int i = 0;
+				foreach (CapturePoint p in MapController.instance.GetCapturePoints()) {
+					p.UpdateCaptureProgress(EntityController.instance.GetCombatEntities());
+					CapturePointValues.Set(i, p.GetCaptureProgress());
+					CapturePointOwners.Set(i, p.GetPointOwnerTeam());
+					i++;
+				}
+			} else {
+				int i = 0;
+				foreach (CapturePoint p in MapController.instance.GetCapturePoints()) {
+					p.SetClientCaptureProgress(CapturePointValues.Get(i), CapturePointOwners.Get(i));
+					i++;
+				}
+			}
+		}
 	}
 	private void Awake() {
 		if (instance != null) {

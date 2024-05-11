@@ -44,7 +44,7 @@ public class LevelSelectManager : MonoBehaviour {
 		}
 
 		MenuManager.instance.SetGameMode(isSolo ? MenuManager.GameMode.Singleplayer :
-			(isComp ? MenuManager.GameMode.Comp : MenuManager.GameMode.Coop));
+			(isComp ? MenuManager.GameMode.PointCap : MenuManager.GameMode.Coop));
 
 		CloseLevelSelect();
 	}

@@ -12,7 +12,7 @@ public class MenuManager : MonoBehaviour {
 
 	public static MenuManager instance;
 
-	public enum GameMode { Singleplayer, Coop, Comp }
+	public enum GameMode { Singleplayer, Coop, Comp, PointCap }
 
 	#endregion
 
@@ -103,6 +103,12 @@ public class MenuManager : MonoBehaviour {
 				LobbyUI.instance.InLobbyUpdated();
 
 				break;
+			case GameMode.PointCap:
+				modeDisplayTitle.text = "PvP KOTH";
+
+				LobbyUI.instance.InLobbyUpdated();
+
+				break;
 			case GameMode.Coop:
 				modeDisplayTitle.text = "COOP";
 
@@ -139,16 +145,15 @@ public class MenuManager : MonoBehaviour {
 
 	//NOTE: play button goes to where currentGameMode is set to (SP game, lobby, etc)
 	public void PlayButtonClicked() {
-		PlayerPrefs.SetInt("is_comp", 0);
+		PlayerPrefs.SetInt("game_mode", (int)currentGameMode);
 
 		switch (currentGameMode) {
 			case GameMode.Singleplayer:
 				StartSingle();
 				break;
+			case GameMode.PointCap:
 			case GameMode.Comp:
 			case GameMode.Coop:
-				PlayerPrefs.SetInt("is_comp", currentGameMode == GameMode.Comp ? 1 : 0);
-
 				if (!ServerLinker.instance.GetIsInLobby()) {
 					PlayerPrefs.SetString("room_id", LobbyUI.GenerateLobbyID());
 					StartLobby(PlayerPrefs.GetString("room_id"), false);
@@ -168,8 +173,7 @@ public class MenuManager : MonoBehaviour {
 		//NOTE: this calls the lobby UI loading screen
 		LobbyUI.instance.SetLobbyLoading(true);
 
-		//TODO: when adding more gamemodes make sure this is still correct!
-		SetGameMode((!PlayerInfo.GetIsPVP()) ? GameMode.Coop : GameMode.Comp);
+		SetGameMode((GameMode)PlayerPrefs.GetInt("game_mode"));
 	}
 	/// <summary>
 	/// Returns -1 if there is no scene with matching name
