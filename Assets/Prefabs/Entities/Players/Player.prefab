@@ -377,7 +377,7 @@ MonoBehaviour:
   mainEntity: {fileID: 5931193942257798054}
   critSoundEffect: {fileID: 318313311001861415}
   effectPrefabs: {fileID: 11400000, guid: d09ac29cb14874b14ae8f5d6efd45caa, type: 2}
-  damageTextPrefab: {fileID: 2647337806047256290, guid: 42d34ec910f49477a83497b39ca4092a, type: 3}
+  sentryPrefab: {fileID: 954837698998907771, guid: 560190efce93a4f81ae82ed30e3ab6aa, type: 3}
   isPlayer: 1
 --- !u!114 &5931193942257798054
 MonoBehaviour:
@@ -398,6 +398,7 @@ MonoBehaviour:
   teamMaterials: {fileID: 11400000, guid: faa23109d9fc044828b87850367187b7, type: 2}
   hitbox: {fileID: 5383900387921732267}
   isPlayer: 1
+  isStructure: 0
   maxHealth: 5000
   healthBarType: 0
   killReward: 0

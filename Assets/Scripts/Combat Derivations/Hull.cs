@@ -73,9 +73,10 @@ public class Hull : MonoBehaviour {
 		}
 	}
 	private void TrySimulatePush(Vector3 other) {
-		if (other == transform.position) other.x += 0.01f;
-		if (AIBrain.GroundDistance(transform.position, other) < 1.8f)
-			physicsVelocity += (transform.position - other).normalized * 2f;
+		float threshold = 1.8f;
+		float distance = AIBrain.GroundDistance(transform.position, other);
+		if (distance < threshold)
+			physicsVelocity += (threshold - distance) * 5f * (transform.position - other).normalized;
 		physicsVelocity.y = 0;
 	}
 

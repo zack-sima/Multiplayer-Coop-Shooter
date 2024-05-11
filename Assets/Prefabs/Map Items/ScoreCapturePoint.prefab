@@ -24,6 +24,10 @@ PrefabInstance:
       propertyPath: captureMode
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1357007156683441028, guid: b744210cfbd4d41509e6c827ed129de6, type: 3}
+      propertyPath: pointsPerSecond
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 6385586886720949545, guid: b744210cfbd4d41509e6c827ed129de6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

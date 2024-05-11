@@ -36,6 +36,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	#region Prefabs
 
 	[SerializeField] public AbilityPrefabAssets effectPrefabs;
+	[SerializeField] private GameObject sentryPrefab;
 
 	#endregion
 
@@ -275,6 +276,14 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	#region Functions
 
+	//TODO: regulate using abilities
+	public void SpawnSentry() {
+		if (!HasSyncAuthority()) return;
+		Runner.Spawn(sentryPrefab, transform.position + new Vector3(Random.Range(-0.1f, 0.1f), 0f,
+			Random.Range(-0.1f, 0.1f)), Quaternion.identity).
+			GetComponent<NetworkedEntity>().SetNonPlayerTeam(GetTeam());
+	}
+
 	//must be called by local player!
 	public void EntityDied() {
 		IsDead = true;
@@ -351,7 +360,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		mainEntity.EntityRemoved();
 		mainEntity.RemoveEntityFromRegistry();
 	}
-	public void SetPVPBotTeam(int team) {
+	public void SetNonPlayerTeam(int team) {
 		Team = team;
 	}
 	public override void Spawned() {
@@ -439,7 +448,7 @@ public class NetworkedEntity : NetworkBehaviour {
 													//UpdateStatModifier(); // Handle stat changes
 		if (HasSyncAuthority()) {
 			//local entity
-			if (isPlayer || PlayerInfo.GetIsPVP()) {
+			if ((isPlayer || PlayerInfo.GetIsPVP()) && !mainEntity.GetIsStructure()) {
 				//natural healing
 				if (Time.time - mainEntity.GetLastDamageTimestamp() > 2.5f) {
 					Health = Mathf.Min(mainEntity.GetMaxHealth(),

@@ -64,11 +64,11 @@ public class AIBrain : MonoBehaviour {
 		if (!navigator.GetIsNavigable()) return;
 
 		//try finding target
-		float closestDistance = isPVPBot ? 20 : 999;
+		float closestDistance = isPVPBot ? 16 : 999;
 		foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
 			if (!ce.GetNetworker().GetInitialized() ||
 				ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
-			float distance = Vector3.Distance(ce.transform.position, transform.position);
+			float distance = GroundDistance(ce.transform.position, transform.position);
 			if (distance < closestDistance) {
 				closestDistance = distance;
 				target = ce;
@@ -77,7 +77,13 @@ public class AIBrain : MonoBehaviour {
 		//if running home, ignore everything else
 		bool runningAway = false;
 
-		if (isPVPBot && entity.GetHealth() < entity.GetMaxHealth() * retreatThreshold) {
+		//in point capture mode when contesting a point, never retreat (or if no enemies nearby)
+		bool order227 = false;
+		if (PlayerInfo.GetIsPointCap() && (targetPoint != null &&
+			GroundDistance(transform.position, targetPoint.transform.position) < 3f ||
+			target == null)) order227 = true;
+
+		if (isPVPBot && entity.GetHealth() < entity.GetMaxHealth() * retreatThreshold && !order227) {
 			//try and heal; TODO: wait for abilities & effects
 			Debug.Log("heal");
 			//heal.Activate(entity.GetNetworker(), true);
@@ -145,14 +151,19 @@ public class AIBrain : MonoBehaviour {
 				if (PlayerInfo.GetIsPointCap()) {
 					//in point capture, go for point and stay there
 					List<CapturePoint> points = MapController.instance.GetCapturePoints();
-					if (targetPoint == null && points.Count > 0 ||
-						targetPoint != null && (targetPoint.GetCaptureProgress() >= 1 ||
-						GroundDistance(targetPoint.transform.position, bogoTarget) > 3)) {
+					if (targetPoint == null || targetPoint != null && targetPoint.GetCaptureProgress() >= 1 &&
+						targetPoint.GetPointOwnerTeam() == entity.GetTeam() || bogoTarget == Vector3.zero) {
 
-						targetPoint = points[Random.Range(0, points.Count)];
+						int rand = Random.Range(0, points.Count);
+						if (points[rand].gameObject.activeInHierarchy)
+							targetPoint = points[rand];
 
-						Vector2 circle = Random.insideUnitCircle * Random.Range(0f, 2f);
-						bogoTarget = targetPoint.transform.position + new Vector3(circle.x, 0, circle.y);
+						if (targetPoint != null && (targetPoint.GetCaptureProgress() < 1 ||
+							targetPoint.GetPointOwnerTeam() != entity.GetTeam() ||
+							bogoTarget == Vector3.zero)) {
+							Vector2 circle = Random.insideUnitCircle * Random.Range(0f, 2f);
+							bogoTarget = targetPoint.transform.position + new Vector3(circle.x, 0, circle.y);
+						}
 					}
 				} else {
 					//in PvP, go to other side if nothing to do
@@ -160,11 +171,13 @@ public class AIBrain : MonoBehaviour {
 						bogoTarget = MapController.instance.GetTeamSpawnpoint((entity.GetTeam() + 1) % 2);
 					}
 				}
+				navigator.SetStopped(false);
 				if (bogoTarget != Vector3.zero) navigator.SetTarget(bogoTarget);
 			} else {
 				navigator.SetStopped(true);
 			}
 		}
+		if (targetPoint == null) { Debug.Log(name); }
 	}
 	private IEnumerator Tick() {
 		while (true) {
@@ -189,7 +202,9 @@ public class AIBrain : MonoBehaviour {
 		if (!entity.GetNetworker().HasSyncAuthority()) return;
 		if (entity.GetNetworker().GetIsDead()) {
 			bogoTarget = Vector3.zero;
+			targetPoint = null;
 			canShootTarget = false;
+			target = null;
 			return;
 		}
 		if (isPVPBot) {

@@ -245,7 +245,7 @@ public class EnemySpawner : NetworkBehaviour {
 			new Vector3(Random.Range(-3f, 3f), 0f, Random.Range(-3f, 3f)),
 			Quaternion.identity).GetComponent<NetworkedEntity>();
 
-		spawned.SetPVPBotTeam(team);
+		spawned.SetNonPlayerTeam(team);
 	}
 	private IEnumerator SpawnPVPBots(int blueBots, int redBots) {
 		yield return new WaitForSeconds(0.1f);
@@ -274,7 +274,7 @@ public class EnemySpawner : NetworkBehaviour {
 	}
 	private void Start() {
 		if (PlayerInfo.GetIsPVP()) {
-			StartCoroutine(SpawnPVPBots(2, 3));
+			StartCoroutine(SpawnPVPBots(2, 2));
 			return;
 		}
 

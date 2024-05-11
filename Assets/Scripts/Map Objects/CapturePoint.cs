@@ -30,7 +30,8 @@ public class CapturePoint : MonoBehaviour {
 
 	[SerializeField] private float captureRadius;
 	[SerializeField] private float captureSpeed;
-	[SerializeField] private float pointsPerSecond;
+	[SerializeField] private int pointsPerSecond;
+	public int GetPointsPerSecond() { return pointsPerSecond; }
 
 	[SerializeField] private Mode captureMode;
 	public Mode GetCaptureMode() { return captureMode; }
@@ -76,7 +77,6 @@ public class CapturePoint : MonoBehaviour {
 	//NOTE: called by GameStatsSyncer non-master client to fetch synced progress
 	public void SetClientCaptureProgress(float captureProgress, int ownerTeam) {
 		if (this.ownerTeam != ownerTeam || this.captureProgress != captureProgress) {
-			Debug.Log("client change");
 			this.ownerTeam = ownerTeam;
 			this.captureProgress = captureProgress;
 			UpdateVisuals();
@@ -133,11 +133,13 @@ public class CapturePoint : MonoBehaviour {
 		}
 		if (changedOwnership) storedPoints = 0;
 
-		//reward points to team controlling point
 		if (ownerTeam != -1) {
 			storedPoints += pointsPerSecond * Time.deltaTime;
 		}
 
+		UpdateVisuals();
+	}
+	private void Start() {
 		UpdateVisuals();
 	}
 

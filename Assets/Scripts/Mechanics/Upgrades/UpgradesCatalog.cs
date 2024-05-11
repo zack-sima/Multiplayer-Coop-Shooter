@@ -175,6 +175,8 @@ public class UpgradesCatalog : MonoBehaviour {
 
 	[SerializeField] private RectTransform upgradeDisplayParent;
 
+	[SerializeField] private GameObject buyReminderIcon;
+
 	#endregion
 
 	#region Members
@@ -269,6 +271,7 @@ public class UpgradesCatalog : MonoBehaviour {
 		}
 		//turn off unused
 		for (int i = upgradableList.Count; i < waveUpgradeCards.Count; i++) {
+			waveUpgradeCards[i].Init(null);
 			waveUpgradeCards[i].gameObject.SetActive(false);
 		}
 	}
@@ -392,6 +395,18 @@ public class UpgradesCatalog : MonoBehaviour {
 	}
 
 	private void Update() {
+		bool canAfford = false;
+		foreach (UpgradeCardButton b in waveUpgradeCards) {
+			if (b.GetNode() == null) continue;
+			if (b.GetNode().cost <= playerMoney) {
+				canAfford = true;
+				break;
+			}
+		}
+
+		if (buyReminderIcon.activeInHierarchy != canAfford)
+			buyReminderIcon.SetActive(canAfford);
+
 		if (Input.GetKeyDown(KeyCode.U)) {
 			ShowPossibleUpgrades();
 		}
