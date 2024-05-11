@@ -250,7 +250,11 @@ public class GarageManager : MonoBehaviour {
 
 			if (!isHull && turretStats != null && turretStats.TryGetValue(nameof(UpgradeInfo.ModiName.Damage), out float damage) && turretStats.TryGetValue(nameof(UpgradeInfo.ModiName.FireRate), out float fireRate)) {
 				if (isUpgrade) {
-					if (turretInfo.GetCurrentStats(turretInfo.currentLevel - 1).TryGetValue(nameof(UpgradeInfo.ModiName.Damage), out float prevDamage) && turretInfo.GetCurrentStats(turretInfo.currentLevel - 1).TryGetValue(nameof(UpgradeInfo.ModiName.FireRate), out float prevFireRate)) {
+					if (turretInfo != null && 
+							turretInfo.GetCurrentStats(turretInfo.currentLevel - 1).TryGetValue(nameof(UpgradeInfo.ModiName.Damage), out float prevDamage) 
+							&& turretInfo.GetCurrentStats(turretInfo.currentLevel - 1).TryGetValue(nameof(UpgradeInfo.ModiName.FireRate), out float prevFireRate)) {
+						
+						
 						upgradeAnimations.Add(StartCoroutine(AnimateText((int)prevDamage, (int)damage, 3f, damageStatMainGarage)));
 						upgradeAnimations.Add(StartCoroutine(AnimateText((int)prevFireRate, (int)fireRate, 3f, fireRateMainGarage, true)));
 						upgradeAnimations.Add(StartCoroutine(AnimateText((int)(prevDamage * prevFireRate), (int)(damage * fireRate), 3f, damageRateMainGarage, true)));
@@ -350,7 +354,7 @@ public class GarageManager : MonoBehaviour {
 
 	private void StopAllUpgradeAnimations() {
 		foreach (Coroutine i in upgradeAnimations) {
-			StopCoroutine(i);
+			if (i != null) StopCoroutine(i);
 		}
 		upgradeAnimations.Clear();
 		PushWhiteTextMeshProGUIUpgradeAnimations();
