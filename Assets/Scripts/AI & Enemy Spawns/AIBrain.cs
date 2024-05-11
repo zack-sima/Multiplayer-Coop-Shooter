@@ -64,11 +64,11 @@ public class AIBrain : MonoBehaviour {
 		if (!navigator.GetIsNavigable()) return;
 
 		//try finding target
-		float closestDistance = isPVPBot ? 20 : 999;
+		float closestDistance = isPVPBot ? 16 : 999;
 		foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
 			if (!ce.GetNetworker().GetInitialized() ||
 				ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
-			float distance = Vector3.Distance(ce.transform.position, transform.position);
+			float distance = GroundDistance(ce.transform.position, transform.position);
 			if (distance < closestDistance) {
 				closestDistance = distance;
 				target = ce;
@@ -154,11 +154,13 @@ public class AIBrain : MonoBehaviour {
 					if (targetPoint == null || targetPoint != null && targetPoint.GetCaptureProgress() >= 1 &&
 						targetPoint.GetPointOwnerTeam() == entity.GetTeam() || bogoTarget == Vector3.zero) {
 
-						targetPoint = points[Random.Range(0, points.Count)];
+						int rand = Random.Range(0, points.Count);
+						if (points[rand].gameObject.activeInHierarchy)
+							targetPoint = points[rand];
 
-						if (targetPoint.GetCaptureProgress() < 1 ||
+						if (targetPoint != null && (targetPoint.GetCaptureProgress() < 1 ||
 							targetPoint.GetPointOwnerTeam() != entity.GetTeam() ||
-							bogoTarget == Vector3.zero) {
+							bogoTarget == Vector3.zero)) {
 							Vector2 circle = Random.insideUnitCircle * Random.Range(0f, 2f);
 							bogoTarget = targetPoint.transform.position + new Vector3(circle.x, 0, circle.y);
 						}

@@ -77,7 +77,6 @@ public class CapturePoint : MonoBehaviour {
 	//NOTE: called by GameStatsSyncer non-master client to fetch synced progress
 	public void SetClientCaptureProgress(float captureProgress, int ownerTeam) {
 		if (this.ownerTeam != ownerTeam || this.captureProgress != captureProgress) {
-			Debug.Log("client change");
 			this.ownerTeam = ownerTeam;
 			this.captureProgress = captureProgress;
 			UpdateVisuals();
@@ -138,6 +137,9 @@ public class CapturePoint : MonoBehaviour {
 			storedPoints += pointsPerSecond * Time.deltaTime;
 		}
 
+		UpdateVisuals();
+	}
+	private void Start() {
 		UpdateVisuals();
 	}
 

@@ -55,6 +55,9 @@ public class Entity : MonoBehaviour {
 	[SerializeField] private bool isPlayer;
 	public bool GetIsPlayer() { return isPlayer; }
 
+	[SerializeField] private bool isStructure;
+	public bool GetIsStructure() { return isStructure; }
+
 	//set in inspector; TODO: change via upgrades, etc & set at init function
 	[SerializeField] private float maxHealth;
 	private float baseHealth;
@@ -93,11 +96,11 @@ public class Entity : MonoBehaviour {
 	//invoked on local player or master client enemy
 	private void EntityDied() {
 		//PvP give other team score
-		if (PlayerInfo.GetIsPVP() && !PlayerInfo.GetIsPointCap()) {
+		if (!isStructure && PlayerInfo.GetIsPVP() && !PlayerInfo.GetIsPointCap()) {
 			GameStatsSyncer.instance.AddTeamScore((GetTeam() + 1) % 2, 1);
 		}
 		//respawn player/cause game over
-		if (this == EntityController.player || PlayerInfo.GetIsPVP()) {
+		if (!isStructure && (this == EntityController.player || PlayerInfo.GetIsPVP())) {
 			if (networker.GetIsDead()) return;
 
 			networker.EntityDied();
@@ -116,7 +119,7 @@ public class Entity : MonoBehaviour {
 			networker.EntityDied();
 
 			//add score
-			if (GameStatsSyncer.instance != null && !isPlayer) {
+			if (!isStructure && GameStatsSyncer.instance != null && !isPlayer) {
 				GameStatsSyncer.instance.AddScore(killReward);
 			}
 		}

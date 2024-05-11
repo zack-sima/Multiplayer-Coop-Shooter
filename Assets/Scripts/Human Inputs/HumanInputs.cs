@@ -169,6 +169,11 @@ public class HumanInputs : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Alpha1))
 			player.GetNetworker().SetTurretName(PlayerInfo.instance.GetTurrets()[0].turretName);
 #endif
+		//TODO: sentry testing
+		if (Input.GetKeyDown(KeyCode.Minus)) {
+			player.GetNetworker().SpawnSentry();
+		}
+
 		if (Input.GetMouseButtonUp(0)) {
 			MainWeaponJoystickReleased();
 		}

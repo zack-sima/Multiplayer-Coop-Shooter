@@ -44,7 +44,7 @@ public class GameStatsSyncer : NetworkBehaviour {
 
 	//NOTE: point capture scores
 	[Networked, Capacity(2), OnChangedRender(nameof(TeamPointCapScoresChanged))]
-	NetworkArray<int> CapturePointScores { get; } = MakeInitializer(new int[] { 200, 200 });
+	NetworkArray<int> CapturePointScores { get; } = MakeInitializer(new int[] { 100, 100 });
 
 	[Networked] //comp only
 	private int WinningTeam { get; set; } = -1;
