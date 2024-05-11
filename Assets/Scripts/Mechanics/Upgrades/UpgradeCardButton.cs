@@ -28,6 +28,8 @@ public class UpgradeCardButton : MonoBehaviour {
 	public void Init(UpgradesCatalog.UpgradeNode node) {
 		this.node = node;
 
+		if (node == null) return;
+
 		nameText.text = node.upgradeName;
 		if (node.level > 0) nameText.text += " " + UpgradesCatalog.ToRoman(node.level);
 
