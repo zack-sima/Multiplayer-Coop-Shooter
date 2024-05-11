@@ -14,7 +14,7 @@ namespace JSON {
             UpgradeInfos
         }
 
-        public static void PullAllInfosFromPersistent(this (Dictionary<string, GarageInfo> turretInfos, Dictionary<string, GarageInfo> hullInfos, Dictionary<string, UpgradeInfo> upgradeInfos) input) {
+        /* public static void PullAllInfosFromPersistent(this (Dictionary<string, GarageInfo> turretInfos, Dictionary<string, GarageInfo> hullInfos, Dictionary<string, UpgradeInfo> upgradeInfos) input) {
             input.turretInfos = PullTurretInfosFromPersistent();
             input.hullInfos = PullHullInfosFromPersistent();
             input.upgradeInfos = PullUpgradeInfosFromPersistent();
@@ -22,7 +22,10 @@ namespace JSON {
 
         public static void ForceBlankInfos(this (Dictionary<string, GarageInfo> turretInfos, Dictionary<string, GarageInfo> hullInfos, Dictionary<string, UpgradeInfo> upgradeInfos) input) {
             RemoveAllInfosFromPersistent();
-            input.PullAllInfosFromPersistent();
+            input.Item1 = InitBlankHullInfo();
+            input.Item2 = InitBlankTurretInfo();
+            input.Item3 = InitBlankUpgradesInfo();
+            //TODO: Pull and pushing onto the persistent
         }
 
         public static void PushAllInfosOntoPersistent((Dictionary<string, GarageInfo> turretInfos, Dictionary<string, GarageInfo> hullInfos, Dictionary<string, UpgradeInfo> upgradeInfos) input) {
@@ -62,29 +65,31 @@ namespace JSON {
         }
 
         private static void RemoveAllInfosFromPersistent() {
-            PersistentDict.DeleteKey(nameof(JSONType.TurretInfos));
-            PersistentDict.DeleteKey(nameof(JSONType.HullInfos));
-            PersistentDict.DeleteKey(nameof(JSONType.UpgradeInfos));
-        }
+            if (PersistentDict.HasKey(nameof(JSONType.TurretInfos)))PersistentDict.DeleteKey(nameof(JSONType.TurretInfos));
+            if (PersistentDict.HasKey(nameof(JSONType.HullInfos)))PersistentDict.DeleteKey(nameof(JSONType.HullInfos));
+            if (PersistentDict.HasKey(nameof(JSONType.UpgradeInfos)))PersistentDict.DeleteKey(nameof(JSONType.UpgradeInfos));
+        } */
 
-        private static Dictionary<string, GarageInfo> InitBlankTurretInfo() {
+        public static Dictionary<string, GarageInfo> InitBlankTurretInfo() {
             Debug.LogWarning("InitBlankTurretInfo");
             Dictionary<string, GarageInfo> temp = new();
             temp.ParseTurretInfos(GarageManager.instance.turretCSVProps.text);
             return temp;
         }
 
-        private static Dictionary<string, GarageInfo> InitBlankHullInfo() {
+        public static Dictionary<string, GarageInfo> InitBlankHullInfo() {
             Debug.LogWarning("InitBlankHullInfo");
             Dictionary<string, GarageInfo> temp = new();
             temp.ParseHullInfos(GarageManager.instance.hullCSVProps.text);
             return temp;
         }
 
-        private static Dictionary<string, UpgradeInfo> InitBlankUpgradesInfo() {
+        public static Dictionary<string, UpgradeInfo> InitBlankUpgradesInfo() {
             Debug.LogWarning("InitBlankUpgradesInfo");
             return new(); // TODO: Implement this
         }
+
+
 
         // Serialize Dictionary<string, GarageInfo> to JSON
         private static string SerializeGarageInfo(Dictionary<string, GarageInfo> dict) {

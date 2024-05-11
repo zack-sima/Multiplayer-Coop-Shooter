@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71c1514a6bd24e1e882cebbe1904ce04, type: 3}
   m_Name: CP-Med-Flat
   m_EditorClassIdentifier: 
-  hashCode: 425241553
+  hashCode: 109342304
   material: {fileID: 8198081878716054600}
-  materialHashCode: -1425605807
+  materialHashCode: 949916864
   m_Version: 1.1.0
   m_SourceFontFileGUID: 918b3fa538eb743e5a4419c75996a566
   m_SourceFontFile_EditorRef: {fileID: 12800000, guid: 918b3fa538eb743e5a4419c75996a566, type: 3}
@@ -5482,8 +5482,8 @@ Material:
     - _Stencil: 0
     - _StencilComp: 8
     - _StencilOp: 0
-    - _StencilReadMask: 255
-    - _StencilWriteMask: 255
+    - _StencilReadMask: 1
+    - _StencilWriteMask: 0
     - _TextureHeight: 512
     - _TextureWidth: 1024
     - _UnderlayDilate: 0
