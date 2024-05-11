@@ -74,10 +74,10 @@ public class GarageManager : MonoBehaviour {
 
 	private readonly List<GameObject> spawnedButtons = new();
 
-	private Vector3 normalCameraPosition = Vector3.zero;
+	private Vector3 normalCameraPosition;
 
 	//interpolate to this
-	private Vector3 targetGarageCameraPosition = new Vector3(-.5f, 1.4f, -5.7f);//new(-1f, 1.8f, -5.5f);
+	private Vector3 targetGarageCameraPosition = new Vector3(-.3f, 1.4f, -5.7f);//new(-1f, 1.8f, -5.5f);
 
 	private bool hullMode = true;
 
