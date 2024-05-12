@@ -46,8 +46,6 @@ public class EntityController : MonoBehaviour {
 
 	private void Awake() {
 		instance = this;
-
-		Application.targetFrameRate = 90;
 	}
 
 	#endregion

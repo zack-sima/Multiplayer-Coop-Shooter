@@ -8,6 +8,26 @@ public class SettingsManager : MonoBehaviour {
 
 	public static SettingsManager instance;
 
+	public static void SetFPS(int frameRateSettings) {
+		switch (frameRateSettings) {
+			case -2:
+				Application.targetFrameRate = 30;
+				break;
+			case -1:
+				Application.targetFrameRate = 45;
+				break;
+			case 0:
+				Application.targetFrameRate = 60;
+				break;
+			case 1:
+				Application.targetFrameRate = 90;
+				break;
+			case 2:
+				Application.targetFrameRate = 120;
+				break;
+		}
+	}
+
 	[SerializeField] private RectTransform settingsScreen;
 
 	[SerializeField] private Image muteAudioImage;
@@ -16,9 +36,11 @@ public class SettingsManager : MonoBehaviour {
 	[SerializeField] private Image muteMusicImage;
 	[SerializeField] private Sprite muteMusicSprite, unMuteMusicSprite;
 
-	[SerializeField] private List<TMP_Text> qualityTexts;
+	[SerializeField] private List<TMP_Text> qualityTexts, fpsTexts, lightingTexts;
 
-	private int currentQualityIndex = 3;
+	private int currentQualityIndex = 2;
+	private int currentLightingIndex = 0;
+	private int currentFPSIndex = 0;
 
 	public void SetQuality(int quality) {
 		QualitySettings.SetQualityLevel(quality);
@@ -30,6 +52,31 @@ public class SettingsManager : MonoBehaviour {
 				qualityTexts[i].color = Color.yellow;
 			} else {
 				qualityTexts[i].color = Color.white;
+			}
+		}
+	}
+	public void SetLighting(int lighting) {
+		PlayerPrefs.SetInt("light_brightness", lighting);
+
+		for (int i = 0; i < lightingTexts.Count; i++) {
+			if (lightingTexts[i] == null) continue;
+			if (i == lighting + 1) {
+				lightingTexts[i].color = Color.yellow;
+			} else {
+				lightingTexts[i].color = Color.white;
+			}
+		}
+	}
+	public void SetFramerate(int framerate) {
+		PlayerPrefs.SetInt("fps", framerate);
+		SetFPS(framerate);
+
+		for (int i = 0; i < fpsTexts.Count; i++) {
+			if (fpsTexts[i] == null) continue;
+			if (i == framerate + 2) {
+				fpsTexts[i].color = Color.yellow;
+			} else {
+				fpsTexts[i].color = Color.white;
 			}
 		}
 	}
@@ -62,6 +109,12 @@ public class SettingsManager : MonoBehaviour {
 		} else {
 			currentQualityIndex = PlayerPrefs.GetInt("quality") - 1;
 		}
+
+		currentLightingIndex = PlayerPrefs.GetInt("light_brightness");
+		currentFPSIndex = PlayerPrefs.GetInt("fps");
+
+		SetFramerate(currentFPSIndex);
+		SetLighting(currentLightingIndex);
 		SetQuality(currentQualityIndex);
 	}
 }

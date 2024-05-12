@@ -119,7 +119,7 @@ public class ButtonDimmer : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
 		deltaInteractable = self.interactable;
 
 		//assume frame rate (delta time can't be used when paused!)
-		float standardDeltaTime = 1f / 60f;
+		float standardDeltaTime = 1f / Application.targetFrameRate;
 
 		if (bounceButton) {
 			if (touchInButton) {
