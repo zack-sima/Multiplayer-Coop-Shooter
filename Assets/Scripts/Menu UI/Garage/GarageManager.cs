@@ -405,12 +405,12 @@ public class GarageManager : MonoBehaviour {
 		turretInfos = JSONParser.InitBlankTurretInfo();
 		hullInfos = JSONParser.InitBlankHullInfo();
 		//upgradeInfos = JSONParser.InitBlankUpgradesInfo();
-		foreach (KeyValuePair<string, GarageInfo> kvp in turretInfos) {
-			Debug.LogWarning(kvp.Key);
-		}
-		foreach (KeyValuePair<string, GarageInfo> kvp in hullInfos) {
-			Debug.LogWarning(kvp.Key);
-		}
+		// foreach (KeyValuePair<string, GarageInfo> kvp in turretInfos) {
+		// 	Debug.LogWarning(kvp.Key);
+		// }
+		// foreach (KeyValuePair<string, GarageInfo> kvp in hullInfos) {
+		// 	Debug.LogWarning(kvp.Key);
+		// }
 
 		//TODO: temporary hard-coding for stats displays
 		bestHull = new() { hp = 5000, speed = 5.0 };

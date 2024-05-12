@@ -77,17 +77,17 @@ public class UIController : MonoBehaviour {
 		List<GameObject> buttons = GetIsMobile() ? mobileAbilityButtons : pcAbilityButtons;
 		InitAbilityButtons(); // turn off all the buttons.
 							  //Debug.Log("UI controller is reached" + PlayerInfo.instance.GetAbilityList().Count + " " + buttons.Count);
-		for (int i = 0; i < PlayerInfo.instance.GetAbilityList().Count && i < buttons.Count; i++) {
+		for (int i = 0; i < NetworkedEntity.playerInstance.GetAbilityList().Count && i < buttons.Count; i++) {
 			//PlayerInfo.instance.GetAbilityList()[i]. /* TODO: Callback for icon, color, shape, etc. */
 
 			//Callback for updating the UI button fill amount.
-			if (PlayerInfo.instance.GetAbilityList()[i].Item1 is IButtonRechargable) {
+			if (NetworkedEntity.playerInstance.GetAbilityList()[i].Item1 is IButtonRechargable) {
 				//callback for the image.
 				GameObject g = buttons[i].FindChild("OutlineProgress");
 				if (g != null) {
 					Image image = g.GetComponent<Image>();
 					if (image != null)
-						((IButtonRechargable)PlayerInfo.instance.GetAbilityList()[i].Item1).SetButtonOutlineProgressImage(image);
+						((IButtonRechargable)NetworkedEntity.playerInstance.GetAbilityList()[i].Item1).SetButtonOutlineProgressImage(image);
 				}
 			}
 			//Debug.Log("Button is activated");

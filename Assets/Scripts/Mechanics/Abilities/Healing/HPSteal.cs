@@ -24,7 +24,8 @@ namespace Abilities {
 			this.entity = entity;
 
 			//Effect
-			GameObject healEffect = entity.InitEffect(entity.GetEffect(UpgradeIndex.HPSteal), stealPeriod + 2f, 5f, UpgradeIndex.HPSteal);
+			GameObject healEffect = entity.InitEffect(stealPeriod + 2f, 5f, UpgradeIndex.HPSteal);
+			if (healEffect == null)	return;
 			if (healEffect.TryGetComponent(out Effect effect)) {
 				effect.EnableDestroy(stealPeriod);
 				effect.EnableEarlyDestruct(5f);

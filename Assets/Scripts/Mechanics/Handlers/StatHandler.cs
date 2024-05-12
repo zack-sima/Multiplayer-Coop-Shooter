@@ -43,13 +43,15 @@ namespace Abilities {
             //etc.
     }
 
-    public static class AbilityManagerExtensions { 
+    public static class StatHandlerExtensions { 
         /// <summary>
         /// For HUMANS only. Called every tick.
         /// </summary> //TODO: Rename this method.
-        public static void SysTickAndAbilityHandler(this NetworkedEntity entity, List<(IAbility ability, bool isActivated)> abilities) {
-            abilities.UpdateAbilityList();
+        public static void SysTickStatHandler(this NetworkedEntity entity, List<(IAbility ability, bool isActivated)> abilities) {
+            //TODO: Init abilities list from csv/persistent data.
+            
             if (entity == null) return;
+            if (entity == NetworkedEntity.playerInstance) abilities.UpdateAbilityList();
             StatModifier stats = new();
             
             for(int i = 0; i < abilities.Count; i++) {
@@ -85,7 +87,7 @@ namespace Abilities {
                     //?=~=~=~=~=| DAMAGE |=~=~=~=~=?//
                     case RapidFire:
                         if (((RapidFire)a).GetIsActive()) { 
-                            NetworkedEntity.playerInstance.OverClockNetworkEntityCall();    
+                            entity.OverClockNetworkEntityCall();    
                         } break;
                         
                 }
@@ -98,7 +100,7 @@ namespace Abilities {
 
                 if (a is IActivatable) {
 #if UNITY_EDITOR
-                    if (Input.GetKeyDown(KeyCode.LeftShift)) {
+                    if (Input.GetKeyDown(KeyCode.LeftShift) && entity == NetworkedEntity.playerInstance) {
                         ((IActivatable)a).Activate(entity, true); 
                         abilities[i] = (a, false); 
                     }
@@ -109,12 +111,14 @@ namespace Abilities {
                     }
                 }
 
-                //Apply stat values.
-                entity.PushStatChanges(stats);
+                
             }
+            //Apply stat values.
+            entity.PushStatChanges(stats);
         }
 
         public static void PushAbilityActivation(this List<(IAbility ability, bool isActivated)> abilities, int index) {
+            if (abilities.Count <= index) { Debug.LogWarning("Index out of range for ability"); return;}
             abilities[index] = (abilities[index].ability, true);
         }
 

@@ -10,5 +10,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4cfa27f778fd040019d312aa097465c2, type: 3}
-  m_Name: Effect Prefab Storage
+  m_Name: SoundEffectPrefab
   m_EditorClassIdentifier: 

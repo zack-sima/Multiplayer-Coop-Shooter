@@ -11,8 +11,10 @@ namespace Abilities.StatHandler {
 
             stats.healthPercentModifier += 1f;
 
-            NetworkedEntity.playerInstance.HealthPercentNetworkEntityCall(stats.healthPercentModifier);
-            NetworkedEntity.playerInstance.HealthFlatNetworkEntityCall(stats.healthFlatModifier);
+            entity.HealthPercentNetworkEntityCall(stats.healthPercentModifier);
+            entity.HealthFlatNetworkEntityCall(stats.healthFlatModifier);
+
+            if (entity != NetworkedEntity.playerInstance) { Debug.LogWarning("Non-player entity is being modified by stats."); return; }
 
             entity.GetEntity().SetMaxHealth(stats.baseHealthPercentModifier * entity.GetEntity().GetBaseHealth() + stats.baseHealthFlatModifier + entity.GetEntity().GetMaxHealth());
         }

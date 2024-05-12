@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 using Abilities;
+using Abilities.UpgradeHandler;
 using Effects;
 using UnityEngine.Video;
 using Abilities.StatHandler;
+
 
 public class NetworkedEntity : NetworkBehaviour {
 
@@ -130,6 +132,13 @@ public class NetworkedEntity : NetworkBehaviour {
 	private bool localIsDead = false;
 	public bool GetLocalIsDead() { return localIsDead; }
 
+	private Dictionary<string, UpgradesCatalog.UpgradeNode> currentUpgrades = new();
+	private List<(InflictionType type, float param, float time)> inflictions = new();
+	private List<(IAbility ability, bool isActivated)> abilities = new();
+	public List<(IAbility, bool)> GetAbilityList() { return abilities; }
+	public StatModifier stats = new();
+
+
 	//if marked dead don't try to access HP, etc
 	private bool stateAuthIsDead = false;
 
@@ -146,7 +155,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	/*======================| StatHandlers |======================*/
 	/// <summary> Needs to be called EVERY frame. </summary>
 	public void OverClockNetworkEntityCall() {
-		PlayerInfo.instance.ReloadFaster();
+		if(this == playerInstance) PlayerInfo.instance.ReloadFaster();
 		optionalCombatEntity.GetTurret().ReloadFaster();
 	}
 
@@ -164,14 +173,11 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	public void HealthPercentNetworkEntityCall(float healthPercentModifier) {
 		if (healthPercentModifier < 0) return;
-		Debug.LogWarning("healing?");
 		Health = Mathf.Min(mainEntity.GetMaxHealth(), healthPercentModifier * Health);
 		mainEntity.UpdateHealthBar();
 	}
 
 	//*======================| Inflictions |======================*//
-
-	private List<(InflictionType type, float param, float time)> inflictions = new();
 
 	public void LocalApplyInfliction(InflictionType type, float param, float time) {
 		Debug.Log("Local is applied");
@@ -186,10 +192,13 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	//*======================| Effects |======================*//
 
-	public GameObject InitEffect(GameObject effectPrefab, float duration, float earlyDestruct, UpgradeIndex i) {
+	public GameObject InitEffect(float duration, float earlyDestruct, UpgradeIndex i) {
 		//Apply both local and RPC the effect change!
+		Debug.LogError("Init effect called");
 		RPCInitEffect(i, duration, earlyDestruct);
-		GameObject g = Instantiate(effectPrefab, transform);
+		GameObject e = this.GetEffect(i);
+		if (e == null) return null;
+		GameObject g = Instantiate(e, transform);
 		g.transform.Translate(Vector3.up * 0.1f);
 		return g;
 	}
@@ -207,11 +216,22 @@ public class NetworkedEntity : NetworkBehaviour {
 		}
 	}
 
-	//*======================| Stats |======================*//
-
-	public StatModifier stats = new();
+	//*======================| Stats & Upgrades & Abilities|======================*//
 
 	public void PushStatChanges(StatModifier m) { stats += m; }
+
+	public void PushUpgradeModi(UpgradesCatalog.UpgradeNode n) {
+		currentUpgrades.PushToUpgradeHandler(n);
+	}
+
+	//TODO: Implement what abilities are added.
+	public void UpdateAbilityListForAI() {
+		abilities.UpdateAIAbilityList();
+	}
+
+	public void PushAIAbilityActivation(int index) {
+		abilities.PushAbilityActivation(index);
+	}
 
 	#endregion
 
@@ -444,10 +464,14 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	private void Update() {
 		if (!initialized) return;
+
 		this.InflictionHandlerSysTick(inflictions); // handles inflictions
-													//UpdateStatModifier(); // Handle stat changes
+		this.SysTickStatHandler(abilities); 
+			
+								//UpdateStatModifier(); // Handle stat changes
 		if (HasSyncAuthority()) {
 			//local entity
+			
 			if ((isPlayer || PlayerInfo.GetIsPVP()) && !mainEntity.GetIsStructure()) {
 				//natural healing
 				if (Time.time - mainEntity.GetLastDamageTimestamp() > 2.5f) {

@@ -109,7 +109,7 @@ namespace Abilities.UpgradeHandler {
                     break;
                 case "Regenerative Armor":
                     if (n.info.TryGetModi(nameof(ModiName.Misc1), out float RAoutput)) {
-                        PlayerInfo.instance.GetAbilityList().Add((new RegenerativeArmor(RAoutput), false)); }
+                        NetworkedEntity.playerInstance.GetAbilityList().Add((new RegenerativeArmor(RAoutput), false)); }
                     break;
                 case "Rocket Pods":
                 

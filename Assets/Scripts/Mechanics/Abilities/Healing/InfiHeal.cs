@@ -19,7 +19,8 @@ namespace Abilities {
             remainingHealTime = healPeriod;
             isActive = true;
             
-            GameObject healEffect = entity.InitEffect(entity.GetEffect(UpgradeIndex.InfiHeal), healPeriod + 2f, 5f, UpgradeIndex.InfiHeal);
+            GameObject healEffect = entity.InitEffect(healPeriod + 2f, 5f, UpgradeIndex.InfiHeal);
+            if (healEffect == null) return;
             if (healEffect.TryGetComponent(out Effect effect)) {
                 effect.EnableDestroy(healPeriod);
                 effect.EnableEarlyDestruct(5f);

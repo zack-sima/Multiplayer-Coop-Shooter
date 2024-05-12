@@ -71,21 +71,21 @@ namespace JSON {
         } */
 
         public static Dictionary<string, GarageInfo> InitBlankTurretInfo() {
-            Debug.LogWarning("InitBlankTurretInfo");
+            //Debug.LogWarning("InitBlankTurretInfo");
             Dictionary<string, GarageInfo> temp = new();
             temp.ParseTurretInfos(GarageManager.instance.turretCSVProps.text);
             return temp;
         }
 
         public static Dictionary<string, GarageInfo> InitBlankHullInfo() {
-            Debug.LogWarning("InitBlankHullInfo");
+            //Debug.LogWarning("InitBlankHullInfo");
             Dictionary<string, GarageInfo> temp = new();
             temp.ParseHullInfos(GarageManager.instance.hullCSVProps.text);
             return temp;
         }
 
         public static Dictionary<string, UpgradeInfo> InitBlankUpgradesInfo() {
-            Debug.LogWarning("InitBlankUpgradesInfo");
+            //Debug.LogWarning("InitBlankUpgradesInfo");
             return new(); // TODO: Implement this
         }
 

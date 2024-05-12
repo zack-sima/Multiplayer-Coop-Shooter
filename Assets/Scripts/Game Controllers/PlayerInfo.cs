@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using Abilities;
-using Abilities.UpgradeHandler;
+using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
 
 
@@ -80,22 +80,9 @@ public class PlayerInfo : MonoBehaviour {
 
 	//NOTE: only call on local player!
 
-	//?======================| Upgrades |======================?//
-
-	//list of current Upgrades. Use a callback to manage them.
-	private Dictionary<string, UpgradesCatalog.UpgradeNode> currentUpgrades = new();
-
-	public void PushUpgradeModi(UpgradesCatalog.UpgradeNode n) {
-		currentUpgrades.PushToUpgradeHandler(n);
-	}
-
 	//?======================| Abilities |======================?//
 	private float totalDmgDealt = 0;
 	public float GetTotalDmgDealt() { return totalDmgDealt; }
-
-	private List<(IAbility ability, bool isActivated)> abilities = new();
-
-	public List<(IAbility, bool)> GetAbilityList() { return abilities; }
 
 	public void IncrementDamageCharge(float dmgDone) {
 		totalDmgDealt += dmgDone;
@@ -103,7 +90,7 @@ public class PlayerInfo : MonoBehaviour {
 	}
 
 	public void PushAbilityActivation(int index) {
-		abilities.PushAbilityActivation(index);
+		NetworkedEntity.playerInstance.GetAbilityList().PushAbilityActivation(index);
 	}
 
 	#endregion
@@ -174,7 +161,7 @@ public class PlayerInfo : MonoBehaviour {
 		if (TryGetAmmoRegen(out float regenSpeed)) {
 			ammoReloadSpeed = regenSpeed;
 		}
-		NetworkedEntity.playerInstance.SysTickAndAbilityHandler(abilities); // for ability Manager.
+		
 	}
 	private void Start() {
 		TurretChanged(GetLocalPlayerTurretName());

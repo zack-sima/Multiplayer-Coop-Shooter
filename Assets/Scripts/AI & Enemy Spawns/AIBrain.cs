@@ -43,8 +43,6 @@ public class AIBrain : MonoBehaviour {
 	//point cap
 	private CapturePoint targetPoint = null;
 
-	IActivatable heal = new Heal();
-
 	#endregion
 
 	#region Functions
@@ -85,7 +83,8 @@ public class AIBrain : MonoBehaviour {
 
 		if (isPVPBot && entity.GetHealth() < entity.GetMaxHealth() * retreatThreshold && !order227) {
 			//try and heal; TODO: wait for abilities & effects
-			Debug.Log("heal");
+			entity.GetNetworker().PushAIAbilityActivation(1);
+			Debug.LogWarning("healing called");
 			//heal.Activate(entity.GetNetworker(), true);
 			//entity.GetNetworker().HealthPercentNetworkEntityCall(3f);
 
@@ -195,9 +194,7 @@ public class AIBrain : MonoBehaviour {
 			yield return new WaitForSeconds(0.35f);
 		}
 	}
-	private void AbilitiesUpdate() {
-		((ISysTickable)heal).SysTickCall();
-	}
+
 	private void Update() {
 		if (!entity.GetNetworker().HasSyncAuthority()) return;
 		if (entity.GetNetworker().GetIsDead()) {
@@ -206,9 +203,6 @@ public class AIBrain : MonoBehaviour {
 			canShootTarget = false;
 			target = null;
 			return;
-		}
-		if (isPVPBot) {
-			AbilitiesUpdate();
 		}
 		if (target == null) {
 			//turret follows movement
@@ -271,6 +265,8 @@ public class AIBrain : MonoBehaviour {
 	private void Start() {
 		navigator.SetRotatable(false);
 		navigator.SetSpeed(entity.GetHull().GetSpeed());
+
+		if (isPVPBot) entity.GetNetworker().UpdateAbilityListForAI(); // CHANGE IF NEEDED, idk what you want.
 
 		StartCoroutine(Tick());
 	}

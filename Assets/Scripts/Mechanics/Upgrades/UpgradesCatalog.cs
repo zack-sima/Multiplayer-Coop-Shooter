@@ -315,7 +315,7 @@ public class UpgradesCatalog : MonoBehaviour {
 		playerUpgrades[upgradeName].unlocked = true;
 
 		//call PlayerInfo callback
-		PlayerInfo.instance.PushUpgradeModi(sender.GetNode());
+		NetworkedEntity.playerInstance.PushUpgradeModi(sender.GetNode());
 
 		sender.PurchaseSuccessful();
 		MoneyChanged();
@@ -380,7 +380,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		foreach (UpgradeNode n in playerUpgrades.Values) {
 			if (n.unlocked) {
-				PlayerInfo.instance.PushUpgradeModi(n);
+				NetworkedEntity.playerInstance.PushUpgradeModi(n);
 			}
 		}
 		//foreach (UpgradeNode u in playerUpgrades.Values) {

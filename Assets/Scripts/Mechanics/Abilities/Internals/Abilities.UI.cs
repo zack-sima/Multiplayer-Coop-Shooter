@@ -8,7 +8,7 @@ namespace Abilities {
         /// <summary>
         /// Called every frame by ui to determine what UI to render.
         /// </summary>
-        public static List<(IAbility, bool)> PullAbility() { return PlayerInfo.instance.GetAbilityList(); }
+        public static List<(IAbility, bool)> PullAbility() { return NetworkedEntity.playerInstance.GetAbilityList(); }
 
         /// <summary>
         /// Call when abilities list changes.
