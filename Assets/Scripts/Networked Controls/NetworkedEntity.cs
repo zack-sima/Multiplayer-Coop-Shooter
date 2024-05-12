@@ -180,13 +180,11 @@ public class NetworkedEntity : NetworkBehaviour {
 	//*======================| Inflictions |======================*//
 
 	public void LocalApplyInfliction(InflictionType type, float param, float time) {
-		Debug.Log("Local is applied");
 		inflictions.InitInfliction(type, param, time);
 	}
 
 	[Rpc(RpcSources.All, RpcTargets.StateAuthority)]
 	public void RPCApplyInfliction(InflictionType type, float param, float time) {
-		Debug.Log("Rpc is applied");
 		inflictions.InitInfliction(type, param, time);
 	}
 
@@ -194,7 +192,6 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	public GameObject InitEffect(float duration, float earlyDestruct, UpgradeIndex i) {
 		//Apply both local and RPC the effect change!
-		Debug.LogError("Init effect called");
 		RPCInitEffect(i, duration, earlyDestruct);
 		GameObject e = this.GetEffect(i);
 		if (e == null) return null;

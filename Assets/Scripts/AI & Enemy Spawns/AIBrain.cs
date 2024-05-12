@@ -84,7 +84,6 @@ public class AIBrain : MonoBehaviour {
 		if (isPVPBot && entity.GetHealth() < entity.GetMaxHealth() * retreatThreshold && !order227) {
 			//try and heal; TODO: wait for abilities & effects
 			entity.GetNetworker().PushAIAbilityActivation(1);
-			Debug.LogWarning("healing called");
 			//heal.Activate(entity.GetNetworker(), true);
 			//entity.GetNetworker().HealthPercentNetworkEntityCall(3f);
 

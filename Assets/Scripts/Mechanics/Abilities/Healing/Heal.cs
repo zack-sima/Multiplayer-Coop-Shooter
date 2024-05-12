@@ -20,8 +20,6 @@ namespace Abilities {
             remainingHealTime = healDuration;
             isActive = true;
 
-            Debug.LogError("Heal internal activated.");
-
             //Effect
             GameObject healEffect = entity.InitEffect(healDuration, 0f, UpgradeIndex.Heal);
             if (healEffect == null) return;
