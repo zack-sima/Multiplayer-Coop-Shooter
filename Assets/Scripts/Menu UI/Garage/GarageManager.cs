@@ -212,30 +212,12 @@ public class GarageManager : MonoBehaviour {
 
 	//*============| UICallbacks |===========*//
 
-	//TODO: implement the actual ui lol.
-	[SerializeField] private GameObject catalogScreen, turretScreen, hullScreen, garageScreen;
-
-	public void OpenHullsScreen() {
-		CloseAllScreens();
-		hullScreen.SetActive(true);
-	}
-
-	public void OpenTurretsScreen() {
-		CloseAllScreens();
-		turretScreen.SetActive(true);
-	}
-
-	public void OpenCatalogScreen() { 
-		CloseAllScreens();
-		catalogScreen.SetActive(true);
-	}
-
-	public void OpenGarageScreen() { 
-		CloseAllScreens();
-		garageScreen.SetActive(true);
-	}
 	#region GarageScreen
 	//*============| GarageScreen |===========*//
+
+	[Header("Panels")]
+	[SerializeField] private GameObject statsPanel;
+	[SerializeField] private GameObject deckPanel; 
 
 	[Header("MainGarageUI")]
 	[SerializeField] private TextMeshProUGUI damageStatMainGarage;
@@ -554,12 +536,6 @@ public class GarageManager : MonoBehaviour {
 	//#region Internals
 	//*============| Internals |===========*//
 
-	private void CloseAllScreens() {
-		if (catalogScreen.activeInHierarchy) catalogScreen.SetActive(false);
-		if (turretScreen.activeInHierarchy) turretScreen.SetActive(false);
-		if (hullScreen.activeInHierarchy) hullScreen.SetActive(false);
-		if (garageScreen.activeInHierarchy) garageScreen.SetActive(false);
-	}
 	//#region Backend
 	//*============| Backend |===========*//
 
