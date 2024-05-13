@@ -234,13 +234,14 @@ public class GarageManager : MonoBehaviour {
 		CloseAllScreens();
 		garageScreen.SetActive(true);
 	}
-
+	#region GarageScreen
 	//*============| GarageScreen |===========*//
 
 	[Header("MainGarageUI")]
 	[SerializeField] private TextMeshProUGUI damageStatMainGarage;
 	[SerializeField] private TextMeshProUGUI damageRateMainGarage, fireRateMainGarage, healthStatMainGarage;
 	[SerializeField] private TextMeshProUGUI tempUpgradeButton, tempUpgradeHullButton;
+	[SerializeField] private GameObject hullLevelMainGarage, turretLevelMainGarage;
 
 	private void UpdateStatsDisplayMainGarage(bool isHull = false, bool isUpgrade = false) {
 		if(turretInfos.TryGetValue(selectedTurretName, out GarageInfo turretInfo) &&
@@ -253,11 +254,11 @@ public class GarageManager : MonoBehaviour {
 					if (turretInfo != null && 
 							turretInfo.GetCurrentStats(turretInfo.currentLevel - 1).TryGetValue(nameof(UpgradeInfo.ModiName.Damage), out float prevDamage) 
 							&& turretInfo.GetCurrentStats(turretInfo.currentLevel - 1).TryGetValue(nameof(UpgradeInfo.ModiName.FireRate), out float prevFireRate)) {
-						
-						
-						upgradeAnimations.Add(StartCoroutine(AnimateText((int)prevDamage, (int)damage, 3f, damageStatMainGarage)));
-						upgradeAnimations.Add(StartCoroutine(AnimateText((int)prevFireRate, (int)fireRate, 3f, fireRateMainGarage, true)));
-						upgradeAnimations.Add(StartCoroutine(AnimateText((int)(prevDamage * prevFireRate), (int)(damage * fireRate), 3f, damageRateMainGarage, true)));
+						upgradeAnimationDict[0].Add(StartCoroutine(AnimateText((int)prevDamage, (int)damage, 3f, damageStatMainGarage)));
+						upgradeAnimationDict[0].Add(StartCoroutine(AnimateText((int)prevFireRate, (int)fireRate, 3f, fireRateMainGarage, true)));
+						upgradeAnimationDict[0].Add(StartCoroutine(AnimateText((int)(prevDamage * prevFireRate), (int)(damage * fireRate), 3f, damageRateMainGarage, true)));
+						ApplyUpgradeEffect();
+						UpdateTurretLevelText();
 					}
 				} else {
 					damageStatMainGarage.text = damage.ToString();
@@ -268,7 +269,9 @@ public class GarageManager : MonoBehaviour {
 			if (isHull && hullStats != null && hullStats.TryGetValue(nameof(UpgradeInfo.ModiName.Health), out float health)) {
 				if (isUpgrade) {
 					if (hullInfo.GetCurrentStats(hullInfo.currentLevel - 1).TryGetValue(nameof(UpgradeInfo.ModiName.Health), out float prevHealth)) {
-						upgradeAnimations.Add(StartCoroutine(AnimateText((int)prevHealth, (int)health, 3f, healthStatMainGarage)));
+						upgradeAnimationDict[1].Add(StartCoroutine(AnimateText((int)prevHealth, (int)health, 3f, healthStatMainGarage)));
+						ApplyUpgradeEffect();
+						UpdateHullLevelText();
 					}
 				} else {
 					healthStatMainGarage.text = health.ToString();
@@ -282,7 +285,7 @@ public class GarageManager : MonoBehaviour {
 			hullInfos.TryGetValue(selectedHullName, out GarageInfo hullInfo)) {
 			if (hullInfo.GetIsMax() > hullInfo.currentLevel) {
 				hullInfo.currentLevel++;
-				StopAllUpgradeAnimations();
+				StopUpgradeAnimations(1);
 				UpdateStatsDisplayMainGarage(isHull: true, isUpgrade: true);
 				Debug.LogWarning("Upgraded");
 			}
@@ -294,13 +297,13 @@ public class GarageManager : MonoBehaviour {
 	
 	}
 
-	public void UpgradeButtonClicked() {
+	public void UpgradeTurretButtonClicked() {
 		if (turretInfos.TryGetValue(selectedTurretName, out GarageInfo turretInfo) &&
 			hullInfos.TryGetValue(selectedHullName, out GarageInfo hullInfo)) {
 			//if (turretInfo.) // TODO: when level == 0, locked.
 			if (turretInfo.GetIsMax() > turretInfo.currentLevel) {
 				turretInfo.currentLevel++;
-				StopAllUpgradeAnimations();
+				StopUpgradeAnimations(0);
 				UpdateStatsDisplayMainGarage(isHull: false, isUpgrade: true);
 				Debug.LogWarning("Upgraded");
 			}
@@ -316,19 +319,44 @@ public class GarageManager : MonoBehaviour {
 			hullInfos.TryGetValue(selectedHullName, out GarageInfo hullInfo)) {
 			turretInfo.currentLevel = 0;
 			hullInfo.currentLevel = 0;
-			UpdateStatsDisplayMainGarage();
+			StopUpgradeAnimations(0);
+			StopUpgradeAnimations(1);
+			UpdateStatsDisplayMainGarage(isHull: false, isUpgrade: false);
+			UpdateStatsDisplayMainGarage(isHull: true, isUpgrade: false);
+			UpdateHullLevelText();
+			UpdateTurretLevelText();
 			tempUpgradeButton.text = "UPGRADE";
 			tempUpgradeHullButton.text = "UPGRADE";
 		}
 	}
 
+	private void UpdateHullLevelText() {
+		if (hullInfos.TryGetValue(selectedHullName, out GarageInfo hullInfo)) {
+			TextMeshProUGUI[] hullLevelText = hullLevelMainGarage.GetComponentsInChildren<TextMeshProUGUI>();
+			if (hullLevelText != null && hullLevelText.Length > 0) {
+				hullLevelText[0].text = (hullInfo.currentLevel + 1).ToString();
+				//TODO: Image animation and colors, sounds, etc.
+			}
+		}
+	}
+
+	private void UpdateTurretLevelText() {
+		if (turretInfos.TryGetValue(selectedTurretName, out GarageInfo turretInfo)) {
+			TextMeshProUGUI[] turretLevelText = turretLevelMainGarage.GetComponentsInChildren<TextMeshProUGUI>();
+			if (turretLevelText != null && turretLevelText.Length > 0) {
+				turretLevelText[0].text = (turretInfo.currentLevel + 1).ToString();
+			}
+		}
+	}
+	#endregion
+
 	//*============| CatalogScreen |===========*//
 
 	//*============| TurretScreen |===========*// 
 	//? IDK if u want these two to be different or not, but I'm just gonna make them the different for now ?
-
+	//#region HullScreen
 	//*============| HullScreen |===========*//
-
+	//#region Internals
 	//*============| Internals |===========*//
 
 	private void CloseAllScreens() {
@@ -337,34 +365,55 @@ public class GarageManager : MonoBehaviour {
 		if (hullScreen.activeInHierarchy) hullScreen.SetActive(false);
 		if (garageScreen.activeInHierarchy) garageScreen.SetActive(false);
 	}
-
+	//#region Backend
 	//*============| Backend |===========*//
 
 	//private class temp
-
+	//#endregion
+	#region Animations
 	//*============| Animations |===========*//
 
 	private bool finishAnimating = false;
-	private List<Coroutine> upgradeAnimations = new();
+
+	[Header("Upgrade Animations")]
+	[SerializeField] private GameObject mockPlayer;
+	[SerializeField] private GameObject upgradeEffect;
+
+	private Dictionary<int, List<Coroutine>> upgradeAnimationDict = new() {
+		{ 0, new List<Coroutine>() },
+		{ 1, new List<Coroutine>() },
+		{ 2, new List<Coroutine>() },
+		{ 3, new List<Coroutine>() },
+		{ 4, new List<Coroutine>() }
+	};
+
+	private void ApplyUpgradeEffect() {
+		GameObject effect = Instantiate(upgradeEffect, mockPlayer.transform);
+		Destroy(effect, 2f);
+	}
 
 	private float LogarithmicLerp(float start, float end, float value) {
 		float scale = end - start;
 		return start + scale * Mathf.Log10(10 * value); // Logarithmic easing
 	}
 
-	private void StopAllUpgradeAnimations() {
-		foreach (Coroutine i in upgradeAnimations) {
-			if (i != null) StopCoroutine(i);
+	private void StopUpgradeAnimations(int index) {
+		if (upgradeAnimationDict.ContainsKey(index)) {
+			foreach (Coroutine i in upgradeAnimationDict[index]) {
+				if (i != null) StopCoroutine(i);
+			}
 		}
-		upgradeAnimations.Clear();
-		PushWhiteTextMeshProGUIUpgradeAnimations();
+		PushWhiteTextMeshProGUIUpgradeAnimations(index);
 	}
 
-	private void PushWhiteTextMeshProGUIUpgradeAnimations() {
-		damageRateMainGarage.color = Color.white;
-		damageStatMainGarage.color = Color.white;
-		fireRateMainGarage.color = Color.white;
-		healthStatMainGarage.color = Color.white;
+	private void PushWhiteTextMeshProGUIUpgradeAnimations(int index) {
+		if (index == 0) {
+			damageRateMainGarage.color = Color.white;
+			damageStatMainGarage.color = Color.white;
+			fireRateMainGarage.color = Color.white;
+		} else if (index == 1) {
+			healthStatMainGarage.color = Color.white;
+		}
 	}
 
 	private IEnumerator AnimateText(int startValue, int endValue, float duration, TextMeshProUGUI textComponent, bool isPerSec = false) {
@@ -393,12 +442,10 @@ public class GarageManager : MonoBehaviour {
 		textComponent.text = endValue.ToString() + (isPerSec ? " /s" : "");
 		textComponent.color = Color.white; // Reset color or set to a new color
 	}
-
-
-
-
+	#endregion
 	//TODO: Push and pulling from persistent data, Loadouts, UIUpdating, etc.
 
+	#region Awake & Start & Update
 	private void Awake() {
 		instance = this;
 
@@ -493,5 +540,5 @@ public class GarageManager : MonoBehaviour {
 	}
 
 	#endregion
-
+	#endregion
 }
