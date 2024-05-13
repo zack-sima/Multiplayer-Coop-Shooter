@@ -48,6 +48,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5226349052682559396, guid: e8c0173dfed5b4631b92752ce61947b6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7032438779581926094, guid: e8c0173dfed5b4631b92752ce61947b6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7521552203544344838, guid: e8c0173dfed5b4631b92752ce61947b6, type: 3}
       propertyPath: m_Name
       value: EnemyGatlingTurret
