@@ -6,7 +6,7 @@ using TMPro;
 using CSV;
 using JSON;
 using Unity.VisualScripting;
-using System;
+using ExitGames.Client.Photon.StructWrapping;
 
 public class GarageManager : MonoBehaviour {
 
@@ -242,12 +242,200 @@ public class GarageManager : MonoBehaviour {
 	[SerializeField] private TextMeshProUGUI damageRateMainGarage, fireRateMainGarage, healthStatMainGarage;
 	[SerializeField] private TextMeshProUGUI tempUpgradeButton, tempUpgradeHullButton;
 	[SerializeField] private GameObject hullLevelMainGarage, turretLevelMainGarage;
+	[SerializeField] private List<GameObject> activeSelectionButtons, gadgetSelectionButtons;
+	[SerializeField] private List<GameObject> loadoutSelectionButtons;
+
+	private uint activeSlotsUnlocked = 2, gadgetSlotsUnlocked = 2;
+	private int loadoutIndexSlotSelected; // TODO: Update the loadout slot from the persistance dict.
+	private bool loadoutStartingPage = false;
+	private Color defaultColorLoadoutButton, defaultTopBevelColorLoadoutButton, defaultBottomBevelColorLoadoutButton;
+
+	private void UpdateNSaveLoadout() {
+		//TODO: Implement saving the loadout.
+		//TODO: Call when the back button is pressed.
+	}
+
+	private void LoadoutChangedCallBack(int index) {
+		//TODO: Implement this, load the stored loadout.
+	}
+
+	public void LoadOutButtonCallBack(int index) {
+		if (index >= loadoutSelectionButtons.Count) return;
+		ResetAllLoadoutButtons();
+		if (loadoutStartingPage) {
+			if (index == 3) {
+				loadoutStartingPage = false;
+				UpdateLoadoutButtons();
+			} else { 
+				loadoutIndexSlotSelected = index;
+				UpdateNSaveLoadout();
+				SetActiveLoadoutButton(index);
+				LoadoutChangedCallBack(index);
+			}
+		} else {
+			if (index == 0) {
+				loadoutStartingPage = true;
+				UpdateLoadoutButtons(); 
+			} else { 
+				loadoutIndexSlotSelected = index + 3;
+				UpdateNSaveLoadout();
+				SetActiveLoadoutButton(index + 3);
+				LoadoutChangedCallBack(index + 3);
+			}
+		}
+		StartCoroutine(ButtonImageAnimation(loadoutSelectionButtons[index].GetComponent<Image>(), .25f));
+	}
+
+	private void ResetAllLoadoutButtons() {
+		foreach(GameObject g in loadoutSelectionButtons) {
+			if (g != null && g.GetComponent<Image>() != null) {
+				g.GetComponent<Image>().color = defaultColorLoadoutButton;
+				Transform top = g.transform.Find("TopBevel");
+				if (top != null) top.GetComponent<Image>().color = defaultTopBevelColorLoadoutButton;
+				Transform bottom = g.transform.Find("BottomBevel");
+				if (bottom != null) bottom.GetComponent<Image>().color = defaultBottomBevelColorLoadoutButton;
+			}
+		}
+	}
+
+	private void SetActiveLoadoutButton(int index) {
+		Color addColor = new Color(-.2f, -.2f, -.2f);
+		if (index < 3) {
+			if (loadoutStartingPage) { 
+				loadoutSelectionButtons[index].GetComponent<Image>().color += addColor;  
+				loadoutSelectionButtons[index].transform.Find("TopBevel").GetComponent<Image>().color += addColor * .7f;
+				loadoutSelectionButtons[index].transform.Find("BottomBevel").GetComponent<Image>().color += addColor * .7f;
+			}
+		} else {
+			if (!loadoutStartingPage) { 
+				loadoutSelectionButtons[index - 3].GetComponent<Image>().color += addColor; 
+				loadoutSelectionButtons[index - 3].transform.Find("TopBevel").GetComponent<Image>().color += addColor * .7f;
+				loadoutSelectionButtons[index - 3].transform.Find("BottomBevel").GetComponent<Image>().color += addColor * .7f;
+			}
+		}
+	}
+
+	private void InitLoadoutButtons() {
+		defaultColorLoadoutButton = loadoutSelectionButtons[0].GetComponent<Image>().color;
+		defaultTopBevelColorLoadoutButton = loadoutSelectionButtons[0].transform.Find("TopBevel").GetComponent<Image>().color;
+		defaultBottomBevelColorLoadoutButton = loadoutSelectionButtons[0].transform.Find("BottomBevel").GetComponent<Image>().color;
+		loadoutIndexSlotSelected = 0; // TODO: SET WHAT LOADOUT IS SELECTED
+		if (loadoutIndexSlotSelected < 3) { 
+			loadoutStartingPage = true;
+			SetActiveLoadoutButton(loadoutIndexSlotSelected);
+		} else {
+			loadoutStartingPage = false;
+			SetActiveLoadoutButton(loadoutIndexSlotSelected + 3);
+		}
+		UpdateLoadoutButtons();
+	}
+
+	private void UpdateLoadoutButtons() {
+		if (loadoutStartingPage) {
+			loadoutSelectionButtons[0].transform.Find("StatText")?.gameObject.SetActive(true);
+			loadoutSelectionButtons[0].transform.Find("Icon")?.gameObject.SetActive(false);
+			loadoutSelectionButtons[3].transform.Find("StatText")?.gameObject.SetActive(false);
+			loadoutSelectionButtons[3].transform.Find("Icon")?.gameObject.SetActive(true);
+
+			TextMeshProUGUI text1 = loadoutSelectionButtons[0].transform.Find("StatText")?.gameObject.GetComponent<TextMeshProUGUI>();
+			if (text1 != null) text1.text = "1";
+			TextMeshProUGUI text2 = loadoutSelectionButtons[1].transform.Find("StatText")?.gameObject.GetComponent<TextMeshProUGUI>();
+			if (text2 != null) text2.text = "2";
+			TextMeshProUGUI text3 = loadoutSelectionButtons[2].transform.Find("StatText")?.gameObject.GetComponent<TextMeshProUGUI>();
+			if (text3 != null) text3.text = "3";
+		} else {
+			loadoutSelectionButtons[0].transform.Find("StatText")?.gameObject.SetActive(false);
+			loadoutSelectionButtons[0].transform.Find("Icon")?.gameObject.SetActive(true);
+			loadoutSelectionButtons[3].transform.Find("StatText")?.gameObject.SetActive(true);
+			loadoutSelectionButtons[3].transform.Find("Icon")?.gameObject.SetActive(false);
+
+			TextMeshProUGUI text1 = loadoutSelectionButtons[1].transform.Find("StatText")?.gameObject.GetComponent<TextMeshProUGUI>();
+			if (text1 != null) text1.text = "4";
+			TextMeshProUGUI text2 = loadoutSelectionButtons[2].transform.Find("StatText")?.gameObject.GetComponent<TextMeshProUGUI>();
+			if (text2 != null) text2.text = "5";
+			TextMeshProUGUI text3 = loadoutSelectionButtons[3].transform.Find("StatText")?.gameObject.GetComponent<TextMeshProUGUI>();
+			if (text3 != null) text3.text = "6";
+		} 
+	}
+
+	private void InitSelectionNodes() {
+		uint actives = 1, gadgets = 1;
+		foreach(GameObject g in activeSelectionButtons) {
+			Transform active = g.transform.Find("Active");
+			active?.GameObject().SetActive(false);
+			Transform button = g.transform.Find("Button");
+			if (button != null) {
+				button.GetComponent<Image>().enabled = true;
+				Color c = button.GetComponent<Image>().color; c.a = 0;
+				button.GetComponent<Image>().color = c;
+			}
+			if (actives <= activeSlotsUnlocked) {
+				Transform lockBG = g.transform.Find("LockBG");
+				lockBG?.GameObject().SetActive(false);
+			} else {
+				Transform regBG = g.transform.Find("RegBG");
+				regBG?.GameObject().SetActive(false);
+			}
+			//TODO: Init the selections based on the loadout.
+			actives++;
+		}
+		foreach(GameObject g in gadgetSelectionButtons) {
+			Transform gadget = g.transform.Find("Gadget");
+			gadget?.GameObject().SetActive(false);
+			Transform button = g.transform.Find("Button");
+			if (button != null) {
+				button.GetComponent<Image>().enabled = true;
+				Color c = button.GetComponent<Image>().color; c.a = 0;
+				button.GetComponent<Image>().color = c;
+			}
+			if (gadgets <= gadgetSlotsUnlocked) {
+				Transform lockBG = g.transform.Find("LockBG");
+				lockBG?.GameObject().SetActive(false);
+			} else {
+				Transform regBG = g.transform.Find("RegBG");
+				regBG?.GameObject().SetActive(false);
+			}
+			gadgets++;
+		}
+	}
+
+	public void ActiveSelectionNodeCallBack(int index) {
+		if (index >= activeSelectionButtons.Count) return;
+		if (index > activeSlotsUnlocked - 1) {
+			StartCoroutine(ButtonImageAnimation(activeSelectionButtons[index].transform.Find("LockBG").GetComponent<Image>(), .25f));
+			return;
+		}
+		if (activeSelectionButtons[index].transform.Find("Active") != null 
+			&& activeSelectionButtons[index].transform.Find("Active").gameObject.activeInHierarchy) {
+				StartCoroutine(ButtonImageAnimation(activeSelectionButtons[index].transform.Find("Active").GetComponent<Image>(), .25f));
+				return;
+		}
+		StartCoroutine(ButtonImageAnimation(activeSelectionButtons[index].transform.Find("RegBG").GetComponent<Image>(), .25f));
+	}
+
+	public void GadgetSelectionButtonsCallBack(int index) {
+		if (index >= gadgetSelectionButtons.Count) return;
+		if (index > gadgetSlotsUnlocked - 1) {
+			StartCoroutine(ButtonImageAnimation(gadgetSelectionButtons[index].transform.Find("LockBG").GetComponent<Image>(), .25f));
+			return;
+		}
+		if (gadgetSelectionButtons[index].transform.Find("Gadget") != null 
+			&& gadgetSelectionButtons[index].transform.Find("Gadget").gameObject.activeInHierarchy) {
+				StartCoroutine(ButtonImageAnimation(gadgetSelectionButtons[index].transform.Find("Gadget").GetComponent<Image>(), .25f));
+				return;
+		}
+		StartCoroutine(ButtonImageAnimation(gadgetSelectionButtons[index].transform.Find("RegBG").GetComponent<Image>(), .25f));
+	}
 
 	private void UpdateStatsDisplayMainGarage(bool isHull = false, bool isUpgrade = false) {
 		if(turretInfos.TryGetValue(selectedTurretName, out GarageInfo turretInfo) &&
 			hullInfos.TryGetValue(selectedHullName, out GarageInfo hullInfo)) {
 			var turretStats = turretInfo.GetCurrentStats(turretInfo.currentLevel);
 			var hullStats = hullInfo.GetCurrentStats(hullInfo.currentLevel);
+
+			UpdateHullLevelText();
+			UpdateTurretLevelText();
+			CheckForMaxed();
 
 			if (!isHull && turretStats != null && turretStats.TryGetValue(nameof(UpgradeInfo.ModiName.Damage), out float damage) && turretStats.TryGetValue(nameof(UpgradeInfo.ModiName.FireRate), out float fireRate)) {
 				if (isUpgrade) {
@@ -287,11 +475,6 @@ public class GarageManager : MonoBehaviour {
 				hullInfo.currentLevel++;
 				StopUpgradeAnimations(1);
 				UpdateStatsDisplayMainGarage(isHull: true, isUpgrade: true);
-				Debug.LogWarning("Upgraded");
-			}
-			if (hullInfo.GetIsMax() == hullInfo.currentLevel) {
-				Debug.LogWarning("Maxed out");
-				tempUpgradeHullButton.text = "MAXED";
 			}
 		}
 	
@@ -305,16 +488,30 @@ public class GarageManager : MonoBehaviour {
 				turretInfo.currentLevel++;
 				StopUpgradeAnimations(0);
 				UpdateStatsDisplayMainGarage(isHull: false, isUpgrade: true);
-				Debug.LogWarning("Upgraded");
-			}
-			if (turretInfo.GetIsMax() == turretInfo.currentLevel) {
-				Debug.LogWarning("Maxed out");
-				tempUpgradeButton.text = "MAXED";
 			}
 		}
 	}
 
+	public void CheckForMaxed() {
+		if (turretInfos.TryGetValue(selectedTurretName, out GarageInfo turretInfo) &&
+			hullInfos.TryGetValue(selectedHullName, out GarageInfo hullInfo)) {
+			if (turretInfo.GetIsMax() == turretInfo.currentLevel) {
+				tempUpgradeButton.text = "MAXED";
+			} else {
+				tempUpgradeButton.text = "UPGRADE";
+			}
+			if (hullInfo.GetIsMax() == hullInfo.currentLevel) {
+				tempUpgradeHullButton.text = "MAXED";
+			} else {
+				tempUpgradeHullButton.text = "UPGRADE";
+			}
+		}
+	
+	}
+
 	public void ResetUpgradesButtonClicked() {
+		turretInfos = JSONParser.InitBlankTurretInfo();
+		hullInfos = JSONParser.InitBlankHullInfo();
 		if (turretInfos.TryGetValue(selectedTurretName, out GarageInfo turretInfo) &&
 			hullInfos.TryGetValue(selectedHullName, out GarageInfo hullInfo)) {
 			turretInfo.currentLevel = 0;
@@ -323,8 +520,6 @@ public class GarageManager : MonoBehaviour {
 			StopUpgradeAnimations(1);
 			UpdateStatsDisplayMainGarage(isHull: false, isUpgrade: false);
 			UpdateStatsDisplayMainGarage(isHull: true, isUpgrade: false);
-			UpdateHullLevelText();
-			UpdateTurretLevelText();
 			tempUpgradeButton.text = "UPGRADE";
 			tempUpgradeHullButton.text = "UPGRADE";
 		}
@@ -386,6 +581,24 @@ public class GarageManager : MonoBehaviour {
 		{ 3, new List<Coroutine>() },
 		{ 4, new List<Coroutine>() }
 	};
+
+	//dim the image for the set duration
+	private IEnumerator ButtonImageAnimation(Image buttonImage, float duration) {
+		float currentTime = 0;
+		if (buttonImage == null) yield break;
+		Vector3 startingScale = buttonImage.transform.localScale;
+		Color c = buttonImage.color;
+		while (currentTime < duration) {
+			currentTime += Time.deltaTime;
+			c.a = Mathf.Lerp(.75f, 1f, currentTime / duration);
+			buttonImage.transform.localScale = Vector3.Lerp(startingScale * .9f, startingScale, currentTime / duration);
+			buttonImage.color = c;
+			yield return null;
+		}
+		c.a = 1;
+		buttonImage.color = c;
+		buttonImage.transform.localScale = startingScale;
+	}
 
 	private void ApplyUpgradeEffect() {
 		GameObject effect = Instantiate(upgradeEffect, mockPlayer.transform);
@@ -449,7 +662,8 @@ public class GarageManager : MonoBehaviour {
 	private void Awake() {
 		instance = this;
 
-		turretInfos = JSONParser.InitBlankTurretInfo();
+
+		turretInfos = JSONParser.InitBlankTurretInfo(); // TEMP
 		hullInfos = JSONParser.InitBlankHullInfo();
 		//upgradeInfos = JSONParser.InitBlankUpgradesInfo();
 		// foreach (KeyValuePair<string, GarageInfo> kvp in turretInfos) {
@@ -513,6 +727,8 @@ public class GarageManager : MonoBehaviour {
 
 	//TODO: change menu manager dropdown values to correspond with hull & turret names in centralized file
 	private void Start() {
+		InitSelectionNodes(); // FOR SELECTION UI INITIALIZATION
+		InitLoadoutButtons(); // FOR LOADOUT BUTTON INITIALIZATION
 		for (int i = 0; i < hullNames.Count; i++) {
 			if (hullNames[i] == PlayerPrefs.GetString("hull_name")) {
 				SelectHull(hullNames[i], hullSprites[i]);
@@ -537,6 +753,10 @@ public class GarageManager : MonoBehaviour {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
 				new Vector3(0.07f, 2f, -8f), Time.deltaTime * 10f);
 		}
+	}
+
+	private void LateUpdate() {
+
 	}
 
 	#endregion
