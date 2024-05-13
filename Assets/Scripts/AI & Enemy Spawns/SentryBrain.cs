@@ -22,15 +22,16 @@ public class SentryBrain : MonoBehaviour {
 			if (!ce.GetNetworker().GetInitialized() ||
 				ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
 			float distance = AIBrain.GroundDistance(ce.transform.position, transform.position);
-			if (distance < closestDistance) {
+			if (distance < closestDistance && CanHitTarget(ce, range)) {
 				closestDistance = distance;
 				target = ce;
 			}
 		}
 
 		//line of sight to target check; raycast all prevents other AI from blocking line of sight
-		canShootTarget = false;
-
+		canShootTarget = CanHitTarget(target, range);
+	}
+	private bool CanHitTarget(CombatEntity target, float range) {
 		Vector3 directionToPlayer = target.transform.position - transform.position;
 		directionToPlayer.y = 0;
 
@@ -42,8 +43,7 @@ public class SentryBrain : MonoBehaviour {
 
 		foreach (var hit in hitsList) {
 			if (hit.collider.gameObject == target.gameObject) {
-				canShootTarget = true;
-				break;
+				return true;
 			} else if (hit.collider.GetComponent<CombatEntity>() == null &&
 				hit.collider.GetComponent<Bullet>() == null) {
 
@@ -51,6 +51,7 @@ public class SentryBrain : MonoBehaviour {
 				break;
 			}
 		}
+		return false;
 	}
 	private IEnumerator Tick() {
 		while (true) {

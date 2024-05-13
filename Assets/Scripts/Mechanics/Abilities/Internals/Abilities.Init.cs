@@ -12,9 +12,9 @@ namespace Abilities {
             if (input.Count > 0) return;
 
             input.Clear();
-            RapidFire f = new RapidFire();
+            Sentry f = new();
             input.Add((f, false));
-            Heal h = new Heal();
+            AreaHeal h = new();
             input.Add((h, false));
 
             AbilityUIManagerExtensions.OnAbilityListChange(); // callback for ui update. REQUIRED, o.w. no abilities will show.
@@ -52,6 +52,16 @@ namespace Abilities {
                     ((OverHeal)i).healAmount = .8f; // percentage heal.
                     ((OverHeal)i).healPeriod = 5f;
                     ((OverHeal)i).maxOverhealAmount = 1000f; // Needs to go down again ?
+                    break;
+                case Sentry:
+                    ((Sentry)i).cooldownPeriod = ((Sentry)i).remainingCooldownTime = 2f;
+                    ((Sentry)i).maxHealth = 2000;
+                    ((Sentry)i).maxAmmo = 35;
+                    ((Sentry)i).ammoRegen = 7.5f;
+                    ((Sentry)i).shootSpeed = 0.08f;
+                    ((Sentry)i).shootSpread = 0.1f;
+                    ((Sentry)i).isFullAuto = true;
+                    ((Sentry)i).dmgModi = 1f;
 
                     break;
                 //==== DAMAGE ====//

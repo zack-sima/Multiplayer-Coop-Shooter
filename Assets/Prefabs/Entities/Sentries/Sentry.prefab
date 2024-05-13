@@ -53,7 +53,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mainEntity: {fileID: 366278136777289315}
   critSoundEffect: {fileID: 0}
-  effectPrefabs: {fileID: 0}
+  effectPrefabs: {fileID: 11400000, guid: d09ac29cb14874b14ae8f5d6efd45caa, type: 2}
   sentryPrefab: {fileID: 0}
   isPlayer: 0
 --- !u!114 &366278136777289315
@@ -448,6 +448,10 @@ PrefabInstance:
     - target: {fileID: 4780522923598946021, guid: b62700fe621a746929e27843764638d5, type: 3}
       propertyPath: m_Name
       value: SentryTurret
+      objectReference: {fileID: 0}
+    - target: {fileID: 8306412023698569218, guid: b62700fe621a746929e27843764638d5, type: 3}
+      propertyPath: rotateSpeed
+      value: 900
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

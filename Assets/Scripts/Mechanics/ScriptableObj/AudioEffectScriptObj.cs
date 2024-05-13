@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace Effects {
-    [CreateAssetMenu(menuName = "EffectStorage")]
+    // [CreateAssetMenu(menuName = "EffectStorage")]
     public class EffectStorage : ScriptableObject {
         
         [SerializeField]
