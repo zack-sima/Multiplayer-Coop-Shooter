@@ -3614,6 +3614,7 @@ MonoBehaviour:
   - turret: {fileID: 8306412023698569218, guid: 81647acf7fd274e03a3bf4245c173d50, type: 3}
     turretName: Flamethrower
     localPositionOffset: {x: 0, y: 0, z: 0}
+  abilityIconPrefab: {fileID: 11400000, guid: d1c814fafece14f7e9acfa39dcb5da9c, type: 2}
 --- !u!114 &4836627643148608670
 MonoBehaviour:
   m_ObjectHideFlags: 0

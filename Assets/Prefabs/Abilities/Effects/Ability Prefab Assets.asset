@@ -17,3 +17,4 @@ MonoBehaviour:
   infiHealEffectPrefab: {fileID: 7672674973976317775, guid: bd55b296acca94bfabfe9c46d732cfb3, type: 3}
   hpStealEffectPrefab: {fileID: 1104784749894489985, guid: cd2d3708de6de42dc98ce328405240e0, type: 3}
   fireEffectPrefab: {fileID: 5824614856206480720, guid: 8f61d8f96e11447d383d1654e68b808e, type: 3}
+  sentryEffectPrefab: {fileID: 5239970825034514261, guid: f86f91ab71e754e2d89cc8105cfcc929, type: 3}

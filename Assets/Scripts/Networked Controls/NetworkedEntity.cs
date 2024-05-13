@@ -294,11 +294,22 @@ public class NetworkedEntity : NetworkBehaviour {
 	#region Functions
 
 	//TODO: regulate using abilities
-	public void SpawnSentry() {
-		if (!HasSyncAuthority()) return;
-		Runner.Spawn(sentryPrefab, transform.position + new Vector3(Random.Range(-0.1f, 0.1f), 0f,
-			Random.Range(-0.1f, 0.1f)), Quaternion.identity).
-			GetComponent<NetworkedEntity>().SetNonPlayerTeam(GetTeam());
+	public NetworkedEntity SpawnSentry() {
+		if (!HasSyncAuthority()) return null;
+		return Runner.Spawn(sentryPrefab, transform.position + new Vector3(Random.Range(-0.1f, 0.1f), 0f,
+			Random.Range(-0.1f, 0.1f)), Quaternion.identity).GetComponent<NetworkedEntity>();
+	}
+
+	public void SetSentryStats(int team, int maxHealth, int maxAmmo, float ammoRegen, float shootSpeed, float shootSpread, float dmgModi, bool isFullAuto) {
+		GetEntity().SetMaxHealth(maxHealth);
+		GetEntity().SetCurrentHealth(maxHealth);
+		SetNonPlayerTeam(team);
+		GetCombatEntity().GetTurret().SetMaxAmmo(maxAmmo);
+		GetCombatEntity().GetTurret().SetAmmoRegenRate(ammoRegen);
+		GetCombatEntity().GetTurret().SetShootSpeed(shootSpeed);
+		GetCombatEntity().GetTurret().SetShootSpread(shootSpread);
+		GetCombatEntity().GetTurret().SetIsFullAuto(isFullAuto);
+		GetCombatEntity().GetTurret().SetBulletDmgModi(dmgModi);
 	}
 
 	//must be called by local player!

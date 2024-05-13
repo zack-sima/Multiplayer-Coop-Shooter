@@ -18,9 +18,14 @@ namespace Effects {
         [SerializeField] public GameObject infiHealEffectPrefab;
         [SerializeField] public GameObject hpStealEffectPrefab;
 
+        //! RMBR TO ATTACH A EFFECT SCRIPT TO THE PREFAB !
+
         [Header("Basic")]
 
         [SerializeField] public GameObject fireEffectPrefab;
+        [SerializeField] public GameObject sentryEffectPrefab;
+
+        //! RMBR TO ATTACH A EFFECT SCRIPT TO THE PREFAB !
 
     }
 
@@ -37,8 +42,12 @@ namespace Effects {
                     return entity.effectPrefabs.hpStealEffectPrefab;
                 case UpgradeIndex.RapidFire:
                     return entity.effectPrefabs.fireEffectPrefab;
+                case UpgradeIndex.Sentry:
+                    return entity.effectPrefabs.sentryEffectPrefab;
+                //! RMBR TO ATTACH A EFFECT SCRIPT TO THE PREFAB !
+                default:
+                    return null;
             }
-            return null;  
         }
     }
 }

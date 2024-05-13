@@ -6,12 +6,13 @@ namespace Abilities {
 
     public enum UpgradeIndex {
         /*========| HEAL |========*/
-        Heal, AreaHeal, InfiHeal, HPSteal, RapidFire
+        Heal, AreaHeal, InfiHeal, HPSteal, RapidFire,
 
         /*========| UPGRADES |========*/
 
         
         /*========| BALLS |========*/
+        Sentry
     }
 
     public static class AbilityBase {

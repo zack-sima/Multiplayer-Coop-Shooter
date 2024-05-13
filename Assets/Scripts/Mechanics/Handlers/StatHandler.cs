@@ -100,6 +100,10 @@ namespace Abilities {
 
                 if (a is IActivatable) {
 #if UNITY_EDITOR
+                    if (Input.GetKey(KeyCode.Minus) && entity == NetworkedEntity.playerInstance) {
+                        ((IActivatable)a).Activate(entity, true); 
+                        abilities[i] = (a, false); 
+                    }
                     if (Input.GetKeyDown(KeyCode.LeftShift) && entity == NetworkedEntity.playerInstance) {
                         ((IActivatable)a).Activate(entity, true); 
                         abilities[i] = (a, false); 

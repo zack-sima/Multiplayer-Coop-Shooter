@@ -27,6 +27,7 @@ public class Turret : MonoBehaviour {
 	//ammo parameters
 	[SerializeField] protected int maxAmmo;
 	public int GetMaxAmmo() { return maxAmmo; }
+	public void SetMaxAmmo(int maxAmmo) { this.maxAmmo = maxAmmo; }
 
 	[Tooltip("Bullets per second")]
 	[SerializeField] protected float ammoRegenerationSpeed;
@@ -34,6 +35,7 @@ public class Turret : MonoBehaviour {
 
 	[SerializeField] protected bool isFullAuto;
 	public bool GetIsFullAuto() { return isFullAuto; }
+	public void SetIsFullAuto(bool isFullAuto) { this.isFullAuto = isFullAuto; }
 
 	[Tooltip("in seconds before shooting again")]
 	[SerializeField] protected float shootSpeed;
@@ -41,6 +43,8 @@ public class Turret : MonoBehaviour {
 
 	//in degrees of y-randomness
 	[SerializeField] protected float shootSpread;
+	public float GetShootSpread() { return shootSpread; }
+	public void SetShootSpread(float shootSpread) { this.shootSpread = shootSpread; }
 
 	[Tooltip("in degrees of y-rotation per second")]
 	[SerializeField] protected float rotateSpeed;
