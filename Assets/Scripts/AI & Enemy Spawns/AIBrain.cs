@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using UnityEngine.AI;
 using Abilities;
+using Unity.VisualScripting;
 
 /// <summary>
 /// Autonomously decides on an AI enemy's course of action
@@ -149,12 +150,30 @@ public class AIBrain : MonoBehaviour {
 				if (PlayerInfo.GetIsPointCap()) {
 					//in point capture, go for point and stay there
 					List<CapturePoint> points = MapController.instance.GetCapturePoints();
-					if (targetPoint == null || targetPoint != null && targetPoint.GetCaptureProgress() >= 1 &&
-						targetPoint.GetPointOwnerTeam() == entity.GetTeam() || bogoTarget == Vector3.zero) {
-
-						int rand = Random.Range(0, points.Count);
-						if (points[rand].gameObject.activeInHierarchy)
+					if (targetPoint != null) {
+					print($"MAGNITUDE{targetPoint != null && targetPoint.GetCaptureProgress() >= 1 && targetPoint.GetPointOwnerTeam() == entity.GetTeam()}");
+					}
+					if (targetPoint == null || (targetPoint != null && targetPoint.GetCaptureProgress() >= 1 &&
+						targetPoint.GetPointOwnerTeam() == entity.GetTeam())
+						 || bogoTarget == Vector3.zero) {
+							print("POINT CHANGING NOW");
+						
+						List<CapturePoint> validPoints = new List<CapturePoint>();
+						for (int i = 0; i < points.Count; ++i) {
+							CapturePoint pointTest = points[i];
+							if (pointTest.gameObject.activeInHierarchy) {
+								if (pointTest.GetCaptureProgress() < 1 || pointTest.GetPointOwnerTeam() != entity.GetTeam()) {
+									validPoints.Add(pointTest); 
+								}
+							}
+						}
+						int rand = Random.Range(0, validPoints.Count);
+						if (validPoints.Count != 0) {
 							targetPoint = points[rand];
+						}
+						else {
+							bogoTarget = MapController.instance.GetTeamSpawnpoint((entity.GetTeam() + 1) % 2);
+						}
 
 						if (targetPoint != null && (targetPoint.GetCaptureProgress() < 1 ||
 							targetPoint.GetPointOwnerTeam() != entity.GetTeam() ||
