@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using CSV;
 using Newtonsoft.Json;
-using Unity.VisualScripting;
 
 namespace JSON {
     public static class JSONParser {
@@ -69,6 +68,8 @@ namespace JSON {
             if (PersistentDict.HasKey(nameof(JSONType.HullInfos)))PersistentDict.DeleteKey(nameof(JSONType.HullInfos));
             if (PersistentDict.HasKey(nameof(JSONType.UpgradeInfos)))PersistentDict.DeleteKey(nameof(JSONType.UpgradeInfos));
         } */
+
+        //TODO: JSON up a class with a bunch of json strings as members, where each member is a Serialized JSON file pulled from the CSVs.
 
         public static Dictionary<string, GarageInfo> InitBlankTurretInfo() {
             //Debug.LogWarning("InitBlankTurretInfo");

@@ -80,6 +80,10 @@ public class SettingsManager : MonoBehaviour {
 			}
 		}
 	}
+	public void ToggleDebugMenu() {
+		DebugUIManager.instance.ToggleDebugMenu();
+		HideSettings();
+	}
 	public void ToggleMuteAudio() {
 		PlayerPrefs.SetInt("mute_audio", PlayerPrefs.GetInt("mute_audio") ^ 1);
 		UpdateIcons();
