@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using CSV;
 using Newtonsoft.Json;
-using Unity.VisualScripting;
 
 namespace JSON {
     public static class JSONParser {

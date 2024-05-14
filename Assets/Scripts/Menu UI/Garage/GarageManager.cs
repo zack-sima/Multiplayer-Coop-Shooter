@@ -645,7 +645,6 @@ public class GarageManager : MonoBehaviour {
 	private void Awake() {
 		instance = this;
 
-
 		turretInfos = JSONParser.InitBlankTurretInfo(); // TEMP
 		hullInfos = JSONParser.InitBlankHullInfo();
 		//upgradeInfos = JSONParser.InitBlankUpgradesInfo();

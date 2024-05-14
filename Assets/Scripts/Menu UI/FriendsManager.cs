@@ -193,9 +193,9 @@ public class FriendsManager : MonoBehaviour {
 
 	private void Update() {
 #if UNITY_EDITOR
-		if (Input.GetKeyDown(KeyCode.Q)) {
-			LobbyInviteReceived("skibidi", "toilet", "abcdef");
-		}
+		// if (Input.GetKeyDown(KeyCode.Q)) {
+		// 	LobbyInviteReceived("skibidi", "toilet", "abcdef");
+		// }
 #endif
 
 		if (lobbyIdInput.text != lobbyIdInput.text.ToUpper())

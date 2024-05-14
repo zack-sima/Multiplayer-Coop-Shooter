@@ -36,7 +36,9 @@ namespace CSV.Parsers {
         /* BASIC */ Tags, Description, Dupe, IUpgrade, UPTags,
         /* OPERATIONAL */ Add, Max, Unlocked, Locked, LockedCash, LockedGem, LockedXP, 
         /* UPGRADES */ Level, UPCost,
-        /* BASICSMODIS  */ XPCost, MoneyCost, GemCost, Above,
+        /* BASICS MODIS  */ XPCost, MoneyCost, GemCost, Above, Cooldown, 
+        /* GENERAL MODIS */ Dmg, Reload, AmmoRegen, MaxHP, CritChance, CritDmg,
+        /* MISC MODIS */ M1, M2, M3, M4, M5, M6, M7, M8, M9, M10,
 
     }
 }

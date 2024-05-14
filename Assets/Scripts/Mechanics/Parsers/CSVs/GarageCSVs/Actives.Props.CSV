@@ -1,6 +1,6 @@
-[ACTIVES],,,,,,
-[ActiveId],HealActive,[Add],[Unlocked],,,[Description]
-[Tags],[XPCost],[MoneyCost],,,,"Restore plentiful amounts of health at a moment's notice. "
+[ACTIVE],,,,,,
+[ActiveId],HealActive,[Add],[Unlocked],,,
+[Tags],[XPCost],[MoneyCost],[Cooldown],,,[Description]
 1,100,200,,,,
 2,200,250,,,,
 3,300,300,,,,
