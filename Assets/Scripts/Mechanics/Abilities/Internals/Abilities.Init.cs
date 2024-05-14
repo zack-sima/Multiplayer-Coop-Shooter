@@ -12,9 +12,9 @@ namespace Abilities {
             if (input.Count > 0) return;
 
             input.Clear();
-            Sentry f = new();
+            Heal f = new();
             input.Add((f, false));
-            AreaHeal h = new();
+            RapidFire h = new();
             input.Add((h, false));
 
             AbilityUIManagerExtensions.OnAbilityListChange(); // callback for ui update. REQUIRED, o.w. no abilities will show.

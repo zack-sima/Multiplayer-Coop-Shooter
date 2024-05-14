@@ -19,64 +19,6 @@ public class PlayerDataHandler : MonoBehaviour {
         ActivesRawCSV, GadgetsRawCSV, HullsRawCSV, TurretsRawCSV
     }
 
-    [System.Serializable]
-    public class InventoryInfo {
-        public readonly string id;
-        public readonly string description;
-        public readonly int maxLevel;
-        private Dictionary<(string, int), float> modiByLevel = new();
-        private Dictionary<string, InGameUpgradeInfo> inGameUpgrades = new();
-        private int currentLevel = 0; // 0 == locked.
-
-        public InventoryInfo(string id, string description, int maxLevel) {
-            this.id = id;
-            this.description = description;
-            this.maxLevel = maxLevel;
-        }
-
-        public bool CanUpgrade() { return currentLevel < maxLevel; }
-
-        public void PushInventoryModi(string id, float input, int level) {
-            if (modiByLevel.ContainsKey((id, level))) {
-                modiByLevel[(id, level)] = input;
-            } else {
-                modiByLevel.Add((id, level), input);
-            }
-        }
-
-        public void PushInGameUpgrade(InGameUpgradeInfo input) {
-            if (!inGameUpgrades.ContainsKey(input.id)) inGameUpgrades.Add(input.id, input);
-            else inGameUpgrades[input.id] = input;
-        }
-
-        public bool TryUpgrading() {
-            if (CanUpgrade()) {
-                currentLevel++;
-                return true;
-            }
-            return false;
-        }
-
-        public bool TryGetModi(string id, int level, out float output) {
-            output = 0;
-            if (modiByLevel.ContainsKey((id, level))) {
-                output = modiByLevel[(id, level)];
-                return true;
-            }
-            return false;
-        }
-    }
-
-    [System.Serializable]
-    public class InGameUpgradeInfo {
-        public readonly string id;
-        public List<string> softRequirements = new(), hardRequirements = new(), mutualRequirements = new();
-        public Dictionary<(string, int), float> modi = new();
-        public int maxLevel = 1;
-        public InGameUpgradeInfo(string id) { this.id = id;} 
-        
-    }
-
     #endregion
 
     #region References
@@ -110,7 +52,7 @@ public class PlayerDataHandler : MonoBehaviour {
     #region Methods
 
     public void ForceResetInfos(bool debug = false) {
-        activesInfo.TryParseActive(activeRawCSV.text, debug);
+        activesInfo.TryParse(activeRawCSV.text, debug);
         //TODO: Populate with other inits.
     }
 
