@@ -109,15 +109,10 @@ public class PlayerDataHandler : MonoBehaviour {
 
     #region Methods
 
-    #region //*==| INFO HANDLERS |==*//
-
     public void ForceResetInfos(bool debug = false) {
         activesInfo.TryParseActive(activeRawCSV.text, debug);
         //TODO: Populate with other inits.
     }
-
-    #endregion
-
 
     #endregion
 
