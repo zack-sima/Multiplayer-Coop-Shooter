@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 904a68dc5043d415fa9110b3cd0b074a, type: 3}
   m_Name: AbilityIconPrefab
   m_EditorClassIdentifier: 
+  defaultActiveIcon: {fileID: 21300000, guid: bff1b6848a7f5491381632887dd5b097, type: 3}
+  defaultGadgetIcon: {fileID: 21300000, guid: c16c5235af373466289295b20873797c, type: 3}
   healActiveIcon: {fileID: 21300000, guid: 29b1c4744c2b94b9bbfd27a33385cc86, type: 3}
   rapidFireActiveIcon: {fileID: 21300000, guid: 1e7a2c0aa72584245a110e544e51e9ca, type: 3}
   sentryActiveIcon: {fileID: 21300000, guid: 58053cc010e874229885a0e612b4a764, type: 3}

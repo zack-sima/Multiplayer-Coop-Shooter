@@ -6,6 +6,7 @@ using TMPro;
 using CSV;
 using JSON;
 using Abilities;
+using CSV.Parsers;
 using Unity.VisualScripting;
 using ExitGames.Client.Photon.StructWrapping;
 
@@ -235,6 +236,8 @@ public class GarageManager : MonoBehaviour {
 	private int loadoutIndexSlotSelected; // TODO: Update the loadout slot from the persistance dict.
 	private bool loadoutStartingPage = false;
 	private Color defaultColorLoadoutButton, defaultTopBevelColorLoadoutButton, defaultBottomBevelColorLoadoutButton;
+
+	private List<CSVId> activeSelections, gadgetSelections;
 
 	private void UpdateNSaveLoadout() {
 		//TODO: Implement saving the loadout.

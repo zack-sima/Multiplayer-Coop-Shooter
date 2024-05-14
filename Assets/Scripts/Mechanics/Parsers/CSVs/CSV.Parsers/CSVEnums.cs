@@ -3,40 +3,40 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace CSV.Parsers {
-    public static partial class CSVParserExtensions {
-        public enum Id { // StringId
 
-            // ! NEED TO BE NAMED THE SAME AS IN THE [----Id] SLOT !
+    public enum CSVId { // StringId
 
-            #region //*==| HULLS |==*//
+        // ! NEED TO BE NAMED THE SAME AS IN THE [----Id] SLOT !
 
-            #endregion
+        #region //*==| HULLS |==*//
 
-            #region //*==| TURRETS |==*//
+        #endregion
 
-
-            #endregion
-            #region //*==| ACTIVES |==*//
-
-            HealActive, RapidFireActive, SentryActive,
-
-            #endregion
-
-            #region //*==| GADGETS |==*//
-            HardenedAmmoGadget,
-            HealGadget,
-            ArmorGadget,
+        #region //*==| TURRETS |==*//
 
 
-            #endregion
-        }
+        #endregion
+        #region //*==| ACTIVES |==*//
 
-        public enum Md { // MODI == $"{nameof(Md.ModiId)}"
-            /* TYPE */ ACTIVE, GADGET, HULL, TURRET,
-            /* BASIC */ Tags,
-            /* OPERATIONAL */ Add, Max, Unlocked, Locked, LockedCash, LockedGem, LockedXP,
-            /* BASICSMODIS  */ XPCost, MoneyCost, GemCost, Above,
+        HealActive, RapidFireActive, SentryActive,
 
-        }
+        #endregion
+
+        #region //*==| GADGETS |==*//
+        
+        HardenedAmmoGadget, HealGadget, ArmorGadget,
+
+
+        #endregion
+    }
+
+    public enum CSVMd { // MODI == $"{nameof(Md.ModiId)}", & parse for [unlocked = 3] (compiler stuff lol)
+        /* TYPE */ ACTIVE, GADGET, HULL, TURRET, 
+        /* IDs */ ActiveId, UpgradeId, GadgetId, HullId, TurretId,
+        /* BASIC */ Tags, Description, Dupe, IUpgrade, UPTags,
+        /* OPERATIONAL */ Add, Max, Unlocked, Locked, LockedCash, LockedGem, LockedXP, 
+        /* UPGRADES */ Level, UPCost,
+        /* BASICSMODIS  */ XPCost, MoneyCost, GemCost, Above,
+
     }
 }
