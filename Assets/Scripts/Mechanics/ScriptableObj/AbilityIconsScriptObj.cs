@@ -5,13 +5,15 @@ namespace Abilities {
 
     //[CreateAssetMenu(menuName = "AbilityIconScriptObj")]
     public class AbilityIconsScriptObj : ScriptableObject {
-        [Header("Abilities")]
-        [SerializeField] public Image healAbilityIcon;
-        [SerializeField] public Image areaHealAbilityIcon;
+        [Header("Actives")]
+        [SerializeField] public Sprite healActiveIcon;
+        [SerializeField] public Sprite rapidFireActiveIcon;
+        [SerializeField] public Sprite sentryActiveIcon;
 
-        [Header("Basics")]
-        [SerializeField] public Image sentryAbilityIcon;
-        [SerializeField] public Image rapidFireAbilityIcon;
+        [Header("Gadgets")]
+        [SerializeField] public Sprite hardenedAmmoGadgetIcon;
+        [SerializeField] public Sprite healGadgetIcon;
+        [SerializeField] public Sprite armorGadgetIcon;
         
     }
 }

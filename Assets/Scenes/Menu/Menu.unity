@@ -5536,7 +5536,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -1592.2866, y: -28.021576}
+  m_AnchoredPosition: {x: -1592.2866, y: -28.021545}
   m_SizeDelta: {x: -890.4019, y: 239.67963}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &249039422
@@ -12426,6 +12426,7 @@ MonoBehaviour:
   upgradeMenu: {fileID: 0}
   turretCSVProps: {fileID: 4900000, guid: 0b6b164fbec7540a2bfee11f8702c7dc, type: 3}
   hullCSVProps: {fileID: 4900000, guid: c22a9c111db254793bb735a1b81c53c4, type: 3}
+  abilityIconPrefab: {fileID: 11400000, guid: d1c814fafece14f7e9acfa39dcb5da9c, type: 2}
   statsPanel: {fileID: 1398669090}
   deckPanel: {fileID: 2065442177}
   damageStatMainGarage: {fileID: 860383150}
@@ -29714,8 +29715,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -14.53, y: 4.667}
-  m_SizeDelta: {x: 29.0602, y: 23.8396}
+  m_AnchoredPosition: {x: -13, y: 4.667}
+  m_SizeDelta: {x: 35.5052, y: 23.8396}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1085094298
 MonoBehaviour:
@@ -35777,8 +35778,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -72, y: 42}
-  m_SizeDelta: {x: 467.37, y: 367.6252}
+  m_AnchoredPosition: {x: -72.000114, y: 42}
+  m_SizeDelta: {x: 488.8534, y: 367.6252}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1359787721
 MonoBehaviour:
@@ -53508,7 +53509,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 1297, y: -275}
+  m_AnchoredPosition: {x: 1283, y: -275}
   m_SizeDelta: {x: -37.196655, y: -5.105057}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2070017931

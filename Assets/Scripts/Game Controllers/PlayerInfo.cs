@@ -53,7 +53,6 @@ public class PlayerInfo : MonoBehaviour {
 	//uses turret name to query for turret (fallback to first turret)
 	[SerializeField] private List<HullInfo> hullPrefabs;
 	[SerializeField] private List<TurretInfo> turretPrefabs;
-	[SerializeField] private AbilityIconsScriptObj abilityIconPrefab;
 
 	#endregion
 

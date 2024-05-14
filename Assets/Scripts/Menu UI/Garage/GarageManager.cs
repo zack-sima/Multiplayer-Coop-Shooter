@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using CSV;
 using JSON;
+using Abilities;
 using Unity.VisualScripting;
 using ExitGames.Client.Photon.StructWrapping;
 
@@ -214,6 +215,9 @@ public class GarageManager : MonoBehaviour {
 
 	#region GarageScreen
 	//*============| GarageScreen |===========*//
+
+	[Header("Icons")]
+	[SerializeField] private AbilityIconsScriptObj abilityIconPrefab;
 
 	[Header("Panels")]
 	[SerializeField] private GameObject statsPanel;
