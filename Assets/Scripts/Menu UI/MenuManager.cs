@@ -68,13 +68,13 @@ public class MenuManager : MonoBehaviour {
 	public string GetPlayerHull() { return currentHull; }
 	public string GetPlayerTurret() { return currentTurret; }
 
-	public void SetHull(string val) {
+	public void SetHull(string val, bool isTemporary = false) {
 		currentHull = val;
-		PlayerHullChanged();
+		PlayerHullChanged(isTemporary);
 	}
-	public void SetTurret(string val) {
+	public void SetTurret(string val, bool isTemporary = false) {
 		currentTurret = val;
-		PlayerTurretChanged();
+		PlayerTurretChanged(isTemporary);
 	}
 
 	//NOTE: also set by level select (rapid mode = higher starting waves; TODO: modes, difficulty, etc)
@@ -132,15 +132,15 @@ public class MenuManager : MonoBehaviour {
 				break;
 		}
 	}
-	public void PlayerTurretChanged() {
-		PlayerPrefs.SetString("turret_name", currentTurret);
+	public void PlayerTurretChanged(bool isTemporary = false) {
+		PlayerPrefs.SetString(isTemporary ? "temp_turret_name" : "turret_name", currentTurret);
 
-		LobbyUI.instance.SetPlayerTurret();
+		LobbyUI.instance.SetPlayerTurret(isTemporary);
 	}
-	public void PlayerHullChanged() {
-		PlayerPrefs.SetString("hull_name", currentHull);
+	public void PlayerHullChanged(bool isTemporary = false) {
+		PlayerPrefs.SetString(isTemporary ? "temp_hull_name" : "hull_name", currentHull);
 
-		LobbyUI.instance.SetPlayerHull();
+		LobbyUI.instance.SetPlayerHull(isTemporary);
 	}
 
 	//NOTE: play button goes to where currentGameMode is set to (SP game, lobby, etc)
@@ -279,8 +279,6 @@ public class MenuManager : MonoBehaviour {
 			PlayerPrefs.SetString("player_name", inputText);
 			if (!waitingChangeNameInput) StartCoroutine(WaitForNameInputExit());
 		}
-		PlayerPrefs.SetString("turret_name", currentTurret);
-		PlayerPrefs.SetString("hull_name", currentHull);
 
 #if UNITY_EDITOR
 		if (Input.GetKey(KeyCode.LeftAlt) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.D))

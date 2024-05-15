@@ -200,29 +200,31 @@ public class LobbyUI : MonoBehaviour {
 		gameStartingUI.gameObject.SetActive(true);
 	}
 	//assumed PlayerPrefs has been set elsewhere already
-	public void SetPlayerTurret() {
-		string newTurret = PlayerPrefs.GetString("turret_name");
+	public void SetPlayerTurret(bool isTemporary = false) {
+		string newTurret = PlayerPrefs.GetString(isTemporary ? "temp_turret_name" : "turret_name");
 
 		playerDisplayers[0].Initialize();
 		playerDisplayers[0].SetTurret(newTurret);
 
-		//call local player if possible to update network
-		if (!ServerLinker.instance.GetIsInLobby() || LobbyPlayer.playerInstance == null ||
-			LobbyStatsSyncer.instance == null) return;
-
-		LobbyPlayer.playerInstance.SetTurretName(newTurret);
+		if (!isTemporary) {
+			//call local player if possible to update network
+			if (!ServerLinker.instance.GetIsInLobby() || LobbyPlayer.playerInstance == null ||
+				LobbyStatsSyncer.instance == null) return;
+			LobbyPlayer.playerInstance.SetTurretName(newTurret);
+		}
 	}
-	public void SetPlayerHull() {
-		string newHull = PlayerPrefs.GetString("hull_name");
+	public void SetPlayerHull(bool isTemporary = false) {
+		string newHull = PlayerPrefs.GetString(isTemporary ? "temp_hull_name" : "hull_name");
 
 		playerDisplayers[0].Initialize();
 		playerDisplayers[0].SetHull(newHull);
 
-		//call local player if possible to update network
-		if (!ServerLinker.instance.GetIsInLobby() || LobbyPlayer.playerInstance == null ||
-			LobbyStatsSyncer.instance == null) return;
-
-		LobbyPlayer.playerInstance.SetHullName(newHull);
+		if (!isTemporary) {
+			//call local player if possible to update network
+			if (!ServerLinker.instance.GetIsInLobby() || LobbyPlayer.playerInstance == null ||
+				LobbyStatsSyncer.instance == null) return;
+			LobbyPlayer.playerInstance.SetHullName(newHull);
+		}
 	}
 	private void Awake() {
 		instance = this;

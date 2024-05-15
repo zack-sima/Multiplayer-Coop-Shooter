@@ -14,7 +14,7 @@ public class GarageManager : MonoBehaviour {
 
 	#region Prefabs
 
-	[SerializeField] private GameObject scrollButtonPrefab;
+	[SerializeField] private GameObject scrollHullTurretPrefab, scrollAbilityPrefab;
 
 	#endregion
 
@@ -25,8 +25,9 @@ public class GarageManager : MonoBehaviour {
 	[SerializeField] private GameObject playerHealthCanvas;
 	public GameObject GetPlayerHealthCanvas() { return playerHealthCanvas; }
 
-	[SerializeField] private RectTransform selectionScreen, selectionContentParent;
-	[SerializeField] private TMP_Text selectionScreenTitle;
+	[SerializeField] private RectTransform selectionContentParent;
+	[SerializeField] private GridLayoutGroup selectionGrid;
+	[SerializeField] private TMP_Text selectionScreenTitle, selectedItemText;
 
 	[SerializeField] private Image selectedHullImage, selectedTurretImage;
 
@@ -51,13 +52,19 @@ public class GarageManager : MonoBehaviour {
 	//interpolate to this
 	private Vector3 targetGarageCameraPosition = new(-1.9f, 1.29f, -5.7f);
 
-	private bool hullMode = true;
-
 	private bool inGarage = false;
 	public bool GetIsInGarage() { return inGarage; }
 
+	//spacings
+	// 215/125 for hull/turret; 139/125 for abilities
+	private Vector2 hullTurretCell = new(215, 125);
+	private Vector2 abilityCell = new(139, 125);
+
 	//stats display
-	private string selectedHullName = "", selectedTurretName = "";
+	private string selectedHullName = "", selectedTurretName = "", selectedAbilityName = "";
+	private Sprite selectedHullSprite = null, selectedTurretSprite = null, selectedAbilitySprite = null;
+
+	private int currentSelectedMode = 0; //hull, turret, abilities
 
 	#endregion
 
@@ -70,60 +77,82 @@ public class GarageManager : MonoBehaviour {
 		spawnedButtons.Clear();
 	}
 	private void SelectHull(string hullName, Sprite hullSprite) {
-		selectedHullImage.sprite = hullSprite;
+		selectedHullSprite = hullSprite;
 		selectedHullName = hullName;
 
-		CloseSelectionScreen();
+		selectedItemText.text = hullName;
 	}
 	private void SelectTurret(string turretName, Sprite turretSprite) {
-		selectedTurretImage.sprite = turretSprite;
 		selectedTurretName = turretName;
+		selectedTurretSprite = turretSprite;
 
-		CloseSelectionScreen();
+		selectedItemText.text = turretName;
 	}
 	public void OpenHulls() {
-		if (hullMode && selectionScreen.gameObject.activeInHierarchy) {
-			CloseSelectionScreen();
-			return;
-		}
-		hullMode = true;
 		selectionScreenTitle.text = "HULLS";
-		selectionScreen.gameObject.SetActive(true);
+		selectionGrid.cellSize = hullTurretCell;
 		ClearButtons();
 
 		for (int i = 0; i < hullNames.Count; i++) {
-			GarageButton b = Instantiate(scrollButtonPrefab, selectionContentParent).GetComponent<GarageButton>();
+			GarageButton b = Instantiate(scrollHullTurretPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
-			b.Init(hullNames[i], hullSprites[i], false);
+			b.Init(hullNames[i], hullSprites[i], mode: 0, level: 0,
+				equipped: hullNames[i] == MenuManager.instance.GetPlayerHull());
 		}
+		currentSelectedMode = 0;
 	}
 	public void OpenTurrets() {
-		if (!hullMode && selectionScreen.gameObject.activeInHierarchy) {
-			CloseSelectionScreen();
-			return;
-		}
-		hullMode = false;
 		selectionScreenTitle.text = "TURRETS";
-		selectionScreen.gameObject.SetActive(true);
+		selectionGrid.cellSize = hullTurretCell;
 		ClearButtons();
 
 		for (int i = 0; i < turretNames.Count; i++) {
-			GarageButton b = Instantiate(scrollButtonPrefab, selectionContentParent).GetComponent<GarageButton>();
+			GarageButton b = Instantiate(scrollHullTurretPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
-			b.Init(turretNames[i], turretSprites[i], true);
+			b.Init(turretNames[i], turretSprites[i], mode: 1, level: 0,
+				equipped: turretNames[i] == MenuManager.instance.GetPlayerTurret());
 		}
+		currentSelectedMode = 1;
 	}
-	public void ScreenButtonClicked(string itemName, Sprite sprite, bool isTurret) {
-		if (!isTurret) {
-			SelectHull(itemName, sprite);
-			MenuManager.instance.SetHull(itemName);
+	//TODO: abilities have unequip
+	public void EquipItem() {
+		if (currentSelectedMode == 0) {
+			MenuManager.instance.SetHull(selectedHullName, isTemporary: false);
+			UpdateEquipped(selectedHullName, true, true);
+			selectedHullImage.sprite = selectedHullSprite;
+		} else if (currentSelectedMode == 1) {
+			MenuManager.instance.SetTurret(selectedTurretName, isTemporary: false);
+			UpdateEquipped(selectedTurretName, true, true);
+			selectedTurretImage.sprite = selectedTurretSprite;
 		} else {
-			SelectTurret(itemName, sprite);
-			MenuManager.instance.SetTurret(itemName);
+			//TODO: equip abilities
 		}
 	}
-	public void CloseSelectionScreen() {
-		selectionScreen.gameObject.SetActive(false);
+	private void UpdateEquipped(string itemName, bool equipped, bool onlyOne) {
+		foreach (GameObject g in spawnedButtons) {
+			if (g == null || !g.TryGetComponent(out GarageButton b)) continue;
+
+			if (b.GetItemName() != itemName) {
+				//if only one can be selected unequip all else
+				if (onlyOne && equipped) {
+					b.SetEquipped(false);
+				}
+			} else {
+				b.SetEquipped(equipped);
+			}
+
+		}
+	}
+	public void ScreenButtonClicked(string itemName, Sprite sprite, int mode) {
+		if (mode == 0) {
+			SelectHull(itemName, sprite);
+			MenuManager.instance.SetHull(itemName, isTemporary: true);
+		} else if (mode == 1) {
+			SelectTurret(itemName, sprite);
+			MenuManager.instance.SetTurret(itemName, isTemporary: true);
+		} else {
+			//TODO: set ability
+		}
 	}
 	public void OpenGarageTab() {
 		garageUI.gameObject.SetActive(true);
@@ -133,11 +162,14 @@ public class GarageManager : MonoBehaviour {
 		blur.SetBlur(1);
 	}
 	public void CloseGarageTab() {
-		CloseSelectionScreen();
 		garageUI.gameObject.SetActive(false);
 		MenuManager.instance.SetMenuScreen(true);
 		playerHealthCanvas.SetActive(true);
 		blur.SetBlur(0);
+
+		//revert hull/turret to non-temp state
+		MenuManager.instance.SetHull(PlayerPrefs.GetString("hull_name"), false);
+		MenuManager.instance.SetTurret(PlayerPrefs.GetString("turret_name"), false);
 
 		inGarage = false;
 	}
@@ -195,14 +227,18 @@ public class GarageManager : MonoBehaviour {
 				break;
 			}
 		}
+		EquipItem();
 		for (int i = 0; i < turretNames.Count; i++) {
 			if (turretNames[i] == PlayerPrefs.GetString("turret_name")) {
 				SelectTurret(turretNames[i], turretSprites[i]);
 				break;
 			}
 		}
+		EquipItem();
 
 		normalCameraPosition = playerCamera.transform.position;
+
+		OpenHulls();
 	}
 
 	private void Update() {
