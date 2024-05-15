@@ -20,9 +20,13 @@ namespace CSV.Parsers {
             int row = 0;
 
             InventoryInfo info = null;
-            List<string> tempModifier = new(), tempHeaders = new(), tempUpgradeHeaders = new();
+            List<string> tempModifier = new();
+            List<string> tempHeaders = new(); 
+            List<string> tempUpgradeHeaders = new();
 
-            if (isDebug) DebugUIManager.instance.LogOutput($"\n/*=====| {debugId} CSV RESET INIT |=====*/\n");
+            bool hasAdd = false;
+
+            if (isDebug) DebugUIManager.instance.LogOutput($"/*=====| {debugId} CSV RESET INIT |=====*/\n");
 
             foreach(string s in rowArray) {
                 row++;
@@ -49,24 +53,29 @@ namespace CSV.Parsers {
 
                         //Init the prior info.
                         if (info != null) {
-                            PushToDict(tempDict, info.id, info);
+                            if (hasAdd) PushToDict(tempDict, info.id, info);
+                            hasAdd = false;
                         }
 
-                        tempHeaders = tempModifier = tempUpgradeHeaders = new();
+                        tempHeaders = new List<string>();
+                        tempModifier = new List<string>();
+                        tempUpgradeHeaders = new List<string>();
+
                         info = new InventoryInfo(stringId);
                         
                         //Init tempModifiers
                         for(int i = 2; i < columnArray.Length; i++) {
                             if (TryParseModi(columnArray[i], row, out string tempModiId)) {
+                                if (tempModiId == nameof(CSVMd.Add)) {
+                                    hasAdd = true;
+                                }
                                 tempModifier.Add(tempModiId);
                             } else {
                                 string error = "ActiveId : Error with modifier extraction of : " + columnArray[i] + " @ row : " + row + " : Modi unable to parse [string] to string. Are Temp [Tags] properly written?";
                                 LogError(error); return false;
                             }
                         }
-                    } else if (id == nameof(CSVMd.Tags)) {
-                             //Try Get TempTags + bool checks
-                                //Init tempTags
+                    } else if (id == nameof(CSVMd.Tags)) { // TempTags
                         for(int i = 1; i < columnArray.Length; i++) {
                             if (TryParseModi(columnArray[i], row, out string tempTag)) {
                                 if (tempTag == nameof(CSVMd.Above)) {
@@ -76,8 +85,6 @@ namespace CSV.Parsers {
                                         string error = "Tags: Error with master extraction of : " + masterHeaders[i] + " : @ row : " + row + " : Modi unable to parse [string] to string. Are Master [Tags] properly written?";
                                         LogError(error); return false;
                                     }
-                                } else if (tempTag == nameof(CSVMd.Description)){
-                                    info.description = columnArray[i];
                                 } else {
                                     if (TryParseModi(columnArray[i], row, out string header)) 
                                         tempHeaders.Add(header);
@@ -130,24 +137,32 @@ namespace CSV.Parsers {
                 } else if (int.TryParse(columnArray[0], out int level)) {
                     for(int i = 1; i < columnArray.Length; i++) {
                         if (double.TryParse(columnArray[i], out double d)) {
-                            if (masterHeaders.Length > i + 1) {
-                                if (TryParseModi(masterHeaders[i + 1], row, out string modiId)) {
-                                    info.PushInventoryModi(modiId, d, level);
-                                } else {
-                                    string error = "MasterHeader : Error with masterHeader extraction of :  " + masterHeaders[i + 1] + " : @ row : " + row + " : MasterHeaders unable to parse from [string].";
-                                    LogError(error); return false;
-                                }
+                            if (tempHeaders.Count > i) {
+                                info.PushInventoryModi(tempHeaders[i], d, level);
                             } else {
-                                string error = "MasterHeader : Error with masterHeader.Count : @ row : " + row + " : MasterHeaders length is less than i + 1.";
+                                string error = "tempHeaders : Error with tempHeader.Count : @ row : " + row + " : TempHeaders length is less than i.";
+                                LogError(error); return false;
+                            }
+                        } else {
+                            if (tempHeaders.Count > i) {
+                                if (tempHeaders[i] == nameof(CSVMd.Display)) {
+                                    info.displayName = columnArray[i];
+                                } else if (tempHeaders[i] == nameof(CSVMd.Description)) {
+                                    info.description = columnArray[i];
+                                } //else if () // TODO: Other interpretations of the data that are string must go here.
+                            } else {
+                                string error = "tempHeaders : Error with tempHeader count : @ row : " + row + " : TempHeaders length is less than i.";
                                 LogError(error); return false;
                             }
                         }
                     }
                 } }
             }
-            if (info != null) 
-                PushToDict(tempDict, info.id, info);
-            if (isDebug) DebugUIManager.instance.LogOutput($"\n/*=====| {debugId} CSV RESET DONE |=====*/\n");
+            if (info != null) {
+                if (hasAdd) PushToDict(tempDict, info.id, info);
+            }
+                
+            if (isDebug) DebugUIManager.instance.LogOutput($"/*=====| {debugId} CSV RESET DONE |=====*/\n");
             dict = tempDict;
             return true;
         }
@@ -195,12 +210,15 @@ namespace CSV.Parsers {
         public readonly string id;
         public string displayName;
         public string description;
-        public int maxLevel;
         private Dictionary<int, Dictionary<string, double>> modiByLevel = new();
         private Dictionary<string, InGameUpgradeInfo> inGameUpgrades = new();
 
         public InventoryInfo(string id) {
             this.id = id;
+        }
+
+        public int GetMaxLevel() {
+            return modiByLevel.Keys.Max();
         }
 
         public void PushInventoryModi(string id, double input, int level) {
@@ -225,6 +243,10 @@ namespace CSV.Parsers {
         public override string ToString() {
             //Print all the modis and inGameUpgrades as well as all other info.
             string s = "ID : " + id + "\n";
+            s += "DisplayName : " + displayName + "\n";
+            s += "Description : " + description + "\n";
+            s += "MaxLevel : " + GetMaxLevel() + "\n";
+
             foreach(var kvp in modiByLevel) {
                 s += "Level : " + kvp.Key + "\n";
                 foreach(var kvp2 in kvp.Value) {

@@ -1,7 +1,7 @@
 [ACTIVE],[Level],[XPCost],[MoneyCost],[Cooldown],,
-[ActiveId],HealActive,[Add],[Unlocked],,,
-[Tags],[Above],[Above],[Above],[Above],,[Description]
-,1,100,200,10,,
+[ActiveId],HealActive,[Add],,,,
+[Tags],[Above],[Above],[Above],[Above],[Display],[Description]
+,1,100,200,10,Self Heal,Mucho Healing
 ,2,200,250,10,,
 ,3,300,300,10,,
 ,4,400,350,10,,
@@ -17,9 +17,9 @@
 ,[IUpgrade],Bigger Heals,200,4,,
 ,[IUpgrade],Bigger Balls,200,4,,
 ,,,,,,
-[ActiveId],RapidFireActive,[Add],[Unlocked],,,
-[Tags],[Above],[Above],[Above],[Above],,[Description]
-,1,100,200,10,,
+[ActiveId],RapidFireActive,[Add],,,,
+[Tags],[Above],[Above],[Above],[Above],[Display],[Description]
+,1,100,200,10,Rapid Fire,Many rounds per second
 ,2,200,250,10,,
 ,3,300,300,10,,
 ,4,400,350,10,,
@@ -35,7 +35,25 @@
 ,[IUpgrade],Bigger Heals,200,4,,
 ,[IUpgrade],Bigger Balls,200,4,,
 ,,,,,,
-[ActiveId],SentryActive,[Add],[Unlocked],,,
+[ActiveId],SentryActive,[Add],,,,
+[Tags],[Above],[Above],[Above],[Above],[Display],[Description]
+,1,100,200,10,Sentry,Deploys a friendly turret to cover fire.
+,2,200,250,10,,
+,3,300,300,10,,
+,4,400,350,10,,
+,5,500,400,10,,
+,6,600,450,10,,
+,7,700,500,10,,
+,8,800,550,10,,
+,9,900,600,10,,
+,10,1000,750,10,,
+,11,[Max],[Max],10,,
+,,,,,,
+,[UPTags],[UpgradeId],[UPCost],[Level],,
+,[IUpgrade],Bigger Heals,200,4,,
+,[IUpgrade],Bigger Balls,200,4,,
+,,,,,,
+[ActiveId],TEMPLETE,,,,,
 [Tags],[Above],[Above],[Above],[Above],,[Description]
 ,1,100,200,10,,
 ,2,200,250,10,,
