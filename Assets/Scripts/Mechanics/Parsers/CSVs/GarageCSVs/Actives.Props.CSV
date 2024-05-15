@@ -1,5 +1,5 @@
 [ACTIVE],[Level],[XPCost],[MoneyCost],[Cooldown],,
-[ActiveId],HealActive,[Add],,,,
+[StringId],HealActive,[Add],,,,
 [Tags],[Above],[Above],[Above],[Above],[Display],[Description]
 ,1,100,200,10,Self Heal,Mucho Healing
 ,2,200,250,10,,
@@ -17,7 +17,7 @@
 ,[IUpgrade],Bigger Heals,200,4,,
 ,[IUpgrade],Bigger Balls,200,4,,
 ,,,,,,
-[ActiveId],RapidFireActive,[Add],,,,
+[StringId],RapidFireActive,[Add],,,,
 [Tags],[Above],[Above],[Above],[Above],[Display],[Description]
 ,1,100,200,10,Rapid Fire,Many rounds per second
 ,2,200,250,10,,
@@ -35,7 +35,7 @@
 ,[IUpgrade],Bigger Heals,200,4,,
 ,[IUpgrade],Bigger Balls,200,4,,
 ,,,,,,
-[ActiveId],SentryActive,[Add],,,,
+[StringId],SentryActive,[Add],,,,
 [Tags],[Above],[Above],[Above],[Above],[Display],[Description]
 ,1,100,200,10,Sentry,Deploys a friendly turret to cover fire.
 ,2,200,250,10,,
@@ -53,7 +53,7 @@
 ,[IUpgrade],Bigger Heals,200,4,,
 ,[IUpgrade],Bigger Balls,200,4,,
 ,,,,,,
-[ActiveId],TEMPLETE,,,,,
+[StringId],TEMPLETE,,,,,
 [Tags],[Above],[Above],[Above],[Above],,[Description]
 ,1,100,200,10,,
 ,2,200,250,10,,

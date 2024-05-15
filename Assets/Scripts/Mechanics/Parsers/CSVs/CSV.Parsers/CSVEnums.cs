@@ -10,7 +10,7 @@ namespace CSV.Parsers {
 
         #region //*==| HULLS |==*//
 
-        Tank, Spider,
+        TankHull, SpiderHull,
 
         #endregion
 
@@ -34,7 +34,7 @@ namespace CSV.Parsers {
     }
 
     public enum CSVMd { // MODI == $"{nameof(Md.ModiId)}", & parse for [unlocked = 3] (compiler stuff lol)
-        /* TYPE */ ACTIVE, GADGET, HULL, TURRET, 
+        /* TYPE */ StringId,
         /* IDs */ ActiveId, UpgradeId, GadgetId, HullId, TurretId,
         /* BASIC */ Tags, Description, Display, Dupe, IUpgrade, UPTags,
         /* OPERATIONAL */ Add, Max, 
@@ -42,6 +42,8 @@ namespace CSV.Parsers {
         /* BASICS MODIS  */ XPCost, MoneyCost, GemCost, Above, Cooldown, 
         /* GENERAL MODIS */ Dmg, Reload, AmmoRegen, MaxHP, CritChance, CritDmg,
         /* MISC MODIS */ M1, M2, M3, M4, M5, M6, M7, M8, M9, M10,
+
+        /* HULL MODIS */ Health,
 
     }
 }

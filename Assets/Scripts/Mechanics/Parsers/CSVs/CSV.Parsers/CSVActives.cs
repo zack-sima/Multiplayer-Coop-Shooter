@@ -38,17 +38,17 @@ namespace CSV.Parsers {
 
                 //Try Get the [stringId] of the item.
                 { if (columnArray[0].Contains('[') && TryParseModi(columnArray[0], row, out string id)) {
-                    if (id == nameof(CSVMd.ActiveId)) {
+                    if (id == nameof(CSVMd.StringId)) {
 
                         if (columnArray.Length < 2) {
                             string error = "ActiveId : Error with array size : @ row : " + row + " : ColumnArray length is less than 2.";
-                            LogError(error); return false;
+                            LogError(error, debugId); return false;
                         }
 
                         //Try Get actual stringId
                         if (!TryGetString(columnArray, 1, out string stringId)) { 
                             string error = "ActiveId : Error with stringId extraction : " + columnArray[1] + " @ row : " + row + " : Is ActiveId properly written?";
-                            LogError(error); return false;
+                            LogError(error, debugId); return false;
                         }
 
                         //Init the prior info.
@@ -72,7 +72,7 @@ namespace CSV.Parsers {
                                 tempModifier.Add(tempModiId);
                             } else {
                                 string error = "ActiveId : Error with modifier extraction of : " + columnArray[i] + " @ row : " + row + " : Modi unable to parse [string] to string. Are Temp [Tags] properly written?";
-                                LogError(error); return false;
+                                LogError(error, debugId); return false;
                             }
                         }
                     } else if (id == nameof(CSVMd.Tags)) { // TempTags
@@ -83,19 +83,19 @@ namespace CSV.Parsers {
                                         tempHeaders.Add(header);
                                     else {
                                         string error = "Tags: Error with master extraction of : " + masterHeaders[i] + " : @ row : " + row + " : Modi unable to parse [string] to string. Are Master [Tags] properly written?";
-                                        LogError(error); return false;
+                                        LogError(error, debugId); return false;
                                     }
                                 } else {
                                     if (TryParseModi(columnArray[i], row, out string header)) 
                                         tempHeaders.Add(header);
                                     else {
                                         string error = "Tags: Error with column extraction of : " + columnArray[i] + " : @ row : " + row + " : Modi unable to parse [string] to string. Are [Tags] properly written?";
-                                        LogError(error); return false;
+                                        LogError(error, debugId); return false;
                                     }
                                 }
                             } else {
                                 string error = "Tags: Error with general extraction of : " + columnArray[i] + " : @ row : " + row + " : Modi unable to parse [string] to string. Are [Tags] properly written?";
-                                LogError(error); return false;
+                                LogError(error, debugId); return false;
                             }
                         }
                     } else if (id == nameof(CSVMd.UPTags)) {
@@ -105,7 +105,7 @@ namespace CSV.Parsers {
                                 tempUpgradeHeaders.Add(tempTag);
                             } else {
                                 string error = "UPTags : Error with upgrade tag extraction of : " + columnArray[i] + " : @ row : " + row + " : Modi unable to parse [string] to string.";
-                                LogError(error); return false;
+                                LogError(error, debugId); return false;
                             }
                         }
                     } else if (id == nameof(CSVMd.IUpgrade)) {
@@ -113,12 +113,12 @@ namespace CSV.Parsers {
                             //Read IUpgrades and init them on the inventory info.
                         if (info == null) {
                             string error = "IUpgrade : Error with null info : @ row : " + row + " : Info is null. Is the [ActiveId] properly written?";
-                            LogError(error); return false;
+                            LogError(error, debugId); return false;
                         }
 
                         if (!(columnArray.Length > 1)) {
                             string error = "IUpgrade : Error with array size : @ row : " + row + " : ColumnArray length is less than 1.";
-                            LogError(error); return false;
+                            LogError(error, debugId); return false;
                         }
 
                         InGameUpgradeInfo upgradeInfo = new InGameUpgradeInfo(columnArray[1]);
@@ -126,10 +126,10 @@ namespace CSV.Parsers {
                             if (double.TryParse(columnArray[i], out double modi)) {
                                 if (tempUpgradeHeaders.Count > i) {
                                     upgradeInfo.PushModi(tempUpgradeHeaders[i], modi);
-                                } else { LogError("IUpgrade : Error with tempUpgradeHeaderCount : @ row " + row + " : TempUpgradeHeadersCount less than current column array size. Are the UPTags propely written?"); return false; }
+                                } else { LogError(debugId, "IUpgrade : Error with tempUpgradeHeaderCount : @ row " + row + " : TempUpgradeHeadersCount less than current column array size. Are the UPTags propely written?"); return false; }
                             } else {
                                 string error = "IUpgrade : Error with column extraction of : " + columnArray[i] + " : @ row : " + row + " : Modi unable to parse to a double.";
-                                LogError(error); return false;
+                                LogError(error, debugId); return false;
                             }
                         }
                         info.PushInGameUpgrade(upgradeInfo);
@@ -141,7 +141,7 @@ namespace CSV.Parsers {
                                 info.PushInventoryModi(tempHeaders[i], d, level);
                             } else {
                                 string error = "tempHeaders : Error with tempHeader.Count : @ row : " + row + " : TempHeaders length is less than i.";
-                                LogError(error); return false;
+                                LogError(error, debugId); return false;
                             }
                         } else {
                             if (tempHeaders.Count > i) {
@@ -152,7 +152,7 @@ namespace CSV.Parsers {
                                 } //else if () // TODO: Other interpretations of the data that are string must go here.
                             } else {
                                 string error = "tempHeaders : Error with tempHeader count : @ row : " + row + " : TempHeaders length is less than i.";
-                                LogError(error); return false;
+                                LogError(error, debugId); return false;
                             }
                         }
                     }
@@ -170,9 +170,9 @@ namespace CSV.Parsers {
             DebugUIManager.instance.LogOutput(warning);
             Debug.LogWarning(warning);
         }
-        private static void LogError(string error) {
-            DebugUIManager.instance.LogOutput(error);
-            Debug.LogError(error);
+        private static void LogError(string error, string debugId) {
+            DebugUIManager.instance.LogOutput(debugId + " : " + error);
+            Debug.LogError(debugId + " : " + error);
         }
         private static bool TryGetString(string[] input, int index, out string output) {
             output = "";
@@ -205,6 +205,7 @@ namespace CSV.Parsers {
             }
         }
     }
+    
     [System.Serializable]
     public class InventoryInfo {
         public readonly string id;

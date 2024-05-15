@@ -1,39 +1,126 @@
-IDString,Cost,Damage,FireRate,MaxAmmo
-[Special],//NO FLOATS,//NO FLOATS,//NO FLOATS,//NO FLOATS
-[TurretId],Autocannon,,,
-0,100,150,10,35
-1,120,170,11,40
-2,130,180,12,45
-3,140,190,13,50
-4,150,200,14,55
-5,160,210,15,60
-6,170,220,16,65
-7,180,230,17,70
-8,190,240,18,75
-9,200,250,19,80
-10,[Max],260,20,85
-,,,,
-[TurretId],Double Cannon,,,
-0,100,250,6,20
-1,120,280,7,22
-2,[Max],310,8,24
-,,,,
-[TurretId],Explosive Cannon,,,
-0,100,650,5,4
-1,120,700,6,5
-2,[Max],750,7,6
-,,,,
-[TurretId],Flamethrower,,,
-0,100,70,15,50
-1,120,75,17,60
-2,[Max],80,19,70
-,,,,
-[TurretId],Gatling,,,
-0,100,60,20,50
-1,120,65,22,55
-2,[Max],70,24,60
-,,,,
-[TurretId],Mortar,,,
-0,100,600,5.0,3
-1,120,650,6.0,4
-2,[Max],700,7.0,5
+[ACTIVE],[Level],[XPCost],[MoneyCost],[Damage],[FireRate],[MaxAmmo],,
+[StringId],AutoCannon,[Add],,,,,,
+[Tags],[Above],[Above],[Above],[Above],[Above],[Above],[Display],[Description]
+,1,100,200,150,10,35,Auto Cannon,Fast firing.
+,2,200,250,170,11,40,,
+,3,300,300,180,12,45,,
+,4,400,350,190,13,50,,
+,5,500,400,200,14,55,,
+,6,600,450,210,15,60,,
+,7,700,500,220,16,65,,
+,8,800,550,230,17,70,,
+,9,900,600,240,18,75,,
+,10,1000,750,250,19,80,,
+,11,[Max],[Max],260,20,85,,
+,,,,,,,,
+,[UPTags],[UpgradeId],[UPCost],[Level],,,,
+,[IUpgrade],Bigger Heals,200,4,,,,
+,[IUpgrade],Bigger Balls,200,4,,,,
+,,,,,,,,
+[StringId],DoubleCannon,[Add],,,,,,
+[Tags],[Above],[Above],[Above],[Above],[Above],[Above],[Display],[Description]
+,1,100,200,250,6,20,Double Cannon,Double the trouble.
+,2,200,250,280,7,22,,
+,3,300,300,310,8,24,,
+,4,400,350,340,9,26,,
+,5,500,400,370,10,28,,
+,6,600,450,400,11,30,,
+,7,700,500,430,12,32,,
+,8,800,550,460,13,34,,
+,9,900,600,490,14,36,,
+,10,1000,750,520,15,38,,
+,11,[Max],[Max],550,16,40,,
+,,,,,,,,
+,[UPTags],[UpgradeId],[UPCost],[Level],,,,
+,[IUpgrade],Bigger Heals,200,4,,,,
+,[IUpgrade],Bigger Balls,200,4,,,,
+,,,,,,,,
+[StringId],ExplosiveCannon,[Add],,,,,,
+[Tags],[Above],[Above],[Above],[Above],[Above],[Above],[Display],[Description]
+,1,100,200,650,5,4,Explosive Cannon,Bring the pain!
+,2,200,250,700,6,5,,
+,3,300,300,750,7,6,,
+,4,400,350,800,8,7,,
+,5,500,400,850,9,8,,
+,6,600,450,900,10,9,,
+,7,700,500,950,11,10,,
+,8,800,550,1000,12,11,,
+,9,900,600,1050,13,12,,
+,10,1000,750,1100,14,13,,
+,11,[Max],[Max],1150,15,14,,
+,,,,,,,,
+,[UPTags],[UpgradeId],[UPCost],[Level],,,,
+,[IUpgrade],Bigger Heals,200,4,,,,
+,[IUpgrade],Bigger Balls,200,4,,,,
+,,,,,,,,
+[StringId],Flamethrower,[Add],,,,,,
+[Tags],[Above],[Above],[Above],[Above],[Above],[Above],[Display],[Description]
+,1,100,200,70,15,50,Flamerthrower,With a burning delight.
+,2,200,250,75,17,60,,
+,3,300,300,80,19,70,,
+,4,400,350,85,21,80,,
+,5,500,400,90,23,90,,
+,6,600,450,95,25,100,,
+,7,700,500,100,27,110,,
+,8,800,550,105,29,120,,
+,9,900,600,110,31,130,,
+,10,1000,750,115,33,140,,
+,11,[Max],[Max],120,35,150,,
+,,,,,,,,
+,[UPTags],[UpgradeId],[UPCost],[Level],,,,
+,[IUpgrade],Bigger Heals,200,4,,,,
+,[IUpgrade],Bigger Balls,200,4,,,,
+,,,,,,,,
+[StringId],Gatling,[Add],,,,,,
+[Tags],[Above],[Above],[Above],[Above],[Above],[Above],[Display],[Description]
+,1,100,200,60,20,50,Gatling,Thousands per second.
+,2,200,250,65,22,55,,
+,3,300,300,70,24,60,,
+,4,400,350,75,26,65,,
+,5,500,400,80,28,70,,
+,6,600,450,85,30,75,,
+,7,700,500,90,32,80,,
+,8,800,550,95,34,85,,
+,9,900,600,100,36,90,,
+,10,1000,750,105,38,95,,
+,11,[Max],[Max],110,40,100,,
+,,,,,,,,
+,[UPTags],[UpgradeId],[UPCost],[Level],,,,
+,[IUpgrade],Bigger Heals,200,4,,,,
+,[IUpgrade],Bigger Balls,200,4,,,,
+,,,,,,,,
+[StringId],Mortar,[Add],,,,,,
+[Tags],[Above],[Above],[Above],[Above],[Above],[Above],[Display],[Description]
+,1,100,200,600,5,3,Mortar,Shell them behind safety.
+,2,200,250,650,6,4,,
+,3,300,300,700,7,5,,
+,4,400,350,750,8,6,,
+,5,500,400,800,9,7,,
+,6,600,450,850,10,8,,
+,7,700,500,900,11,9,,
+,8,800,550,950,12,10,,
+,9,900,600,1000,13,11,,
+,10,1000,750,1050,14,12,,
+,11,[Max],[Max],1100,15,13,,
+,,,,,,,,
+,[UPTags],[UpgradeId],[UPCost],[Level],,,,
+,[IUpgrade],Bigger Heals,200,4,,,,
+,[IUpgrade],Bigger Balls,200,4,,,,
+,,,,,,,,
+[StringId],TEMPLETE,,,,,,,
+[Tags],[Above],[Above],[Above],[Above],,,[Display],[Description]
+,1,100,200,10,,,,
+,2,200,250,10,,,,
+,3,300,300,10,,,,
+,4,400,350,10,,,,
+,5,500,400,10,,,,
+,6,600,450,10,,,,
+,7,700,500,10,,,,
+,8,800,550,10,,,,
+,9,900,600,10,,,,
+,10,1000,750,10,,,,
+,11,[Max],[Max],10,,,,
+,,,,,,,,
+,[UPTags],[UpgradeId],[UPCost],[Level],,,,
+,[IUpgrade],Bigger Heals,200,4,,,,
+,[IUpgrade],Bigger Balls,200,4,,,,

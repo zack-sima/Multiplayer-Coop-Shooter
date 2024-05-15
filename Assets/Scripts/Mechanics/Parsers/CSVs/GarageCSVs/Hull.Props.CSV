@@ -1,11 +1,54 @@
-IDString,Cost,Health,Movement
-[Special],,,
-[HullId],Tank,,
-0,100,5000,5.0
-1,120,5250,5.25
-2,[Max],5500,5.5
-,,,
-[HullId],Spider,,
-0,100,5000,5.0
-1,120,5250,5.25
-2,[Max],4500,5.5
+[ACTIVE],[Level],[XPCost],[MoneyCost],[Health],,
+[StringId],TankHull,[Add],,,,
+[Tags],[Above],[Above],[Above],[Above],[Display],[Description]
+,1,100,200,5000,Tank,Tracks
+,2,200,250,5500,,
+,3,300,300,6000,,
+,4,400,350,6500,,
+,5,500,400,7000,,
+,6,600,450,7500,,
+,7,700,500,8500,,
+,8,800,550,9000,,
+,9,900,600,9500,,
+,10,1000,750,10000,,
+,11,[Max],[Max],10500,,
+,,,,,,
+,[UPTags],[UpgradeId],[UPCost],[Level],,
+,[IUpgrade],Bigger Heals,200,4,,
+,[IUpgrade],Bigger Balls,200,4,,
+,,,,,,
+[StringId],SpiderHull,[Add],,,,
+[Tags],[Above],[Above],[Above],[Above],[Display],[Description]
+,1,100,200,5000,Spider,Legs
+,2,200,250,5500,,
+,3,300,300,6000,,
+,4,400,350,6500,,
+,5,500,400,7000,,
+,6,600,450,7500,,
+,7,700,500,8500,,
+,8,800,550,9000,,
+,9,900,600,9500,,
+,10,1000,750,10000,,
+,11,[Max],[Max],10500,,
+,,,,,,
+,[UPTags],[UpgradeId],[UPCost],[Level],,
+,[IUpgrade],Bigger Heals,200,4,,
+,[IUpgrade],Bigger Balls,200,4,,
+,,,,,,
+[StringId],TEMPLETE,,,,,
+[Tags],[Above],[Above],[Above],[Above],,[Description]
+,1,100,200,10,,
+,2,200,250,10,,
+,3,300,300,10,,
+,4,400,350,10,,
+,5,500,400,10,,
+,6,600,450,10,,
+,7,700,500,10,,
+,8,800,550,10,,
+,9,900,600,10,,
+,10,1000,750,10,,
+,11,[Max],[Max],10,,
+,,,,,,
+,[UPTags],[UpgradeId],[UPCost],[Level],,
+,[IUpgrade],Bigger Heals,200,4,,
+,[IUpgrade],Bigger Balls,200,4,,

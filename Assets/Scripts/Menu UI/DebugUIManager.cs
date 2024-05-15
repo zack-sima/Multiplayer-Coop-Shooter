@@ -324,7 +324,7 @@ public class DebugUIManager : MonoBehaviour {
 
         Dictionary<string, InventoryInfo> abilities1 = new(), gadgets1 = new(), hulls1 = new(), turrets1 = new();
 
-        if (abilities1.TryParse(PlayerDataHandler.instance.GetActiveRawCSV()))  {
+        if (abilities1.TryParse(PlayerDataHandler.instance.GetActiveRawCSV(), debugId: "Abilities"))  {
             foreach(InventoryInfo i in abilities1.Values) {
                 var ability = new FileSystemNode($"{i.id}.txt", false) { Content = i.ToString() };
                 actives.AddChild(ability);
@@ -338,19 +338,19 @@ public class DebugUIManager : MonoBehaviour {
         //     }
         // }
 
-        // if (hulls1.TryParse(PlayerDataHandler.instance.GetHullRawCSV())) {
-        //     foreach(InventoryInfo i in hulls1.Values) {
-        //         var hull = new FileSystemNode($"{i.id}.txt", false) { Content = i.ToString() };
-        //         hulls.AddChild(hull);
-        //     }
-        // }
+        if (hulls1.TryParse(PlayerDataHandler.instance.GetHullRawCSV())) {
+            foreach(InventoryInfo i in hulls1.Values) {
+                var hull = new FileSystemNode($"{i.id}.txt", false) { Content = i.ToString() };
+                hulls.AddChild(hull);
+            }
+        }
 
-        // if (turrets1.TryParse(PlayerDataHandler.instance.GetTurretRawCSV())) {
-        //     foreach(InventoryInfo i in turrets1.Values) {
-        //         var turret = new FileSystemNode($"{i.id}.txt", false) { Content = i.ToString() };
-        //         turrets.AddChild(turret);
-        //     }
-        // }
+        if (turrets1.TryParse(PlayerDataHandler.instance.GetTurretRawCSV(), debugId: "Turrets")) {
+            foreach(InventoryInfo i in turrets1.Values) {
+                var turret = new FileSystemNode($"{i.id}.txt", false) { Content = i.ToString() };
+                turrets.AddChild(turret);
+            }
+        }
 
     }
 
