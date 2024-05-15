@@ -1,6 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using Unity.VisualScripting;
 using UnityEngine;
+using System.Linq;
+
 
 public class baseBrain : MonoBehaviour
 {
@@ -36,8 +41,61 @@ public class baseBrain : MonoBehaviour
     //point cap
     protected CapturePoint targetPoint = null;
 
+    protected int screenHeight = 9; // SCREEN HEIGHT IS Z AXIS
+    // Technically height of screen / 2
+    protected int screenWidth = 16;
     #endregion
     // Start is called before the first frame update
+    public bool TargetInRange(CombatEntity enemy)
+    {
+        bool inRange = false;
+        if (entity.GetTurret() is Mortar)
+        {
+            //mortar can shoot over obstacles
+            inRange = GroundDistance(transform.position, enemy.transform.position) < 13.5f;
+            return inRange;
+        }
+        else
+        {
+            //line of sight to target check; raycast all prevents other AI from blocking line of sight
+            Vector3 directionToPlayer = enemy.transform.position - transform.position;
+            directionToPlayer.y = 0;
+
+            RaycastHit[] hits = Physics.RaycastAll(transform.position + Vector3.up,
+                directionToPlayer.normalized, maxRange);
+
+            List<RaycastHit> hitsList = hits.ToList();
+            hitsList.Sort((hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
+
+            foreach (var hit in hitsList)
+            {
+                if (hit.collider.gameObject == enemy.gameObject)
+                {
+                    inRange = true;
+                    break;
+                }
+                else if (hit.collider.GetComponent<CombatEntity>() == null &&
+                    hit.collider.GetComponent<Bullet>() == null)
+                {
+
+                    //If hit is not a combat entity, break
+                    break;
+                }
+            }
+            return inRange;
+        }
+    }
+    public bool InVisionRange(CombatEntity enemy)
+    {
+        Vector3 enemyPosition = enemy.transform.position;
+        Vector3 selfPosition = transform.position;
+        if (Math.Abs(enemyPosition.x - selfPosition.x) < screenWidth
+        && Math.Abs(enemyPosition.z - selfPosition.z) < screenHeight)
+        {
+            return true;
+        }
+        else return false;
+    }
     public static float GroundDistance(Vector3 a, Vector3 b)
     {
         return Vector2.Distance(new Vector2(a.x, a.z), new Vector2(b.x, b.z));
@@ -117,7 +175,7 @@ public class baseBrain : MonoBehaviour
                 botPhaseTimer -= Time.deltaTime;
                 if (botPhaseTimer <= 0f)
                 {
-                    botPhaseTimer = inPausePhase ? Random.Range(burstTime, burstTime + 0.5f) : Random.Range(pauseTime, pauseTime + 0.3f);
+                    botPhaseTimer = inPausePhase ? UnityEngine.Random.Range(burstTime, burstTime + 0.5f) : UnityEngine.Random.Range(pauseTime, pauseTime + 0.3f);
                     inPausePhase = !inPausePhase;
                 }
                 if (!inPausePhase) { print("SHOOTING"); entity.TryFireMainWeapon(); }
