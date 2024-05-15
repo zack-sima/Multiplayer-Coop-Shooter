@@ -38,6 +38,12 @@ public class GarageManager : MonoBehaviour {
 	[SerializeField] private List<string> turretNames;
 	[SerializeField] private List<Sprite> turretSprites;
 
+	[SerializeField] private List<string> gadgetNames;
+	[SerializeField] private List<Sprite> gadgetSprites;
+
+	[SerializeField] private List<string> abilityNames;
+	[SerializeField] private List<Sprite> abilitySprites;
+
 	[SerializeField] private Camera playerCamera;
 	[SerializeField] private CameraBlur blur;
 
@@ -61,8 +67,10 @@ public class GarageManager : MonoBehaviour {
 	private Vector2 abilityCell = new(139, 125);
 
 	//stats display
-	private string selectedHullName = "", selectedTurretName = "", selectedAbilityName = "";
-	private Sprite selectedHullSprite = null, selectedTurretSprite = null, selectedAbilitySprite = null;
+	private string selectedHullName = "", selectedTurretName = "",
+		selectedGadgetName = "", selectedAbilityName = "";
+	private Sprite selectedHullSprite = null, selectedTurretSprite = null,
+		selectedGadgetSprite = null, selectedAbilitySprite = null;
 
 	private int currentSelectedMode = 0; //hull, turret, abilities
 
@@ -88,6 +96,18 @@ public class GarageManager : MonoBehaviour {
 
 		selectedItemText.text = turretName;
 	}
+	private void SelectGadget(string gadgetName, Sprite gadgetSprite) {
+		selectedGadgetName = gadgetName;
+		selectedGadgetSprite = gadgetSprite;
+
+		selectedItemText.text = gadgetName;
+	}
+	private void SelectAbility(string abilityName, Sprite abilitySprite) {
+		selectedAbilityName = abilityName;
+		selectedAbilitySprite = abilitySprite;
+
+		selectedItemText.text = abilityName;
+	}
 	public void OpenHulls() {
 		selectionScreenTitle.text = "HULLS";
 		selectionGrid.cellSize = hullTurretCell;
@@ -97,7 +117,7 @@ public class GarageManager : MonoBehaviour {
 			GarageButton b = Instantiate(scrollHullTurretPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
 			b.Init(hullNames[i], hullSprites[i], mode: 0, level: 0,
-				equipped: hullNames[i] == MenuManager.instance.GetPlayerHull());
+				equipped: hullNames[i] == PlayerPrefs.GetString("hull_name"));
 		}
 		currentSelectedMode = 0;
 	}
@@ -110,38 +130,74 @@ public class GarageManager : MonoBehaviour {
 			GarageButton b = Instantiate(scrollHullTurretPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
 			b.Init(turretNames[i], turretSprites[i], mode: 1, level: 0,
-				equipped: turretNames[i] == MenuManager.instance.GetPlayerTurret());
+				equipped: turretNames[i] == PlayerPrefs.GetString("turret_name"));
 		}
 		currentSelectedMode = 1;
 	}
-	//TODO: abilities have unequip
+	public void OpenGadgets() {
+		selectionScreenTitle.text = "GADGETS";
+		selectionGrid.cellSize = abilityCell;
+		ClearButtons();
+
+		for (int i = 0; i < gadgetNames.Count; i++) {
+			GarageButton b = Instantiate(scrollAbilityPrefab, selectionContentParent).GetComponent<GarageButton>();
+			spawnedButtons.Add(b.gameObject);
+			b.Init(gadgetNames[i], gadgetSprites[i], mode: 2, level: 0,
+				equipped: gadgetNames[i] == PlayerPrefs.GetString("gadget_name"));
+		}
+		currentSelectedMode = 2;
+	}
+	public void OpenAbilities() {
+		selectionScreenTitle.text = "ABILITIES";
+		selectionGrid.cellSize = abilityCell;
+		ClearButtons();
+
+		for (int i = 0; i < abilityNames.Count; i++) {
+			GarageButton b = Instantiate(scrollAbilityPrefab, selectionContentParent).GetComponent<GarageButton>();
+			spawnedButtons.Add(b.gameObject);
+			b.Init(abilityNames[i], abilitySprites[i], mode: 3, level: 0,
+				equipped: abilityNames[i] == PlayerPrefs.GetString("ability_name"));
+		}
+		currentSelectedMode = 3;
+	}
 	public void EquipItem() {
 		if (currentSelectedMode == 0) {
+			//equip hull
 			MenuManager.instance.SetHull(selectedHullName, isTemporary: false);
-			UpdateEquipped(selectedHullName, true, true);
+			UpdateEquipped(selectedHullName, false, true);
 			selectedHullImage.sprite = selectedHullSprite;
 		} else if (currentSelectedMode == 1) {
+			//equip turret
 			MenuManager.instance.SetTurret(selectedTurretName, isTemporary: false);
-			UpdateEquipped(selectedTurretName, true, true);
+			UpdateEquipped(selectedTurretName, false, true);
 			selectedTurretImage.sprite = selectedTurretSprite;
+		} else if (currentSelectedMode == 2) {
+			//equip gadget
+			bool equipped = UpdateEquipped(selectedGadgetName, true, false);
+			PlayerPrefs.SetInt("gadget_" + selectedGadgetName, equipped ? 1 : 0);
 		} else {
-			//TODO: equip abilities
+			//equip ability
+			bool equipped = UpdateEquipped(selectedAbilityName, true, false);
+			PlayerPrefs.SetInt("ability_" + selectedAbilityName, equipped ? 1 : 0);
 		}
 	}
-	private void UpdateEquipped(string itemName, bool equipped, bool onlyOne) {
+	private bool UpdateEquipped(string itemName, bool isToggle, bool onlyOne) {
 		foreach (GameObject g in spawnedButtons) {
 			if (g == null || !g.TryGetComponent(out GarageButton b)) continue;
 
 			if (b.GetItemName() != itemName) {
 				//if only one can be selected unequip all else
-				if (onlyOne && equipped) {
+				if (onlyOne) {
 					b.SetEquipped(false);
 				}
 			} else {
-				b.SetEquipped(equipped);
+				if (isToggle) {
+					b.ToggleEquipped();
+					return b.GetIsEquipped();
+				} else b.SetEquipped(true);
 			}
-
 		}
+		return true;
 	}
 	public void ScreenButtonClicked(string itemName, Sprite sprite, int mode) {
 		if (mode == 0) {
@@ -150,8 +206,10 @@ public class GarageManager : MonoBehaviour {
 		} else if (mode == 1) {
 			SelectTurret(itemName, sprite);
 			MenuManager.instance.SetTurret(itemName, isTemporary: true);
+		} else if (mode == 2) {
+			SelectGadget(itemName, sprite);
 		} else {
-			//TODO: set ability
+			SelectAbility(itemName, sprite);
 		}
 	}
 	public void OpenGarageTab() {
@@ -227,13 +285,34 @@ public class GarageManager : MonoBehaviour {
 				break;
 			}
 		}
+		currentSelectedMode = 0;
 		EquipItem();
+
 		for (int i = 0; i < turretNames.Count; i++) {
 			if (turretNames[i] == PlayerPrefs.GetString("turret_name")) {
 				SelectTurret(turretNames[i], turretSprites[i]);
 				break;
 			}
 		}
+		currentSelectedMode = 1;
+		EquipItem();
+
+		for (int i = 0; i < gadgetNames.Count; i++) {
+			if (gadgetNames[i] == PlayerPrefs.GetString("gadget_name")) {
+				SelectGadget(gadgetNames[i], gadgetSprites[i]);
+				break;
+			}
+		}
+		currentSelectedMode = 2;
+		EquipItem();
+
+		for (int i = 0; i < abilityNames.Count; i++) {
+			if (abilityNames[i] == PlayerPrefs.GetString("ability_name")) {
+				SelectGadget(abilityNames[i], abilitySprites[i]);
+				break;
+			}
+		}
+		currentSelectedMode = 3;
 		EquipItem();
 
 		normalCameraPosition = playerCamera.transform.position;

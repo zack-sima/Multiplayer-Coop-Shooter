@@ -9745,6 +9745,32 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 7f5b43cb978694f9bb181bc92010dbb8, type: 3}
   - {fileID: 21300000, guid: 25dca2f29c29b4825b074437505634e7, type: 3}
   - {fileID: 21300000, guid: f1cdc3d2f7a65422aa5b28a717f57e45, type: 3}
+  gadgetNames:
+  - a
+  - b
+  - c
+  - d
+  - e
+  - f
+  - g
+  - h
+  gadgetSprites:
+  - {fileID: 21300000, guid: dcf1faa0b04c24ebe8917ed462b59bf7, type: 3}
+  - {fileID: 21300000, guid: 8709cf0fb6146429ba2d96ec4d790238, type: 3}
+  - {fileID: 21300000, guid: adc7de8378256444f8afbdf3e027f9bf, type: 3}
+  - {fileID: 21300000, guid: 9a96e03a9239c4b11b7c2f084317d27f, type: 3}
+  - {fileID: 21300000, guid: c2ac11d4d54f14674bde750dac6caf41, type: 3}
+  - {fileID: 21300000, guid: 70b8586fb95584701aed47cc134a80bf, type: 3}
+  - {fileID: 21300000, guid: 9a4f72d3aa7ac4eaf80adfdd56fcf8b4, type: 3}
+  - {fileID: 21300000, guid: ff45a81ebad47488aa023a16d48e103f, type: 3}
+  abilityNames:
+  - aa
+  - bb
+  - cc
+  abilitySprites:
+  - {fileID: 21300000, guid: de76d80adde8a41e890bf1866535fd42, type: 3}
+  - {fileID: 21300000, guid: 8709cf0fb6146429ba2d96ec4d790238, type: 3}
+  - {fileID: 21300000, guid: ea9a7a0f5c1e4418a835386818927849, type: 3}
   playerCamera: {fileID: 1447961981}
   blur: {fileID: 1447961983}
 --- !u!4 &517357633
@@ -18574,7 +18600,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 517357632}
         m_TargetAssemblyTypeName: GarageManager, Assembly-CSharp
-        m_MethodName: OpenTurrets
+        m_MethodName: OpenAbilities
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -19049,7 +19075,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 517357632}
         m_TargetAssemblyTypeName: GarageManager, Assembly-CSharp
-        m_MethodName: OpenTurrets
+        m_MethodName: OpenGadgets
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

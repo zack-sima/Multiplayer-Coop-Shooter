@@ -453,8 +453,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff617ffd70a4348f6a654364a7b4e7dc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  equippedBand: {fileID: 0}
-  levelText: {fileID: 0}
+  equippedBand: {fileID: 3052939794789743340}
+  levelText: {fileID: 4764219854307029302}
   itemImage: {fileID: 3906152702566998716}
 --- !u!1 &1244037875803232055
 GameObject:

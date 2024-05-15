@@ -25,6 +25,12 @@ public class GarageButton : MonoBehaviour {
 	public string GetItemName() {
 		return itemName;
 	}
+	public bool GetIsEquipped() {
+		return equippedBand.activeInHierarchy;
+	}
+	public void ToggleEquipped() {
+		equippedBand.SetActive(!equippedBand.activeInHierarchy);
+	}
 	public void SetEquipped(bool equipped) {
 		equippedBand.SetActive(equipped);
 	}
