@@ -4,8 +4,6 @@ using UnityEngine;
 using CSV.Parsers;
 using Newtonsoft.Json;
 using TMPro;
-using UnityEngine.UI;
-using Unity.VisualScripting;
 
 [System.Serializable]
 public class PlayerDataHandler : MonoBehaviour {
@@ -30,13 +28,6 @@ public class PlayerDataHandler : MonoBehaviour {
     [SerializeField] public TextAsset activeRawCSV;
     [SerializeField] public TextAsset gadgetRawCSV, hullRawCSV, turretRawCSV;
 
-    [Header("Debug UI")]
-    [SerializeField] public GameObject debugScreen;
-    [SerializeField] public TextMeshProUGUI debugConsoleText;
-    [SerializeField] public TextMeshProUGUI debugInputText;
-    [SerializeField] public GameObject debugInputField;
-
-
     #endregion
 
     #region Members
@@ -47,68 +38,133 @@ public class PlayerDataHandler : MonoBehaviour {
     private Dictionary<string, InventoryInfo> gadgetsInfo = new();
     private Dictionary<string, InventoryInfo> hullsInfo = new();
     private Dictionary<string, InventoryInfo> turretsInfo = new();
+    private Dictionary<CSVId, List<string>> equippedInfos = new();
 
     #endregion
 
     #region Getters & Setters
 
-    public string GetActiveRawCSV() {
-        return activeRawCSV.text;
+    public string GetActiveRawCSV() { return activeRawCSV.text; }
+    public string GetGadgetRawCSV() { return gadgetRawCSV.text; }
+    public string GetHullRawCSV() { return hullRawCSV.text; }
+    public string GetTurretRawCSV() { return turretRawCSV.text; }
+    public Dictionary<string, InventoryInfo> GetActiveInfos() { return activesInfo; }
+    public Dictionary<string, InventoryInfo> GetGadgetInfos() { return gadgetsInfo; }
+    public Dictionary<string, InventoryInfo> GetHullInfos() { return hullsInfo; }
+    public Dictionary<string, InventoryInfo> GetTurretInfos() { return turretsInfo; }
+    public List<string> GetActiveInfoKeys() {
+        List<string> keys = new();
+        foreach (var item in activesInfo) { keys.Add(item.Key); }
+        return keys;
+    }
+    public List<string> GetGadgetInfoKeys() {
+        List<string> keys = new();
+        foreach (var item in gadgetsInfo) { keys.Add(item.Key); }
+        return keys;
+    }
+    public List<string> GetHullInfoKeys() {
+        List<string> keys = new();
+        foreach (var item in hullsInfo) { keys.Add(item.Key); }
+        return keys;
+    }
+    public List<string> GetTurretInfoKeys() {
+        List<string> keys = new();
+        foreach (var item in turretsInfo) { keys.Add(item.Key); }
+        return keys;
     }
 
-    public string GetGadgetRawCSV() {
-        return gadgetRawCSV.text;
+    /// <summary>
+    /// II = Inventory Info. Used for DOUBLE value types.
+    /// </summary>
+    public bool TryGetIIModifierValue(CSVId itemKey, CSVMd modiKey, int level, out double modiVal) {
+        if (TryGetActiveModi(nameof(itemKey), nameof(modiKey), level, out modiVal)) { return true; }
+        if (TryGetGadgetModi(nameof(itemKey), nameof(modiKey), level, out modiVal)) { return true; }
+        if (TryGetHullModi(nameof(itemKey), nameof(modiKey), level, out modiVal)) { return true; }
+        if (TryGetTurretModi(nameof(itemKey), nameof(modiKey), level, out modiVal)) { return true; }
+        return false;
     }
 
-    public string GetHullRawCSV() {
-        return hullRawCSV.text;
-    }
-
-    public string GetTurretRawCSV() {
-        return turretRawCSV.text;
-    }
-
-    public Dictionary<string, InventoryInfo> GetActiveInfos() {
-        return activesInfo;
-    }
-
-    public Dictionary<string, InventoryInfo> GetGadgetInfos() {
-        return gadgetsInfo;
-    }
-
-    public Dictionary<string, InventoryInfo> GetHullInfos() {
-        return hullsInfo;
-    }
-
-    public Dictionary<string, InventoryInfo> GetTurretInfos() {
-        return turretsInfo;
-    }
+    /// <summary>
+    /// II = Inventory Info. Used for STRING value types.
+    /// </summary>
+    // public bool TryGetIIModifierValue(CSVId itemKey, CSVMd modiKey, out string modiString) {
+    //     if (TryGetItemFromInfos(itemKey, out InventoryInfo info)) {
+    //         if (info.TryGetModi(modiKey, out modiString)) { return true; }
+    //     }
+    // }
 
     #endregion
 
     #region Methods
 
-
-
-    public bool ForceResetInfos(bool isDebug = false) {
-        return activesInfo.TryParse(activeRawCSV.text, isDebug, "Abilities");
-        //TODO: Populate with other inits.
+    private bool TryGetItemFromInfos(CSVId itemKey, out InventoryInfo info) {
+        if (activesInfo.TryGetValue(nameof(itemKey), out info)) { return true; }
+        if (gadgetsInfo.TryGetValue(nameof(itemKey), out info)) { return true; }
+        if (hullsInfo.TryGetValue(nameof(itemKey), out info)) { return true; }
+        if (turretsInfo.TryGetValue(nameof(itemKey), out info)) { return true; }
+        return false;
     }
 
-    // public static double GetInventoryInfo(string itemId, string modiId, int level) {
+    private bool TryGetActiveModi(string itemKey, string modiKey, int level, out double modiVal) {
+        if (activesInfo.TryGetValue(itemKey, out InventoryInfo info)) 
+            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
+        modiVal = 0;
+        return false;
+    }
 
-    // }
+    private bool TryGetGadgetModi(string itemKey, string modiKey, int level, out double modiVal) {
+        if (gadgetsInfo.TryGetValue(itemKey, out InventoryInfo info)) 
+            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
+        modiVal = 0;
+        return false;
+    }
+
+    private bool TryGetHullModi(string itemKey, string modiKey, int level, out double modiVal) {
+        if (hullsInfo.TryGetValue(itemKey, out InventoryInfo info)) 
+            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
+        modiVal = 0;
+        return false;
+    }
+
+    private bool TryGetTurretModi(string itemKey, string modiKey, int level, out double modiVal) {
+        if (turretsInfo.TryGetValue(itemKey, out InventoryInfo info)) 
+            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
+        modiVal = 0;
+        return false;
+    }
+
+    public bool ForceResetInfos(bool isDebug = false) {
+        float startTime = Time.realtimeSinceStartup;
+        bool returnBool = activesInfo.TryParse(activeRawCSV.text, isDebug, "Abilities") &&
+               gadgetsInfo.TryParse(gadgetRawCSV.text, isDebug, "Gadgets") &&
+               hullsInfo.TryParse(hullRawCSV.text, isDebug, "Hulls") &&
+               turretsInfo.TryParse(turretRawCSV.text, isDebug, "Turrets");
+        if (isDebug) {
+            DebugUIManager.instance?.LogOutput("\n Total time Taken : " + ((Time.realtimeSinceStartup - startTime)*1000f).ToString() + "ms\n");
+        }
+        return returnBool;
+    }
+
+
 
     #endregion
 
     #region UnityCallBacks
 
     private void Awake() {
-        instance = this;
+        if (instance == null) {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        } else {
+            Destroy(gameObject);
+        }
     }
 
+    private int testCounter = 0;    
+
     private void Update() {
-        
+        testCounter++;
+        Debug.LogWarning(testCounter);
     }
 
     #endregion

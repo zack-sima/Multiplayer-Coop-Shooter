@@ -8,6 +8,8 @@ namespace CSV.Parsers {
 
         // ! NEED TO BE NAMED THE SAME AS IN THE [----Id] SLOT !
 
+        ACTIVES, TURRETS, GADGETS, HULLS,
+
         #region //*==| HULLS |==*//
 
         TankHull, SpiderHull,
@@ -34,16 +36,15 @@ namespace CSV.Parsers {
     }
 
     public enum CSVMd { // MODI == $"{nameof(Md.ModiId)}", & parse for [unlocked = 3] (compiler stuff lol)
-        /* TYPE */ StringId,
-        /* IDs */ ActiveId, UpgradeId, GadgetId, HullId, TurretId,
-        /* BASIC */ Tags, Description, Display, Dupe, IUpgrade, UPTags,
+        /* TYPE */ StringId, 
+        /* BASIC */ Tags, Description, Display, IUpgrade, UPTags,
         /* OPERATIONAL */ Add, Max, 
         /* UPGRADES */ Level, UPCost,
-        /* BASICS MODIS  */ XPCost, MoneyCost, GemCost, Above, Cooldown, 
-        /* GENERAL MODIS */ Dmg, Reload, AmmoRegen, MaxHP, CritChance, CritDmg,
-        /* MISC MODIS */ M1, M2, M3, M4, M5, M6, M7, M8, M9, M10,
+        /* BASICS MODIS  */ XPCost, MoneyCost, Above, Cooldown, 
+        /* GENERAL MODIS */ Damage, Reload, AmmoRegen, MaxHP, CritChance, CritDamage,
 
         /* HULL MODIS */ Health,
+        /* TURRET MODIS */ /*Damage*/ FireRate, MaxAmmo,
 
     }
 }

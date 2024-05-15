@@ -1,10 +1,9 @@
-using System.Collections;
+
 using System.Collections.Generic;
-using Abilities;
 using UnityEngine;
 using TMPro;
 using CSV.Parsers;
-using UnityEditor.TerrainTools;
+using System;
 
 public class DebugUIManager : MonoBehaviour {
 
@@ -19,7 +18,9 @@ public class DebugUIManager : MonoBehaviour {
 
     #endregion
     #region Members
-
+#if UNITY_EDITOR
+    const bool allowDebugMenu = true; // enables/disables the usage of the debug menu.
+#endif
     private FileSystemNode root, currentDirectory;
 
     private Dictionary<string, System.Action<string[]>> commands = new Dictionary<string, System.Action<string[]>>();
@@ -31,6 +32,7 @@ public class DebugUIManager : MonoBehaviour {
     private const int MaxCommandHistory = 50; // Maximum number of commands to store
 
     private bool isWelcomeScreen = true;
+    bool firstInit = false;
 
     private string GetWelcomeScreen() {
         return @"
@@ -92,9 +94,7 @@ public class DebugUIManager : MonoBehaviour {
     }
 
     public void ToggleDebugMenu() {
-#if UNITY_EDITOR
-        debugScreen.SetActive(!debugScreen.activeSelf);
-#endif
+       if (allowDebugMenu) debugScreen.SetActive(!debugScreen.activeSelf);
     }
 
     public void LogOutput(string output) {
@@ -106,6 +106,7 @@ public class DebugUIManager : MonoBehaviour {
         LogOutput(output + " " + progressBar + "\n");
     }
 
+    //TODO: Make progress bar stay in one spot.
     private string GenerateProgressBar(float progress, int length = 20) {
         int filledLength = Mathf.RoundToInt(length * progress);
         string bar = new string('#', filledLength) + new string('-', length - filledLength);
@@ -159,8 +160,35 @@ public class DebugUIManager : MonoBehaviour {
             LogOutput("Usage: cat <file>");
             return;
         }
-        string result = ViewFileContent(args[1]);
-        LogOutput(result);
+
+        string pattern = args[1];
+
+        // Check if pattern contains a wildcard
+        if (pattern.Contains('*')) {
+            List<string> matchedFiles = new List<string>();
+
+            // Match all files in the current directory against the pattern
+            foreach (var child in currentDirectory.Children.Values) {
+                if (!child.IsDirectory && WildcardMatcher.IsMatch(child.Name, pattern)) {
+                    matchedFiles.Add(child.Name);
+                }
+            }
+
+            if (matchedFiles.Count == 0) {
+                LogOutput($"No files matching pattern: {pattern}");
+            } else {
+                foreach (string fileName in matchedFiles) {
+                    string result = ViewFileContent(fileName);
+                    LogOutput($"Content of {fileName}:\n{result}");
+                }
+            }
+        } else {
+            // If no wildcard, just view the file content
+            string result = ViewFileContent(pattern);
+            LogOutput(result);
+        }
+        // string result = ViewFileContent(args[1]);
+        // LogOutput(result);
     }
 
     private void ForceResetCommand(string[] args) {
@@ -176,6 +204,14 @@ public class DebugUIManager : MonoBehaviour {
         LogOutput("Available commands:");
         foreach (var cmd in commands.Keys) {
             LogOutput(cmd);
+        }
+    }
+
+    private static class WildcardMatcher {
+        public static bool IsMatch(string text, string pattern) {
+            // Escape regex special characters in the pattern, replace * with .*
+            string regexPattern = "^" + System.Text.RegularExpressions.Regex.Escape(pattern).Replace("\\*", ".*") + "$";
+            return System.Text.RegularExpressions.Regex.IsMatch(text, regexPattern);
         }
     }
 
@@ -319,6 +355,18 @@ public class DebugUIManager : MonoBehaviour {
         root.AddChild(gadgets);
         root.AddChild(turrets);
 
+        string enums = "CSV Modifiers:\n";
+        foreach(string s in Enum.GetNames(typeof(CSVMd))) {
+            enums += s + "\n";
+        }
+        enums += "\nCSV Ids:\n";
+        foreach(string s in Enum.GetNames(typeof(CSVId))) {
+            enums += s + "\n";
+        }
+        
+        var csvEnums = new FileSystemNode("csvenums.txt", false) { Content = enums };
+        root.AddChild(csvEnums);
+
         var verison = new FileSystemNode("version.txt", false) { Content = "0.0.1" };
         root.AddChild(verison);
 
@@ -331,12 +379,12 @@ public class DebugUIManager : MonoBehaviour {
             }
         }
 
-        // if (gadgets1.TryParse(PlayerDataHandler.instance.GetGadgetRawCSV())) {
-        //     foreach(InventoryInfo i in gadgets1.Values) {
-        //         var gadget = new FileSystemNode($"{i.id}.txt", false) { Content = i.ToString() };
-        //         gadgets.AddChild(gadget);
-        //     }
-        // }
+        if (gadgets1.TryParse(PlayerDataHandler.instance.GetGadgetRawCSV())) {
+            foreach(InventoryInfo i in gadgets1.Values) {
+                var gadget = new FileSystemNode($"{i.id}.txt", false) { Content = i.ToString() };
+                gadgets.AddChild(gadget);
+            }
+        }
 
         if (hulls1.TryParse(PlayerDataHandler.instance.GetHullRawCSV())) {
             foreach(InventoryInfo i in hulls1.Values) {
@@ -380,28 +428,28 @@ public class DebugUIManager : MonoBehaviour {
     #region //*==| AWAKE & UPDATE |==*//
 
     private void Awake() {
-        if (instance != null) {
+        if (!allowDebugMenu) {
             Destroy(gameObject);
             return;
         }
         instance = this;
-        DontDestroyOnLoad(gameObject);
-
-        
         InitRegisterCommands();
     }
 
     private void Start() {
-#if UNITY_EDITOR
-        InitFileSystem();
-#endif
-        debugConsoleText.alignment = TextAlignmentOptions.Center;
-        LogOutput(GetWelcomeScreen());
+        
     }
 
     private void Update() {
-#if UNITY_EDITOR
-        if ((Input.GetKey(KeyCode.LeftCommand) && Input.GetKeyDown(KeyCode.D)) || Input.GetKeyDown(KeyCode.BackQuote)) {
+        if (((Input.GetKey(KeyCode.LeftCommand) && Input.GetKeyDown(KeyCode.D)) || Input.GetKeyDown(KeyCode.BackQuote)) && allowDebugMenu) {
+            if (!debugScreen.activeInHierarchy) {
+                if (!firstInit) {
+                    firstInit = true;
+                    debugConsoleText.alignment = TextAlignmentOptions.Center;
+                    LogOutput(GetWelcomeScreen());
+                    InitFileSystem();
+                }
+            }
             debugScreen.SetActive(!debugScreen.activeSelf);
         }
         if (debugScreen.activeInHierarchy) {
@@ -418,7 +466,6 @@ public class DebugUIManager : MonoBehaviour {
             }
         }
     }
-#endif
 
     #endregion
 }
