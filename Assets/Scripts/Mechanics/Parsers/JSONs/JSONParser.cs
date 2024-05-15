@@ -5,15 +5,15 @@ using CSV;
 using Newtonsoft.Json;
 
 namespace JSON {
-    public static class JSONParser {
+	public static class JSONParser {
 
-        private enum JSONType {
-            TurretInfos,
-            HullInfos,
-            UpgradeInfos
-        }
+		private enum JSONType {
+			TurretInfos,
+			HullInfos,
+			UpgradeInfos
+		}
 
-        /* public static void PullAllInfosFromPersistent(this (Dictionary<string, GarageInfo> turretInfos, Dictionary<string, GarageInfo> hullInfos, Dictionary<string, UpgradeInfo> upgradeInfos) input) {
+		/* public static void PullAllInfosFromPersistent(this (Dictionary<string, GarageInfo> turretInfos, Dictionary<string, GarageInfo> hullInfos, Dictionary<string, UpgradeInfo> upgradeInfos) input) {
             input.turretInfos = PullTurretInfosFromPersistent();
             input.hullInfos = PullHullInfosFromPersistent();
             input.upgradeInfos = PullUpgradeInfosFromPersistent();
@@ -69,45 +69,45 @@ namespace JSON {
             if (PersistentDict.HasKey(nameof(JSONType.UpgradeInfos)))PersistentDict.DeleteKey(nameof(JSONType.UpgradeInfos));
         } */
 
-        //TODO: JSON up a class with a bunch of json strings as members, where each member is a Serialized JSON file pulled from the CSVs.
+		//TODO: JSON up a class with a bunch of json strings as members, where each member is a Serialized JSON file pulled from the CSVs.
 
-        public static Dictionary<string, GarageInfo> InitBlankTurretInfo() {
-            //Debug.LogWarning("InitBlankTurretInfo");
-            Dictionary<string, GarageInfo> temp = new();
-            temp.ParseTurretInfos(GarageManager.instance.turretCSVProps.text);
-            return temp;
-        }
+		//public static Dictionary<string, GarageInfo> InitBlankTurretInfo() {
+		//    //Debug.LogWarning("InitBlankTurretInfo");
+		//    Dictionary<string, GarageInfo> temp = new();
+		//    temp.ParseTurretInfos(GarageManager.instance.turretCSVProps.text);
+		//    return temp;
+		//}
 
-        public static Dictionary<string, GarageInfo> InitBlankHullInfo() {
-            //Debug.LogWarning("InitBlankHullInfo");
-            Dictionary<string, GarageInfo> temp = new();
-            temp.ParseHullInfos(GarageManager.instance.hullCSVProps.text);
-            return temp;
-        }
+		//public static Dictionary<string, GarageInfo> InitBlankHullInfo() {
+		//    //Debug.LogWarning("InitBlankHullInfo");
+		//    Dictionary<string, GarageInfo> temp = new();
+		//    temp.ParseHullInfos(GarageManager.instance.hullCSVProps.text);
+		//    return temp;
+		//}
 
-        public static Dictionary<string, UpgradeInfo> InitBlankUpgradesInfo() {
-            //Debug.LogWarning("InitBlankUpgradesInfo");
-            return new(); // TODO: Implement this
-        }
+		public static Dictionary<string, UpgradeInfo> InitBlankUpgradesInfo() {
+			//Debug.LogWarning("InitBlankUpgradesInfo");
+			return new(); // TODO: Implement this
+		}
 
 
 
-        // Serialize Dictionary<string, GarageInfo> to JSON
-        private static string SerializeGarageInfo(Dictionary<string, GarageInfo> dict) {
-            return JsonConvert.SerializeObject(dict);
-        }
+		// Serialize Dictionary<string, GarageInfo> to JSON
+		private static string SerializeGarageInfo(Dictionary<string, GarageInfo> dict) {
+			return JsonConvert.SerializeObject(dict);
+		}
 
-        // Deserialize JSON to Dictionary<string, GarageInfo>
-        private static Dictionary<string, GarageInfo> DeserializeGarageInfo(string json) {
-            return JsonConvert.DeserializeObject<Dictionary<string, GarageInfo>>(json);
-        }
+		// Deserialize JSON to Dictionary<string, GarageInfo>
+		private static Dictionary<string, GarageInfo> DeserializeGarageInfo(string json) {
+			return JsonConvert.DeserializeObject<Dictionary<string, GarageInfo>>(json);
+		}
 
-        private static Dictionary<string, UpgradeInfo> DeserializeUpgradeInfo(string json) {
-            return JsonConvert.DeserializeObject<Dictionary<string, UpgradeInfo>>(json);
-        }
+		private static Dictionary<string, UpgradeInfo> DeserializeUpgradeInfo(string json) {
+			return JsonConvert.DeserializeObject<Dictionary<string, UpgradeInfo>>(json);
+		}
 
-        private static string SerializeUpgradeInfo(Dictionary<string, UpgradeInfo> dict) {
-            return JsonConvert.SerializeObject(dict);
-        }
-    }
+		private static string SerializeUpgradeInfo(Dictionary<string, UpgradeInfo> dict) {
+			return JsonConvert.SerializeObject(dict);
+		}
+	}
 }
