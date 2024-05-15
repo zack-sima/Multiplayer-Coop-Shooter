@@ -83,13 +83,19 @@ public class EnemySpawner : NetworkBehaviour {
 		bool onBoss = isBossWave;
 		while (totalSpawnCredits >= minCost) {
 			int spawnChoice = rand.Next() % currEnemyCosts.Count;
+			
 
 			//find another enemy (don't allow expensive enemies if they take up >25% of total cost)
 			if (currEnemyCosts[spawnChoice] > totalSpawnCredits || !isBossWave &&
 				currEnemyCosts[spawnChoice] > minCost && currEnemyCosts[spawnChoice] * 4f > totalSpawnCredits) continue;
 
 			totalSpawnCredits -= currEnemyCosts[spawnChoice];
+			if (waveNum + 1 == 999) {
+				enemySpawns.Add(currEnemyPrefabs[4]);
+			}
+			else{
 			enemySpawns.Add(currEnemyPrefabs[spawnChoice]);
+			}
 
 			spawned++;
 
