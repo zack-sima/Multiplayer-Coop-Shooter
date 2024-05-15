@@ -5,6 +5,7 @@ using CSV.Parsers;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 [System.Serializable]
 public class PlayerDataHandler : MonoBehaviour {
@@ -49,10 +50,48 @@ public class PlayerDataHandler : MonoBehaviour {
 
     #endregion
 
+    #region Getters & Setters
+
+    public string GetActiveRawCSV() {
+        return activeRawCSV.text;
+    }
+
+    public string GetGadgetRawCSV() {
+        return gadgetRawCSV.text;
+    }
+
+    public string GetHullRawCSV() {
+        return hullRawCSV.text;
+    }
+
+    public string GetTurretRawCSV() {
+        return turretRawCSV.text;
+    }
+
+    public Dictionary<string, InventoryInfo> GetActiveInfos() {
+        return activesInfo;
+    }
+
+    public Dictionary<string, InventoryInfo> GetGadgetInfos() {
+        return gadgetsInfo;
+    }
+
+    public Dictionary<string, InventoryInfo> GetHullInfos() {
+        return hullsInfo;
+    }
+
+    public Dictionary<string, InventoryInfo> GetTurretInfos() {
+        return turretsInfo;
+    }
+
+    #endregion
+
     #region Methods
 
-    public void ForceResetInfos(bool debug = false) {
-        activesInfo.TryParse(activeRawCSV.text, debug);
+
+
+    public bool ForceResetInfos(bool isDebug = false) {
+        return activesInfo.TryParse(activeRawCSV.text, isDebug, "Abilities");
         //TODO: Populate with other inits.
     }
 
