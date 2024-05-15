@@ -69,14 +69,26 @@ public class DebugUIManager : MonoBehaviour {
     }
 
     public void LogOutput(string output) {
-        debugConsoleText.text = output + "\n" + debugConsoleText.text;
+        debugConsoleText.text += output + "\n";
     }
+
+    public void LogOutput(string output, float progress) {
+        string progressBar = GenerateProgressBar(progress);
+        debugConsoleText.text += output + " " + progressBar + "\n";
+    }
+
+    private string GenerateProgressBar(float progress, int length = 20) {
+        int filledLength = Mathf.RoundToInt(length * progress);
+        string bar = new string('#', filledLength) + new string('-', length - filledLength);
+        return $"[{bar}] {progress * 100:0.0}%";
+    }  
+
 
     private void RegisterCommand(string command, System.Action<string[]> action) {
         commands.Add(command, action);
     }
 
-    void GiveMoneyCommand(string[] args) {
+    private void GiveMoneyCommand(string[] args) {
         if (args.Length < 2) {
             LogOutput("Usage: giveMoney <amount>");
             return;
@@ -94,8 +106,12 @@ public class DebugUIManager : MonoBehaviour {
     }
 
     private void ForceResetCommand(string[] args) {
-        PlayerDataHandler.instance.ForceResetInfos(true);
-        LogOutput("All Infos Forced Reset.");
+        if (PlayerDataHandler.instance.ForceResetInfos(isDebug: true))
+            LogOutput("All infos succesfully force reset.");
+        else { 
+            LogOutput("Failed to force reset.");
+            Debug.LogError("Failed to force reset.");
+        }
     }
 
     private void HelpCommand(string[] args) {

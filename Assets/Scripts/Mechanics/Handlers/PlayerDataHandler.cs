@@ -51,8 +51,8 @@ public class PlayerDataHandler : MonoBehaviour {
 
     #region Methods
 
-    public void ForceResetInfos(bool debug = false) {
-        activesInfo.TryParse(activeRawCSV.text, debug);
+    public bool ForceResetInfos(bool isDebug = false) {
+        return activesInfo.TryParse(activeRawCSV.text, isDebug, "Abilities");
         //TODO: Populate with other inits.
     }
 

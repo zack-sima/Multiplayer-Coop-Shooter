@@ -5,68 +5,160 @@ using System.Text.RegularExpressions;
 using UnityEngine;
 using CSV;
 using UnityEngine.Rendering;
+using System.Linq;
+using Fusion;
 
 namespace CSV.Parsers {
     
     public static partial class CSVParserExtensions {
-        public static bool TryParse(this Dictionary<string, InventoryInfo> dict, string csv, bool debug) {
-
+        public static bool TryParse(this Dictionary<string, InventoryInfo> dict, string csv, bool isDebug = false, string debugId = "") {
+            var tempDict = dict;
             string[] rowArray = csv.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             
             string[] masterHeaders = rowArray[0].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
             rowArray[0] = "";
-            int row = -1;
+            int row = 0;
 
-            InventoryInfo info;
-            List<string> tempModifier, tempHeaders;
+            InventoryInfo info = null;
+            List<string> tempModifier = new(), tempHeaders = new(), tempUpgradeHeaders = new();
 
-            bool hasStringId = false;
+            if (isDebug) DebugUIManager.instance.LogOutput($"\n/*=====| {debugId} CSV RESET INIT |=====*/\n");
 
             foreach(string s in rowArray) {
                 row++;
                 string[] columnArray= s.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                if (columnArray.Length < 1) continue;
+                if (isDebug) { DebugUIManager.instance.LogOutput(debugId + " CSV Progress : ", ((float)row)/ ((float)rowArray.Length)); }
+
+                if (columnArray.Length < 2) continue;
 
                 //Try Get the [stringId] of the item.
-                { if (!hasStringId && TryParseModi(columnArray[0], row, out string id)) {
+                { if (columnArray[0].Contains('[') && TryParseModi(columnArray[0], row, out string id)) {
                     if (id == nameof(CSVMd.ActiveId)) {
 
-                        //Try Get actual stringId
-                        if (!TryGetString(columnArray, 1, out string stringId)) { continue; }
+                        if (columnArray.Length < 2) {
+                            string error = "ActiveId : Error with array size : @ row : " + row + " : ColumnArray length is less than 2.";
+                            LogError(error); return false;
+                        }
 
-                        hasStringId = true;
-                        tempHeaders = tempModifier = new();
+                        //Try Get actual stringId
+                        if (!TryGetString(columnArray, 1, out string stringId)) { 
+                            string error = "ActiveId : Error with stringId extraction : " + columnArray[1] + " @ row : " + row + " : Is ActiveId properly written?";
+                            LogError(error); return false;
+                        }
+
+                        //Init the prior info.
+                        if (info != null) {
+                            PushToDict(tempDict, info.id, info);
+                        }
+
+                        tempHeaders = tempModifier = tempUpgradeHeaders = new();
                         info = new InventoryInfo(stringId);
                         
                         //Init tempModifiers
                         for(int i = 2; i < columnArray.Length; i++) {
-                            //This is for the tempTags bruh
-                            // if (TryParseModi(secondCut[i], out string modiId)) {
-                            //     if (modiId == nameof(CSVMd.Above) && masterHeaders.Length > i)
-                            //         tempModifier.Add(masterHeaders[i]);
-                            // } else tempModifier.Add(modiId);
+                            if (TryParseModi(columnArray[i], row, out string tempModiId)) {
+                                tempModifier.Add(tempModiId);
+                            } else {
+                                string error = "ActiveId : Error with modifier extraction of : " + columnArray[i] + " @ row : " + row + " : Modi unable to parse [string] to string. Are Temp [Tags] properly written?";
+                                LogError(error); return false;
+                            }
+                        }
+                    } else if (id == nameof(CSVMd.Tags)) {
+                             //Try Get TempTags + bool checks
+                                //Init tempTags
+                        for(int i = 1; i < columnArray.Length; i++) {
+                            if (TryParseModi(columnArray[i], row, out string tempTag)) {
+                                if (tempTag == nameof(CSVMd.Above)) {
+                                    if (masterHeaders.Length > i && TryParseModi(masterHeaders[i], row, out string header)) 
+                                        tempHeaders.Add(header);
+                                    else {
+                                        string error = "Tags: Error with master extraction of : " + masterHeaders[i] + " : @ row : " + row + " : Modi unable to parse [string] to string. Are Master [Tags] properly written?";
+                                        LogError(error); return false;
+                                    }
+                                } else if (tempTag == nameof(CSVMd.Description)){
+                                    info.description = columnArray[i];
+                                } else {
+                                    if (TryParseModi(columnArray[i], row, out string header)) 
+                                        tempHeaders.Add(header);
+                                    else {
+                                        string error = "Tags: Error with column extraction of : " + columnArray[i] + " : @ row : " + row + " : Modi unable to parse [string] to string. Are [Tags] properly written?";
+                                        LogError(error); return false;
+                                    }
+                                }
+                            } else {
+                                string error = "Tags: Error with general extraction of : " + columnArray[i] + " : @ row : " + row + " : Modi unable to parse [string] to string. Are [Tags] properly written?";
+                                LogError(error); return false;
+                            }
+                        }
+                    } else if (id == nameof(CSVMd.UPTags)) {
+                        tempUpgradeHeaders = new();
+                        for(int i = 0; i < columnArray.Length; i++) {
+                            if (TryParseModi(columnArray[i], row, out string tempTag)) {
+                                tempUpgradeHeaders.Add(tempTag);
+                            } else {
+                                string error = "UPTags : Error with upgrade tag extraction of : " + columnArray[i] + " : @ row : " + row + " : Modi unable to parse [string] to string.";
+                                LogError(error); return false;
+                            }
+                        }
+                    } else if (id == nameof(CSVMd.IUpgrade)) {
+                        //Try Get IUpgrades + bool checks 
+                            //Read IUpgrades and init them on the inventory info.
+                        if (info == null) {
+                            string error = "IUpgrade : Error with null info : @ row : " + row + " : Info is null. Is the [ActiveId] properly written?";
+                            LogError(error); return false;
                         }
 
+                        if (!(columnArray.Length > 1)) {
+                            string error = "IUpgrade : Error with array size : @ row : " + row + " : ColumnArray length is less than 1.";
+                            LogError(error); return false;
+                        }
 
+                        InGameUpgradeInfo upgradeInfo = new InGameUpgradeInfo(columnArray[1]);
+                        for(int i = 2; i < columnArray.Length; i++) {
+                            if (double.TryParse(columnArray[i], out double modi)) {
+                                if (tempUpgradeHeaders.Count > i) {
+                                    upgradeInfo.PushModi(tempUpgradeHeaders[i], modi);
+                                } else { LogError("IUpgrade : Error with tempUpgradeHeaderCount : @ row " + row + " : TempUpgradeHeadersCount less than current column array size. Are the UPTags propely written?"); return false; }
+                            } else {
+                                string error = "IUpgrade : Error with column extraction of : " + columnArray[i] + " : @ row : " + row + " : Modi unable to parse to a double.";
+                                LogError(error); return false;
+                            }
+                        }
+                        info.PushInGameUpgrade(upgradeInfo);
                     }
-                }}
-
-                //Try Get TempTags + bool checks
-                    //Init tempTags
-
-                //Try Get Levels + bool checks 
-                    //Read levels and init modifiers.
-
-                //Try Get IUpgrades + bool checks 
-                    //Read IUpgrades and init them on the inventory info.
-
-                //Push to the main dict.
-
+                } else if (int.TryParse(columnArray[0], out int level)) {
+                    for(int i = 1; i < columnArray.Length; i++) {
+                        if (double.TryParse(columnArray[i], out double d)) {
+                            if (masterHeaders.Length > i + 1) {
+                                if (TryParseModi(masterHeaders[i + 1], row, out string modiId)) {
+                                    info.PushInventoryModi(modiId, d, level);
+                                } else {
+                                    string error = "MasterHeader : Error with masterHeader extraction of :  " + masterHeaders[i + 1] + " : @ row : " + row + " : MasterHeaders unable to parse from [string].";
+                                    LogError(error); return false;
+                                }
+                            } else {
+                                string error = "MasterHeader : Error with masterHeader.Count : @ row : " + row + " : MasterHeaders length is less than i + 1.";
+                                LogError(error); return false;
+                            }
+                        }
+                    }
+                } }
             }
+            if (info != null) 
+                PushToDict(tempDict, info.id, info);
+            if (isDebug) DebugUIManager.instance.LogOutput($"\n/*=====| {debugId} CSV RESET DONE |=====*/\n");
+            dict = tempDict;
             return true;
         }
-
+        private static void LogWarning(string warning) {
+            DebugUIManager.instance.LogOutput(warning);
+            Debug.LogWarning(warning);
+        }
+        private static void LogError(string error) {
+            DebugUIManager.instance.LogOutput(error);
+            Debug.LogError(error);
+        }
         private static bool TryGetString(string[] input, int index, out string output) {
             output = "";
             if (input.Length > index) {
@@ -90,13 +182,10 @@ namespace CSV.Parsers {
             return true;
         }
         private static string ExtractStringId(string input) {
-            var match = Regex.Match(input, @"\[(.*?)\]");
-            if (match.Success)
-            {
+            var match = Regex.Match(input, @"\[([^\[\]]*)\]");
+            if (match.Success) {
                 return match.Groups[1].Value;
-            }
-            else
-            {
+            } else {
                 return null;
             }
         }
@@ -107,19 +196,17 @@ namespace CSV.Parsers {
         public string displayName;
         public string description;
         public int maxLevel;
-        private Dictionary<(string, int), double> modiByLevel = new();
+        private Dictionary<int, Dictionary<string, double>> modiByLevel = new();
         private Dictionary<string, InGameUpgradeInfo> inGameUpgrades = new();
 
         public InventoryInfo(string id) {
             this.id = id;
         }
 
-        public void PushInventoryModi(string id, float input, int level) {
-            if (modiByLevel.ContainsKey((id, level))) {
-                modiByLevel[(id, level)] = input;
-            } else {
-                modiByLevel.Add((id, level), input);
-            }
+        public void PushInventoryModi(string id, double input, int level) {
+            if (!modiByLevel.ContainsKey(level)) modiByLevel.Add(level, new Dictionary<string, double>());
+            if (!modiByLevel[level].ContainsKey(id)) modiByLevel[level].Add(id, input);
+            else modiByLevel[level][id] = input;
         }
 
         public void PushInGameUpgrade(InGameUpgradeInfo input) {
@@ -129,11 +216,24 @@ namespace CSV.Parsers {
 
         public bool TryGetModi(string id, int level, out double output) {
             output = 0;
-            if (modiByLevel.ContainsKey((id, level))) {
-                output = modiByLevel[(id, level)];
+            if (modiByLevel.ContainsKey(level) && modiByLevel[level].ContainsKey(id)) {
+                output = modiByLevel[level][id];
                 return true;
             }
             return false;
+        }
+        public override string ToString() {
+            //Print all the modis and inGameUpgrades as well as all other info.
+            string s = "ID : " + id + "\n";
+            foreach(var kvp in modiByLevel) {
+                s += "Level : " + kvp.Key + "\n";
+                foreach(var kvp2 in kvp.Value) {
+                    s += "Modi : " + kvp2.Key + " : " + kvp2.Value + "\n";
+                }
+                s += "\n";
+            }
+            s += "\n";
+            return s;
         }
     }
 
@@ -141,9 +241,33 @@ namespace CSV.Parsers {
     public class InGameUpgradeInfo {
         public readonly string id;
         public List<string> softRequirements = new(), hardRequirements = new(), mutualRequirements = new();
-        public Dictionary<(string, int), float> modi = new();
+        public Dictionary<string, double> modi = new();
         public int maxLevel = 1;
         public InGameUpgradeInfo(string id) { this.id = id;} 
-        
+
+        public bool TryGetModi(string id, out double output) {
+            output = 0;
+            if (modi.ContainsKey(id)) {
+                output = modi[id];
+                return true;
+            }
+            return false;
+        }
+
+        public void PushModi(string id, double input) {
+            if (!modi.ContainsKey(id)) modi.Add(id, input);
+            else modi[id] = input;
+        }
+
+        public override string ToString() {
+            //return all the modis and requirements.
+            string s = "ID : " + id + "\n";
+            foreach(var kvp in modi) {
+                s += "Modi : " + kvp.Key + " : " + kvp.Value + "\n";
+            }
+            s += "\n";
+            return s;
+        }
+
     }
 }
