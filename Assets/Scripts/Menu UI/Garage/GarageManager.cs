@@ -49,7 +49,7 @@ public class GarageManager : MonoBehaviour {
 	private Vector3 normalCameraPosition;
 
 	//interpolate to this
-	private Vector3 targetGarageCameraPosition = new(-1.5f, 1.29f, -5.7f);
+	private Vector3 targetGarageCameraPosition = new(-1.9f, 1.29f, -5.7f);
 
 	private bool hullMode = true;
 
