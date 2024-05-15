@@ -10,24 +10,27 @@ public class GarageManager : MonoBehaviour {
 
 	public static GarageManager instance;
 
+	private const int MAX_ABILITIES = 3;
+	private const int MAX_GADGETS = 6;
+
 	#endregion
 
 	#region Prefabs
 
-	[SerializeField] private GameObject scrollButtonPrefab;
+	[SerializeField] private GameObject scrollHullTurretPrefab, scrollAbilityPrefab;
 
 	#endregion
 
 	#region References
 
 	[SerializeField] private RectTransform garageUI;
-	[SerializeField] private Image garageImage;
 
 	[SerializeField] private GameObject playerHealthCanvas;
 	public GameObject GetPlayerHealthCanvas() { return playerHealthCanvas; }
 
-	[SerializeField] private RectTransform selectionScreen, selectionContentParent;
-	[SerializeField] private TMP_Text selectionScreenTitle;
+	[SerializeField] private RectTransform selectionContentParent;
+	[SerializeField] private GridLayoutGroup selectionGrid;
+	[SerializeField] private TMP_Text selectionScreenTitle, selectedItemText;
 
 	[SerializeField] private Image selectedHullImage, selectedTurretImage;
 
@@ -38,7 +41,14 @@ public class GarageManager : MonoBehaviour {
 	[SerializeField] private List<string> turretNames;
 	[SerializeField] private List<Sprite> turretSprites;
 
+	[SerializeField] private List<string> gadgetNames;
+	[SerializeField] private List<Sprite> gadgetSprites;
+
+	[SerializeField] private List<string> abilityNames;
+	[SerializeField] private List<Sprite> abilitySprites;
+
 	[SerializeField] private Camera playerCamera;
+	[SerializeField] private CameraBlur blur;
 
 	#endregion
 
@@ -48,16 +58,26 @@ public class GarageManager : MonoBehaviour {
 
 	private Vector3 normalCameraPosition;
 
-	//interpolate to this //old: new(-1f, 1.8f, -5.5f);
-	private Vector3 targetGarageCameraPosition = new(-0.3f, 1.4f, -5.7f);
-
-	private bool hullMode = true;
+	//interpolate to this
+	private Vector3 targetGarageCameraPosition = new(-1.9f, 1.29f, -5.7f);
 
 	private bool inGarage = false;
 	public bool GetIsInGarage() { return inGarage; }
 
+	//spacings
+	// 215/125 for hull/turret; 139/125 for abilities
+	private Vector2 hullTurretCell = new(215, 125);
+	private Vector2 abilityCell = new(139, 125);
+
 	//stats display
-	private string selectedHullName = "", selectedTurretName = "";
+	private string selectedHullName = "", selectedTurretName = "",
+		selectedGadgetName = "", selectedAbilityName = "";
+	private Sprite selectedHullSprite = null, selectedTurretSprite = null,
+		selectedGadgetSprite = null, selectedAbilitySprite = null;
+
+	private bool selectedAbilityIsOn = false;
+
+	private int currentSelectedMode = 0; //hull, turret, abilities
 
 	#endregion
 
@@ -70,101 +90,207 @@ public class GarageManager : MonoBehaviour {
 		spawnedButtons.Clear();
 	}
 	private void SelectHull(string hullName, Sprite hullSprite) {
-		selectedHullImage.sprite = hullSprite;
+		selectedHullSprite = hullSprite;
 		selectedHullName = hullName;
 
-		CloseSelectionScreen();
+		selectedItemText.text = hullName;
 	}
 	private void SelectTurret(string turretName, Sprite turretSprite) {
-		selectedTurretImage.sprite = turretSprite;
 		selectedTurretName = turretName;
+		selectedTurretSprite = turretSprite;
 
-		CloseSelectionScreen();
+		selectedItemText.text = turretName;
 	}
-	private void UpdateStats() {
-		// if (!turretStats.ContainsKey(selectedTurretName) ||
-		// 	!hullStats.ContainsKey(selectedHullName)) return;
+	private void SelectGadget(string gadgetName, Sprite gadgetSprite) {
+		selectedGadgetName = gadgetName;
+		selectedGadgetSprite = gadgetSprite;
 
-		// damageDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-		// 	$"{turretStats[selectedTurretName].damage}";
-		// ammoDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-		// 	$"{turretStats[selectedTurretName].ammo}";
-		// shootRateDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-		// 	$"{turretStats[selectedTurretName].shootSpeed:0.0}/s";
-		// speedDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-		// 	$"{hullStats[selectedHullName].speed:0.0}m/s";
-		// healthDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-		// 	$"{hullStats[selectedHullName].hp}";
+		selectedItemText.text = gadgetName;
+	}
+	private void SelectAbility(string abilityName, Sprite abilitySprite) {
+		selectedAbilityName = abilityName;
+		selectedAbilitySprite = abilitySprite;
 
-		// damageDisplay.GetChild(1).localScale = new Vector2(
-		// 	turretStats[selectedTurretName].damage / (float)bestTurret.damage, 1);
-		// ammoDisplay.GetChild(1).localScale = new Vector2(
-		// 	turretStats[selectedTurretName].ammo / (float)bestTurret.ammo, 1);
-		// shootRateDisplay.GetChild(1).localScale = new Vector2(
-		// 	(float)(turretStats[selectedTurretName].shootSpeed / bestTurret.shootSpeed), 1);
-		// speedDisplay.GetChild(1).localScale = new Vector2(
-		// 	(float)(hullStats[selectedHullName].speed / bestHull.speed), 1);
-		// healthDisplay.GetChild(1).localScale = new Vector2(
-		// 	(float)hullStats[selectedHullName].hp / bestHull.hp, 1);
-
+		selectedItemText.text = abilityName;
 	}
 	public void OpenHulls() {
-		if (hullMode && selectionScreen.gameObject.activeInHierarchy) {
-			CloseSelectionScreen();
-			return;
-		}
-		hullMode = true;
 		selectionScreenTitle.text = "HULLS";
-		selectionScreen.gameObject.SetActive(true);
+		selectionGrid.cellSize = hullTurretCell;
 		ClearButtons();
 
 		for (int i = 0; i < hullNames.Count; i++) {
-			GarageButton b = Instantiate(scrollButtonPrefab, selectionContentParent).GetComponent<GarageButton>();
+			GarageButton b = Instantiate(scrollHullTurretPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
-			b.Init(hullNames[i], hullSprites[i], false);
+			b.Init(hullNames[i], hullSprites[i], mode: 0, level: 0,
+				equipped: hullNames[i] == PlayerPrefs.GetString("hull_name"));
 		}
+		currentSelectedMode = 0;
 	}
 	public void OpenTurrets() {
-		if (!hullMode && selectionScreen.gameObject.activeInHierarchy) {
-			CloseSelectionScreen();
-			return;
-		}
-		hullMode = false;
 		selectionScreenTitle.text = "TURRETS";
-		selectionScreen.gameObject.SetActive(true);
+		selectionGrid.cellSize = hullTurretCell;
 		ClearButtons();
 
 		for (int i = 0; i < turretNames.Count; i++) {
-			GarageButton b = Instantiate(scrollButtonPrefab, selectionContentParent).GetComponent<GarageButton>();
+			GarageButton b = Instantiate(scrollHullTurretPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
-			b.Init(turretNames[i], turretSprites[i], true);
+			b.Init(turretNames[i], turretSprites[i], mode: 1, level: 0,
+				equipped: turretNames[i] == PlayerPrefs.GetString("turret_name"));
 		}
+		currentSelectedMode = 1;
 	}
-	public void ScreenButtonClicked(string itemName, Sprite sprite, bool isTurret) {
-		if (!isTurret) {
-			SelectHull(itemName, sprite);
-			MenuManager.instance.SetHull(itemName);
+	public void OpenGadgets() {
+		SetGadgetsText();
+		selectionGrid.cellSize = abilityCell;
+		ClearButtons();
+
+		for (int i = 0; i < gadgetNames.Count; i++) {
+			GarageButton b = Instantiate(scrollAbilityPrefab, selectionContentParent).GetComponent<GarageButton>();
+			spawnedButtons.Add(b.gameObject);
+			b.Init(gadgetNames[i], gadgetSprites[i], mode: 2, level: 0,
+				equipped: PlayerPrefs.GetInt("gadget_" + gadgetNames[i]) == 1);
+		}
+		currentSelectedMode = 2;
+	}
+	public void OpenAbilities() {
+		SetAbilitiesText();
+		selectionGrid.cellSize = abilityCell;
+		ClearButtons();
+
+		for (int i = 0; i < abilityNames.Count; i++) {
+			GarageButton b = Instantiate(scrollAbilityPrefab, selectionContentParent).GetComponent<GarageButton>();
+			spawnedButtons.Add(b.gameObject);
+			b.Init(abilityNames[i], abilitySprites[i], mode: 3, level: 0,
+				equipped: PlayerPrefs.GetInt("ability_" + abilityNames[i]) == 1);
+		}
+		currentSelectedMode = 3;
+	}
+	private void EquipItem(bool saveAbilities) {
+		if (currentSelectedMode == 0) {
+			//equip hull
+			MenuManager.instance.SetHull(selectedHullName, isTemporary: false);
+			UpdateEquipped(selectedHullName, false, true);
+			selectedHullImage.sprite = selectedHullSprite;
+		} else if (currentSelectedMode == 1) {
+			//equip turret
+			MenuManager.instance.SetTurret(selectedTurretName, isTemporary: false);
+			UpdateEquipped(selectedTurretName, false, true);
+			selectedTurretImage.sprite = selectedTurretSprite;
+		} else if (currentSelectedMode == 2) {
+			//equip gadget if under max
+			if (!saveAbilities || selectedAbilityIsOn || CountGadgets() < MAX_GADGETS) {
+				bool equipped = UpdateEquipped(selectedGadgetName, true, false);
+				PlayerPrefs.SetInt("gadget_" + selectedGadgetName, equipped ? 1 : 0);
+				if (saveAbilities) SaveAbilities();
+				selectedAbilityIsOn = equipped;
+
+				SetGadgetsText();
+			}
 		} else {
-			SelectTurret(itemName, sprite);
-			MenuManager.instance.SetTurret(itemName);
+			//equip ability if under max
+			if (!saveAbilities || selectedAbilityIsOn || CountAbilities() < MAX_ABILITIES) {
+				bool equipped = UpdateEquipped(selectedAbilityName, true, false);
+				PlayerPrefs.SetInt("ability_" + selectedAbilityName, equipped ? 1 : 0);
+				if (saveAbilities) SaveAbilities();
+				selectedAbilityIsOn = equipped;
+
+				SetAbilitiesText();
+			}
 		}
 	}
-	public void CloseSelectionScreen() {
-		selectionScreen.gameObject.SetActive(false);
+	private void SetAbilitiesText() {
+		selectionScreenTitle.text = $"ABILITIES ({CountAbilities()}/{MAX_ABILITIES})";
+	}
+	private void SetGadgetsText() {
+		selectionScreenTitle.text = $"GADGETS ({CountGadgets()}/{MAX_GADGETS})";
+	}
+	public void EquipItem() {
+		EquipItem(true);
+	}
+	private int CountGadgets() {
+		int gadgets = 0;
+		for (int i = 0; i < gadgetNames.Count; i++) {
+			if (PlayerPrefs.GetInt("gadget_" + gadgetNames[i]) == 1) {
+				gadgets++;
+			}
+		}
+		return gadgets;
+	}
+	private int CountAbilities() {
+		int abilities = 0;
+		for (int i = 0; i < abilityNames.Count; i++) {
+			if (PlayerPrefs.GetInt("ability_" + abilityNames[i]) == 1) {
+				abilities++;
+			}
+		}
+		return abilities;
+	}
+	//loads gadgets and abilities into one big persistentdict list
+	private void SaveAbilities() {
+		List<string> abilitiesToLoad = new();
+
+		for (int i = 0; i < gadgetNames.Count; i++) {
+			if (PlayerPrefs.GetInt("gadget_" + gadgetNames[i]) == 1) {
+				abilitiesToLoad.Add(gadgetNames[i]);
+			}
+		}
+		for (int i = 0; i < abilityNames.Count; i++) {
+			if (PlayerPrefs.GetInt("ability_" + abilityNames[i]) == 1) {
+				abilitiesToLoad.Add(abilityNames[i]);
+			}
+		}
+		PersistentDict.SetStringList("active_abilities", abilitiesToLoad);
+	}
+	private bool UpdateEquipped(string itemName, bool isToggle, bool onlyOne) {
+		foreach (GameObject g in spawnedButtons) {
+			if (g == null || !g.TryGetComponent(out GarageButton b)) continue;
+
+			if (b.GetItemName() != itemName) {
+				//if only one can be selected unequip all else
+				if (onlyOne) {
+					b.SetEquipped(false);
+				}
+			} else {
+				if (isToggle) {
+					b.ToggleEquipped();
+					return b.GetIsEquipped();
+				} else b.SetEquipped(true);
+			}
+		}
+		return true;
+	}
+	public void ScreenButtonClicked(string itemName, Sprite sprite, int mode, bool isEnabled) {
+		if (mode == 0) {
+			SelectHull(itemName, sprite);
+			MenuManager.instance.SetHull(itemName, isTemporary: true);
+		} else if (mode == 1) {
+			SelectTurret(itemName, sprite);
+			MenuManager.instance.SetTurret(itemName, isTemporary: true);
+		} else if (mode == 2) {
+			selectedAbilityIsOn = isEnabled;
+			SelectGadget(itemName, sprite);
+		} else {
+			selectedAbilityIsOn = isEnabled;
+			SelectAbility(itemName, sprite);
+		}
 	}
 	public void OpenGarageTab() {
 		garageUI.gameObject.SetActive(true);
 		MenuManager.instance.SetMenuScreen(false);
-		garageImage.enabled = true;
 		playerHealthCanvas.SetActive(false);
 		inGarage = true;
+		blur.SetBlur(1);
 	}
 	public void CloseGarageTab() {
-		CloseSelectionScreen();
 		garageUI.gameObject.SetActive(false);
 		MenuManager.instance.SetMenuScreen(true);
-		garageImage.enabled = false;
 		playerHealthCanvas.SetActive(true);
+		blur.SetBlur(0);
+
+		//revert hull/turret to non-temp state
+		MenuManager.instance.SetHull(PlayerPrefs.GetString("hull_name"), false);
+		MenuManager.instance.SetTurret(PlayerPrefs.GetString("turret_name"), false);
+
 		inGarage = false;
 	}
 
@@ -176,6 +302,7 @@ public class GarageManager : MonoBehaviour {
 	}
 	private IEnumerator AnimateText(int startValue, int endValue, float duration,
 		TextMeshProUGUI textComponent, bool isPerSec = false) {
+
 		float currentTime = 0;
 		int currentValue = startValue;
 
@@ -220,14 +347,37 @@ public class GarageManager : MonoBehaviour {
 				break;
 			}
 		}
+		currentSelectedMode = 0;
+		EquipItem(false);
+
 		for (int i = 0; i < turretNames.Count; i++) {
 			if (turretNames[i] == PlayerPrefs.GetString("turret_name")) {
 				SelectTurret(turretNames[i], turretSprites[i]);
 				break;
 			}
 		}
+		currentSelectedMode = 1;
+		EquipItem(false);
 
-		//normalCameraPosition = playerCamera.transform.position = new Vector3(0.07f, 2f, -8f);
+		currentSelectedMode = 2;
+		for (int i = 0; i < gadgetNames.Count; i++) {
+			if (PlayerPrefs.GetInt("gadget_" + gadgetNames[i]) == 1) {
+				SelectGadget(gadgetNames[i], gadgetSprites[i]);
+				EquipItem(false);
+			}
+		}
+
+		currentSelectedMode = 3;
+		for (int i = 0; i < abilityNames.Count; i++) {
+			if (PlayerPrefs.GetInt("ability_" + abilityNames[i]) == 1) {
+				SelectAbility(abilityNames[i], abilitySprites[i]);
+				EquipItem(false);
+			}
+		}
+
+		normalCameraPosition = playerCamera.transform.position;
+
+		OpenHulls();
 	}
 
 	private void Update() {
@@ -236,7 +386,7 @@ public class GarageManager : MonoBehaviour {
 				targetGarageCameraPosition, Time.deltaTime * 10f);
 		} else {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
-				new Vector3(0.07f, 2f, -8f), Time.deltaTime * 10f);
+				normalCameraPosition, Time.deltaTime * 10f);
 		}
 	}
 
