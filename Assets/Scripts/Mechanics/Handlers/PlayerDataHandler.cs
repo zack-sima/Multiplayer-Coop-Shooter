@@ -56,6 +56,10 @@ public class PlayerDataHandler : MonoBehaviour {
         //TODO: Populate with other inits.
     }
 
+    // public static double GetInventoryInfo(string itemId, string modiId, int level) {
+
+    // }
+
     #endregion
 
     #region UnityCallBacks

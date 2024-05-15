@@ -95,7 +95,7 @@ public class DebugUIManager : MonoBehaviour {
 
     private void ForceResetCommand(string[] args) {
         PlayerDataHandler.instance.ForceResetInfos(true);
-        LogOutput("All Infos Reset.");
+        LogOutput("All Infos Forced Reset.");
     }
 
     private void HelpCommand(string[] args) {

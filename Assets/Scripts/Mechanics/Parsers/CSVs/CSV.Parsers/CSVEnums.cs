@@ -10,10 +10,13 @@ namespace CSV.Parsers {
 
         #region //*==| HULLS |==*//
 
+        Tank, Spider,
+
         #endregion
 
         #region //*==| TURRETS |==*//
 
+        Autocannon, Gatling, ExplosiveCannon, Mortar, Flamethrower, DoubleCannon,
 
         #endregion
         #region //*==| ACTIVES |==*//

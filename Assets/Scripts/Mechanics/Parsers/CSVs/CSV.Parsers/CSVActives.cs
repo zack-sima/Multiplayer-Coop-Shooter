@@ -11,62 +11,60 @@ namespace CSV.Parsers {
     public static partial class CSVParserExtensions {
         public static bool TryParse(this Dictionary<string, InventoryInfo> dict, string csv, bool debug) {
 
-            string[] firstCut = csv.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] rowArray = csv.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             
-            string[] masterHeaders = firstCut[0].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            firstCut[0] = "";
-            int row = 0;
+            string[] masterHeaders = rowArray[0].Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            rowArray[0] = "";
+            int row = -1;
+
             InventoryInfo info;
-            List<string> tempHeaders;
+            List<string> tempModifier, tempHeaders;
 
-            foreach(string s in firstCut) {
-                string[] secondCut = s.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            bool hasStringId = false;
 
-                if (secondCut.Length < 1) continue;
+            foreach(string s in rowArray) {
+                row++;
+                string[] columnArray= s.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                if (columnArray.Length < 1) continue;
 
                 //Try Get the [stringId] of the item.
-                { if (TryParseModi(secondCut[0], out string id)) {
+                { if (!hasStringId && TryParseModi(columnArray[0], row, out string id)) {
                     if (id == nameof(CSVMd.ActiveId)) {
 
                         //Try Get actual stringId
-                        if (!TryGetString(secondCut, 1, out string stringId)) { continue; }
+                        if (!TryGetString(columnArray, 1, out string stringId)) { continue; }
 
-                        tempHeaders = new();
+                        hasStringId = true;
+                        tempHeaders = tempModifier = new();
                         info = new InventoryInfo(stringId);
                         
-                        //Init tempHeaders
-                        for(int i = 2; i < secondCut.Length; i++) {
-                            if (TryParseModi(secondCut[i], out string modiId)) {
-                                if (modiId == nameof(CSVMd.Above) && masterHeaders.Length > i)
-                                    tempHeaders.Add(masterHeaders[i]);
-                            } else tempHeaders.Add(modiId);
+                        //Init tempModifiers
+                        for(int i = 2; i < columnArray.Length; i++) {
+                            //This is for the tempTags bruh
+                            // if (TryParseModi(secondCut[i], out string modiId)) {
+                            //     if (modiId == nameof(CSVMd.Above) && masterHeaders.Length > i)
+                            //         tempModifier.Add(masterHeaders[i]);
+                            // } else tempModifier.Add(modiId);
                         }
 
-                        //Read levels and init modifiers.
-
-                        //Read IUpgrades and init them.
-
-                        //Push to dict.
 
                     }
                 }}
-                foreach(string s2 in secondCut) {
 
-                    if (debug) Debug.Log($"Row {row}: {s2}");
+                //Try Get TempTags + bool checks
+                    //Init tempTags
 
-                }
+                //Try Get Levels + bool checks 
+                    //Read levels and init modifiers.
+
+                //Try Get IUpgrades + bool checks 
+                    //Read IUpgrades and init them on the inventory info.
+
+                //Push to the main dict.
+
             }
-            
-
-            //[Active ID]
-            //[Tags]
-
-            //levels
-
-            //[UPTags]
-
-            //[IUpgrades]
-            return false;
+            return true;
         }
 
         private static bool TryGetString(string[] input, int index, out string output) {
@@ -84,10 +82,10 @@ namespace CSV.Parsers {
                 dict[id] = info;
             }
         }
-        private static bool TryParseModi(string input, out string id) {
+        private static bool TryParseModi(string input, int row, out string id) {
             id = "";
             string s = ExtractStringId(input)?.Replace(" ", "");
-            if (s == null) return false;
+            if (s == null) { DebugUIManager.instance.LogOutput("Error with extracting Modifier " + input + " @ row : " + row); return false; }
             id = s;
             return true;
         }
@@ -106,17 +104,15 @@ namespace CSV.Parsers {
     [System.Serializable]
     public class InventoryInfo {
         public readonly string id;
+        public string displayName;
         public string description;
         public int maxLevel;
-        private Dictionary<(string, int), float> modiByLevel = new();
+        private Dictionary<(string, int), double> modiByLevel = new();
         private Dictionary<string, InGameUpgradeInfo> inGameUpgrades = new();
-        private int currentLevel = 0; // 0 == locked.
 
         public InventoryInfo(string id) {
             this.id = id;
         }
-
-        public bool CanUpgrade() { return currentLevel < maxLevel; }
 
         public void PushInventoryModi(string id, float input, int level) {
             if (modiByLevel.ContainsKey((id, level))) {
@@ -131,15 +127,7 @@ namespace CSV.Parsers {
             else inGameUpgrades[input.id] = input;
         }
 
-        public bool TryUpgrading() {
-            if (CanUpgrade()) {
-                currentLevel++;
-                return true;
-            }
-            return false;
-        }
-
-        public bool TryGetModi(string id, int level, out float output) {
+        public bool TryGetModi(string id, int level, out double output) {
             output = 0;
             if (modiByLevel.ContainsKey((id, level))) {
                 output = modiByLevel[(id, level)];
