@@ -160,11 +160,7 @@ public class PlayerDataHandler : MonoBehaviour {
         }
     }
 
-    private int testCounter = 0;    
-
     private void Update() {
-        testCounter++;
-        Debug.LogWarning(testCounter);
     }
 
     #endregion
