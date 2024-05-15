@@ -21,7 +21,6 @@ public class GarageManager : MonoBehaviour {
 	#region References
 
 	[SerializeField] private RectTransform garageUI;
-	[SerializeField] private Image garageImage;
 
 	[SerializeField] private GameObject playerHealthCanvas;
 	public GameObject GetPlayerHealthCanvas() { return playerHealthCanvas; }
@@ -39,6 +38,7 @@ public class GarageManager : MonoBehaviour {
 	[SerializeField] private List<Sprite> turretSprites;
 
 	[SerializeField] private Camera playerCamera;
+	[SerializeField] private CameraBlur blur;
 
 	#endregion
 
@@ -48,8 +48,8 @@ public class GarageManager : MonoBehaviour {
 
 	private Vector3 normalCameraPosition;
 
-	//interpolate to this //old: new(-1f, 1.8f, -5.5f);
-	private Vector3 targetGarageCameraPosition = new(-0.3f, 1.4f, -5.7f);
+	//interpolate to this
+	private Vector3 targetGarageCameraPosition = new(-1.5f, 1.29f, -5.7f);
 
 	private bool hullMode = true;
 
@@ -80,33 +80,6 @@ public class GarageManager : MonoBehaviour {
 		selectedTurretName = turretName;
 
 		CloseSelectionScreen();
-	}
-	private void UpdateStats() {
-		// if (!turretStats.ContainsKey(selectedTurretName) ||
-		// 	!hullStats.ContainsKey(selectedHullName)) return;
-
-		// damageDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-		// 	$"{turretStats[selectedTurretName].damage}";
-		// ammoDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-		// 	$"{turretStats[selectedTurretName].ammo}";
-		// shootRateDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-		// 	$"{turretStats[selectedTurretName].shootSpeed:0.0}/s";
-		// speedDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-		// 	$"{hullStats[selectedHullName].speed:0.0}m/s";
-		// healthDisplay.GetChild(0).GetComponent<TMP_Text>().text =
-		// 	$"{hullStats[selectedHullName].hp}";
-
-		// damageDisplay.GetChild(1).localScale = new Vector2(
-		// 	turretStats[selectedTurretName].damage / (float)bestTurret.damage, 1);
-		// ammoDisplay.GetChild(1).localScale = new Vector2(
-		// 	turretStats[selectedTurretName].ammo / (float)bestTurret.ammo, 1);
-		// shootRateDisplay.GetChild(1).localScale = new Vector2(
-		// 	(float)(turretStats[selectedTurretName].shootSpeed / bestTurret.shootSpeed), 1);
-		// speedDisplay.GetChild(1).localScale = new Vector2(
-		// 	(float)(hullStats[selectedHullName].speed / bestHull.speed), 1);
-		// healthDisplay.GetChild(1).localScale = new Vector2(
-		// 	(float)hullStats[selectedHullName].hp / bestHull.hp, 1);
-
 	}
 	public void OpenHulls() {
 		if (hullMode && selectionScreen.gameObject.activeInHierarchy) {
@@ -155,16 +128,17 @@ public class GarageManager : MonoBehaviour {
 	public void OpenGarageTab() {
 		garageUI.gameObject.SetActive(true);
 		MenuManager.instance.SetMenuScreen(false);
-		garageImage.enabled = true;
 		playerHealthCanvas.SetActive(false);
 		inGarage = true;
+		blur.SetBlur(1);
 	}
 	public void CloseGarageTab() {
 		CloseSelectionScreen();
 		garageUI.gameObject.SetActive(false);
 		MenuManager.instance.SetMenuScreen(true);
-		garageImage.enabled = false;
 		playerHealthCanvas.SetActive(true);
+		blur.SetBlur(0);
+
 		inGarage = false;
 	}
 
@@ -176,6 +150,7 @@ public class GarageManager : MonoBehaviour {
 	}
 	private IEnumerator AnimateText(int startValue, int endValue, float duration,
 		TextMeshProUGUI textComponent, bool isPerSec = false) {
+
 		float currentTime = 0;
 		int currentValue = startValue;
 
@@ -227,7 +202,7 @@ public class GarageManager : MonoBehaviour {
 			}
 		}
 
-		//normalCameraPosition = playerCamera.transform.position = new Vector3(0.07f, 2f, -8f);
+		normalCameraPosition = playerCamera.transform.position;
 	}
 
 	private void Update() {
@@ -236,7 +211,7 @@ public class GarageManager : MonoBehaviour {
 				targetGarageCameraPosition, Time.deltaTime * 10f);
 		} else {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
-				new Vector3(0.07f, 2f, -8f), Time.deltaTime * 10f);
+				normalCameraPosition, Time.deltaTime * 10f);
 		}
 	}
 
