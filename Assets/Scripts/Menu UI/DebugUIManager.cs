@@ -20,7 +20,11 @@ public class DebugUIManager : MonoBehaviour {
     #region Members
 #if UNITY_EDITOR
     const bool allowDebugMenu = true; // enables/disables the usage of the debug menu.
+#else
+    const bool allowDebugMenu = false;
 #endif
+
+
     private FileSystemNode root, currentDirectory;
 
     private Dictionary<string, System.Action<string[]>> commands = new Dictionary<string, System.Action<string[]>>();
