@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e2381ffb27e014cd7ba2ea16dc8f7b68, type: 3}
-  m_Name: Ability Prefab Assets
+  m_Name: AbilityEffectsPrefab
   m_EditorClassIdentifier: 
   healEffectPrefab: {fileID: 8301208436968944004, guid: 095d6d6a1de2a4a6cbb3bea2940b2fb1, type: 3}
   areaHealEffectPrefab: {fileID: 8783893285912058362, guid: 23bbb7c4f2c484b13aed87863965c5de, type: 3}
