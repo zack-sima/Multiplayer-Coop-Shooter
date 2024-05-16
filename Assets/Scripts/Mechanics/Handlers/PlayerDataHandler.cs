@@ -148,6 +148,9 @@ public class PlayerDataHandler : MonoBehaviour {
         EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 10);
         //EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 10);
         EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
+        EquipInfo(CSVType.GADGETS, CSVId.HardenedAmmoGadget, 1);
+        EquipInfo(CSVType.GADGETS, CSVId.RegenerativeArmorGadget, 1);
+
     }
 
     private bool TryGetItemFromInfos(CSVId itemKey, out InventoryInfo info) {

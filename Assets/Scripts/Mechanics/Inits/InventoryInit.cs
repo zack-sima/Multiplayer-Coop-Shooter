@@ -7,7 +7,7 @@ using CSV.Parsers;
 
 public static class InventoryInit {
     public static void UpdateInventory(this (List<(IAbility ability, bool isActivated)> actives, 
-                Dictionary<string, UpgradesCatalog.UpgradeNode> upgrades) inventory) {
+                Dictionary<string, UpgradesCatalog.UpgradeNode> upgrades) inventory, NetworkedEntity entity) {
         
 
         Dictionary<string, Dictionary<string, int>> requested = PlayerDataHandler.instance.GetEquippedInfos();
@@ -26,13 +26,6 @@ public static class InventoryInit {
                 inventory.actives.InitActive(a.Key, a.Value);
             }
 
-            
-            //     input.Clear();
-            //     Heal f = new();
-            //     input.Add((f, false));
-            //     RapidFire h = new();
-            //     input.Add((h, false));
-
         } else {
             LogWarning("No actives requested to be equipped.", "InventoryHandler");
         }
@@ -41,8 +34,7 @@ public static class InventoryInit {
         //*=======================| GADGETS |=======================*//
 
         if (requested.ContainsKey(nameof(CSVType.GADGETS))) {
-            Dictionary<string, int> gadgetInfos = requested[nameof(CSVType.GADGETS)];
-
+            requested[nameof(CSVType.GADGETS)].InitGadgets(entity);
         } else {
             LogWarning("No gadgets requested to be equipped.", "InventoryHandler");
         }

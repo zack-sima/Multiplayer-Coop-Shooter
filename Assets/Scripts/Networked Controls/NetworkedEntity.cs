@@ -397,7 +397,7 @@ public class NetworkedEntity : NetworkBehaviour {
 				playerInstance = this;
 				EntityController.player = optionalCombatEntity;
 
-				(abilities, currentUpgrades).UpdateInventory(); // Pulls from PlayerDataHandler
+				(abilities, currentUpgrades).UpdateInventory(this); // Pulls from PlayerDataHandler
 				UpgradesCatalog.instance.InitUpgrades(); //init upgrades.
 
 				HullName = PlayerInfo.instance.GetLocalPlayerHullName();

@@ -31,8 +31,8 @@ namespace CSV.Parsers {
 
         #region //*==| GADGETS |==*//
         
-        HardenedAmmoGadget, HealGadget, ArmorGadget,
-
+        HardenedAmmoGadget, ImprovedLoaderGadget, HardenedArmorGadget, FireControlGadget, PolishedTriggerGadget, LaserSightGadget, BracedInternalsGadget,
+        RegenerativeArmorGadget,
 
         #endregion
     }

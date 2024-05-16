@@ -38,3 +38,5 @@ BASIC GUIDE TO THE INVENTORY <-> IMPLEMENTATION LOOP
                     -> NetworkedEntity.playerInstance.Add(UpgradeNode)
 
 > ActiveInit, IIAbility, CSVEnums, DescriptionInit, AbilitiesStatHandler, PlayerDataHandler, UpgradeHandler <
+> GadgetInits + UpgradeInits + RMRB TO ATTACH EFFECT SCRIPT ON EFFECTS <
+> ActiveInits + UpgradeInits + AbilitiesStatHandler + IIAbilityScript + RMRB TO ATTACH EFFECT SCRIPT ON EFFECTS <

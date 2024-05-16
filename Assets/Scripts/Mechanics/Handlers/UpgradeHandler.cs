@@ -17,7 +17,7 @@ namespace Abilities.UpgradeHandler {
             if (n == null || n.info == null) { Debug.LogError("Upgrade Null"); return; }
             switch(n.upgradeName) {
 
-                #region //?==| ABILITIES |==?//
+                #region //?==| ACTIVE ABILITIES |==?//
 
                 case nameof(CSVId.HealActive) + "Faster Heals": {
                     if (n.info.TryGetModi(nameof(CSVMd.Cooldown), out double cooldown) && TryGetActive(CSVId.HealActive, out IAbility h)) {
@@ -50,10 +50,58 @@ namespace Abilities.UpgradeHandler {
                     break; }
 
                 #endregion
+
+                #region //?==| ACTIVE GADGETS |==?//
+
+                case nameof(CSVId.RegenerativeArmorGadget) + "Enhanced Healing": {
+                    if (n.info.TryGetModi(nameof(CSVMd.HealAmount), out double hpPercentPerSec) && TryGetActive(CSVId.RegenerativeArmorGadget, out IAbility r)) {
+                        ((RegenerativeArmorGadget)r).hpPercentPerSec += (float)hpPercentPerSec;
+                    }
+                    break; }
                 
-                // #region //?==| GADGETS |==?//
+                #endregion
+                #region //?==| PASSIVE GADGETS |==?//
                 // //*?=======================| Stat |=======================?*//
                 // // * ANYTHING SINGLE-FRAME BASED
+                case nameof(CSVId.HardenedAmmoGadget) + "Hardened Ammo": {
+                    if (n.info.TryGetModi(nameof(CSVMd.Damage), out double dmgModi) && TryGetTurret(out Turret turret)) {
+                        turret.SetBulletDmgModi((float)dmgModi + turret.GetBulletModi());
+                    }
+                    break; }
+                case nameof(CSVId.ImprovedLoaderGadget) + "Improved Loader": {
+                    if (n.info.TryGetModi(nameof(CSVMd.Reload), out double reload) && n.info.TryGetModi(nameof(CSVMd.AmmoRegen), out double ammoRegen) && TryGetTurret(out Turret turret)) {
+                        turret.SetShootSpeed((float)reload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
+                        turret.SetAmmoRegenRate((float)ammoRegen * turret.GetBaseAmmoRegenRate() + turret.GetAmmoRegenSpeed());
+                    }
+                    break; }
+                case nameof(CSVId.HardenedArmorGadget) + "Hardened Armor": {
+                    if (n.info.TryGetModi(nameof(CSVMd.MaxHP), out double maxHp)) {
+                        TryGetCombatEntity(out CombatEntity c);
+                        c.SetMaxHealth((float)maxHp * c.GetBaseHealth());
+                    }
+                    break; }
+                case nameof(CSVId.FireControlGadget) + "Fire Control": {
+                    if (n.info.TryGetModi(nameof(CSVMd.Reload), out double reload) && TryGetTurret(out Turret turret)) {
+                        turret.SetShootSpeed((float)reload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
+                    }
+                    break; }
+                case nameof(CSVId.PolishedTriggerGadget) + "Polished Trigger": {
+                    if (n.info.TryGetModi(nameof(CSVMd.CritChance), out double crit) && TryGetTurret(out Turret turret)) {
+                        turret.SetCritChance((float)crit + turret.GetCritValues().Item1);
+                    }
+                    break; }
+                case nameof(CSVId.LaserSightGadget) + "Laser Sight": {
+                    if (n.info.TryGetModi(nameof(CSVMd.CritDamage), out double critDmg) && TryGetTurret(out Turret turret)) {
+                        turret.SetCritDamage((float)critDmg + turret.GetCritValues().Item2);
+                    }
+                    break; }
+                case nameof(CSVId.BracedInternalsGadget) + "Braced Internals": {
+                    if (n.info.TryGetModi(nameof(CSVMd.MaxHP), out double maxHp)) {
+                        TryGetCombatEntity(out CombatEntity c);
+                        c.SetMaxHealth((float)maxHp * c.GetBaseHealth());
+                    }
+                    break; }
+                #endregion
                 // case "Braced Internals": {
                 //     if (n.info.TryGetModi(nameof(ModiName.MaxHP), out float maxHp)) {
                 //         NetworkedEntity.playerInstance.GetEntity().SetMaxHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
@@ -114,8 +162,6 @@ namespace Abilities.UpgradeHandler {
                 //         turret.SetBulletDmgModi(dmgModi += turret.GetBulletModi());
                 //     }
                 // break; }
-
-                // //*?=======================| ACTIVE GADGETS |=======================?*//
                 // // * ANYTHING PER-FRAME BASE
                 // case "Advanced Targeting":
 
@@ -143,7 +189,7 @@ namespace Abilities.UpgradeHandler {
                 //     break;
                 // case "Regenerative Armor":
                 //     if (n.info.TryGetModi(nameof(ModiName.Misc1), out float RAoutput)) {
-                //         NetworkedEntity.playerInstance.GetAbilityList().Add((new RegenerativeArmor(RAoutput), false)); }
+                        // NetworkedEntity.playerInstance.GetAbilityList().Add((new RegenerativeArmor(RAoutput), false)); }
                 //     break;
                 // case "Rocket Pods":
                 

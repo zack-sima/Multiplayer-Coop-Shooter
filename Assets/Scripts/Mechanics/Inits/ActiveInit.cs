@@ -16,7 +16,7 @@ namespace Abilities {
             }
 
             switch(activeId) {
-
+                //*?=======================| ACTIVE ABILITIES |=======================?*//
                 case nameof(CSVId.HealActive): {
                     Heal h = new Heal(CSVId.HealActive);
                     h.Init(infos[activeId], level);
@@ -34,8 +34,17 @@ namespace Abilities {
                     s.Init(infos[activeId], level);
                     actives.Add((s, false));
                     break; }
+                    
+                //TODO: Add more active abilities here ...
 
-                //TODO: Add more abilities here ...
+                //*?=======================| ACTIVE GADGETS |=======================?*//
+                case nameof(CSVId.RegenerativeArmorGadget): {
+                    RegenerativeArmorGadget r = new RegenerativeArmorGadget(CSVId.RegenerativeArmorGadget);
+                    r.Init(infos[activeId], level);
+                    actives.Add((r, false));
+                    break; }
+
+                //TODO: Add more active gadgets here ...
             }
 
             infos[activeId].GetInGameUpgrade().InitUpgrades();
