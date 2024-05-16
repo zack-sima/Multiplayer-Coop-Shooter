@@ -43,7 +43,7 @@ namespace Abilities {
             //etc.
     }
 
-    public static class StatHandlerExtensions { 
+    public static class AbilityStatHandlerExtensions { 
         /// <summary>
         /// For HUMANS only. Called every tick.
         /// </summary> //TODO: Rename this method.
@@ -51,7 +51,7 @@ namespace Abilities {
             //TODO: Init abilities list from csv/persistent data.
             
             if (entity == null) return;
-            if (entity == NetworkedEntity.playerInstance) abilities.UpdateAbilityList();
+            //if (entity == NetworkedEntity.playerInstance) abilities.UpdateAbilityList();
             StatModifier stats = new();
             
             for(int i = 0; i < abilities.Count; i++) {
@@ -70,21 +70,21 @@ namespace Abilities {
                         if (((Heal)a).GetIsActive()) { 
                             stats.healthFlatModifier += ((Heal)a).healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / ((Heal)a).healDuration; 
                         } break;
-                    case AreaHeal:
-                        if (((AreaHeal)a).GetIsActive()) {
-                            stats.healthFlatModifier += ((AreaHeal)a).healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / ((AreaHeal)a).healPeriod; 
-                        } break;
-                    case InfiHeal:
-                        if (((InfiHeal)a).GetIsActive()) {
-                            stats.healthFlatModifier += ((InfiHeal)a).healPerSec * Time.deltaTime;
-                        } break;
-                    case HPSteal:
-                        if (((HPSteal)a).GetIsActive()) {
-                            stats.healthFlatModifier += ((HPSteal)a).totalHPStolen * Time.deltaTime;
-                            ((HPSteal)a).totalHPStolen -= ((HPSteal)a).totalHPStolen * Time.deltaTime;
-                        } break;
+                    // case AreaHeal:
+                    //     if (((AreaHeal)a).GetIsActive()) {
+                    //         stats.healthFlatModifier += ((AreaHeal)a).healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / ((AreaHeal)a).healPeriod; 
+                    //     } break;
+                    // case InfiHeal:
+                    //     if (((InfiHeal)a).GetIsActive()) {
+                    //         stats.healthFlatModifier += ((InfiHeal)a).healPerSec * Time.deltaTime;
+                    //     } break;
+                    // case HPSteal:
+                    //     if (((HPSteal)a).GetIsActive()) {
+                    //         stats.healthFlatModifier += ((HPSteal)a).totalHPStolen * Time.deltaTime;
+                    //         ((HPSteal)a).totalHPStolen -= ((HPSteal)a).totalHPStolen * Time.deltaTime;
+                    //     } break;
                     
-                    //?=~=~=~=~=| DAMAGE |=~=~=~=~=?//
+                    // //?=~=~=~=~=| DAMAGE |=~=~=~=~=?//
                     case RapidFire:
                         if (((RapidFire)a).GetIsActive()) { 
                             entity.OverClockNetworkEntityCall();    

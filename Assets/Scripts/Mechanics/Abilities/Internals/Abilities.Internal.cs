@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using CSV.Parsers;
 using UnityEngine;
 
 namespace Abilities {
@@ -7,7 +8,12 @@ namespace Abilities {
     /// <summary>
     /// Parent Interface
     /// </summary>
-    public interface IAbility { }
+    public interface IAbility { 
+        /// <summary>
+        /// 
+        /// </summary>
+        public string GetId();
+    }
 
     public interface IActivatable : IAbility { 
         /// <summary>
@@ -42,6 +48,13 @@ namespace Abilities {
         /// Called by UIController to Set the Outline for updating. (!Circular button!)
         /// </summary>
         public void SetButtonOutlineProgressImage(UnityEngine.UI.Image outlineProgress);
+    }
+
+    public interface IInitable {
+        /// <summary>
+        /// Called by InventoryHandler to initialize the ability with the InventoryInfo.
+        /// </summary>
+        public void Init(InventoryInfo info, int level);
     }
 
     public interface ITierable {

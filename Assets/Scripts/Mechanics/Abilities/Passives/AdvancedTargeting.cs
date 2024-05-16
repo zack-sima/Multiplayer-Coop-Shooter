@@ -1,6 +1,6 @@
 
-namespace Abilities {
-    public class AdvancedTargeting : IPassivable {
+// namespace Abilities {
+//     public class AdvancedTargeting : IPassivable {
         
-    }
-}
+//     }
+// }
