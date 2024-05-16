@@ -113,7 +113,27 @@ public class GarageManager : MonoBehaviour {
 
 		selectedItemText.text = abilityName;
 	}
+	private void ReselectHull() {
+		for (int i = 0; i < hullNames.Count; i++) {
+			if (hullNames[i] == PlayerPrefs.GetString("hull_name")) {
+				SelectHull(hullNames[i], hullSprites[i]);
+				break;
+			}
+		}
+	}
+	private void ReselectTurret() {
+		for (int i = 0; i < turretNames.Count; i++) {
+			if (turretNames[i] == PlayerPrefs.GetString("turret_name")) {
+				SelectTurret(turretNames[i], turretSprites[i]);
+				break;
+			}
+		}
+	}
 	public void OpenHulls() {
+		//revert hull/turret to non-temp state
+		MenuManager.instance.SetTurret(PlayerPrefs.GetString("turret_name"), false);
+		ReselectHull();
+
 		selectionScreenTitle.text = "HULLS";
 		selectionGrid.cellSize = hullTurretCell;
 		ClearButtons();
@@ -127,6 +147,17 @@ public class GarageManager : MonoBehaviour {
 		currentSelectedMode = 0;
 	}
 	public void OpenTurrets() {
+		//revert hull/turret to non-temp state
+		MenuManager.instance.SetHull(PlayerPrefs.GetString("hull_name"), false);
+		ReselectTurret();
+
+		for (int i = 0; i < turretNames.Count; i++) {
+			if (turretNames[i] == PlayerPrefs.GetString("turret_name")) {
+				SelectTurret(turretNames[i], turretSprites[i]);
+				break;
+			}
+		}
+
 		selectionScreenTitle.text = "TURRETS";
 		selectionGrid.cellSize = hullTurretCell;
 		ClearButtons();
@@ -140,6 +171,10 @@ public class GarageManager : MonoBehaviour {
 		currentSelectedMode = 1;
 	}
 	public void OpenGadgets() {
+		//revert hull/turret to non-temp state
+		MenuManager.instance.SetHull(PlayerPrefs.GetString("hull_name"), false);
+		MenuManager.instance.SetTurret(PlayerPrefs.GetString("turret_name"), false);
+
 		SetGadgetsText();
 		selectionGrid.cellSize = abilityCell;
 		ClearButtons();
@@ -151,8 +186,13 @@ public class GarageManager : MonoBehaviour {
 				equipped: PlayerPrefs.GetInt("gadget_" + gadgetNames[i]) == 1);
 		}
 		currentSelectedMode = 2;
+		SelectGadget(gadgetNames[0], gadgetSprites[0]);
 	}
 	public void OpenAbilities() {
+		//revert hull/turret to non-temp state
+		MenuManager.instance.SetHull(PlayerPrefs.GetString("hull_name"), false);
+		MenuManager.instance.SetTurret(PlayerPrefs.GetString("turret_name"), false);
+
 		SetAbilitiesText();
 		selectionGrid.cellSize = abilityCell;
 		ClearButtons();
@@ -164,6 +204,7 @@ public class GarageManager : MonoBehaviour {
 				equipped: PlayerPrefs.GetInt("ability_" + abilityNames[i]) == 1);
 		}
 		currentSelectedMode = 3;
+		SelectAbility(abilityNames[0], abilitySprites[0]);
 	}
 	private void EquipItem(bool saveAbilities) {
 		if (currentSelectedMode == 0) {
@@ -388,10 +429,6 @@ public class GarageManager : MonoBehaviour {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
 				normalCameraPosition, Time.deltaTime * 10f);
 		}
-	}
-
-	private void LateUpdate() {
-
 	}
 
 	#endregion
