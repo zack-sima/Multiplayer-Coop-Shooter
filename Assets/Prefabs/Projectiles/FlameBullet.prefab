@@ -51,7 +51,7 @@ MonoBehaviour:
   explosionPrefab: {fileID: 0}
   firePrefab: {fileID: 910420461738393916, guid: f82f3ab9b88474a7b911753f114007fb, type: 3}
   speed: 15
-  damage: 90
+  damage: 50
   isExplosion: 0
   isFlame: 1
   explosionRadius: 0

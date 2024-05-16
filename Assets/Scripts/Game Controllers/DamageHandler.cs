@@ -12,6 +12,10 @@ public static class DamageHandler {
 	//  TODO: does not affect normal entities.
 	public static void DealExplosiveDamage(Vector3 position, float radius,
 		float damage, bool canDamageTeam, CombatEntity self = null) {
+
+		//TODO: NOTE: disabled chain bombs
+		canDamageTeam = false;
+
 		float u1 = 1.0f - UnityEngine.Random.value;
 		float u2 = 1.0f - UnityEngine.Random.value;
 		float randStdNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) * Mathf.Sin(2.0f * Mathf.PI * u2);

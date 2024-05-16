@@ -3927,7 +3927,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   progressBar: {fileID: 1850191167399221093}
-  triggerKey: 
+  triggerKey: Q
   OnAbilityUsed:
     m_PersistentCalls:
       m_Calls:
@@ -4448,7 +4448,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 9083135421723080873}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: DebugUIManager, Assembly-CSharp
         m_MethodName: ToggleDebugMenu
         m_Mode: 1
@@ -4474,7 +4474,6 @@ GameObject:
   - component: {fileID: 1890779474984233302}
   - component: {fileID: 4836627643148608670}
   - component: {fileID: 7873191167118644515}
-  - component: {fileID: 9083135421723080873}
   m_Layer: 5
   m_Name: Game UI
   m_TagString: Untagged
@@ -4655,21 +4654,6 @@ MonoBehaviour:
   - upgradeName: Polished Trigger
     icon: {fileID: 21300000, guid: 88076169dd1bb463789152f9a7ae36fe, type: 3}
   fallbackSprite: {fileID: 21300000, guid: 8709cf0fb6146429ba2d96ec4d790238, type: 3}
---- !u!114 &9083135421723080873
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3243132742402371420}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a0fc132523284446a844a6a4738fa8c5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debugScreen: {fileID: 2119091514651083154}
-  debugInputField: {fileID: 8380943093838331714}
-  debugConsoleText: {fileID: 1459822407899008100}
 --- !u!1 &3243411560902512936
 GameObject:
   m_ObjectHideFlags: 0
@@ -5613,7 +5597,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   progressBar: {fileID: 1166324949319653363}
-  triggerKey: 
+  triggerKey: Q
   OnAbilityUsed:
     m_PersistentCalls:
       m_Calls:
