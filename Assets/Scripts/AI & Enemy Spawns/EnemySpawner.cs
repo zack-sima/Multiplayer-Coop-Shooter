@@ -83,7 +83,7 @@ public class EnemySpawner : NetworkBehaviour {
 		bool onBoss = isBossWave;
 		while (totalSpawnCredits >= minCost) {
 			int spawnChoice = rand.Next() % currEnemyCosts.Count;
-			
+
 
 			//find another enemy (don't allow expensive enemies if they take up >25% of total cost)
 			if (currEnemyCosts[spawnChoice] > totalSpawnCredits || !isBossWave &&
@@ -92,9 +92,8 @@ public class EnemySpawner : NetworkBehaviour {
 			totalSpawnCredits -= currEnemyCosts[spawnChoice];
 			if (waveNum + 1 == 999) {
 				enemySpawns.Add(currEnemyPrefabs[4]);
-			}
-			else{
-			enemySpawns.Add(currEnemyPrefabs[spawnChoice]);
+			} else {
+				enemySpawns.Add(currEnemyPrefabs[spawnChoice]);
 			}
 
 			spawned++;
@@ -134,8 +133,8 @@ public class EnemySpawner : NetworkBehaviour {
 				//upgrades if there is a timer
 				if (SpawnTimer > 0) {
 
-					//force it back to 10
-					if (SpawnTimer > 10) SpawnTimer = 10;
+					//force it down to 5
+					if (SpawnTimer > 5) SpawnTimer = 5;
 
 					WaveEnded = true;
 					WaveCallback++;
@@ -170,7 +169,7 @@ public class EnemySpawner : NetworkBehaviour {
 
 			//end of wave delay
 			SpawnIndex = 0;
-			SpawnTimer = 10 + currWave / 2f;
+			SpawnTimer = 5 + currWave / 3f;
 			if ((currWave + 1) % 5 == 0) SpawnTimer += 10;
 		}
 	}

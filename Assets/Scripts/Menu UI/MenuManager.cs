@@ -255,6 +255,8 @@ public class MenuManager : MonoBehaviour {
 			currentHull = PlayerPrefs.GetString("hull_name");
 	}
 	private void Start() {
+		QualitySettings.SetQualityLevel(4);
+
 		Time.timeScale = 1f;
 
 		for (int i = 0; i < mapSceneNames.Count; i++) {

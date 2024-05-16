@@ -32,13 +32,13 @@ public class AINavigator : MonoBehaviour {
 		agent.Warp(targetPosition);
 	}
 	public void SetTarget(Vector3 targetPosition, bool forceSet = false) {
-		bool isFar = Vector3.Distance(targetPosition, transform.position) > 15f;
-		float distance = Vector3.Distance(currentTarget, targetPosition);
+		bool isFar = AIBrain.GroundDistance(targetPosition, transform.position) > 15f;
+		float distance = AIBrain.GroundDistance(currentTarget, targetPosition);
 
 		//at least set once every second
-		if (Time.time - lastTargetTimestamp > 1) forceSet = true;
+		if (Time.time - lastTargetTimestamp > 2) forceSet = true;
 
-		if (forceSet || (distance > 5f && isFar) || (distance > 1f && !isFar)) {
+		if (forceSet || (distance > 10f && isFar) || (distance > 3f && !isFar)) {
 			currentTarget = targetPosition;
 			agent.SetDestination(targetPosition);
 			lastTargetTimestamp = Time.time;

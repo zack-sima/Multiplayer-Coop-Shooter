@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55e6184d2ea958044a6434dca151c688, type: 3}
   m_Name: SSCC
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   shader: {fileID: 4800000, guid: 62449f654265cf94e81275e55a4b1823, type: 3}
 --- !u!114 &11400000
 MonoBehaviour:

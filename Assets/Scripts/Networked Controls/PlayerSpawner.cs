@@ -46,5 +46,8 @@ public class PlayerSpawner : SimulationBehaviour, IPlayerJoined {
 	}
 	void Awake() {
 		instance = this;
+
+		if (PlayerPrefs.GetInt("quality") != 0)
+			QualitySettings.SetQualityLevel(PlayerPrefs.GetInt("quality") - 1);
 	}
 }

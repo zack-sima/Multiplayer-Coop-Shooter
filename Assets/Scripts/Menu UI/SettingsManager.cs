@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.Rendering;
 
 public class SettingsManager : MonoBehaviour {
 
@@ -43,7 +45,6 @@ public class SettingsManager : MonoBehaviour {
 	private int currentFPSIndex = 0;
 
 	public void SetQuality(int quality) {
-		QualitySettings.SetQualityLevel(quality);
 		PlayerPrefs.SetInt("quality", quality + 1);
 
 		for (int i = 0; i < qualityTexts.Count; i++) {
