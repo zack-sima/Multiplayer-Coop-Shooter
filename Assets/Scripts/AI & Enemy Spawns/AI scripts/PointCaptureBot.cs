@@ -9,6 +9,9 @@ public class PointCaptureBot : baseBrain
 {
 
     public float accuracy = 0.1f;
+    public CombatEntity pursuitTarget;
+    public float chaseValue = 0.5f; // determines how likely it is to chase the opponent
+    // if high, more likely to chase
     #region Functions
     protected override void EnemyDecisionTick()
     {
@@ -22,42 +25,6 @@ public class PointCaptureBot : baseBrain
 
         //wait for NavMeshAgent to initialize
         if (!navigator.GetIsNavigable()) return;
-        float weight = -100000;
-        Dictionary<CombatEntity, float> potentialTargets = new Dictionary<CombatEntity, float>();
-        //try finding target
-        foreach (CombatEntity ce in EntityController.instance.GetCombatEntities())
-        {
-            if (!ce.GetNetworker().GetInitialized() ||
-                ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
-            if (InVisionRange(ce))
-            {
-                // add weight based on target health
-                weight = 0;
-                if (TargetInRange(ce))
-                {
-
-                    weight += 100000;
-                    canShootTarget = true;
-                    print($"BOT: IN RANGE {canShootTarget}");
-                }
-                weight += 10 * GroundDistance(ce.transform.position, transform.position);
-                weight -= ce.GetHealth();
-                potentialTargets.Add(ce, weight);
-            }
-        }
-        foreach (KeyValuePair<CombatEntity, float> entry in potentialTargets)
-        {
-            if (weight <= entry.Value)
-            {
-                weight = entry.Value;
-                target = entry.Key;
-            }
-        }
-
-
-
-
-        //if running home, ignore everything else
         bool runningAway = false;
 
         if (entity.GetHealth() * 0.75 < entity.GetMaxHealth() * retreatThreshold)
@@ -80,6 +47,52 @@ public class PointCaptureBot : baseBrain
             navigator.SetTarget(homeTarget);
             runningAway = true;
         }
+
+        float weight = -100000;
+        float pursuitWeight = -100000;
+        Dictionary<CombatEntity, (float, float)> potentialTargets = new Dictionary<CombatEntity, (float, float)>();
+        //try finding target
+        foreach (CombatEntity ce in EntityController.instance.GetCombatEntities())
+        {
+            if (!ce.GetNetworker().GetInitialized() ||
+                ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
+            if (InVisionRange(ce))
+            {
+                // add weight based on target health
+                weight = 0;
+                pursuitWeight = 0;
+                weight += 10 * GroundDistance(ce.transform.position, transform.position);
+                weight -= ce.GetHealth();
+                pursuitWeight = weight;
+                if (TargetInRange(ce))
+                {
+                    weight += 100000;
+                    canShootTarget = true;
+                    print($"BOT: IN RANGE {canShootTarget}");
+                }
+
+                potentialTargets.Add(ce, (weight, pursuitWeight));
+            }
+        }
+        foreach (KeyValuePair<CombatEntity, (float, float)> entry in potentialTargets)
+        {
+            if (weight <= entry.Value.Item1)
+            {
+                weight = entry.Value.Item1;
+                target = entry.Key;
+            }
+            if (pursuitWeight <= entry.Value.Item2)
+            {
+                pursuitWeight = entry.Value.Item2;
+                pursuitTarget = entry.Key;
+            }
+        }
+
+
+
+
+        //if running home, ignore everything else
+
 
         if (target != null)
         {
@@ -106,7 +119,7 @@ public class PointCaptureBot : baseBrain
                     GroundDistance(targetPoint.transform.position, transform.position) > 5f))
                 {
                     Vector2 circle = Random.insideUnitCircle * Random.Range(2f, 5f);
-                    bogoTarget = target.transform.position + new Vector3(circle.x, 0, circle.y);
+                    bogoTarget = pursuitTarget.transform.position + new Vector3(circle.x, 0, circle.y);
                 }
                 navigator.SetStopped(false);
                 navigator.SetTarget(bogoTarget);
