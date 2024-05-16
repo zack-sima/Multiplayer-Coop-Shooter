@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Abilities;
 
 public class PointCaptureBot : baseBrain
 {
 
     public float accuracy = 0.1f;
+    public CombatEntity pursuitTarget;
+    public float chaseValue = 0.5f; // determines how likely it is to chase the opponent
+    // if high, more likely to chase
     #region Functions
     protected override void EnemyDecisionTick()
     {
@@ -21,22 +25,6 @@ public class PointCaptureBot : baseBrain
 
         //wait for NavMeshAgent to initialize
         if (!navigator.GetIsNavigable()) return;
-        float closestDistance = 16;
-        //try finding target
-        foreach (CombatEntity ce in EntityController.instance.GetCombatEntities())
-        {
-            if (!ce.GetNetworker().GetInitialized() ||
-                ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
-            float distance = GroundDistance(ce.transform.position, transform.position);
-            if (distance < closestDistance)
-            {
-                closestDistance = distance;
-                target = ce;
-            }
-        }
-
-
-        //if running home, ignore everything else
         bool runningAway = false;
 
         if (entity.GetHealth() * 0.75 < entity.GetMaxHealth() * retreatThreshold)
@@ -60,44 +48,60 @@ public class PointCaptureBot : baseBrain
             runningAway = true;
         }
 
+        float weight = -100000;
+        float pursuitWeight = -100000;
+        Dictionary<CombatEntity, (float, float)> potentialTargets = new Dictionary<CombatEntity, (float, float)>();
+        //try finding target
+        foreach (CombatEntity ce in EntityController.instance.GetCombatEntities())
+        {
+            if (!ce.GetNetworker().GetInitialized() ||
+                ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;
+            if (InVisionRange(ce))
+            {
+                // add weight based on target health
+                weight = 0;
+                pursuitWeight = 0;
+                weight += 10 * GroundDistance(ce.transform.position, transform.position);
+                weight -= ce.GetHealth();
+                pursuitWeight = weight;
+                if (TargetInRange(ce))
+                {
+                    weight += 100000;
+                    canShootTarget = true;
+                    print($"BOT: IN RANGE {canShootTarget}");
+                }
+
+                potentialTargets.Add(ce, (weight, pursuitWeight));
+            }
+        }
+        foreach (KeyValuePair<CombatEntity, (float, float)> entry in potentialTargets)
+        {
+            if (weight <= entry.Value.Item1)
+            {
+                weight = entry.Value.Item1;
+                target = entry.Key;
+            }
+            if (pursuitWeight <= entry.Value.Item2)
+            {
+                pursuitWeight = entry.Value.Item2;
+                pursuitTarget = entry.Key;
+            }
+        }
+
+
+
+
+        //if running home, ignore everything else
+
+
         if (target != null)
         {
-            //try raycasting to target
-            canShootTarget = false;
             bool veryCloseToTarget = GroundDistance(transform.position, target.transform.position) < 3f;
+            //try raycasting to target
 
-            if (entity.GetTurret() is Mortar)
+            if (GroundDistance(targetPoint.transform.position, transform.position) < 2)
             {
-                //mortar can shoot over obstacles
-                canShootTarget = GroundDistance(transform.position, target.transform.position) < 13.5f;
-            }
-            else
-            {
-                //line of sight to target check; raycast all prevents other AI from blocking line of sight
-                Vector3 directionToPlayer = target.transform.position - transform.position;
-                directionToPlayer.y = 0;
-
-                RaycastHit[] hits = Physics.RaycastAll(transform.position + Vector3.up,
-                    directionToPlayer.normalized, maxRange);
-
-                List<RaycastHit> hitsList = hits.ToList();
-                hitsList.Sort((hit1, hit2) => hit1.distance.CompareTo(hit2.distance));
-
-                foreach (var hit in hitsList)
-                {
-                    if (hit.collider.gameObject == target.gameObject)
-                    {
-                        canShootTarget = true;
-                        break;
-                    }
-                    else if (hit.collider.GetComponent<CombatEntity>() == null &&
-                        hit.collider.GetComponent<Bullet>() == null)
-                    {
-
-                        //If hit is not a combat entity, break
-                        break;
-                    }
-                }
+                bogoTarget = targetPoint.transform.position;
             }
 
             if (runningAway)
@@ -115,7 +119,7 @@ public class PointCaptureBot : baseBrain
                     GroundDistance(targetPoint.transform.position, transform.position) > 5f))
                 {
                     Vector2 circle = Random.insideUnitCircle * Random.Range(2f, 5f);
-                    bogoTarget = target.transform.position + new Vector3(circle.x, 0, circle.y);
+                    bogoTarget = pursuitTarget.transform.position + new Vector3(circle.x, 0, circle.y);
                 }
                 navigator.SetStopped(false);
                 navigator.SetTarget(bogoTarget);
@@ -130,7 +134,6 @@ public class PointCaptureBot : baseBrain
                  || bogoTarget == Vector3.zero) // If there is no target 
                                                 // or the point is already captured by the team
             {
-                print("BOT: RETARGETING");
                 List<CapturePoint> validPoints = new List<CapturePoint>();
                 foreach (CapturePoint pointTest in points)
                 {
@@ -143,16 +146,11 @@ public class PointCaptureBot : baseBrain
                     }
                 }
                 int rand = Random.Range(0, validPoints.Count);
-                foreach (CapturePoint thing in validPoints)
-                {
-                    print($"BOT2: {thing}");
-                }
                 if (validPoints.Count != 0)
                 {
 
 
                     targetPoint = validPoints[rand];
-                    print($"BOT: {targetPoint}");
                     Vector2 circle = Random.insideUnitCircle * Random.Range(0f, 2f);
                     bogoTarget = targetPoint.transform.position + new Vector3(circle.x, 0, circle.y);
                 }
