@@ -430,7 +430,11 @@ MonoBehaviour:
   burstTime: 1
   pauseTime: 0.3
   retreatThreshold: 0.42
+  valueOfTank: 1000
+  wallAvoidance: 3
   accuracy: 0.1
+  pursuitTarget: {fileID: 0}
+  chaseValue: 0.5
 --- !u!114 &7763485335613006241 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 366278136777289315, guid: 9f3c46c853176485cbe26373a8df426d, type: 3}

@@ -41,9 +41,9 @@ public class baseBrain : MonoBehaviour
     //point cap
     protected CapturePoint targetPoint = null;
 
-    protected int screenHeight = 9; // SCREEN HEIGHT IS Z AXIS
+    protected int screenHeight = 18; // SCREEN HEIGHT IS Z AXIS
     // Technically height of screen / 2
-    protected int screenWidth = 16;
+    protected int screenWidth = 32;
     #endregion
     // Start is called before the first frame update
     public bool TargetInRange(CombatEntity enemy)
