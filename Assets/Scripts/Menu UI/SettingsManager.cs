@@ -44,6 +44,9 @@ public class SettingsManager : MonoBehaviour {
 	private int currentLightingIndex = 0;
 	private int currentFPSIndex = 0;
 
+	public void ToggleMap() {
+		PlayerPrefs.SetInt("use_outdoor", PlayerPrefs.GetInt("use_outdoor") ^ 1);
+	}
 	public void SetQuality(int quality) {
 		PlayerPrefs.SetInt("quality", quality + 1);
 

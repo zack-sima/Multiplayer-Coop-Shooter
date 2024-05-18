@@ -35,6 +35,8 @@ public class MenuManager : MonoBehaviour {
 
 	[SerializeField] private TMP_InputField waveInput;
 
+	[SerializeField] private GameObject garageMap, outdoorsMap;
+
 	#endregion
 
 	#region Members
@@ -280,6 +282,10 @@ public class MenuManager : MonoBehaviour {
 		if (PlayerPrefs.GetString("player_name") != inputText) {
 			PlayerPrefs.SetString("player_name", inputText);
 			if (!waitingChangeNameInput) StartCoroutine(WaitForNameInputExit());
+		}
+		if (outdoorsMap.activeInHierarchy != (PlayerPrefs.GetInt("use_outdoor") == 1)) {
+			outdoorsMap.SetActive(PlayerPrefs.GetInt("use_outdoor") == 1);
+			garageMap.SetActive(PlayerPrefs.GetInt("use_outdoor") != 1);
 		}
 
 #if UNITY_EDITOR

@@ -59,7 +59,8 @@ public class GarageManager : MonoBehaviour {
 	private Vector3 normalCameraPosition;
 
 	//interpolate to this
-	private Vector3 targetGarageCameraPosition = new(-1.9f, 1.29f, -5.7f);
+	private Vector3 targetGarageCameraPosition = new(-1.9f, 0.5f, -5.7f);
+	private Vector3 targetGarageCameraRotation = new(7f, 0, 0);
 
 	private bool inGarage = false;
 	public bool GetIsInGarage() { return inGarage; }
@@ -425,9 +426,13 @@ public class GarageManager : MonoBehaviour {
 		if (garageUI.gameObject.activeInHierarchy) {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
 				targetGarageCameraPosition, Time.deltaTime * 10f);
+			playerCamera.transform.rotation = Quaternion.RotateTowards(playerCamera.transform.rotation,
+				Quaternion.Euler(targetGarageCameraRotation), Time.deltaTime * 25f);
 		} else {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
 				normalCameraPosition, Time.deltaTime * 10f);
+			playerCamera.transform.rotation = Quaternion.RotateTowards(playerCamera.transform.rotation,
+				Quaternion.identity, Time.deltaTime * 25f);
 		}
 	}
 
