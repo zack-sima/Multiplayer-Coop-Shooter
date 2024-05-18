@@ -143,9 +143,10 @@ public class PlayerDataHandler : MonoBehaviour {
         equippedInfos.Clear();
     }
 
-    private void TempEquipInfos() {
+    private void TempEquipInfos() { 
         //EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
-        EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 10);
+        EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 11);
+        //EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 10);
         //EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 10);
         EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
         EquipInfo(CSVType.GADGETS, CSVId.HardenedAmmoGadget, 1);

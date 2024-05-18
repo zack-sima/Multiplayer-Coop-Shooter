@@ -295,7 +295,7 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	//TODO: regulate using abilities
 	public NetworkedEntity SpawnSentry() {
-		if (!HasSyncAuthority()) return null;
+		//if (!HasSyncAuthority()) return null;
 		return Runner.Spawn(sentryPrefab, transform.position + new Vector3(Random.Range(-0.1f, 0.1f), 0f,
 			Random.Range(-0.1f, 0.1f)), Quaternion.identity).GetComponent<NetworkedEntity>();
 	}
