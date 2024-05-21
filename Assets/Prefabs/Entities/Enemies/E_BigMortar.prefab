@@ -32,6 +32,10 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 1.35
       objectReference: {fileID: 0}
+    - target: {fileID: 1796317835345343047, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.03
+      objectReference: {fileID: 0}
     - target: {fileID: 1920111377816778058, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
       propertyPath: m_Materials.Array.size
       value: 1
@@ -40,10 +44,34 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 5baa09d0f1d3646d98525ff98b6656dc, type: 2}
+    - target: {fileID: 2543073641785332804, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2543073641785332804, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2543073641785332804, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2543073641785332804, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.58
+      objectReference: {fileID: 0}
     - target: {fileID: 3481837575094032324, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 33ff0ade8734d49d7b90851ae8cfa9fd, type: 2}
+    - target: {fileID: 4745022660656937123, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 4745022660656937123, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 52
+      objectReference: {fileID: 0}
     - target: {fileID: 5557270009005376558, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -88,6 +116,10 @@ PrefabInstance:
       propertyPath: SortKey
       value: 3676086471
       objectReference: {fileID: 0}
+    - target: {fileID: 6299073862048361903, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 3.36
+      objectReference: {fileID: 0}
     - target: {fileID: 7199139338457447609, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
       propertyPath: m_Name
       value: E_BigMortar
@@ -100,6 +132,10 @@ PrefabInstance:
       propertyPath: maxHealth
       value: 8000
       objectReference: {fileID: 0}
+    - target: {fileID: 7763485335613006241, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+      propertyPath: explosionPrefab
+      value: 
+      objectReference: {fileID: 7254993791974905389, guid: 73975ca08378947b5ad53687748af48f, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

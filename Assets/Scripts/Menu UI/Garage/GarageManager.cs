@@ -424,8 +424,15 @@ public class GarageManager : MonoBehaviour {
 
 	private void Update() {
 		if (garageUI.gameObject.activeInHierarchy) {
+			Vector3 target = targetGarageCameraPosition;
+
+			//standard aspect ratio adjustment
+			float aspectRatio = (float)Screen.width / Screen.height / (1920f / 1080f);
+			aspectRatio = (aspectRatio + 1f) / 2f;
+			target.x *= aspectRatio;
+
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
-				targetGarageCameraPosition, Time.deltaTime * 10f);
+				target, Time.deltaTime * 10f);
 			playerCamera.transform.rotation = Quaternion.RotateTowards(playerCamera.transform.rotation,
 				Quaternion.Euler(targetGarageCameraRotation), Time.deltaTime * 25f);
 		} else {

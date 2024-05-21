@@ -63,6 +63,8 @@ public class LobbyUI : MonoBehaviour {
 	private float playerTurretRotation = -20f;
 	private float playerHullRotation = 20f;
 
+	private float randSeed = 0f;
+
 	#endregion
 
 	#region Functions
@@ -250,6 +252,8 @@ public class LobbyUI : MonoBehaviour {
 		PlayerNameInputChanged();
 		SetPlayerHull();
 		SetPlayerTurret();
+
+		randSeed = Random.Range(1f, 10f);
 	}
 	private void Update() {
 		int index = 1;
@@ -301,6 +305,18 @@ public class LobbyUI : MonoBehaviour {
 		playerDisplayers[0].SetTurretRotation(playerHullRotation - 20f + playerTurretRotation);
 
 		playerHullRotation -= playerScroller.GetMouseDelta().x / 3.5f;
+
+		//bobbing effect
+		float time = Time.time + randSeed;
+		float frequency = 0.25f;
+		float amplitude = 15f;
+
+		// Combining sine and cosine to create a sharper effect
+		float bobbingEffect = Mathf.Sin(time * frequency) * amplitude + Mathf.Cos(time * frequency * 0.5f) * (amplitude * 0.5f);
+
+		// Applying the bobbing effect to the player turret rotation
+		playerTurretRotation = bobbingEffect;
+
 
 		//disable other players
 		for (; index < MAX_PLAYERS; index++) {

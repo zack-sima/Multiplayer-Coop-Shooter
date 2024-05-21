@@ -13,9 +13,6 @@ public static class DamageHandler {
 	public static void DealExplosiveDamage(Vector3 position, float radius,
 		float damage, bool canDamageTeam, CombatEntity self = null) {
 
-		//TODO: NOTE: disabled chain bombs
-		canDamageTeam = false;
-
 		float u1 = 1.0f - UnityEngine.Random.value;
 		float u2 = 1.0f - UnityEngine.Random.value;
 		float randStdNormal = Mathf.Sqrt(-2.0f * Mathf.Log(u1)) * Mathf.Sin(2.0f * Mathf.PI * u2);
@@ -26,8 +23,14 @@ public static class DamageHandler {
 		foreach (CombatEntity e in new List<CombatEntity>(EntityController.instance.GetCombatEntities())) {
 			if (e == null || e == self || !e.GetNetworker().GetInitialized()) continue;
 
+			//reduce if team explosion
+			float dmgScale = 1f;
+
 			//same team
-			if (!canDamageTeam && self != null && e.GetTeam() == self.GetTeam()) continue;
+			if (self != null && e.GetTeam() == self.GetTeam()) {
+				if (!canDamageTeam) continue;
+				dmgScale = 0.3f;
+			}
 
 			float dist = AIBrain.GroundDistance(position, e.gameObject.transform.position);
 
@@ -35,7 +38,7 @@ public static class DamageHandler {
 				if (e.GetNetworker().GetIsDead() || dist > radius) continue;
 			} catch { continue; }
 
-			float realDmg = damage * Mathf.Min(1.5f * radius - 1.2f * dist, radius) / radius;
+			float realDmg = damage * dmgScale * Mathf.Min(1.5f * radius - 1.2f * dist, radius) / radius;
 
 			e.GetNetworker().LoseLocalHealth(realDmg);
 

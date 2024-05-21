@@ -27,6 +27,8 @@ public class ButtonDimmer : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
 	private bool buttonDown = false;
 	private bool touchInButton = false;
 
+	private PointerEventData downPointer = null;
+
 	private Button self;
 
 	private void ButtonUp() {
@@ -60,8 +62,10 @@ public class ButtonDimmer : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
 					if (i) i.color = new Color(dimImageColors[i].r - dimDegree * 0.7f, dimImageColors[i].g - dimDegree * 0.7f,
 						dimImageColors[i].b - dimDegree * 0.7f, dimImageColors[i].a);
 			}
+
 			buttonDown = true;
 			touchInButton = true;
+			downPointer = eventData;
 		}
 	}
 
@@ -122,16 +126,26 @@ public class ButtonDimmer : MonoBehaviour, IPointerEnterHandler, IPointerClickHa
 		float standardDeltaTime = 1f / Application.targetFrameRate;
 
 		if (bounceButton) {
+			if (buttonDown) {
+				if (downPointer != null) {
+					transform.localScale = Vector2.one;
+					bool inRect = RectTransformUtility.RectangleContainsScreenPoint(
+						GetComponent<RectTransform>(), downPointer.position);
+					transform.localScale = new Vector2(Mathf.Min(currentSize, 1f), Mathf.Min(currentSize, 1f));
+
+					touchInButton = inRect;
+				}
+			}
 			if (touchInButton) {
 				float threshold = 1f - bounceDegree;
 				if (currentSize > threshold) {
 					currentSize = Mathf.Max(threshold, currentSize - standardDeltaTime * 2f);
-					transform.localScale = new Vector2(currentSize, currentSize);
+					transform.localScale = new Vector2(Mathf.Min(currentSize, 1f), Mathf.Min(currentSize, 1f));
 				}
 			} else {
 				if (currentSize < 1f) {
 					currentSize = Mathf.Min(1f, currentSize + standardDeltaTime * 3.5f);
-					transform.localScale = new Vector2(currentSize, currentSize);
+					transform.localScale = new Vector2(Mathf.Min(currentSize, 1f), Mathf.Min(currentSize, 1f));
 				}
 			}
 		}

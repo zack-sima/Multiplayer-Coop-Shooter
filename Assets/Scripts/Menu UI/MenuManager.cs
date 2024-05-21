@@ -106,7 +106,7 @@ public class MenuManager : MonoBehaviour {
 
 				break;
 			case GameMode.PointCap:
-				modeDisplayTitle.text = "PvP KOTH";
+				modeDisplayTitle.text = "POINT CAP";
 
 				LobbyUI.instance.InLobbyUpdated();
 
