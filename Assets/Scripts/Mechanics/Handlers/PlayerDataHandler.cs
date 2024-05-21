@@ -4,6 +4,7 @@ using UnityEngine;
 using CSV.Parsers;
 using Newtonsoft.Json;
 using TMPro;
+using System.Linq;
 
 [System.Serializable]
 public class PlayerDataHandler : MonoBehaviour {
@@ -38,7 +39,7 @@ public class PlayerDataHandler : MonoBehaviour {
     private Dictionary<string, InventoryInfo> gadgetsInfo = new();
     private Dictionary<string, InventoryInfo> hullsInfo = new();
     private Dictionary<string, InventoryInfo> turretsInfo = new();
-    private Dictionary<CSVId, List<string>> equippedInfos = new();
+    private Dictionary<string, Dictionary<string, int>> equippedInfos = new();
 
     #endregion
 
@@ -52,56 +53,119 @@ public class PlayerDataHandler : MonoBehaviour {
     public Dictionary<string, InventoryInfo> GetGadgetInfos() { return gadgetsInfo; }
     public Dictionary<string, InventoryInfo> GetHullInfos() { return hullsInfo; }
     public Dictionary<string, InventoryInfo> GetTurretInfos() { return turretsInfo; }
-    public List<string> GetActiveInfoKeys() {
-        List<string> keys = new();
-        foreach (var item in activesInfo) { keys.Add(item.Key); }
-        return keys;
-    }
-    public List<string> GetGadgetInfoKeys() {
-        List<string> keys = new();
-        foreach (var item in gadgetsInfo) { keys.Add(item.Key); }
-        return keys;
-    }
-    public List<string> GetHullInfoKeys() {
-        List<string> keys = new();
-        foreach (var item in hullsInfo) { keys.Add(item.Key); }
-        return keys;
-    }
-    public List<string> GetTurretInfoKeys() {
-        List<string> keys = new();
-        foreach (var item in turretsInfo) { keys.Add(item.Key); }
-        return keys;
-    }
+    public List<string> GetActiveInfoKeys() { return activesInfo.Keys.ToList(); }
+    public List<string> GetGadgetInfoKeys() { return gadgetsInfo.Keys.ToList(); }
+    public List<string> GetHullInfoKeys() { return hullsInfo.Keys.ToList(); }
+    public List<string> GetTurretInfoKeys() { return turretsInfo.Keys.ToList(); }
 
     /// <summary>
     /// II = Inventory Info. Used for DOUBLE value types.
     /// </summary>
     public bool TryGetIIModifierValue(CSVId itemKey, CSVMd modiKey, int level, out double modiVal) {
-        if (TryGetActiveModi(nameof(itemKey), nameof(modiKey), level, out modiVal)) { return true; }
-        if (TryGetGadgetModi(nameof(itemKey), nameof(modiKey), level, out modiVal)) { return true; }
-        if (TryGetHullModi(nameof(itemKey), nameof(modiKey), level, out modiVal)) { return true; }
-        if (TryGetTurretModi(nameof(itemKey), nameof(modiKey), level, out modiVal)) { return true; }
+        if (TryGetActiveModi(itemKey.ToString(), modiKey.ToString(), level, out modiVal)) { return true; }
+        if (TryGetGadgetModi(itemKey.ToString(), modiKey.ToString(), level, out modiVal)) { return true; }
+        if (TryGetHullModi(itemKey.ToString(), modiKey.ToString(), level, out modiVal)) { return true; }
+        if (TryGetTurretModi(itemKey.ToString(), modiKey.ToString(), level, out modiVal)) { return true; }
+        return false;
+    }
+    public bool TryGetIIModifierValue(string itemKey, string modiKey, int level, out double modiVal) {
+        if (TryGetActiveModi(itemKey, modiKey, level, out modiVal)) { return true; }
+        if (TryGetGadgetModi(itemKey, modiKey, level, out modiVal)) { return true; }
+        if (TryGetHullModi(itemKey, modiKey, level, out modiVal)) { return true; }
+        if (TryGetTurretModi(itemKey, modiKey, level, out modiVal)) { return true; }
         return false;
     }
 
     /// <summary>
     /// II = Inventory Info. Used for STRING value types.
     /// </summary>
-    // public bool TryGetIIModifierValue(CSVId itemKey, CSVMd modiKey, out string modiString) {
-    //     if (TryGetItemFromInfos(itemKey, out InventoryInfo info)) {
-    //         if (info.TryGetModi(modiKey, out modiString)) { return true; }
-    //     }
-    // }
+    public bool TryGetIIModifierValue(CSVId itemKey, CSVMd modiKey, out string modiString) {
+        if (TryGetItemFromInfos(itemKey, out InventoryInfo info)) {
+            modiString = info.GetStringModi(modiKey);
+            return true;
+        }
+        modiString = "";
+        return false;
+    }
+    public bool TryGetIIModifierValue(string itemKey, string modiKey, out string modiString) {
+        if (TryGetItemFromInfos(itemKey, out InventoryInfo info)) {
+            modiString = info.GetStringModi(modiKey);
+            return true;
+        }
+        modiString = "";
+        return false;
+    }
+
+    /// <summary>
+    /// II = Inventory Info. Get Max Level.
+    /// </summary>
+    public bool TryGetIIMaxLevel(CSVId itemKey, out int maxLevel) {
+        if (TryGetItemFromInfos(itemKey, out InventoryInfo info)) {
+            maxLevel = info.GetMaxLevel();
+            return true;
+        }
+        maxLevel = 0;
+        return false;
+    }
+    public bool TryGetIIMaxLevel(string itemKey, out int maxLevel) {
+        if (TryGetItemFromInfos(itemKey, out InventoryInfo info)) {
+            maxLevel = info.GetMaxLevel();
+            return true;
+        }
+        maxLevel = 0;
+        return false;
+    }
+
+    public Dictionary<string, Dictionary<string, int>> GetEquippedInfos() {
+        return equippedInfos;
+    }
 
     #endregion
 
     #region Methods
 
+    public void EquipInfo(string type, string id, int level) {
+        if (equippedInfos.ContainsKey(type)) {
+            if (equippedInfos[type].ContainsKey(id)) {
+                equippedInfos[type][id] = level;
+            } else {
+                equippedInfos[type].Add(id, level);
+            }
+        } else {
+            equippedInfos.Add(type, new Dictionary<string, int>() { { id, level } });
+        }
+    }
+    public void EquipInfo(CSVType type, CSVId id, int level) {
+        EquipInfo(type.ToString(), id.ToString(), level);
+    }
+
+    public void ClearEquipInfos() {
+        equippedInfos.Clear();
+    }
+
+    private void TempEquipInfos() { 
+        //EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
+        EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 11);
+        //EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 10);
+        //EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 10);
+        EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
+        EquipInfo(CSVType.GADGETS, CSVId.HardenedAmmoGadget, 1);
+        EquipInfo(CSVType.GADGETS, CSVId.RegenerativeArmorGadget, 1);
+
+    }
+
     private bool TryGetItemFromInfos(CSVId itemKey, out InventoryInfo info) {
-        if (activesInfo.TryGetValue(nameof(itemKey), out info)) { return true; }
-        if (gadgetsInfo.TryGetValue(nameof(itemKey), out info)) { return true; }
-        if (hullsInfo.TryGetValue(nameof(itemKey), out info)) { return true; }
-        if (turretsInfo.TryGetValue(nameof(itemKey), out info)) { return true; }
+        if (activesInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
+        if (gadgetsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
+        if (hullsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
+        if (turretsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
+        return false;
+    }
+    private bool TryGetItemFromInfos(string itemKey, out InventoryInfo info) {
+        if (activesInfo.TryGetValue(itemKey, out info)) { return true; }
+        if (gadgetsInfo.TryGetValue(itemKey, out info)) { return true; }
+        if (hullsInfo.TryGetValue(itemKey, out info)) { return true; }
+        if (turretsInfo.TryGetValue(itemKey, out info)) { return true; }
         return false;
     }
 
@@ -145,8 +209,6 @@ public class PlayerDataHandler : MonoBehaviour {
         return returnBool;
     }
 
-
-
     #endregion
 
     #region UnityCallBacks
@@ -158,6 +220,11 @@ public class PlayerDataHandler : MonoBehaviour {
         } else {
             Destroy(gameObject);
         }
+    }
+
+    private void Start() {
+        ForceResetInfos();
+        TempEquipInfos(); // TODO: Remove this.
     }
 
     private void Update() {

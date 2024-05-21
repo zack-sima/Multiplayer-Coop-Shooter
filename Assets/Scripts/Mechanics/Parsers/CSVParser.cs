@@ -121,7 +121,8 @@ namespace CSV.Parsers {
                             LogError(error, debugId); return false;
                         }
 
-                        InGameUpgradeInfo upgradeInfo = new InGameUpgradeInfo(columnArray[1]);
+                        InGameUpgradeInfo upgradeInfo = new InGameUpgradeInfo(info.id + columnArray[1], columnArray[1]);
+                        upgradeInfo.parentDisplay = info.displayName;
                         for(int i = 2; i < columnArray.Length; i++) {
                             if (double.TryParse(columnArray[i], out double modi)) {
                                 if (tempUpgradeHeaders.Count > i) {
@@ -218,6 +219,19 @@ namespace CSV.Parsers {
             this.id = id;
         }
 
+        public string GetStringModi(CSVMd modi) {
+            if (modi == CSVMd.StringId) return id;
+            if (modi == CSVMd.Description) return description;
+            if (modi == CSVMd.Display) return displayName;
+            return "";
+        }
+        public string GetStringModi(string modi) {
+            if (modi == nameof(CSVMd.StringId)) return id;
+            if (modi == nameof(CSVMd.Description)) return description;
+            if (modi == nameof(CSVMd.Display)) return displayName;
+            return "";
+        }
+
         public int GetMaxLevel() {
             return modiByLevel.Keys.Max();
         }
@@ -233,10 +247,22 @@ namespace CSV.Parsers {
             else inGameUpgrades[input.id] = input;
         }
 
+        public List<InGameUpgradeInfo> GetInGameUpgrade() {
+            return inGameUpgrades.Values.ToList();
+        }
+
         public bool TryGetModi(string id, int level, out double output) {
             output = 0;
             if (modiByLevel.ContainsKey(level) && modiByLevel[level].ContainsKey(id)) {
                 output = modiByLevel[level][id];
+                return true;
+            }
+            return false;
+        }
+         public bool TryGetModi(CSVMd id, int level, out double output) {
+            output = 0;
+            if (modiByLevel.ContainsKey(level) && modiByLevel[level].ContainsKey(id.ToString())) {
+                output = modiByLevel[level][id.ToString()];
                 return true;
             }
             return false;
@@ -256,6 +282,11 @@ namespace CSV.Parsers {
                 s += "\n";
             }
             s += "\n";
+
+            s += "InGameUpgrades : \n";
+            foreach(var kvp in inGameUpgrades) {
+                s += kvp.Value.ToString();
+            }
             return s;
         }
     }
@@ -263,10 +294,11 @@ namespace CSV.Parsers {
     [System.Serializable]
     public class InGameUpgradeInfo {
         public readonly string id;
+        public string displayName, parentDisplay;
         public List<string> softRequirements = new(), hardRequirements = new(), mutualRequirements = new();
         public Dictionary<string, double> modi = new();
         public int maxLevel = 1;
-        public InGameUpgradeInfo(string id) { this.id = id;} 
+        public InGameUpgradeInfo(string id, string displayName) { this.id = id; this.displayName = displayName; } 
 
         public bool TryGetModi(string id, out double output) {
             output = 0;
@@ -277,9 +309,31 @@ namespace CSV.Parsers {
             return false;
         }
 
+        public string GetDescription() {
+            string s = "";
+            foreach(var kvp in modi) {
+                if (kvp.Value == 0) continue;
+                if (kvp.Key == nameof(CSVMd.Level) || kvp.Key == nameof(CSVMd.UPCost)) continue;
+
+                //TODO: Switch statement for different types of modis.
+                s += parentDisplay + " :\n " + AddSpacesToSentence(kvp.Key) + " " + (kvp.Value > 0 ? "+" : "") + kvp.Value.DescriptionInit(kvp.Key) + "\n";
+            }
+            return s;
+        }
+
+        public static string AddSpacesToSentence(string text) {
+            if (string.IsNullOrWhiteSpace(text))
+                return "";
+            return Regex.Replace(text, "([A-Z])", " $1").Trim();
+        }
+
         public void PushModi(string id, double input) {
             if (!modi.ContainsKey(id)) modi.Add(id, input);
             else modi[id] = input;
+        }
+        
+        public static bool HasDecimalPart(double value) {
+            return value != Math.Floor(value);
         }
 
         public override string ToString() {

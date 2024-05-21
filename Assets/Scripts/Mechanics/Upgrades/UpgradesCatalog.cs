@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CSV;
+using CSV.Parsers;
 
 public class UpgradesCatalog : MonoBehaviour {
 
@@ -28,13 +29,14 @@ public class UpgradesCatalog : MonoBehaviour {
 	}
 	public class UpgradeNode {
 		public string upgradeName;
+		public string displayName;
 		public Sprite icon;
 		public int cost;
 		public int level;
 		public string description;
 		public bool unlocked;
 		public readonly bool replacePrior;
-		public UpgradeInfo info;
+		public InGameUpgradeInfo info;
 		public UpgradeNode prior;
 
 		//if any tech in here was bought, this cannot be bought
@@ -48,7 +50,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		//CONSTRUCTOR
 		public UpgradeNode(
-			string upgradeName, Sprite icon, int cost, UpgradeInfo info, int level = 0,
+			string upgradeName, string displayName, Sprite icon, int cost, InGameUpgradeInfo info, int level = 0,
 			string description = "No description", bool unlocked = false, bool replacePrior = false,
 			List<string> mutuallyExclusiveUpgrades = null,
 			List<string> hardRequirements = null,
@@ -66,6 +68,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 			this.description = description;
 			this.upgradeName = upgradeName;
+			this.displayName = displayName;
 			this.icon = icon;
 			this.cost = cost;
 			this.unlocked = unlocked;
@@ -323,23 +326,30 @@ public class UpgradesCatalog : MonoBehaviour {
 		ReRollUpgrades();
 		RerenderUpgrades();
 	}
-	public UpgradeNode AddUpgrade(string name, int cost, UpgradeInfo info, int level = 0,
-		string description = "No description", bool unlocked = false,
+	public UpgradeNode AddUpgrade(string id, string displayName, int cost, int level = 0, InGameUpgradeInfo info = null, bool unlocked = false,
 		bool replacePrior = false, List<string> mutuallyExclusiveUpgrades = null,
 		List<string> hardRequirements = null, List<string> softRequirements = null) {
 
-		UpgradeNode n = new(name, GetUpgradeIcon(name), cost, info, level, description, unlocked, replacePrior,
+		UpgradeNode n = new(id, displayName, GetUpgradeIcon(name), cost, info, level, info?.GetDescription(), unlocked, replacePrior,
 			mutuallyExclusiveUpgrades, hardRequirements, softRequirements);
 
 		//only add _level if level != 0
 		playerUpgrades.Add(n.GetUpgradeId(), n);
-
 		return n;
 	}
 	private Sprite GetUpgradeIcon(string name) {
 		if (upgradeIconsDict.ContainsKey(name)) return upgradeIconsDict[name];
 		Debug.LogWarning($"need sprite for `{name}`!");
 		return fallbackSprite;
+	}
+	public void InitUpgrades() {
+		foreach (UpgradeNode n in playerUpgrades.Values) {
+			if (n.unlocked) {
+				NetworkedEntity.playerInstance.PushUpgradeModi(n);
+			}
+		}
+		ReRollUpgrades();
+		RerenderUpgrades();
 	}
 	private void Awake() {
 		instance = this;
@@ -369,27 +379,13 @@ public class UpgradesCatalog : MonoBehaviour {
 
 	}
 
-	/*=================| CSV |=================*/
-	private void CSVInit() { // TODO: Update with turret info, etc.
-		this.ParseUpgradesFromAllCSV();
-	}
-
 	private void Start() {
-		//make sure player starts with these abilities unlocked
-		CSVInit();
 
-		foreach (UpgradeNode n in playerUpgrades.Values) {
-			if (n.unlocked) {
-				NetworkedEntity.playerInstance.PushUpgradeModi(n);
-			}
-		}
+		
 		//foreach (UpgradeNode u in playerUpgrades.Values) {
 		//	Debug.LogWarning("UpgradeInit : " + u.ToString());
 		//}
 		if (UIController.GetIsMobile()) PCHotkeyText.gameObject.SetActive(false);
-
-		ReRollUpgrades();
-		RerenderUpgrades();
 
 		playerMoney = PlayerPrefs.GetInt("game_start_cash");
 	}

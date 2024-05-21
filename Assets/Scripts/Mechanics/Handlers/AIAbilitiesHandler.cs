@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using CSV.Parsers;
 
 namespace Abilities {
     public static class AIAbilitiesExtensions {
@@ -9,10 +10,10 @@ namespace Abilities {
 
             input.Clear(); // Remove all current abilties.
 
-            RapidFire f = new RapidFire(); // Initialize new ability.
-            input.Add((f, false)); // bool is for activation state.
+            // RapidFire f = new RapidFire(); // Initialize new ability.
+            // input.Add((f, false)); // bool is for activation state.
 
-            Heal h = new Heal(); // Initialize new ability.
+            Heal h = new Heal(CSVId.HealActive); // Initialize new ability.
             h.cooldownPeriod = h.remainingCooldownTime = 3f; // Set cooldown period. (if you want stats that are not the default.)
             //TODO: idk if you need like a CSV for these bots to have different stats.
 

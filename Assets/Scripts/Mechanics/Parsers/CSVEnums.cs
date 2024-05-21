@@ -4,11 +4,13 @@ using UnityEngine;
 
 namespace CSV.Parsers {
 
+    public enum CSVType {
+        ACTIVES, TURRETS, GADGETS, HULLS,
+    }
+
     public enum CSVId { // StringId
 
         // ! NEED TO BE NAMED THE SAME AS IN THE [----Id] SLOT !
-
-        ACTIVES, TURRETS, GADGETS, HULLS,
 
         #region //*==| HULLS |==*//
 
@@ -29,8 +31,8 @@ namespace CSV.Parsers {
 
         #region //*==| GADGETS |==*//
         
-        HardenedAmmoGadget, HealGadget, ArmorGadget,
-
+        HardenedAmmoGadget, ImprovedLoaderGadget, HardenedArmorGadget, FireControlGadget, PolishedTriggerGadget, LaserSightGadget, BracedInternalsGadget,
+        RegenerativeArmorGadget,
 
         #endregion
     }
@@ -39,12 +41,20 @@ namespace CSV.Parsers {
         /* TYPE */ StringId, 
         /* BASIC */ Tags, Description, Display, IUpgrade, UPTags,
         /* OPERATIONAL */ Add, Max, 
-        /* UPGRADES */ Level, UPCost,
-        /* BASICS MODIS  */ XPCost, MoneyCost, Above, Cooldown, 
-        /* GENERAL MODIS */ Damage, Reload, AmmoRegen, MaxHP, CritChance, CritDamage,
+        /* UPGRADE */ Level, UPCost,
+        /* BASIC */ XPCost, MoneyCost, Above, Cooldown, 
+        /* GENERAL */ Damage, Reload, AmmoRegen, MaxHP, CritChance, CritDamage,
 
-        /* HULL MODIS */ Health,
-        /* TURRET MODIS */ /*Damage*/ FireRate, MaxAmmo,
+        /* HULL */ Health,
+        /* TURRET */ /*Damage*/ FireRate, MaxAmmo,
+
+        /* HEALTH */ HealAmount, 
+
+        /* Durations */
+            RapidDuration, HealDuration, 
+        
+        /* Sentries */
+            SentryDamage, SentryHealth, SentryShootSpeed, SentryMaxAmmo, SentryAmmoRegen, SentryShootSpread, SentryCritChance, SentryCritDamage,
 
     }
 }

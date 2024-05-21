@@ -90,14 +90,15 @@ public class Turret : MonoBehaviour {
 	protected float bulletDmgModi = 1f;
 
 	public float GetBaseShootSpeed() { return baseShootSpeed; }
-	public void SetShootSpeed(float shootSpeed) { this.shootSpeed = shootSpeed; }
+	public void SetShootSpeed(double shootSpeed) { this.shootSpeed = (float)shootSpeed; }
 
 	public float GetBaseAmmoRegenRate() { return baseAmmoRegen; }
-	public void SetAmmoRegenRate(float ammoRegen) { ammoRegenerationSpeed = ammoRegen; }
+	public void SetAmmoRegenRate(double ammoRegen) { ammoRegenerationSpeed = (float)ammoRegen; }
 
 	public float GetBaseBulletModi() { return 1f; } // Base is always 1f.
 	public float GetBulletModi() { return bulletDmgModi; }
 	public void SetBulletDmgModi(float bulletDmgModi) { this.bulletDmgModi = bulletDmgModi; }
+	public void SetBulletDmgModi(double bulletDmgModi) { this.bulletDmgModi = (float)bulletDmgModi; }
 	private void SetBaseValues() {
 		baseShootSpeed = shootSpeed;
 		baseAmmoRegen = ammoRegenerationSpeed;

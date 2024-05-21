@@ -19,7 +19,7 @@ namespace Abilities {
         
         public static Dictionary<UpgradeIndex, IAbility> baseUpgradeValues = new() {
             /*========| HEAL |========*/
-            { UpgradeIndex.Heal, new Heal() }
+            //{ UpgradeIndex.Heal, new Heal() }
 
         };
     }
