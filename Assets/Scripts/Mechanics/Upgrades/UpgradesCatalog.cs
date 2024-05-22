@@ -252,7 +252,7 @@ public class UpgradesCatalog : MonoBehaviour {
 		//look through dict
 		foreach (KeyValuePair<string, int> kv in highestUnlockedUpgrades) { // for the top bar ui
 			string levelText = kv.Value == 0 ? "" : ToRoman(kv.Value);
-			Debug.Log("kv.Key : " + kv.Key);
+			
 			//Sprite sprite = GetUpgradeIcon(kv.Key);
 			if (PlayerDataHandler.instance.TryGetIcon(kv.Key , out PlayerDataHandler.IconKeyValuePair i)) {
 				Sprite sprite = i.icon;

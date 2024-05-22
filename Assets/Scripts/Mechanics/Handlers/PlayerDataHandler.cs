@@ -25,8 +25,9 @@ public class PlayerDataHandler : MonoBehaviour {
 
     [System.Serializable]
     public class IconBundle {
-        public IconType type;
-        public IconKeyValuePair parent;
+        public string id;
+        public Sprite icon;
+        //public IconKeyValuePair parent;
         public Sprite regularUiIcon, activeUiIcon;
         public List<IconKeyValuePair> children;
     }
@@ -62,7 +63,7 @@ public class PlayerDataHandler : MonoBehaviour {
 
     public bool TryGetUIIcon(string id, out (Sprite active, Sprite regular) s) {
         foreach(IconBundle icon in icons) {
-            if (icon.parent.id == id) {
+            if (icon.id == id) {
                 s = (icon.activeUiIcon, icon.regularUiIcon);
                 return true;
             }
@@ -73,8 +74,12 @@ public class PlayerDataHandler : MonoBehaviour {
 
     public bool TryGetIcon(string id, out IconKeyValuePair i) {
         foreach(IconBundle icon in icons) {
-            if (icon.parent.id == id) {
-                i = icon.parent;
+            if (icon.id == id) {
+                IconKeyValuePair pair = new IconKeyValuePair {
+                    id = icon.id,
+                    icon = icon.icon
+                };
+                i = pair;
                 return true;
             }
 
@@ -195,8 +200,8 @@ public class PlayerDataHandler : MonoBehaviour {
         //EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
         // EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 11);
         EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 10);
-        // EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 10);
-        EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
+        EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 10);
+        // EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
         // EquipInfo(CSVType.GADGETS, CSVId.HardenedAmmoGadget, 1);
         // EquipInfo(CSVType.GADGETS, CSVId.RegenerativeArmorGadget, 1);
 
@@ -205,7 +210,7 @@ public class PlayerDataHandler : MonoBehaviour {
     private void SetIconChildrenIds() {
         for(int i = 0; i < icons.Count; i++) {
             for(int j = 0; j < icons[i].children.Count; j++) {
-                icons[i].children[j].id = icons[i].parent.id + icons[i].children[j].id;
+                icons[i].children[j].id = icons[i].id + icons[i].children[j].id;
             }
         }
     }
