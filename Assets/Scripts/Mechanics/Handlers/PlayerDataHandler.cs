@@ -60,7 +60,7 @@ public class PlayerDataHandler : MonoBehaviour {
     #endregion
 
     #region Getters & Setters
-    
+
     public Dictionary<string, int> GetEquippedInfos(string type) {
         if (equippedInfos.TryGetValue(type, out Dictionary<string, int> dict)) {
             return dict;
@@ -69,6 +69,16 @@ public class PlayerDataHandler : MonoBehaviour {
     }
     public Dictionary<string, int> GetEquippedInfos(CSVType type) {
         return GetEquippedInfos(type.ToString());
+    }
+    public bool TryGetGeneralIcon(string id, out Sprite s) {
+        foreach(IconBundle icon in icons) {
+            if (icon.id == id) {
+                s = icon.icon;
+                return true;
+            }
+        }
+        s = null;
+        return false;
     }
     public bool TryGetUIIcon(string id, out (Sprite active, Sprite regular) s) {
         foreach(IconBundle icon in icons) {
