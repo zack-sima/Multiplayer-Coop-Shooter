@@ -915,8 +915,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 267.59073, y: -529.59607}
-  m_SizeDelta: {x: 385.18146, y: 500}
+  m_AnchoredPosition: {x: 262.12552, y: -540.87317}
+  m_SizeDelta: {x: 374.25104, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &63617934
 MonoBehaviour:
@@ -4630,7 +4630,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1030.4475, y: -41.46}
+  m_AnchoredPosition: {x: 904.5648, y: -41.46}
   m_SizeDelta: {x: 250, y: 65.3408}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &215747667
@@ -9070,6 +9070,10 @@ PrefabInstance:
       value: RailMap_1
       objectReference: {fileID: 0}
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
+      propertyPath: difficulty
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: displayProg
       value: 1
       objectReference: {fileID: 0}
@@ -11366,8 +11370,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 702.7722, y: -529.59607}
-  m_SizeDelta: {x: 385.18146, y: 500}
+  m_AnchoredPosition: {x: 686.3766, y: -540.87317}
+  m_SizeDelta: {x: 374.25104, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &553378880
 MonoBehaviour:
@@ -13656,7 +13660,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 260.14917, y: -41.46}
+  m_AnchoredPosition: {x: 218.18826, y: -41.46}
   m_SizeDelta: {x: 250, y: 65.3408}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!114 &632453888
@@ -14038,6 +14042,10 @@ PrefabInstance:
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: mapName
       value: Orbital_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
+      propertyPath: difficulty
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: displayProg
@@ -20901,8 +20909,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -152.03322, y: -26.4412}
-  m_SizeDelta: {x: 278.5097, y: -71.9765}
+  m_AnchoredPosition: {x: -155.09166, y: -26.4412}
+  m_SizeDelta: {x: 272.3928, y: -71.9765}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &964605519
 MonoBehaviour:
@@ -20954,9 +20962,9 @@ MonoBehaviour:
   m_fontSize: 35
   m_fontSizeBase: 35
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 25
+  m_fontSizeMax: 35
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -32360,6 +32368,10 @@ PrefabInstance:
       value: Reactor_1
       objectReference: {fileID: 0}
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
+      propertyPath: difficulty
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: displayProg
       value: 1
       objectReference: {fileID: 0}
@@ -40325,8 +40337,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -152.03323, y: 18.762}
-  m_SizeDelta: {x: 278.5097, y: -55.8699}
+  m_AnchoredPosition: {x: -155.09167, y: 18.762001}
+  m_SizeDelta: {x: 272.3928, y: -55.8699}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1517891502
 MonoBehaviour:
@@ -40348,7 +40360,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: COOP
+  m_text: CO-OP
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 0dd3f9df89d034ad6badb0d5b08b93a2, type: 2}
   m_sharedMaterial: {fileID: 5504618955688631974, guid: 0dd3f9df89d034ad6badb0d5b08b93a2, type: 2}
@@ -40378,9 +40390,9 @@ MonoBehaviour:
   m_fontSize: 45
   m_fontSizeBase: 45
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 35
+  m_fontSizeMax: 45
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -40821,6 +40833,10 @@ PrefabInstance:
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: isSolo
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
+      propertyPath: difficulty
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: displayProg
@@ -51478,6 +51494,10 @@ PrefabInstance:
       value: Orbital_1
       objectReference: {fileID: 0}
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
+      propertyPath: difficulty
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: displayProg
       value: 1
       objectReference: {fileID: 0}
@@ -53005,6 +53025,10 @@ PrefabInstance:
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: mapName
       value: Reactor_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
+      propertyPath: difficulty
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: displayProg
@@ -57034,8 +57058,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1137.9536, y: -529.59607}
-  m_SizeDelta: {x: 385.18146, y: 500}
+  m_AnchoredPosition: {x: 1110.6276, y: -540.87317}
+  m_SizeDelta: {x: 374.25104, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7306727834632841582
 GameObject:

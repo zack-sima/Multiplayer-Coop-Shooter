@@ -44,7 +44,9 @@ public class Hull : MonoBehaviour {
 	public void Move(Vector3 direction, int inReverse = -1) {
 		if (rootTransform == null) return;
 
-		currentVelocity = Vector3.MoveTowards(currentVelocity, speed * direction, acceleration * Time.deltaTime);
+		float maxSpeed = animator.GetInReverse() == 1 ? speed * 0.85f : speed;
+
+		currentVelocity = Vector3.MoveTowards(currentVelocity, maxSpeed * direction, acceleration * Time.deltaTime);
 
 		//if -1 don't set inReverse
 		if (inReverse != -1 && direction != Vector3.zero) {

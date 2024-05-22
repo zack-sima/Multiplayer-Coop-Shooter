@@ -82,7 +82,24 @@ public class MenuManager : MonoBehaviour {
 	//NOTE: also set by level select (rapid mode = higher starting waves; TODO: modes, difficulty, etc)
 	private int currentWave = 0;
 	public int GetWave() { return currentWave; }
-	public void SetWave(int wave) { currentWave = wave; }
+	public void SetWave(int wave) {
+		currentWave = wave;
+
+		if (LobbyStatsSyncer.instance != null && LobbyStatsSyncer.instance.Runner.IsSharedModeMasterClient) {
+			LobbyUI.instance.WaveChanged(wave);
+		}
+	}
+
+	//NOTE: 0 = standard, 1 = hardened, 2 = special difficulty, tbd
+	private int currentCoopDifficulty = 0;
+	public int GetDifficulty() { return currentCoopDifficulty; }
+	public void SetDifficulty(int difficulty) {
+		currentCoopDifficulty = difficulty;
+
+		if (LobbyStatsSyncer.instance != null && LobbyStatsSyncer.instance.Runner.IsSharedModeMasterClient) {
+			LobbyUI.instance.DifficultyChanged(difficulty);
+		}
+	}
 
 	#endregion
 
@@ -112,9 +129,10 @@ public class MenuManager : MonoBehaviour {
 
 				break;
 			case GameMode.Coop:
-				modeDisplayTitle.text = "COOP";
+				modeDisplayTitle.text = "CO-OP";
 
-				if (currentWave > 1) modeDisplayTitle.text += " RAPID";
+				if (currentCoopDifficulty / 10 == 1) modeDisplayTitle.text += " (HARD)";
+				if (currentCoopDifficulty / 10 == 2) modeDisplayTitle.text += " (RAPID)";
 
 				LobbyUI.instance.InLobbyUpdated();
 
@@ -122,7 +140,8 @@ public class MenuManager : MonoBehaviour {
 			case GameMode.Singleplayer:
 				modeDisplayTitle.text = "SOLO";
 
-				if (currentWave > 1) modeDisplayTitle.text += " RAPID";
+				if (currentCoopDifficulty / 10 == 1) modeDisplayTitle.text += " (HARD)";
+				if (currentCoopDifficulty / 10 == 2) modeDisplayTitle.text += " (RAPID)";
 
 				if (ServerLinker.instance.GetIsInLobby()) {
 					ServerLinker.instance.StopLobby();
@@ -188,6 +207,26 @@ public class MenuManager : MonoBehaviour {
 		}
 		return -1;
 	}
+	public int GetCashByDifficulty(int difficulty) {
+		difficulty /= 10;
+
+		return difficulty switch {
+			0 => 250,
+			1 => 500,
+			2 => 2500,
+			_ => 250,
+		};
+	}
+	public int GetStartDelayByDifficulty(int difficulty) {
+		difficulty /= 10;
+
+		return difficulty switch {
+			0 => 5,
+			1 => 5,
+			2 => 15,
+			_ => 5
+		};
+	}
 	//NOTE: only call this from the lobby!
 	public void StartShared(string mapName) {
 		InitGame();
@@ -197,9 +236,10 @@ public class MenuManager : MonoBehaviour {
 		int mapIndex = GetSceneIndexByName(mapName);
 
 		//TODO: scale by challenge mode, difficulty, etc
-		PlayerPrefs.SetInt("game_start_delay", currentWave <= 1 ? 5 : 30);
-		PlayerPrefs.SetInt("game_start_cash", currentWave <= 1 ? 250 : 5000);
+		PlayerPrefs.SetInt("game_start_delay", GetStartDelayByDifficulty(currentCoopDifficulty));
+		PlayerPrefs.SetInt("game_start_cash", GetCashByDifficulty(currentCoopDifficulty));
 		PlayerPrefs.SetInt("game_start_wave", currentWave);
+		PlayerPrefs.SetInt("game_start_difficulty", currentCoopDifficulty);
 
 		//saved lobby room ID + "_g" goes to correct game room
 		if (mapIndex != -1)
@@ -214,9 +254,12 @@ public class MenuManager : MonoBehaviour {
 		}
 #endif
 		//TODO: scale by challenge mode, difficulty, etc
+		print(GetCashByDifficulty(currentCoopDifficulty));
 		PlayerPrefs.SetInt("game_start_delay", 5);
-		PlayerPrefs.SetInt("game_start_cash", currentWave <= 1 ? 250 : 2500);
+		PlayerPrefs.SetInt("game_start_cash", GetCashByDifficulty(currentCoopDifficulty));
 		PlayerPrefs.SetInt("game_start_wave", currentWave);
+		PlayerPrefs.SetInt("game_start_difficulty", currentCoopDifficulty);
+
 
 		if (sceneIndex != -1) {
 			LobbyUI.instance.SetGameStarting();
@@ -267,6 +310,7 @@ public class MenuManager : MonoBehaviour {
 
 		currentGameMode = (GameMode)PlayerPrefs.GetInt("game_mode");
 
+		SetDifficulty(PlayerPrefs.GetInt("game_start_difficulty"));
 		SetWave(PlayerPrefs.GetInt("game_start_wave"));
 		SetSelectedMap(PlayerPrefs.GetString("last_map"));
 

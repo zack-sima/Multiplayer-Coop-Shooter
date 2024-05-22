@@ -8,9 +8,9 @@ public class LevelSelectButton : MonoBehaviour {
 
 	[SerializeField] private string mapName;
 	[SerializeField] private bool isSolo;
-	[SerializeField] private bool isRapid;
 	[SerializeField] private bool isComp;
 	[SerializeField] private bool isPCP;
+	[SerializeField] private int difficulty;
 
 	//TODO: actually show trophies/completion, etc
 	[SerializeField] private bool displayProg;
@@ -42,6 +42,6 @@ public class LevelSelectButton : MonoBehaviour {
 		return "#" + ColorUtility.ToHtmlStringRGB(color);
 	}
 	public void SelectMap() {
-		LevelSelectManager.instance.SetMap(mapName, isSolo, isRapid, isComp, isPCP);
+		LevelSelectManager.instance.SetMap(mapName, isSolo, isComp, isPCP, difficulty);
 	}
 }
