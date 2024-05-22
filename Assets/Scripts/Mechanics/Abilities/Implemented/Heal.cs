@@ -54,7 +54,8 @@ namespace Abilities {
                 remainingCooldownTime = Mathf.Max(0, remainingCooldownTime - Time.deltaTime);
                 if (outline != null) { // update the outline.
                     outline.fillAmount = (cooldownPeriod - remainingCooldownTime) / cooldownPeriod;
-                    if (abilityIcon.sprite != regular) abilityIcon.sprite = regular;
+                    if (remainingCooldownTime != 0 && abilityIcon.sprite != regular) abilityIcon.sprite = regular;
+                    else if (remainingCooldownTime == 0 && abilityIcon.sprite != active) abilityIcon.sprite = active;
                 }
             }
         }
@@ -74,6 +75,7 @@ namespace Abilities {
             if (info.TryGetModi(CSVMd.Cooldown, level, out double cd)) {
                 cooldownPeriod = (float)cd;
             } else DebugUIManager.instance?.LogError("No Cooldown found.", "HealActive");
+            remainingCooldownTime = cooldownPeriod;
         }
 
         public void SetIconImage(Image iconImage) {

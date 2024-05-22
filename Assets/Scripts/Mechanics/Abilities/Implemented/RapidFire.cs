@@ -16,13 +16,14 @@ namespace Abilities {
         private string id;
         
         
-        public RapidFire(CSVId id) { this.id = id.ToString(); }
+        public RapidFire(CSVId id) { this.id = id.ToString(); remainingCooldownTime = 0;}
 
         public void Activate(NetworkedEntity entity, bool isOverride = false) { //reset the timer and activate ability.
             if (!isOverride && (isActive || remainingCooldownTime != 0)) return;
             remainingCooldownTime = cooldownPeriod;
             remainingFiringTime = firingPeriod;
             isActive = true;
+            abilityIcon.sprite = active;
             
             //Effect
             GameObject fireEffect = entity.InitEffect(firingPeriod + 3f, 5f, UpgradeIndex.RapidFire);
@@ -51,6 +52,8 @@ namespace Abilities {
                 remainingCooldownTime = Mathf.Max(0, remainingCooldownTime - Time.deltaTime);
                 if (outline != null) { // update the outline.
                     outline.fillAmount = (cooldownPeriod - remainingCooldownTime) / cooldownPeriod;
+                    if (remainingCooldownTime != 0 && abilityIcon.sprite != regular) abilityIcon.sprite = regular;
+                    else if (remainingCooldownTime == 0 && abilityIcon.sprite != active) abilityIcon.sprite = active;
                 }
             }
         }
@@ -70,6 +73,7 @@ namespace Abilities {
             if (info.TryGetModi(CSVMd.Cooldown, level, out double hd)) {
                 cooldownPeriod = remainingCooldownTime = (float)hd;
             } else DebugUIManager.instance?.LogError("No Cooldown found.", "RapidFireActive");
+            remainingCooldownTime = cooldownPeriod;
         }
 
         public void SetIconImage(Image iconImage) {

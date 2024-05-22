@@ -48,6 +48,9 @@ namespace Abilities {
 
         public void SysTickCall() {
             remainingCooldownTime = Mathf.Max(0, remainingCooldownTime - Time.deltaTime);
+            if (remainingCooldownTime == 0) {
+                if (abilityIcon.sprite != active) abilityIcon.sprite = active;
+            } else if (abilityIcon.sprite != regular) abilityIcon.sprite = regular;
             if (outline != null) { // update the outline.
                 outline.fillAmount = (cooldownPeriod - remainingCooldownTime) / cooldownPeriod;
             }     
@@ -69,6 +72,7 @@ namespace Abilities {
             if (info.TryGetModi(CSVMd.SentryShootSpeed, level, out double fireRate)) shootSpeed = (float)fireRate; else DebugUIManager.instance?.LogError("No fire rate found for " + id, "SentryInit");
             if (info.TryGetModi(CSVMd.SentryShootSpread, level, out double spread)) shootSpread = (float)spread; else DebugUIManager.instance?.LogError("No spread found for " + id, "SentryInit");
             if (info.TryGetModi(CSVMd.SentryDamage, level, out double damage)) dmgModi = (float)damage; else DebugUIManager.instance?.LogError("No damage found for " + id, "SentryInit");
+            remainingCooldownTime = cooldownPeriod;
         }
 
         public void SetIconImage(Image iconImage) {
