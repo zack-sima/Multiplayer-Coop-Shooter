@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using Effects;
 using CSV.Parsers;
+using UnityEngine.UI;
 
 namespace Abilities {
 
     class RapidFire : IActivatable, ISysTickable, IButtonRechargable, IInitable {
         public float cooldownPeriod, remainingCooldownTime, firingPeriod, remainingFiringTime;
         private bool isActive = false;
-        private UnityEngine.UI.Image outline = null;
+        private Image outline = null;
+        private Image abilityIcon = null;
+        private Sprite active, regular;
         private string id;
         
         
@@ -67,6 +70,15 @@ namespace Abilities {
             if (info.TryGetModi(CSVMd.Cooldown, level, out double hd)) {
                 cooldownPeriod = remainingCooldownTime = (float)hd;
             } else DebugUIManager.instance?.LogError("No Cooldown found.", "RapidFireActive");
+        }
+
+        public void SetIconImage(Image iconImage) {
+            if(PlayerDataHandler.instance.TryGetUIIcon(nameof(CSVId.RapidFireActive), out (Sprite active, Sprite regular) s)) {
+                abilityIcon = iconImage;
+                iconImage.sprite = s.regular;
+                active = s.active;
+                regular = s.regular;
+            } else DebugUIManager.instance?.LogError("No icon found for : ", "RapidFireActive");
         }
     }
 }

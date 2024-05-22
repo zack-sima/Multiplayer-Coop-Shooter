@@ -48,6 +48,11 @@ namespace Abilities {
         /// Called by UIController to Set the Outline for updating. (!Circular button!)
         /// </summary>
         public void SetButtonOutlineProgressImage(UnityEngine.UI.Image outlineProgress);
+
+        /// <summary>
+        /// Called by UIController to update the image in the button.
+        /// </summary>
+        public void SetIconImage(UnityEngine.UI.Image iconImage);
     }
 
     public interface IInitable {

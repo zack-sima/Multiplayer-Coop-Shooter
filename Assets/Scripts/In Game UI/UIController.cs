@@ -89,6 +89,12 @@ public class UIController : MonoBehaviour {
 					if (image != null)
 						((IButtonRechargable)NetworkedEntity.playerInstance.GetAbilityList()[i].Item1).SetButtonOutlineProgressImage(image);
 				}
+				GameObject icon = buttons[i].FindChild("Icon");
+				if (icon != null) {
+					Image image = icon.GetComponent<Image>();
+					if (image != null)
+						((IButtonRechargable)NetworkedEntity.playerInstance.GetAbilityList()[i].Item1).SetIconImage(image);
+				}
 			}
 			//Debug.Log("Button is activated");
 			buttons[i].SetActive(true);

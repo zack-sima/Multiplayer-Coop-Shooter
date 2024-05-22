@@ -35,7 +35,7 @@ public class UpgradeCardButton : MonoBehaviour {
 
 		descriptionText.text = node.description;
 		costText.text = "$" + node.cost.ToString();
-		image.sprite = node.icon;
+		if (node.internalIcon != null) image.sprite = node.internalIcon;
 		purchased = false;
 	}
 

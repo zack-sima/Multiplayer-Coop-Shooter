@@ -121,7 +121,7 @@ namespace CSV.Parsers {
                             LogError(error, debugId); return false;
                         }
 
-                        InGameUpgradeInfo upgradeInfo = new InGameUpgradeInfo(info.id + columnArray[1], columnArray[1]);
+                        InGameUpgradeInfo upgradeInfo = new InGameUpgradeInfo(info.id + columnArray[1], info.id, columnArray[1]);
                         upgradeInfo.parentDisplay = info.displayName;
                         for(int i = 2; i < columnArray.Length; i++) {
                             if (double.TryParse(columnArray[i], out double modi)) {
@@ -293,12 +293,12 @@ namespace CSV.Parsers {
 
     [System.Serializable]
     public class InGameUpgradeInfo {
-        public readonly string id;
+        public readonly string id, parentId;
         public string displayName, parentDisplay;
         public List<string> softRequirements = new(), hardRequirements = new(), mutualRequirements = new();
         public Dictionary<string, double> modi = new();
         public int maxLevel = 1;
-        public InGameUpgradeInfo(string id, string displayName) { this.id = id; this.displayName = displayName; } 
+        public InGameUpgradeInfo(string id, string parentId, string displayName) { this.id = id; this.displayName = displayName; this.parentId = parentId; } 
 
         public bool TryGetModi(string id, out double output) {
             output = 0;

@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using CSV.Parsers;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace Abilities {
     public static class UpgradeInit {
@@ -12,13 +11,13 @@ namespace Abilities {
             foreach(InGameUpgradeInfo i in upgrades) {
                 if (i.TryGetModi(nameof(CSVMd.UPCost), out double upCost) && i.TryGetModi(nameof(CSVMd.Level), out double lvl)) {
                     if (lvl <= 1) { // Only one upgrade of it.
-                        UpgradesCatalog.instance.AddUpgrade(id: i.id, displayName: i.displayName, cost: (int)upCost, info: i);
+                        UpgradesCatalog.instance.AddUpgrade(id: i.id, parentId: i.parentId, displayName: i.displayName, cost: (int)upCost, info: i);
                         continue;
                     } else {
-                        UpgradesCatalog.UpgradeNode priorNode = UpgradesCatalog.instance.AddUpgrade(id: i.id, displayName: i.displayName, cost: (int)upCost, info: i, level: 1);
+                        UpgradesCatalog.UpgradeNode priorNode = UpgradesCatalog.instance.AddUpgrade(id: i.id, parentId: i.parentId, displayName: i.displayName, cost: (int)upCost, info: i, level: 1);
                         for(int j = 2; j < lvl + 1; j++) {
                             List<string> hards = new() { priorNode.GetUpgradeId() };
-                            UpgradesCatalog.UpgradeNode currentNode = UpgradesCatalog.instance.AddUpgrade(id: i.id, displayName: i.displayName, cost: (int)(upCost * j), 
+                            UpgradesCatalog.UpgradeNode currentNode = UpgradesCatalog.instance.AddUpgrade(id: i.id, parentId: i.parentId, displayName: i.displayName, cost: (int)(upCost * j), 
                                     info: i, level: j, hardRequirements: hards);
                             currentNode.prior = priorNode;
                             priorNode = currentNode;

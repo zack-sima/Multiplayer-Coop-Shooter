@@ -2,6 +2,7 @@ using CSV.Parsers;
 using Effects;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 namespace Abilities {
 
@@ -9,7 +10,9 @@ namespace Abilities {
         public float cooldownPeriod, healAmount, healDuration, remainingCooldownTime; 
         private float remainingHealTime = 0;
         private bool isActive = false;
-        private UnityEngine.UI.Image outline = null;
+        private Image outline = null;
+        private Image abilityIcon = null;
+        private Sprite active, regular;
         private readonly string id;
 
         public string GetId() { return id; }
@@ -21,6 +24,7 @@ namespace Abilities {
             remainingCooldownTime = cooldownPeriod;
             remainingHealTime = healDuration;
             isActive = true;
+            abilityIcon.sprite = active;
 
             //Effect
             GameObject healEffect = entity.InitEffect(healDuration, 0f, UpgradeIndex.Heal);
@@ -50,12 +54,14 @@ namespace Abilities {
                 remainingCooldownTime = Mathf.Max(0, remainingCooldownTime - Time.deltaTime);
                 if (outline != null) { // update the outline.
                     outline.fillAmount = (cooldownPeriod - remainingCooldownTime) / cooldownPeriod;
+                    if (abilityIcon.sprite != regular) abilityIcon.sprite = regular;
                 }
             }
         }
 
-        public void SetButtonOutlineProgressImage(UnityEngine.UI.Image outlineProgress) {
+        public void SetButtonOutlineProgressImage(Image outlineProgress) {
             outline = outlineProgress;
+            outline.color = Color.green;
         }
 
         public void Init(InventoryInfo info, int level) {
@@ -68,6 +74,15 @@ namespace Abilities {
             if (info.TryGetModi(CSVMd.Cooldown, level, out double cd)) {
                 cooldownPeriod = (float)cd;
             } else DebugUIManager.instance?.LogError("No Cooldown found.", "HealActive");
+        }
+
+        public void SetIconImage(Image iconImage) {
+            if(PlayerDataHandler.instance.TryGetUIIcon(nameof(CSVId.HealActive), out (Sprite active, Sprite regular) s)) {
+                abilityIcon = iconImage;
+                iconImage.sprite = s.regular;
+                active = s.active;
+                regular = s.regular;
+            } else DebugUIManager.instance?.LogError("No icon found for : ", "RapidFireActive");
         }
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 using Effects;
 using CSV.Parsers;
 using UnityEngine.Rendering;
+using UnityEngine.UI;
 
 namespace Abilities {
     //TODO: turret ability hook up here!
@@ -14,7 +15,9 @@ namespace Abilities {
         public bool isFullAuto;
         private string id;
 
-        private UnityEngine.UI.Image outline = null;
+        private Image outline = null;
+        private Image abilityIcon = null;
+        private Sprite active, regular;
 
         public Sentry(CSVId id) { this.id = id.ToString(); }
 
@@ -66,6 +69,15 @@ namespace Abilities {
             if (info.TryGetModi(CSVMd.SentryShootSpeed, level, out double fireRate)) shootSpeed = (float)fireRate; else DebugUIManager.instance?.LogError("No fire rate found for " + id, "SentryInit");
             if (info.TryGetModi(CSVMd.SentryShootSpread, level, out double spread)) shootSpread = (float)spread; else DebugUIManager.instance?.LogError("No spread found for " + id, "SentryInit");
             if (info.TryGetModi(CSVMd.SentryDamage, level, out double damage)) dmgModi = (float)damage; else DebugUIManager.instance?.LogError("No damage found for " + id, "SentryInit");
+        }
+
+        public void SetIconImage(Image iconImage) {
+            if(PlayerDataHandler.instance.TryGetUIIcon(nameof(CSVId.SentryActive), out (Sprite active, Sprite regular) s)) {
+                abilityIcon = iconImage;
+                iconImage.sprite = s.regular;
+                active = s.active;
+                regular = s.regular;
+            } else DebugUIManager.instance?.LogError("No icon found for : ", "RapidFireActive");
         }
     }
 }

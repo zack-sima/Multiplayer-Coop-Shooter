@@ -60,12 +60,24 @@ public class PlayerDataHandler : MonoBehaviour {
 
     #region Getters & Setters
 
+    public bool TryGetUIIcon(string id, out (Sprite active, Sprite regular) s) {
+        foreach(IconBundle icon in icons) {
+            if (icon.parent.id == id) {
+                s = (icon.activeUiIcon, icon.regularUiIcon);
+                return true;
+            }
+        }
+        s = (null, null);
+        return false;
+    }
+
     public bool TryGetIcon(string id, out IconKeyValuePair i) {
         foreach(IconBundle icon in icons) {
             if (icon.parent.id == id) {
                 i = icon.parent;
                 return true;
             }
+
             foreach(IconKeyValuePair child in icon.children) {
                 if (child.id == id) {
                     i = child;
@@ -75,6 +87,10 @@ public class PlayerDataHandler : MonoBehaviour {
         }
         i = null;
         return false;
+    }
+
+    public List<IconBundle> GetIcons() {
+        return icons;
     }
 
     public string GetActiveRawCSV() { return activeRawCSV.text; }
@@ -179,7 +195,7 @@ public class PlayerDataHandler : MonoBehaviour {
         //EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
         // EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 11);
         //EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 10);
-        //EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 10);
+        // EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 10);
         EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
         // EquipInfo(CSVType.GADGETS, CSVId.HardenedAmmoGadget, 1);
         // EquipInfo(CSVType.GADGETS, CSVId.RegenerativeArmorGadget, 1);
