@@ -2,21 +2,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using CSV.Parsers;
-using Newtonsoft.Json;
-using TMPro;
 using System.Linq;
 
 [System.Serializable]
 public class PlayerDataHandler : MonoBehaviour {
-    //TODO: Where the basics stuff like loadouts, number of loadout slots, player level, player xp, player money, player gems, player cash, player name, player id, player email, player password, player last login, player last logout, player last played, player last played level, player last played mode, player last played difficulty, player last played time, player last played score, player last played kills, player last played deaths, player last played assists, player last played damage dealt, player last played damage taken, player last played healing done, player last played healing taken, player last played damage blocked, player last played damage absorbed, player last played damage reflected, player last played damage dodged, player last played damage crit, player last played damage crit taken, player last played damage crit dealt, player last played damage crit blocked, player last played damage crit absorbed, player last played damage crit reflected, player last played damage crit dodged, player last played damage crit dealt, player last played damage crit blocked, player last played damage crit absorbed, player last played damage crit reflected, player last played damage crit dodged, player last played damage crit dealt, player last played damage crit blocked, player last played damage crit absorbed, player last played damage crit reflected, player last played damage crit dodged, player last played damage crit dealt, player last played damage crit blocked, player last played damage crit absorbed, player last played damage crit reflected, player last played damage crit dodged, player last played damage crit dealt, player last played damage crit blocked, player last played damage crit absorbed, player last played damage crit reflected, player last played damage crit dodged, player last played damage crit dealt, player last played damage crit blocked, player last played damage crit absorbed, player last played damage crit reflected, player last played damage crit dodged, player last played damage crit dealt, player last played damage crit blocked, player last played damage crit absorbed, player last played damage crit reflected, player last played damage crit dodged, player last played damage crit dealt, player last played damage crit blocked, player last played damage crit absorbed, player last played damage crit reflected, player last played damage crit dodged, player last played damage crit dealt, player last played damage crit blocked, player last played damage crit absorbed, player last played damage crit reflected, player last played damage crit dodged, player last played damage crit dealt, player last played damage crit blocked, player last played damage crit absorbed, player last played damage crit reflected, player last played damage crit dodged, player last
-    //Copilot wrote the above bruh ^
-    //Store this on the persistent dict 
-    //Store all upgradeinfos and the equivalent on this.
 
     #region Nested
 
     private enum PersistentDictKeys {
         ActivesRawCSV, GadgetsRawCSV, HullsRawCSV, TurretsRawCSV
+    }
+
+    public enum IconType {
+        Active
+    }
+
+    [System.Serializable]
+    public class IconKeyValuePair {
+        public string id;
+        public Sprite icon;
+    }
+
+    [System.Serializable]
+    public class IconBundle {
+        public IconType type;
+        public IconKeyValuePair parent;
+        public Sprite regularUiIcon, activeUiIcon;
+        public List<IconKeyValuePair> children;
     }
 
     #endregion
@@ -28,6 +40,9 @@ public class PlayerDataHandler : MonoBehaviour {
     [Header("Raw CSVs")]
     [SerializeField] public TextAsset activeRawCSV;
     [SerializeField] public TextAsset gadgetRawCSV, hullRawCSV, turretRawCSV;
+
+    [Header("Icons")]
+    [SerializeField] private List<IconBundle> icons;
 
     #endregion
 
@@ -44,6 +59,15 @@ public class PlayerDataHandler : MonoBehaviour {
     #endregion
 
     #region Getters & Setters
+
+    public IconBundle GetIcon(string id) {
+        foreach(IconBundle icon in icons) {
+            if (icon.parent.id == id) {
+                return icon;
+            }
+        }
+        return null;
+    }
 
     public string GetActiveRawCSV() { return activeRawCSV.text; }
     public string GetGadgetRawCSV() { return gadgetRawCSV.text; }
@@ -154,6 +178,14 @@ public class PlayerDataHandler : MonoBehaviour {
 
     }
 
+    private void SetIconChildrenIds() {
+        for(int i = 0; i < icons.Count; i++) {
+            for(int j = 0; j < icons[i].children.Count; j++) {
+                icons[i].children[j].id = icons[i].parent.id + icons[i].children[j].id;
+            }
+        }
+    }
+
     private bool TryGetItemFromInfos(CSVId itemKey, out InventoryInfo info) {
         if (activesInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
         if (gadgetsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
@@ -217,9 +249,11 @@ public class PlayerDataHandler : MonoBehaviour {
         if (instance == null) {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            SetIconChildrenIds();
         } else {
             Destroy(gameObject);
         }
+
     }
 
     private void Start() {

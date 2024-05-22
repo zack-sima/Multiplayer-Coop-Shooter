@@ -51573,6 +51573,40 @@ MonoBehaviour:
   gadgetRawCSV: {fileID: 4900000, guid: 33c44551077f74459a4d3e01c4714284, type: 3}
   hullRawCSV: {fileID: 4900000, guid: c22a9c111db254793bb735a1b81c53c4, type: 3}
   turretRawCSV: {fileID: 4900000, guid: 0b6b164fbec7540a2bfee11f8702c7dc, type: 3}
+  icons:
+  - type: 0
+    parent:
+      id: HealActive
+      icon: {fileID: 0}
+    regularUiIcon: {fileID: 21300000, guid: 0a78727290d0c46058ae42cfa9032d94, type: 3}
+    activeUiIcon: {fileID: 21300000, guid: 821543d94fdcf4585b51f76651aedc6c, type: 3}
+    children:
+    - id: Faster Heals
+      icon: {fileID: 0}
+    - id: Bigger Heals
+      icon: {fileID: 0}
+  - type: 0
+    parent:
+      id: RapidFireActive
+      icon: {fileID: 0}
+    regularUiIcon: {fileID: 21300000, guid: 0a78727290d0c46058ae42cfa9032d94, type: 3}
+    activeUiIcon: {fileID: 21300000, guid: 821543d94fdcf4585b51f76651aedc6c, type: 3}
+    children:
+    - id: Faster Heals
+      icon: {fileID: 0}
+    - id: Bigger Heals
+      icon: {fileID: 0}
+  - type: 0
+    parent:
+      id: SentryActive
+      icon: {fileID: 0}
+    regularUiIcon: {fileID: 21300000, guid: 5d284b69185e1424daf49fe5e86f3fd4, type: 3}
+    activeUiIcon: {fileID: 21300000, guid: b62f528563d7d4f37b23bb843afbcc8b, type: 3}
+    children:
+    - id: Faster Heals
+      icon: {fileID: 0}
+    - id: Bigger Heals
+      icon: {fileID: 0}
 --- !u!1 &1964852148
 GameObject:
   m_ObjectHideFlags: 0

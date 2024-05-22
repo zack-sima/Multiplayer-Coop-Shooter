@@ -21,7 +21,7 @@ public class DebugUIManager : MonoBehaviour {
 #if UNITY_EDITOR
     const bool allowDebugMenu = true; // enables/disables the usage of the debug menu.
 #else
-    const bool allowDebugMenu = false;
+    const bool allowDebugMenu = true;
 #endif
 
 
