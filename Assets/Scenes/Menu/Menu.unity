@@ -51577,14 +51577,14 @@ MonoBehaviour:
   - type: 0
     parent:
       id: HealActive
-      icon: {fileID: 0}
+      icon: {fileID: 21300000, guid: c7b397002edfa4e7c80a76ffcb73de4c, type: 3}
     regularUiIcon: {fileID: 21300000, guid: 0a78727290d0c46058ae42cfa9032d94, type: 3}
     activeUiIcon: {fileID: 21300000, guid: 821543d94fdcf4585b51f76651aedc6c, type: 3}
     children:
     - id: Faster Heals
-      icon: {fileID: 0}
+      icon: {fileID: 21300000, guid: c53113c0d4e33447da5dde2bc4be243a, type: 3}
     - id: Bigger Heals
-      icon: {fileID: 0}
+      icon: {fileID: 21300000, guid: 672a4bb0d63894d88a070e0b6f519dc3, type: 3}
   - type: 0
     parent:
       id: RapidFireActive

@@ -80,6 +80,10 @@ public class UpgradesCatalog : MonoBehaviour {
 			return upgradeName + " " + ToRoman(level);
 		}
 
+		public string GetIconId() {
+			return upgradeName;
+		}
+
 		//returns whether soft and hard requirements have been met;
 		//NOTE: call this function once per round to decide which ones to feed to player
 		public bool CanUnlock(Dictionary<string, UpgradeNode> playerUpgrades) {
@@ -338,6 +342,8 @@ public class UpgradesCatalog : MonoBehaviour {
 		return n;
 	}
 	private Sprite GetUpgradeIcon(string name) {
+		Debug.LogWarning("requesting this id : " + name);
+		if (upgradeIconsDict == null) upgradeIconsDict = new();
 		if (upgradeIconsDict.ContainsKey(name)) return upgradeIconsDict[name];
 		Debug.LogWarning($"need sprite for `{name}`!");
 		return fallbackSprite;
@@ -347,17 +353,39 @@ public class UpgradesCatalog : MonoBehaviour {
 			if (n.unlocked) {
 				NetworkedEntity.playerInstance.PushUpgradeModi(n);
 			}
+			//init upgrade
+			upgradeIconsDict = new();
+			Debug.LogWarning(n.GetIconId());
+			if (PlayerDataHandler.instance.TryGetIcon(n.GetIconId(), out PlayerDataHandler.IconKeyValuePair i)) {
+				
+				if (upgradeIconsDict.ContainsKey(n.GetIconId())) {
+					upgradeIconsDict[n.GetIconId()] = i.icon;
+				} else {
+					upgradeIconsDict.Add(n.GetIconId(), i.icon);
+				}
+			}
 		}
+
+		upgradeIconsDict = new();
+		
+		//foreach (UpgradeNode u in playerUpgrades.Values) {
+		//	Debug.LogWarning("UpgradeInit : " + u.ToString());
+		//}
+		if (UIController.GetIsMobile()) PCHotkeyText.gameObject.SetActive(false);
+
+		playerMoney = PlayerPrefs.GetInt("game_start_cash");
+
 		ReRollUpgrades();
 		RerenderUpgrades();
+
 	}
 	private void Awake() {
 		instance = this;
 
-		upgradeIconsDict = new();
-		foreach (UpgradeIcon u in upgradeIcons) {
-			upgradeIconsDict.Add(u.upgradeName, u.icon);
-		}
+		// upgradeIconsDict = new();
+		// foreach (UpgradeIcon u in upgradeIcons) {
+		// 	upgradeIconsDict.Add(u.upgradeName, u.icon);
+		// }
 
 		//NOTE: CREATE ALL ABILITY TREES HERE;
 		//TODO: CREATE STATIC FUNCTIONS THAT CREATES A NEW DICT BASED ON CLASS
@@ -380,14 +408,7 @@ public class UpgradesCatalog : MonoBehaviour {
 	}
 
 	private void Start() {
-
 		
-		//foreach (UpgradeNode u in playerUpgrades.Values) {
-		//	Debug.LogWarning("UpgradeInit : " + u.ToString());
-		//}
-		if (UIController.GetIsMobile()) PCHotkeyText.gameObject.SetActive(false);
-
-		playerMoney = PlayerPrefs.GetInt("game_start_cash");
 	}
 
 	private void Update() {

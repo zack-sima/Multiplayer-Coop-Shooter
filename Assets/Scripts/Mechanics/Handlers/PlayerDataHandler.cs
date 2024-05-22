@@ -60,13 +60,21 @@ public class PlayerDataHandler : MonoBehaviour {
 
     #region Getters & Setters
 
-    public IconBundle GetIcon(string id) {
+    public bool TryGetIcon(string id, out IconKeyValuePair i) {
         foreach(IconBundle icon in icons) {
             if (icon.parent.id == id) {
-                return icon;
+                i = icon.parent;
+                return true;
+            }
+            foreach(IconKeyValuePair child in icon.children) {
+                if (child.id == id) {
+                    i = child;
+                    return true;
+                }
             }
         }
-        return null;
+        i = null;
+        return false;
     }
 
     public string GetActiveRawCSV() { return activeRawCSV.text; }
@@ -169,12 +177,12 @@ public class PlayerDataHandler : MonoBehaviour {
 
     private void TempEquipInfos() { 
         //EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
-        EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 11);
+        // EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 11);
         //EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 10);
         //EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 10);
         EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
-        EquipInfo(CSVType.GADGETS, CSVId.HardenedAmmoGadget, 1);
-        EquipInfo(CSVType.GADGETS, CSVId.RegenerativeArmorGadget, 1);
+        // EquipInfo(CSVType.GADGETS, CSVId.HardenedAmmoGadget, 1);
+        // EquipInfo(CSVType.GADGETS, CSVId.RegenerativeArmorGadget, 1);
 
     }
 
