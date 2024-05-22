@@ -60,7 +60,16 @@ public class PlayerDataHandler : MonoBehaviour {
     #endregion
 
     #region Getters & Setters
-
+    
+    public Dictionary<string, int> GetEquippedInfos(string type) {
+        if (equippedInfos.TryGetValue(type, out Dictionary<string, int> dict)) {
+            return dict;
+        }
+        return new();
+    }
+    public Dictionary<string, int> GetEquippedInfos(CSVType type) {
+        return GetEquippedInfos(type.ToString());
+    }
     public bool TryGetUIIcon(string id, out (Sprite active, Sprite regular) s) {
         foreach(IconBundle icon in icons) {
             if (icon.id == id) {
@@ -71,7 +80,6 @@ public class PlayerDataHandler : MonoBehaviour {
         s = (null, null);
         return false;
     }
-
     public bool TryGetIcon(string id, out IconKeyValuePair i) {
         foreach(IconBundle icon in icons) {
             if (icon.id == id) {
@@ -93,11 +101,9 @@ public class PlayerDataHandler : MonoBehaviour {
         i = null;
         return false;
     }
-
     public List<IconBundle> GetIcons() {
         return icons;
     }
-
     public string GetActiveRawCSV() { return activeRawCSV.text; }
     public string GetGadgetRawCSV() { return gadgetRawCSV.text; }
     public string GetHullRawCSV() { return hullRawCSV.text; }
@@ -110,7 +116,6 @@ public class PlayerDataHandler : MonoBehaviour {
     public List<string> GetGadgetInfoKeys() { return gadgetsInfo.Keys.ToList(); }
     public List<string> GetHullInfoKeys() { return hullsInfo.Keys.ToList(); }
     public List<string> GetTurretInfoKeys() { return turretsInfo.Keys.ToList(); }
-
     /// <summary>
     /// II = Inventory Info. Used for DOUBLE value types.
     /// </summary>
@@ -128,7 +133,6 @@ public class PlayerDataHandler : MonoBehaviour {
         if (TryGetTurretModi(itemKey, modiKey, level, out modiVal)) { return true; }
         return false;
     }
-
     /// <summary>
     /// II = Inventory Info. Used for STRING value types.
     /// </summary>
@@ -148,7 +152,6 @@ public class PlayerDataHandler : MonoBehaviour {
         modiString = "";
         return false;
     }
-
     /// <summary>
     /// II = Inventory Info. Get Max Level.
     /// </summary>
@@ -168,9 +171,53 @@ public class PlayerDataHandler : MonoBehaviour {
         maxLevel = 0;
         return false;
     }
-
     public Dictionary<string, Dictionary<string, int>> GetEquippedInfos() {
         return equippedInfos;
+    }
+    private void SetIconChildrenIds() {
+        for(int i = 0; i < icons.Count; i++) {
+            for(int j = 0; j < icons[i].children.Count; j++) {
+                icons[i].children[j].id = icons[i].id + icons[i].children[j].id;
+            }
+        }
+    }
+    private bool TryGetItemFromInfos(CSVId itemKey, out InventoryInfo info) {
+        if (activesInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
+        if (gadgetsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
+        if (hullsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
+        if (turretsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
+        return false;
+    }
+    private bool TryGetItemFromInfos(string itemKey, out InventoryInfo info) {
+        if (activesInfo.TryGetValue(itemKey, out info)) { return true; }
+        if (gadgetsInfo.TryGetValue(itemKey, out info)) { return true; }
+        if (hullsInfo.TryGetValue(itemKey, out info)) { return true; }
+        if (turretsInfo.TryGetValue(itemKey, out info)) { return true; }
+        return false;
+    }
+    private bool TryGetActiveModi(string itemKey, string modiKey, int level, out double modiVal) {
+        if (activesInfo.TryGetValue(itemKey, out InventoryInfo info)) 
+            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
+        modiVal = 0;
+        return false;
+    }
+    private bool TryGetGadgetModi(string itemKey, string modiKey, int level, out double modiVal) {
+        if (gadgetsInfo.TryGetValue(itemKey, out InventoryInfo info)) 
+            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
+        modiVal = 0;
+        return false;
+    }
+    private bool TryGetHullModi(string itemKey, string modiKey, int level, out double modiVal) {
+        if (hullsInfo.TryGetValue(itemKey, out InventoryInfo info)) 
+            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
+        modiVal = 0;
+        return false;
+    }
+    private bool TryGetTurretModi(string itemKey, string modiKey, int level, out double modiVal) {
+        if (turretsInfo.TryGetValue(itemKey, out InventoryInfo info)) 
+            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
+        modiVal = 0;
+        return false;
     }
 
     #endregion
@@ -205,57 +252,6 @@ public class PlayerDataHandler : MonoBehaviour {
         // EquipInfo(CSVType.GADGETS, CSVId.HardenedAmmoGadget, 1);
         // EquipInfo(CSVType.GADGETS, CSVId.RegenerativeArmorGadget, 1);
 
-    }
-
-    private void SetIconChildrenIds() {
-        for(int i = 0; i < icons.Count; i++) {
-            for(int j = 0; j < icons[i].children.Count; j++) {
-                icons[i].children[j].id = icons[i].id + icons[i].children[j].id;
-            }
-        }
-    }
-
-    private bool TryGetItemFromInfos(CSVId itemKey, out InventoryInfo info) {
-        if (activesInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
-        if (gadgetsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
-        if (hullsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
-        if (turretsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
-        return false;
-    }
-    private bool TryGetItemFromInfos(string itemKey, out InventoryInfo info) {
-        if (activesInfo.TryGetValue(itemKey, out info)) { return true; }
-        if (gadgetsInfo.TryGetValue(itemKey, out info)) { return true; }
-        if (hullsInfo.TryGetValue(itemKey, out info)) { return true; }
-        if (turretsInfo.TryGetValue(itemKey, out info)) { return true; }
-        return false;
-    }
-
-    private bool TryGetActiveModi(string itemKey, string modiKey, int level, out double modiVal) {
-        if (activesInfo.TryGetValue(itemKey, out InventoryInfo info)) 
-            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
-        modiVal = 0;
-        return false;
-    }
-
-    private bool TryGetGadgetModi(string itemKey, string modiKey, int level, out double modiVal) {
-        if (gadgetsInfo.TryGetValue(itemKey, out InventoryInfo info)) 
-            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
-        modiVal = 0;
-        return false;
-    }
-
-    private bool TryGetHullModi(string itemKey, string modiKey, int level, out double modiVal) {
-        if (hullsInfo.TryGetValue(itemKey, out InventoryInfo info)) 
-            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
-        modiVal = 0;
-        return false;
-    }
-
-    private bool TryGetTurretModi(string itemKey, string modiKey, int level, out double modiVal) {
-        if (turretsInfo.TryGetValue(itemKey, out InventoryInfo info)) 
-            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
-        modiVal = 0;
-        return false;
     }
 
     public bool ForceResetInfos(bool isDebug = false) {
