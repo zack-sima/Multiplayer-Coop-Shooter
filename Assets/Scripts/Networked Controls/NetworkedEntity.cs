@@ -5,7 +5,6 @@ using Fusion;
 using Abilities;
 using Abilities.UpgradeHandler;
 using Effects;
-using UnityEngine.Video;
 using Abilities.StatHandler;
 
 
@@ -69,7 +68,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	private int Team { get; set; } = -1;
 	public int GetTeam() { try { return Team; } catch { return -1; } }
 
-	public void ChangeLocalHealth(float health) {Health = health;}
+	public void ChangeLocalHealth(float health) { Health = health; }
 
 	[Networked, OnChangedRender(nameof(IsDeadChanged))]
 	private bool IsDead { get; set; } = false;
@@ -155,7 +154,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	/*======================| StatHandlers |======================*/
 	/// <summary> Needs to be called EVERY frame. </summary>
 	public void OverClockNetworkEntityCall() {
-		if(this == playerInstance) PlayerInfo.instance.ReloadFaster();
+		if (this == playerInstance) PlayerInfo.instance.ReloadFaster();
 		optionalCombatEntity.GetTurret().ReloadFaster();
 	}
 
@@ -474,12 +473,12 @@ public class NetworkedEntity : NetworkBehaviour {
 		if (!initialized) return;
 
 		this.InflictionHandlerSysTick(inflictions); // handles inflictions
-		this.SysTickStatHandler(abilities); 
-			
-								//UpdateStatModifier(); // Handle stat changes
+		this.SysTickStatHandler(abilities);
+
+		//UpdateStatModifier(); // Handle stat changes
 		if (HasSyncAuthority()) {
 			//local entity
-			
+
 			if ((isPlayer || PlayerInfo.GetIsPVP()) && !mainEntity.GetIsStructure()) {
 				//natural healing
 				if (Time.time - mainEntity.GetLastDamageTimestamp() > 2.5f) {

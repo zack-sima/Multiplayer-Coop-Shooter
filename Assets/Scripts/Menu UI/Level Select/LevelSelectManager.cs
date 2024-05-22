@@ -46,7 +46,7 @@ public class LevelSelectManager : MonoBehaviour {
 		}
 	}
 	//NOTE: may eventually want to customize with the ability to remotely swap out map selections
-	public void SetMap(string mapName, bool isSolo, bool isComp, bool isPCP, int difficulty) {
+	public void SetMap(string mapName, MenuManager.GameMode mode, int difficulty) {
 		//soloMapScreen.gameObject.SetActive(false);
 		//coopMapScreen.gameObject.SetActive(false);
 		//compMapScreen.gameObject.SetActive(false);
@@ -60,8 +60,7 @@ public class LevelSelectManager : MonoBehaviour {
 
 		MenuManager.instance.SetDifficulty(difficulty);
 
-		MenuManager.instance.SetGameMode(isSolo ? MenuManager.GameMode.Singleplayer :
-			(isComp ? (isPCP ? MenuManager.GameMode.PointCap : MenuManager.GameMode.Comp) : MenuManager.GameMode.Coop));
+		MenuManager.instance.SetGameMode(mode);
 
 		CloseLevelSelect();
 	}

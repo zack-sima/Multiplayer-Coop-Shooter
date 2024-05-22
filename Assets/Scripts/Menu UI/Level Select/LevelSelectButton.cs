@@ -7,9 +7,7 @@ using TMPro;
 public class LevelSelectButton : MonoBehaviour {
 
 	[SerializeField] private string mapName;
-	[SerializeField] private bool isSolo;
-	[SerializeField] private bool isComp;
-	[SerializeField] private bool isPCP;
+	[SerializeField] private MenuManager.GameMode mode;
 	[SerializeField] private int difficulty;
 
 	//TODO: actually show trophies/completion, etc
@@ -22,7 +20,7 @@ public class LevelSelectButton : MonoBehaviour {
 			progDisplayText.gameObject.SetActive(false);
 			progDisplayIcon.gameObject.SetActive(false);
 		} else {
-			int wave = Random.Range(10, 100);
+			int wave = PersistentDict.GetInt("wave_record_" + mapName + "_" + (int)mode);
 			progDisplayText.text = $"RECORD:\n<color={ChooseColorByWave(wave)}>WAVE {wave}";
 		}
 	}
@@ -42,6 +40,6 @@ public class LevelSelectButton : MonoBehaviour {
 		return "#" + ColorUtility.ToHtmlStringRGB(color);
 	}
 	public void SelectMap() {
-		LevelSelectManager.instance.SetMap(mapName, isSolo, isComp, isPCP, difficulty);
+		LevelSelectManager.instance.SetMap(mapName, mode, difficulty);
 	}
 }

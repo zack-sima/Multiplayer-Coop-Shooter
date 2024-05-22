@@ -87,6 +87,18 @@ public class GameStatsSyncer : NetworkBehaviour {
 	//everyone displays the same score
 	private void WaveChanged() {
 		UIController.instance.SetWaveText(Wave + 1);
+
+		if (PlayerInfo.GetIsPVP() || GameOver) return;
+
+		int currentRecord = PersistentDict.GetInt("wave_record_" + PlayerPrefs.GetString("game_map_name") +
+			"_" + PlayerPrefs.GetInt("game_mode"));
+
+		if (Wave + 1 > currentRecord) {
+			PersistentDict.SetInt("wave_record_" + PlayerPrefs.GetString("game_map_name") +
+				"_" + PlayerPrefs.GetInt("game_mode"), Wave + 1);
+		}
+
+
 	}
 	private void GameOverChanged() {
 		if (GameOver) {
@@ -212,6 +224,8 @@ public class GameStatsSyncer : NetworkBehaviour {
 		UIController.instance.SetRespawnUIEnabled(false);
 		UIController.instance.SetGameOverUIEnabled(true);
 
+		gameOverInvoked = true;
+
 		for (float i = 10f; i > 0f; i -= Time.deltaTime) {
 			//UIController screen
 			if (PlayerInfo.GetIsPVP()) {
@@ -241,9 +255,6 @@ public class GameStatsSyncer : NetworkBehaviour {
 		}
 	}
 	private void Update() {
-		if (GameOver && !gameOverInvoked) {
-			StartCoroutine(GameOverCoroutine());
-		}
 		//every new second time is synced
 		if (HasSyncAuthority() && (int)Time.time > (int)(Time.time - Time.deltaTime)) {
 			ServerTime = localTime;

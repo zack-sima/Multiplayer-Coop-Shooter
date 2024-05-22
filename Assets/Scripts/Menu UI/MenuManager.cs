@@ -240,6 +240,7 @@ public class MenuManager : MonoBehaviour {
 		PlayerPrefs.SetInt("game_start_cash", GetCashByDifficulty(currentCoopDifficulty));
 		PlayerPrefs.SetInt("game_start_wave", currentWave);
 		PlayerPrefs.SetInt("game_start_difficulty", currentCoopDifficulty);
+		PlayerPrefs.SetString("game_map_name", mapName);
 
 		//saved lobby room ID + "_g" goes to correct game room
 		if (mapIndex != -1)
@@ -259,7 +260,7 @@ public class MenuManager : MonoBehaviour {
 		PlayerPrefs.SetInt("game_start_cash", GetCashByDifficulty(currentCoopDifficulty));
 		PlayerPrefs.SetInt("game_start_wave", currentWave);
 		PlayerPrefs.SetInt("game_start_difficulty", currentCoopDifficulty);
-
+		PlayerPrefs.SetString("game_map_name", selectedMapName);
 
 		if (sceneIndex != -1) {
 			LobbyUI.instance.SetGameStarting();

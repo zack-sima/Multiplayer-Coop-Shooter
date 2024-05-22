@@ -14032,6 +14032,10 @@ PrefabInstance:
       value: MapButton
       objectReference: {fileID: 0}
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
+      propertyPath: mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: isComp
       value: 0
       objectReference: {fileID: 0}
@@ -17333,6 +17337,7 @@ GameObject:
   - component: {fileID: 781131090}
   - component: {fileID: 781131089}
   - component: {fileID: 781131088}
+  - component: {fileID: 781131092}
   m_Layer: 5
   m_Name: ModeDisplay
   m_TagString: Untagged
@@ -17354,10 +17359,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1596814716}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.075592, y: 0.000016451}
-  m_SizeDelta: {x: 500, y: 500}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: -0.000030517578, y: 416.00247}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &781131088
 MonoBehaviour:
@@ -17427,6 +17432,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 781131086}
   m_CullTransparentMesh: 1
+--- !u!114 &781131092
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 781131086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 1
+  m_AspectRatio: 0.9
 --- !u!1 &789247633
 GameObject:
   m_ObjectHideFlags: 0
@@ -40827,6 +40846,10 @@ PrefabInstance:
       value: MapButton
       objectReference: {fileID: 0}
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
+      propertyPath: mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: isComp
       value: 0
       objectReference: {fileID: 0}
@@ -48272,6 +48295,10 @@ PrefabInstance:
       value: MapButton
       objectReference: {fileID: 0}
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
+      propertyPath: mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: isComp
       value: 0
       objectReference: {fileID: 0}
@@ -49374,6 +49401,7 @@ GameObject:
   - component: {fileID: 1898484968}
   - component: {fileID: 1898484967}
   - component: {fileID: 1898484966}
+  - component: {fileID: 1898484970}
   m_Layer: 5
   m_Name: ModeDisplay
   m_TagString: Untagged
@@ -49395,10 +49423,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1660541803}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.075592, y: 0.000016451}
-  m_SizeDelta: {x: 500, y: 500}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 416.0025}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1898484966
 MonoBehaviour:
@@ -49468,6 +49496,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1898484964}
   m_CullTransparentMesh: 1
+--- !u!114 &1898484970
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1898484964}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 1
+  m_AspectRatio: 0.9
 --- !u!1 &1902546921
 GameObject:
   m_ObjectHideFlags: 0
@@ -53015,6 +53057,10 @@ PrefabInstance:
       value: MapButton
       objectReference: {fileID: 0}
     - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
+      propertyPath: mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104558317283762673, guid: 4f59a5fe55ed54f0c96244a10cde1da9, type: 3}
       propertyPath: isComp
       value: 0
       objectReference: {fileID: 0}
@@ -56059,10 +56105,10 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 8216480113318012225}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.075592, y: 0.000016451}
-  m_SizeDelta: {x: 500, y: 500}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 416.0025}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1001 &3175098268559400594
 PrefabInstance:
@@ -56178,6 +56224,7 @@ GameObject:
   - component: {fileID: 2094516157593170457}
   - component: {fileID: 5391162348251859992}
   - component: {fileID: 3835208355038699611}
+  - component: {fileID: 6793639818588538657}
   m_Layer: 5
   m_Name: ModeDisplay
   m_TagString: Untagged
@@ -56927,6 +56974,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3282680304009606719}
   m_CullTransparentMesh: 1
+--- !u!114 &6793639818588538657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3282680304009606719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AspectMode: 1
+  m_AspectRatio: 0.9
 --- !u!1001 &6973201146294556779
 PrefabInstance:
   m_ObjectHideFlags: 0
