@@ -280,7 +280,6 @@ public class AIBrain : MonoBehaviour {
 	}
 	private void Start() {
 		navigator.SetRotatable(false);
-		navigator.SetSpeed(entity.GetHull().GetSpeed());
 
 		if (isPVPBot) entity.GetNetworker().UpdateAbilityListForAI(); // CHANGE IF NEEDED, idk what you want.
 

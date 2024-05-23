@@ -55,7 +55,17 @@ public class EnemySpawner : NetworkBehaviour {
 
 	#endregion
 
+	#region References
+
+	//NOTE: 0 + n = standard, 10 + n = challenge, 20 + n = special mode (tbd)
+	[SerializeField] private List<WaveData> wavePresets;
+
+	#endregion
+
 	#region Members
+
+	//loaded in presets
+	private WaveData currentWavePresets = null;
 
 	//a hook to FixedUpdateNetwork
 	private bool spawnEnemyLater = false;
@@ -65,15 +75,30 @@ public class EnemySpawner : NetworkBehaviour {
 
 	#region Spawn Logic
 
+	private bool GetIsBossWave(int waveNum) {
+		return (waveNum + 1) % 5 == 0 && waveNum >= 9;
+	}
 	//NOTE: this returns a shuffled list (seeded by wave) of enemy prefab indices
 	private List<GameObject> DetermineEnemiesForInfiniteWave(int waveNum) {
 		//$10 is the standard cost of a normal enemy
-		int totalSpawnCredits = 10 * ((int)Mathf.Pow(waveNum, 1.5f) + 5);
+
+		int totalSpawnCredits;
+		if (currentWavePresets != null) {
+			totalSpawnCredits = 10 * ((int)(currentWavePresets.GetSpendingMultiplier() *
+				Mathf.Pow(waveNum, 1.38f + currentWavePresets.GetRampFactor()) + 5)) + currentWavePresets.GetMoney();
+		} else {
+			totalSpawnCredits = 10 * ((int)(Mathf.Pow(waveNum, 1.38f) + 5));
+		}
 
 		//bosses
-		bool isBossWave = (waveNum + 1) % 5 == 0 && waveNum >= 9;
-		List<int> currEnemyCosts = isBossWave ? enemyBossCosts : enemyCosts;
-		List<GameObject> currEnemyPrefabs = isBossWave ? enemyBossPrefabs : enemyPrefabs;
+		bool isBossWave = GetIsBossWave(waveNum);
+		List<int> currEnemyCosts = currentWavePresets != null ? currentWavePresets.GetBogoSpawnCosts(waveNum) : null;
+		List<GameObject> currEnemyPrefabs = currentWavePresets != null ? currentWavePresets.GetBogoSpawnPrefabs(waveNum) : null;
+
+		if (currEnemyPrefabs == null) {
+			currEnemyCosts = isBossWave ? enemyBossCosts : enemyCosts;
+			currEnemyPrefabs = isBossWave ? enemyBossPrefabs : enemyPrefabs;
+		}
 
 		List<GameObject> enemySpawns = new();
 		System.Random rand = new(GameStatsSyncer.instance.GetRandomSeed() + waveNum);
@@ -81,13 +106,13 @@ public class EnemySpawner : NetworkBehaviour {
 		int minCost = currEnemyCosts.Min();
 		int spawned = 0;
 		bool onBoss = isBossWave;
+
+		int iterations = 0;
 		while (totalSpawnCredits >= minCost) {
 			int spawnChoice = rand.Next() % currEnemyCosts.Count;
 
-
-			//find another enemy (don't allow expensive enemies if they take up >25% of total cost)
-			if (currEnemyCosts[spawnChoice] > totalSpawnCredits || !isBossWave &&
-				currEnemyCosts[spawnChoice] > minCost && currEnemyCosts[spawnChoice] * 4f > totalSpawnCredits) continue;
+			//find another enemy
+			if (currEnemyCosts[spawnChoice] > totalSpawnCredits) continue;
 
 			totalSpawnCredits -= currEnemyCosts[spawnChoice];
 			if (waveNum + 1 == 999) {
@@ -105,6 +130,12 @@ public class EnemySpawner : NetworkBehaviour {
 				currEnemyPrefabs = enemyPrefabs;
 				minCost = currEnemyCosts.Min();
 				onBoss = false;
+			}
+
+			iterations++;
+			if (iterations > 9999) {
+				Debug.LogWarning("could not finish spawning!");
+				break;
 			}
 		}
 		return enemySpawns;
@@ -164,12 +195,13 @@ public class EnemySpawner : NetworkBehaviour {
 				spawnEnemyLaterPrefab = enemies[i];
 
 				SpawnIndex++;
-				yield return new WaitForSeconds(8f / (currWave + 5f));
+				yield return new WaitForSeconds(8f / (currWave + 5f) * (currentWavePresets == null ? 1 :
+					currentWavePresets.GetIntervalFactor()));
 			}
 
 			//end of wave delay
 			SpawnIndex = 0;
-			SpawnTimer = 5 + currWave / 3f;
+			SpawnTimer = 5 + currWave / 3f + (GetIsBossWave(currWave) ? 10 + currWave / 3f : 0);
 			if ((currWave + 1) % 5 == 0) SpawnTimer += 10;
 		}
 	}
@@ -281,6 +313,10 @@ public class EnemySpawner : NetworkBehaviour {
 		if (PlayerInfo.GetIsPVP()) {
 			StartCoroutine(SpawnPVPBots(2, 2));
 			return;
+		}
+		int difficulty = PlayerPrefs.GetInt("game_start_difficulty");
+		if (difficulty < wavePresets.Count && difficulty >= 0) {
+			currentWavePresets = wavePresets[difficulty];
 		}
 
 		StartCoroutine(SpawnCycle());

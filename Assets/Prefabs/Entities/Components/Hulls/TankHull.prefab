@@ -62,6 +62,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: -572870694361189799, guid: cb541d5bbc0b946e0aa91717ec3dc144, type: 3}
+  - {fileID: 2100000, guid: 5baa09d0f1d3646d98525ff98b6656dc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -134,8 +135,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   turretAnchor: {fileID: 2325913016705456889}
   animator: {fileID: 4346554063448639422}
-  speed: 4.5
-  acceleration: 20
+  speed: 5
+  acceleration: 15
 --- !u!114 &4346554063448639422
 MonoBehaviour:
   m_ObjectHideFlags: 0

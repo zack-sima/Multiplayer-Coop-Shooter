@@ -141,9 +141,9 @@ public class HumanCombatEntity : CombatEntity {
 		//movement marker
 		if (movementMarker != null && UIController.GetIsMobile()) {
 			if (GetIsPlayer() && GetNetworker().HasSyncAuthority()) {
-				if (TryGetComponent(out Rigidbody rb2) && rb2.velocity != Vector3.zero &&
-					GetNetworker().GetInitialized() && !GetNetworker().GetIsDead()) {
-					movementMarker.localPosition = 0.35f * new Vector3(rb2.velocity.x, 0, rb2.velocity.z);
+				Vector3 velocity = HumanInputs.instance.GetDisplayedMoveVector();
+				if (velocity != Vector3.zero && GetNetworker().GetInitialized() && !GetNetworker().GetIsDead()) {
+					movementMarker.localPosition = 1.5f * new Vector3(velocity.x, 0, velocity.z);
 					movementMarker.gameObject.SetActive(true);
 				} else {
 					movementMarker.gameObject.SetActive(false);

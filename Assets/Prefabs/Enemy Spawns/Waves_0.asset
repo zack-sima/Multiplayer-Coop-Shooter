@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3753ef3ba6cff4ccc991ba6797a5c8f0, type: 3}
+  m_Name: Waves_0
+  m_EditorClassIdentifier: 
+  enemyPrefabs:
+  - {fileID: 7199139338457447609, guid: 682fdc1e430e24faf9ce0351c807d44b, type: 3}
+  - {fileID: 7199139338457447609, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
+  - {fileID: 7199139338457447609, guid: 70be4a4e8956746b9ae72dc78b2b7c14, type: 3}
+  - {fileID: 7199139338457447609, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+  - {fileID: 3257286713558779120, guid: bf1fa87f381564931868369f6131c349, type: 3}
+  enemyCosts: 0a0000000f0000000f0000001400000019000000
+  waves:
+  - waveNum: 0
+    bogoEnemyPrefabs: 00000000
+  - waveNum: 1
+    bogoEnemyPrefabs: 0000000002000000
+  - waveNum: 2
+    bogoEnemyPrefabs: 0000000002000000
+  - waveNum: 3
+    bogoEnemyPrefabs: 000000000100000002000000
+  - waveNum: 4
+    bogoEnemyPrefabs: 01000000
+  - waveNum: 8
+    bogoEnemyPrefabs: 01000000
+  - waveNum: 12
+    bogoEnemyPrefabs: 03000000
+  - waveNum: 15
+    bogoEnemyPrefabs: 04000000
+  - waveNum: 19
+    bogoEnemyPrefabs: 0100000003000000
+  - waveNum: 23
+    bogoEnemyPrefabs: 0100000004000000
+  - waveNum: 28
+    bogoEnemyPrefabs: 010000000400000003000000
+  - waveNum: 32
+    bogoEnemyPrefabs: 000000000200000003000000
+  - waveNum: 37
+    bogoEnemyPrefabs: 0300000004000000
+  allocCostMultiplier: 1
+  additionalSpawnMoney: 0
+  enemyRampupFactor: 0
+  enemyIntervalFactor: 1

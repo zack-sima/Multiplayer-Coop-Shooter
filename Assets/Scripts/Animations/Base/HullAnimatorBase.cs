@@ -20,7 +20,7 @@ public abstract class HullAnimatorBase : MonoBehaviour {
 
 	//NOTE: only locally for track-based things on PC (-1 means not set)
 	private int inReverse = -1;
-	protected int GetInReverse() { return inReverse; }
+	public int GetInReverse() { return inReverse; }
 
 	private Vector3 targetDirection = Vector3.zero;
 	protected Vector3 GetTargetDirection() { return targetDirection; }
@@ -36,7 +36,6 @@ public abstract class HullAnimatorBase : MonoBehaviour {
 	public void SetInReverse(bool reversed) {
 		inReverse = reversed ? 1 : 0;
 	}
-
 	//callback when player is spawned in/teleported so spider legs, etc don't try follow
 	public virtual void Teleported() { }
 	public void SetTeamMaterial(Material m) {

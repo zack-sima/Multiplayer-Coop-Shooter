@@ -86,12 +86,18 @@ public class LobbyUI : MonoBehaviour {
 
 		PlayerNameInputChanged();
 	}
-	//TODO: set this for rapid mode; add difficulty and more modes
 	public void WaveChanged(int newStartingWave) {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
 
 		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
 			LobbyStatsSyncer.instance.SetStartingWave(newStartingWave);
+		}
+	}
+	public void DifficultyChanged(int newDifficulty) {
+		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
+
+		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) {
+			LobbyStatsSyncer.instance.SetDifficulty(newDifficulty);
 		}
 	}
 	public void MapChanged() {
@@ -128,6 +134,12 @@ public class LobbyUI : MonoBehaviour {
 		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) return;
 
 		MenuManager.instance.SetWave(LobbyStatsSyncer.instance.GetStartingWave());
+	}
+	public void SetClientDifficulty() {
+		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
+		if (LobbyPlayer.playerInstance.Runner.IsSharedModeMasterClient) return;
+
+		MenuManager.instance.SetDifficulty(LobbyStatsSyncer.instance.GetDifficulty());
 	}
 	public void SetClientMap() {
 		if (LobbyPlayer.playerInstance == null || LobbyStatsSyncer.instance == null) return;
