@@ -124,7 +124,7 @@ public class baseBrain : MonoBehaviour
             }
             catch (System.Exception e) { Debug.LogWarning(e); }
 
-            yield return new WaitForSeconds(0.35f);
+            yield return new WaitForSeconds(1f);
         }
     }
     protected void BaseStart()

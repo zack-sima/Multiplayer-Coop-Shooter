@@ -148,7 +148,7 @@ public class PointCaptureBot : baseBrain
                 int rand = Random.Range(0, validPoints.Count);
                 if (validPoints.Count != 0)
                 {
-
+                    print($"BOT4: {points}, {points.Count}");
 
                     targetPoint = validPoints[rand];
                     Vector2 circle = Random.insideUnitCircle * Random.Range(0f, 2f);
