@@ -120,6 +120,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 3.36
       objectReference: {fileID: 0}
+    - target: {fileID: 6598096018604365266, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+      propertyPath: m_Speed
+      value: 4.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7199139338457447609, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
       propertyPath: m_Name
       value: E_BigMortar

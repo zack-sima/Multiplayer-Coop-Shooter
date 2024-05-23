@@ -13,12 +13,57 @@ MonoBehaviour:
   m_Name: Waves_10
   m_EditorClassIdentifier: 
   enemyPrefabs:
-  - {fileID: 7199139338457447609, guid: 682fdc1e430e24faf9ce0351c807d44b, type: 3}
-  - {fileID: 7199139338457447609, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
-  - {fileID: 7199139338457447609, guid: 70be4a4e8956746b9ae72dc78b2b7c14, type: 3}
-  - {fileID: 7199139338457447609, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
-  - {fileID: 3257286713558779120, guid: bf1fa87f381564931868369f6131c349, type: 3}
-  enemyCosts: 0a0000000f0000000f0000001400000019000000
+  - prefabs:
+    - {fileID: 7199139338457447609, guid: 682fdc1e430e24faf9ce0351c807d44b, type: 3}
+    - {fileID: 7199139338457447609, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
+    - {fileID: 7199139338457447609, guid: 70be4a4e8956746b9ae72dc78b2b7c14, type: 3}
+    - {fileID: 7199139338457447609, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+    - {fileID: 3257286713558779120, guid: bf1fa87f381564931868369f6131c349, type: 3}
+  - prefabs:
+    - {fileID: 5607350789513698284, guid: 85e4a08c0098442d581b401123a52ebf, type: 3}
+    - {fileID: 7199139338457447609, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
+    - {fileID: 7199139338457447609, guid: 70be4a4e8956746b9ae72dc78b2b7c14, type: 3}
+    - {fileID: 7199139338457447609, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+    - {fileID: 3257286713558779120, guid: bf1fa87f381564931868369f6131c349, type: 3}
+  - prefabs:
+    - {fileID: 5607350789513698284, guid: 85e4a08c0098442d581b401123a52ebf, type: 3}
+    - {fileID: 7199139338457447609, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
+    - {fileID: 2225056807299657409, guid: a9048107fb4ba4ed3bee611e79583493, type: 3}
+    - {fileID: 7199139338457447609, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+    - {fileID: 3257286713558779120, guid: bf1fa87f381564931868369f6131c349, type: 3}
+  - prefabs:
+    - {fileID: 5607350789513698284, guid: 85e4a08c0098442d581b401123a52ebf, type: 3}
+    - {fileID: 6796912476885155776, guid: f9e71ea7548cf449b813bc31dc536be1, type: 3}
+    - {fileID: 2225056807299657409, guid: a9048107fb4ba4ed3bee611e79583493, type: 3}
+    - {fileID: 7199139338457447609, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
+    - {fileID: 3257286713558779120, guid: bf1fa87f381564931868369f6131c349, type: 3}
+  enemyCosts:
+  - costs: 0a0000000d0000000f0000001200000019000000
+  - costs: 140000000d0000000f0000001200000019000000
+  - costs: 140000000d000000190000001200000019000000
+  - costs: 1400000019000000190000001200000019000000
+  enemyBossPrefabs:
+  - prefabs:
+    - {fileID: 7199139338457447609, guid: 29a0516fe6cc64785a71d11597a03ca6, type: 3}
+    - {fileID: 9164951118431273854, guid: 4688fbfcffe824badaeaea7aa2af8b8e, type: 3}
+    - {fileID: 7199139338457447609, guid: 69f88134132d142f0aae157840fc399d, type: 3}
+  - prefabs:
+    - {fileID: 8120391685944419036, guid: 0cbb1cac6991048ef8970ddbe7e01d6d, type: 3}
+    - {fileID: 9164951118431273854, guid: 4688fbfcffe824badaeaea7aa2af8b8e, type: 3}
+    - {fileID: 7199139338457447609, guid: 69f88134132d142f0aae157840fc399d, type: 3}
+  - prefabs:
+    - {fileID: 8120391685944419036, guid: 0cbb1cac6991048ef8970ddbe7e01d6d, type: 3}
+    - {fileID: 614729261378040568, guid: f6318791af30e4f6ea0519bfa8e08b10, type: 3}
+    - {fileID: 7199139338457447609, guid: 69f88134132d142f0aae157840fc399d, type: 3}
+  - prefabs:
+    - {fileID: 8120391685944419036, guid: 0cbb1cac6991048ef8970ddbe7e01d6d, type: 3}
+    - {fileID: 614729261378040568, guid: f6318791af30e4f6ea0519bfa8e08b10, type: 3}
+    - {fileID: 257450857768645666, guid: b9e3977f90de04e7a92090df30472e28, type: 3}
+  enemyBossCosts:
+  - costs: 5a0000006400000069000000
+  - costs: 960000006400000069000000
+  - costs: 96000000a000000069000000
+  - costs: 96000000a0000000af000000
   waves:
   - waveNum: 0
     bogoEnemyPrefabs: 0000000002000000
@@ -50,3 +95,4 @@ MonoBehaviour:
   additionalSpawnMoney: 100
   enemyRampupFactor: 0.1
   enemyIntervalFactor: 0.5
+  rampUpWaveNumber: 5

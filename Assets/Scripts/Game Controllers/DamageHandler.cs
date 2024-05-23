@@ -29,7 +29,7 @@ public static class DamageHandler {
 			//same team
 			if (self != null && e.GetTeam() == self.GetTeam()) {
 				if (!canDamageTeam) continue;
-				dmgScale = 0.3f;
+				dmgScale = 0.2f;
 			}
 
 			float dist = AIBrain.GroundDistance(position, e.gameObject.transform.position);
