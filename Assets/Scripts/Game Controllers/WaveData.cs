@@ -43,6 +43,15 @@ public class WaveData : ScriptableObject {
 		if (tier >= enemyPrefabs.Count) tier = enemyPrefabs.Count - 1;
 		return tier;
 	}
+	private int GetBossTier(int wave) {
+		//spawn normal bosses wave 10/15
+		int tier = wave / rampUpWaveNumber - 3;
+
+		if (tier >= enemyBossPrefabs.Count) tier = enemyBossPrefabs.Count - 1;
+		if (tier < 0) tier = 0;
+
+		return tier;
+	}
 	private void OnEnable() {
 		waveDict = new();
 		foreach (WaveInfo w in waves) {
@@ -63,24 +72,26 @@ public class WaveData : ScriptableObject {
 		return additionalSpawnMoney;
 	}
 	public List<GameObject> GetBogoSpawnPrefabs(int wave, bool isBoss) {
-		if (!waveDict.ContainsKey(wave)) return isBoss ? enemyBossPrefabs[GetTier(wave)].prefabs :
+		if (!waveDict.ContainsKey(wave) || isBoss)
+			return isBoss ? enemyBossPrefabs[GetBossTier(wave)].prefabs :
 				enemyPrefabs[GetTier(wave)].prefabs;
 
 		List<GameObject> prefabs = new();
 
 		foreach (int i in waveDict[wave].bogoEnemyPrefabs)
-			prefabs.Add(isBoss ? enemyBossPrefabs[GetTier(wave)].prefabs[i] : enemyPrefabs[GetTier(wave)].prefabs[i]);
+			prefabs.Add(isBoss ? enemyBossPrefabs[GetBossTier(wave)].prefabs[i] : enemyPrefabs[GetTier(wave)].prefabs[i]);
 
 		if (prefabs.Count == 0) return null;
 		return prefabs;
 	}
 	public List<int> GetBogoSpawnCosts(int wave, bool isBoss) {
-		if (!waveDict.ContainsKey(wave)) return isBoss ? enemyBossCosts[GetTier(wave)].costs : enemyCosts[GetTier(wave)].costs;
+		if (!waveDict.ContainsKey(wave) || isBoss)
+			return isBoss ? enemyBossCosts[GetBossTier(wave)].costs : enemyCosts[GetTier(wave)].costs;
 
 		List<int> costs = new();
 
 		foreach (int i in waveDict[wave].bogoEnemyPrefabs)
-			costs.Add(isBoss ? enemyBossCosts[GetTier(wave)].costs[i] : enemyCosts[GetTier(wave)].costs[i]);
+			costs.Add(isBoss ? enemyBossCosts[GetBossTier(wave)].costs[i] : enemyCosts[GetTier(wave)].costs[i]);
 
 		if (costs.Count == 0) return null;
 		return costs;
