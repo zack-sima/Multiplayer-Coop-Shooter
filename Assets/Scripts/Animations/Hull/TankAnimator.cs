@@ -50,13 +50,15 @@ public class TankAnimator : HullAnimatorBase {
 		}
 		if (reversed) {
 			transform.rotation = Quaternion.RotateTowards(
-				transform.rotation, Quaternion.Euler(0, targetRotation + 180, 0), 250f * Time.deltaTime);
+				transform.rotation, Quaternion.Euler(0, targetRotation + 180, 0), 250f *
+				Time.deltaTime * Mathf.Min(1f, GetVelocity().magnitude * 0.25f));
 
 			leftTracksAnimator.SetSpeed(-GetVelocity().magnitude);
 			rightTracksAnimator.SetSpeed(-GetVelocity().magnitude);
 		} else {
 			transform.rotation = Quaternion.RotateTowards(
-				transform.rotation, Quaternion.Euler(0, targetRotation, 0), 250f * Time.deltaTime);
+				transform.rotation, Quaternion.Euler(0, targetRotation, 0), 250f *
+				Time.deltaTime * Mathf.Min(1f, GetVelocity().magnitude * 0.25f));
 
 			leftTracksAnimator.SetSpeed(GetVelocity().magnitude);
 			rightTracksAnimator.SetSpeed(GetVelocity().magnitude);

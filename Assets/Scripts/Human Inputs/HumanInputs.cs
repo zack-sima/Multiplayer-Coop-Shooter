@@ -53,6 +53,10 @@ public class HumanInputs : MonoBehaviour {
 	//PC tank drive
 	private float tankRotation = 0f;
 
+	//mobile "dot"
+	private Vector3 displayedMoveVector = Vector3.zero;
+	public Vector3 GetDisplayedMoveVector() { return displayedMoveVector; }
+
 	#endregion
 
 	#region Functions
@@ -75,6 +79,7 @@ public class HumanInputs : MonoBehaviour {
 		player.GetHull().SquishPhysics(EntityController.instance.GetCombatEntities(), player);
 		if (!canInput) {
 			player.GetHull().Move(Vector3.zero);
+			displayedMoveVector = Vector3.zero;
 			return;
 		}
 		player.SetTurretFollowsMovement(true);
@@ -85,9 +90,11 @@ public class HumanInputs : MonoBehaviour {
 			float angleRad = movementJoystick.GetJoystickAngle();
 
 			Vector3 moveVector = mag * new Vector3(Mathf.Cos(angleRad), 0, Mathf.Sin(angleRad));
+			displayedMoveVector = moveVector;
 			player.GetHull().Move(moveVector);
 		} else {
 			player.GetHull().Move(Vector3.zero);
+			displayedMoveVector = Vector3.zero;
 		}
 		if (mainWeaponJoystick.GetButtonIsDown()) {
 			float mag = mainWeaponJoystick.GetJoystickMagnitude();

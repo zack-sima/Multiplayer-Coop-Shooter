@@ -136,7 +136,7 @@ MonoBehaviour:
   turretAnchor: {fileID: 2325913016705456889}
   animator: {fileID: 4346554063448639422}
   speed: 5
-  acceleration: 12
+  acceleration: 15
 --- !u!114 &4346554063448639422
 MonoBehaviour:
   m_ObjectHideFlags: 0

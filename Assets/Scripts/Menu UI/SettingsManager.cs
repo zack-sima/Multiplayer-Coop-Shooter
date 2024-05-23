@@ -3,8 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.Rendering.Universal;
-using UnityEngine.Rendering;
+
+#if UNITY_IOS
+
+using UnityEngine.iOS;
+
+#endif
 
 public class SettingsManager : MonoBehaviour {
 
@@ -112,8 +116,14 @@ public class SettingsManager : MonoBehaviour {
 	private void Start() {
 		UpdateIcons();
 
+
 		if (PlayerPrefs.GetInt("quality") == 0) {
-			PlayerPrefs.SetInt("quality", currentQualityIndex);
+
+#if UNITY_IOS
+			//NOTE: determine player graphics default ~iPhone SE 2nd gen
+			if ((int)Device.generation > 55) currentQualityIndex = 4;
+#endif
+			PlayerPrefs.SetInt("quality", currentQualityIndex + 1);
 		} else {
 			currentQualityIndex = PlayerPrefs.GetInt("quality") - 1;
 		}
