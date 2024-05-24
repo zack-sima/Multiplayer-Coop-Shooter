@@ -30,12 +30,12 @@ public class UpgradeCardButton : MonoBehaviour {
 
 		if (node == null) return;
 
-		nameText.text = node.upgradeName;
+		nameText.text = node.displayName;
 		if (node.level > 0) nameText.text += " " + UpgradesCatalog.ToRoman(node.level);
 
 		descriptionText.text = node.description;
 		costText.text = "$" + node.cost.ToString();
-		image.sprite = node.icon;
+		if (node.internalIcon != null) image.sprite = node.internalIcon;
 		purchased = false;
 	}
 

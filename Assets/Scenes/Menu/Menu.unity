@@ -3268,7 +3268,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 41.460022}
+  m_AnchoredPosition: {x: 0, y: 41.45996}
   m_SizeDelta: {x: -0.00012207, y: 82.92}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &151201708
@@ -10355,7 +10355,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 41.460022}
+  m_AnchoredPosition: {x: 0, y: 41.45996}
   m_SizeDelta: {x: -0.00012207, y: 82.92}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &515929031
@@ -15292,7 +15292,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: 41.460022}
+  m_AnchoredPosition: {x: 0, y: 41.45996}
   m_SizeDelta: {x: -0.00012207, y: 82.92}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &699519410
@@ -17481,7 +17481,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -6.2426147}
+  m_AnchoredPosition: {x: 0, y: -6.242676}
   m_SizeDelta: {x: 600, y: 239.6796}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &789247635
@@ -32708,7 +32708,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -21.58}
+  m_AnchoredPosition: {x: 0, y: -21.579956}
   m_SizeDelta: {x: 0, y: -209}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1237262996
@@ -40492,7 +40492,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -21.58}
+  m_AnchoredPosition: {x: 0, y: -21.579956}
   m_SizeDelta: {x: 0, y: -209}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1517937144
@@ -45093,7 +45093,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -6.2426147}
+  m_AnchoredPosition: {x: 0, y: -6.242676}
   m_SizeDelta: {x: 600, y: 239.6796}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1724884288
@@ -49953,7 +49953,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -21.58}
+  m_AnchoredPosition: {x: 0, y: -21.579956}
   m_SizeDelta: {x: 0, y: -209}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1916919507
@@ -51635,6 +51635,32 @@ MonoBehaviour:
   gadgetRawCSV: {fileID: 4900000, guid: 33c44551077f74459a4d3e01c4714284, type: 3}
   hullRawCSV: {fileID: 4900000, guid: c22a9c111db254793bb735a1b81c53c4, type: 3}
   turretRawCSV: {fileID: 4900000, guid: 0b6b164fbec7540a2bfee11f8702c7dc, type: 3}
+  icons:
+  - id: HealActive
+    icon: {fileID: 21300000, guid: c7b397002edfa4e7c80a76ffcb73de4c, type: 3}
+    regularUiIcon: {fileID: 21300000, guid: 0a78727290d0c46058ae42cfa9032d94, type: 3}
+    activeUiIcon: {fileID: 21300000, guid: 821543d94fdcf4585b51f76651aedc6c, type: 3}
+    children:
+    - id: Faster Heals
+      icon: {fileID: 21300000, guid: c53113c0d4e33447da5dde2bc4be243a, type: 3}
+    - id: Bigger Heals
+      icon: {fileID: 21300000, guid: 672a4bb0d63894d88a070e0b6f519dc3, type: 3}
+  - id: RapidFireActive
+    icon: {fileID: 21300000, guid: 20883c1139ab74393844dfc740918ab5, type: 3}
+    regularUiIcon: {fileID: 21300000, guid: 37a6ef267109a473ea8e83f8e587173b, type: 3}
+    activeUiIcon: {fileID: 21300000, guid: db404816c5bb24e95924d45f2152cd92, type: 3}
+    children:
+    - id: Faster Fire
+      icon: {fileID: 21300000, guid: a7252f6b476284a51bed29c1c0e05e11, type: 3}
+  - id: SentryActive
+    icon: {fileID: 21300000, guid: 56f0c9b4fc3f34c009143569a465f28a, type: 3}
+    regularUiIcon: {fileID: 21300000, guid: 5d284b69185e1424daf49fe5e86f3fd4, type: 3}
+    activeUiIcon: {fileID: 21300000, guid: b62f528563d7d4f37b23bb843afbcc8b, type: 3}
+    children:
+    - id: Reinforced Sentry
+      icon: {fileID: 21300000, guid: 0eed031fe50394484a433a42c19d2dc8, type: 3}
+    - id: Larger Caliber
+      icon: {fileID: 21300000, guid: 753d4a81dc05c4aa693a7cba1daf2573, type: 3}
 --- !u!1 &1964852148
 GameObject:
   m_ObjectHideFlags: 0
@@ -54790,7 +54816,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -6.2426147}
+  m_AnchoredPosition: {x: 0, y: -6.242676}
   m_SizeDelta: {x: 600, y: 239.6796}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2085905309

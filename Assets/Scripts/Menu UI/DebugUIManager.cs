@@ -21,7 +21,7 @@ public class DebugUIManager : MonoBehaviour {
 #if UNITY_EDITOR
     const bool allowDebugMenu = true; // enables/disables the usage of the debug menu.
 #else
-    const bool allowDebugMenu = false;
+    const bool allowDebugMenu = true;
 #endif
 
 
@@ -85,6 +85,16 @@ public class DebugUIManager : MonoBehaviour {
                 }
             }
         }
+    }
+
+    public void LogWarning(string error, string debugId) {
+        LogOutput(debugId + " : " + error);
+        Debug.LogWarning(debugId + " : " + error);
+    }
+
+    public void LogError(string error, string debugId) {
+        LogOutput(debugId + " : " + error);
+        Debug.LogError(debugId + " : " + error);
     }
 
     private void ExecuteCommand(string input) {
@@ -195,12 +205,49 @@ public class DebugUIManager : MonoBehaviour {
         // LogOutput(result);
     }
 
-    private void ForceResetCommand(string[] args) {
+    private void ResetCommand(string[] args) {
+        if (args.Length < 2) {
+            LogOutput("Usage: reset <type>\n Types: playerData, consoleFiles, *");
+            return;
+        }
+        switch (args[1]) {
+            case "playerData":
+                ForcePlayerDataResetCommand(args);
+                break;
+            case "consoleFiles":
+                ForceResetConsoleFilesCommand(args);
+                break;
+            case "equipped":
+                ForceResetEquippedCommand(args);
+                break;
+            case "*":
+                LogOutput("Resetting all data...");
+                ForceResetEquippedCommand(args);
+                ForcePlayerDataResetCommand(args);
+                ForceResetConsoleFilesCommand(args);
+                break;
+            default:
+                LogOutput("Invalid reset type.");
+                break;
+        }
+    }
+
+    private void ForceResetEquippedCommand(string[] args) {
+        //TODO: Reset equipped items.
+        //LogOutput("Equipped items succesfully reset.");
+    }
+
+    private void ForceResetConsoleFilesCommand(string[] args) {
+        InitFileSystem();
+        LogOutput("Console files succesfully reset.");
+    }
+
+    private void ForcePlayerDataResetCommand(string[] args) {
         if (PlayerDataHandler.instance.ForceResetInfos(isDebug: true))
             LogOutput("All infos succesfully force reset.");
         else { 
             LogOutput("Failed to force reset.");
-            Debug.LogError("Failed to force eset.");
+            Debug.LogError("Failed to force reset.");
         }
     }
 
@@ -354,10 +401,13 @@ public class DebugUIManager : MonoBehaviour {
         var hulls = new FileSystemNode("hulls", true);
         var turrets = new FileSystemNode("turrets", true);
 
+        var equip = new FileSystemNode("equipped", true);
+
         root.AddChild(actives);
         root.AddChild(hulls);
         root.AddChild(gadgets);
         root.AddChild(turrets);
+        root.AddChild(equip);
 
         string enums = "CSV Modifiers:\n";
         foreach(string s in Enum.GetNames(typeof(CSVMd))) {
@@ -404,6 +454,55 @@ public class DebugUIManager : MonoBehaviour {
             }
         }
 
+        Dictionary<string, Dictionary<string, int>> equipped = PlayerDataHandler.instance?.GetEquippedInfos();
+        if (equipped != null) {
+
+            if (equipped.ContainsKey(nameof(CSVType.ACTIVES))) {
+                var Eactives = new FileSystemNode("Eactives", true);
+                foreach(KeyValuePair<string, int> e in equipped[nameof(CSVType.ACTIVES)]) {
+                    if (abilities1.ContainsKey(e.Key)) {
+                        var ability = new FileSystemNode($"{e.Key}.txt", false) { Content = abilities1[e.Key].ToString() };
+                        Eactives.AddChild(ability);
+                    }
+                }
+                equip.AddChild(Eactives);
+            }
+
+            if (equipped.ContainsKey(nameof(CSVType.GADGETS))) {
+                var Egadgets = new FileSystemNode("Egadgets", true);
+                foreach(KeyValuePair<string, int> e in equipped[nameof(CSVType.GADGETS)]) {
+                    if (gadgets1.ContainsKey(e.Key)) {
+                        var gadget = new FileSystemNode($"{e.Key}.txt", false) { Content = gadgets1[e.Key].ToString() };
+                        Egadgets.AddChild(gadget);
+                    }
+                }
+                equip.AddChild(Egadgets);
+            }
+
+            if (equipped.ContainsKey(nameof(CSVType.HULLS))) {
+                var Ehulls = new FileSystemNode("Ehulls", true);
+                foreach(KeyValuePair<string, int> e in equipped[nameof(CSVType.HULLS)]) {
+                    if (hulls1.ContainsKey(e.Key)) {
+                        var hull = new FileSystemNode($"{e.Key}.txt", false) { Content = hulls1[e.Key].ToString() };
+                        Ehulls.AddChild(hull);
+                    }
+                }
+                equip.AddChild(Ehulls);
+            }
+
+            if (equipped.ContainsKey(nameof(CSVType.TURRETS))) {
+                var Eturrets = new FileSystemNode("Eturrets", true);
+                foreach(KeyValuePair<string, int> e in equipped[nameof(CSVType.TURRETS)]) {
+                    if (turrets1.ContainsKey(e.Key)) {
+                        var turret = new FileSystemNode($"{e.Key}.txt", false) { Content = turrets1[e.Key].ToString() };
+                        Eturrets.AddChild(turret);
+                    }
+                }
+                equip.AddChild(Eturrets);
+            }
+        
+        }
+
     }
 
     #endregion
@@ -418,7 +517,7 @@ public class DebugUIManager : MonoBehaviour {
         RegisterCommand("ls", LsCommand);
         RegisterCommand("cat", CatCommand);
 
-        RegisterCommand("reset", ForceResetCommand);
+        RegisterCommand("reset", ResetCommand);
         //RegisterCommand("money", GiveMoneyCommand);
         //Force upgrade
 

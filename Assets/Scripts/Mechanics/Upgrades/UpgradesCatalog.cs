@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using CSV;
+using CSV.Parsers;
 
 public class UpgradesCatalog : MonoBehaviour {
 
@@ -28,13 +29,15 @@ public class UpgradesCatalog : MonoBehaviour {
 	}
 	public class UpgradeNode {
 		public string upgradeName;
-		public Sprite icon;
+		public string displayName;
+		public string parentId;
+		public Sprite internalIcon;
 		public int cost;
 		public int level;
 		public string description;
 		public bool unlocked;
 		public readonly bool replacePrior;
-		public UpgradeInfo info;
+		public InGameUpgradeInfo info;
 		public UpgradeNode prior;
 
 		//if any tech in here was bought, this cannot be bought
@@ -48,7 +51,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		//CONSTRUCTOR
 		public UpgradeNode(
-			string upgradeName, Sprite icon, int cost, UpgradeInfo info, int level = 0,
+			string upgradeName, string parentId, string displayName, int cost, InGameUpgradeInfo info, int level = 0,
 			string description = "No description", bool unlocked = false, bool replacePrior = false,
 			List<string> mutuallyExclusiveUpgrades = null,
 			List<string> hardRequirements = null,
@@ -66,7 +69,14 @@ public class UpgradesCatalog : MonoBehaviour {
 
 			this.description = description;
 			this.upgradeName = upgradeName;
-			this.icon = icon;
+			this.displayName = displayName;
+			this.parentId = parentId;
+			if (PlayerDataHandler.instance.TryGetIcon(upgradeName, out PlayerDataHandler.IconKeyValuePair i)) {
+				internalIcon = i.icon;
+			} else {
+				Debug.LogError("Icon not found for " + upgradeName);
+				internalIcon = null;
+			}
 			this.cost = cost;
 			this.unlocked = unlocked;
 			this.level = level;
@@ -75,6 +85,10 @@ public class UpgradesCatalog : MonoBehaviour {
 		public string GetUpgradeId() {
 			if (level == 0) return upgradeName;
 			return upgradeName + " " + ToRoman(level);
+		}
+
+		public string GetIconId() {
+			return upgradeName;
 		}
 
 		//returns whether soft and hard requirements have been met;
@@ -187,6 +201,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 	//don't make null so it doesn't look that bad
 	[SerializeField] private Sprite fallbackSprite;
+	public Sprite GetFallbackSprite() { return fallbackSprite; }
 
 	//the real list
 	private Dictionary<string, UpgradeNode> playerUpgrades;
@@ -211,6 +226,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 	//destroys GameObjects in UI and replaces them with new ones
 	private void RerenderUpgrades() {
+		
 		//clear out old
 		foreach (GameObject g in upgradeDisplays) {
 			if (g != null) Destroy(g);
@@ -221,23 +237,32 @@ public class UpgradesCatalog : MonoBehaviour {
 		SortedDictionary<string, int> highestUnlockedUpgrades = new();
 		foreach (UpgradeNode n in playerUpgrades.Values) {
 			if (n == null || !n.unlocked) continue;
-			if (!highestUnlockedUpgrades.ContainsKey(n.upgradeName)) {
-				highestUnlockedUpgrades.Add(n.upgradeName, n.level);
-			} else if (highestUnlockedUpgrades[n.upgradeName] < n.level) {
-				//put highest level in dict
-				highestUnlockedUpgrades[n.upgradeName] = n.level;
-			}
+			// if (!highestUnlockedUpgrades.ContainsKey(n.parentId)) {
+			// 	highestUnlockedUpgrades.Add(n.parentId, n.level);
+			// } else if (highestUnlockedUpgrades[n.parentId] < n.level) {
+			// 	//put highest level in dict
+			// 	highestUnlockedUpgrades[n.parentId] = n.level;
+			// }
+			if (!highestUnlockedUpgrades.ContainsKey(n.parentId)) {
+				highestUnlockedUpgrades.Add(n.parentId, 1);
+			} else highestUnlockedUpgrades[n.parentId]++; // increment max level
+			
 		}
+
 		//look through dict
-		foreach (KeyValuePair<string, int> kv in highestUnlockedUpgrades) {
+		foreach (KeyValuePair<string, int> kv in highestUnlockedUpgrades) { // for the top bar ui
 			string levelText = kv.Value == 0 ? "" : ToRoman(kv.Value);
-			Sprite sprite = GetUpgradeIcon(kv.Key);
+			
+			//Sprite sprite = GetUpgradeIcon(kv.Key);
+			if (PlayerDataHandler.instance.TryGetIcon(kv.Key , out PlayerDataHandler.IconKeyValuePair i)) {
+				Sprite sprite = i.icon;
 
-			GameObject ins = Instantiate(upgradeDisplayPrefab, upgradeDisplayParent);
-			upgradeDisplays.Add(ins);
+				GameObject ins = Instantiate(upgradeDisplayPrefab, upgradeDisplayParent);
+				upgradeDisplays.Add(ins);
 
-			ins.GetComponent<Image>().sprite = sprite;
-			ins.transform.GetChild(0).GetComponent<TMP_Text>().text = levelText;
+				ins.GetComponent<Image>().sprite = sprite;
+				ins.transform.GetChild(0).GetComponent<TMP_Text>().text = levelText;
+			} else Debug.LogError("Icon not found for " + kv.Key);
 		}
 	}
 
@@ -323,31 +348,65 @@ public class UpgradesCatalog : MonoBehaviour {
 		ReRollUpgrades();
 		RerenderUpgrades();
 	}
-	public UpgradeNode AddUpgrade(string name, int cost, UpgradeInfo info, int level = 0,
-		string description = "No description", bool unlocked = false,
+	public UpgradeNode AddUpgrade(string id, string parentId, string displayName, int cost, int level = 0, InGameUpgradeInfo info = null, bool unlocked = false,
 		bool replacePrior = false, List<string> mutuallyExclusiveUpgrades = null,
 		List<string> hardRequirements = null, List<string> softRequirements = null) {
 
-		UpgradeNode n = new(name, GetUpgradeIcon(name), cost, info, level, description, unlocked, replacePrior,
+		Debug.LogWarning(parentId);
+
+		UpgradeNode n = new(id, parentId, displayName, cost, info, level, info?.GetDescription(), unlocked, replacePrior,
 			mutuallyExclusiveUpgrades, hardRequirements, softRequirements);
 
 		//only add _level if level != 0
 		playerUpgrades.Add(n.GetUpgradeId(), n);
-
 		return n;
 	}
-	private Sprite GetUpgradeIcon(string name) {
-		if (upgradeIconsDict.ContainsKey(name)) return upgradeIconsDict[name];
-		Debug.LogWarning($"need sprite for `{name}`!");
-		return fallbackSprite;
+	// private Sprite GetUpgradeIcon(string name) {
+	// 	//Debug.LogWarning("requesting this id : " + name);
+	// 	// if (upgradeIconsDict == null) upgradeIconsDict = new();
+	// 	// if (upgradeIconsDict.ContainsKey(name)) return upgradeIconsDict[name];
+	// 	if (PlayerDataHandler.instance.TryGetIcon(name, out PlayerDataHandler.IconKeyValuePair i)) {
+	// 		if (i.icon != null) return i.icon;
+	// 	}
+	// 	Debug.LogWarning($"need sprite for `{name}`!");
+	// 	return fallbackSprite;
+	// }
+	public void InitUpgrades() {
+		foreach (UpgradeNode n in playerUpgrades.Values) {
+			if (n.unlocked) {
+				NetworkedEntity.playerInstance.PushUpgradeModi(n);
+			}
+			//init upgrade
+			upgradeIconsDict = new();
+
+			if (PlayerDataHandler.instance.TryGetIcon(n.GetIconId(), out PlayerDataHandler.IconKeyValuePair i)) {
+				
+				if (upgradeIconsDict.ContainsKey(n.GetIconId())) {
+					upgradeIconsDict[n.GetIconId()] = i.icon;
+				} else {
+					upgradeIconsDict.Add(n.GetIconId(), i.icon);
+				}
+			}
+		}
+		
+		//foreach (UpgradeNode u in playerUpgrades.Values) {
+		//	Debug.LogWarning("UpgradeInit : " + u.ToString());
+		//}
+		if (UIController.GetIsMobile()) PCHotkeyText.gameObject.SetActive(false);
+
+		playerMoney = PlayerPrefs.GetInt("game_start_cash");
+
+		ReRollUpgrades();
+		RerenderUpgrades();
+
 	}
 	private void Awake() {
 		instance = this;
 
-		upgradeIconsDict = new();
-		foreach (UpgradeIcon u in upgradeIcons) {
-			upgradeIconsDict.Add(u.upgradeName, u.icon);
-		}
+		// upgradeIconsDict = new();
+		// foreach (UpgradeIcon u in upgradeIcons) {
+		// 	upgradeIconsDict.Add(u.upgradeName, u.icon);
+		// }
 
 		//NOTE: CREATE ALL ABILITY TREES HERE;
 		//TODO: CREATE STATIC FUNCTIONS THAT CREATES A NEW DICT BASED ON CLASS
@@ -366,32 +425,12 @@ public class UpgradesCatalog : MonoBehaviour {
 
 		// for (int i = 0; i < 10; i++) AddUpgrade($"Camp {i + 1}", 10 + i);
 
+		upgradeIconsDict = new();
 
-	}
-
-	/*=================| CSV |=================*/
-	private void CSVInit() { // TODO: Update with turret info, etc.
-		this.ParseUpgradesFromAllCSV();
 	}
 
 	private void Start() {
-		//make sure player starts with these abilities unlocked
-		CSVInit();
-
-		foreach (UpgradeNode n in playerUpgrades.Values) {
-			if (n.unlocked) {
-				NetworkedEntity.playerInstance.PushUpgradeModi(n);
-			}
-		}
-		//foreach (UpgradeNode u in playerUpgrades.Values) {
-		//	Debug.LogWarning("UpgradeInit : " + u.ToString());
-		//}
-		if (UIController.GetIsMobile()) PCHotkeyText.gameObject.SetActive(false);
-
-		ReRollUpgrades();
-		RerenderUpgrades();
-
-		playerMoney = PlayerPrefs.GetInt("game_start_cash");
+		
 	}
 
 	private void Update() {
