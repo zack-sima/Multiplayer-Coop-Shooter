@@ -48,17 +48,19 @@ public class TankAnimator : HullAnimatorBase {
 		} else {
 			reversed = GetInReverse() == 1;
 		}
+		
+		float velocityMult = Time.deltaTime * Mathf.Min(1f, GetVelocity().magnitude * 0.25f);
+		if (!UIController.GetIsMobile()) velocityMult = 1;
+
 		if (reversed) {
 			transform.rotation = Quaternion.RotateTowards(
-				transform.rotation, Quaternion.Euler(0, targetRotation + 180, 0), 250f *
-				Time.deltaTime * Mathf.Min(1f, GetVelocity().magnitude * 0.25f));
+				transform.rotation, Quaternion.Euler(0, targetRotation + 180, 0), 250f * velocityMult);
 
 			leftTracksAnimator.SetSpeed(-GetVelocity().magnitude);
 			rightTracksAnimator.SetSpeed(-GetVelocity().magnitude);
 		} else {
 			transform.rotation = Quaternion.RotateTowards(
-				transform.rotation, Quaternion.Euler(0, targetRotation, 0), 250f *
-				Time.deltaTime * Mathf.Min(1f, GetVelocity().magnitude * 0.25f));
+				transform.rotation, Quaternion.Euler(0, targetRotation, 0), 250f * velocityMult);
 
 			leftTracksAnimator.SetSpeed(GetVelocity().magnitude);
 			rightTracksAnimator.SetSpeed(GetVelocity().magnitude);

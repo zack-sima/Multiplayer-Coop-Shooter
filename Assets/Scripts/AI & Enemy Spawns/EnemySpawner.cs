@@ -52,6 +52,20 @@ public class EnemySpawner : NetworkBehaviour {
 	//NOTE: 0 + n = standard, 10 + n = challenge, 20 + n = special mode (tbd)
 	[SerializeField] private List<WaveData> wavePresets;
 
+	public string GetWaveDataString() {
+		if (wavePresets != null) {
+			string s = "Avaliable wave presets: ";
+			for(int i = 0; i < wavePresets.Count - 1; i++) {
+				if (wavePresets[i] != null)
+					s += i + ", ";
+			}
+			if (wavePresets[wavePresets.Count - 1] != null)
+				s += wavePresets.Count - 1;
+			return s;
+		}
+		return "wavePresets == null";
+	}
+ 
 	#endregion
 
 	#region Members

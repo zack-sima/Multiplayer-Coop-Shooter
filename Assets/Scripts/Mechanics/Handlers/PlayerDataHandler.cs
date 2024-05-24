@@ -233,7 +233,17 @@ public class PlayerDataHandler : MonoBehaviour {
     #endregion
 
     #region Methods
-
+    public void EquipInfo(string id, int lvl = 1) {
+        if (activesInfo.ContainsKey(id)) {
+            EquipInfo(nameof(CSVType.ACTIVES), id, lvl);
+        } else if (gadgetsInfo.ContainsKey(id)) {
+            EquipInfo(nameof(CSVType.GADGETS), id, lvl);
+        } else if (hullsInfo.ContainsKey(id)) {
+            EquipInfo(nameof(CSVType.HULLS), id, lvl);
+        } else if (turretsInfo.ContainsKey(id)) {
+            EquipInfo(nameof(CSVType.TURRETS), id, lvl);
+        }
+    }
     public void EquipInfo(string type, string id, int level) {
         if (equippedInfos.ContainsKey(type)) {
             if (equippedInfos[type].ContainsKey(id)) {
@@ -257,8 +267,8 @@ public class PlayerDataHandler : MonoBehaviour {
         //EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
         // EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 11);
         EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 10);
-        EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 10);
-        // EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
+        // EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 10);
+        EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
         // EquipInfo(CSVType.GADGETS, CSVId.HardenedAmmoGadget, 1);
         // EquipInfo(CSVType.GADGETS, CSVId.RegenerativeArmorGadget, 1);
 

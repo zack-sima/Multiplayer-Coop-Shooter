@@ -4,6 +4,8 @@ using UnityEngine;
 using TMPro;
 using CSV.Parsers;
 using System;
+using UnityEngine.Rendering;
+using Fusion;
 
 public class DebugUIManager : MonoBehaviour {
 
@@ -15,6 +17,7 @@ public class DebugUIManager : MonoBehaviour {
     [SerializeField] public GameObject debugScreen;
     [SerializeField] public TMP_InputField debugInputField;
     [SerializeField] public TMP_Text debugConsoleText;
+    [SerializeField] public EnemySpawner enemySpawnerPrefab;
 
     #endregion
     #region Members
@@ -30,6 +33,7 @@ public class DebugUIManager : MonoBehaviour {
     private Dictionary<string, System.Action<string[]>> commands = new Dictionary<string, System.Action<string[]>>();
     private Queue<string> commandHistory = new Queue<string>();
     private List<string> commandHistoryList = new List<string>();
+    private Dictionary<string, string> itemDict = new();
 
     private int historyIndex = -1;
     private const string CommandHistoryKey = "CommandHistory";
@@ -59,7 +63,7 @@ public class DebugUIManager : MonoBehaviour {
 
     public void InterpretDebugText() {
         if (isWelcomeScreen) {
-            ClearConsoleCommand(null);
+            ClearCommand(null);
             debugConsoleText.alignment = TextAlignmentOptions.Left;
             isWelcomeScreen = false;
         }
@@ -97,7 +101,7 @@ public class DebugUIManager : MonoBehaviour {
         Debug.LogError(debugId + " : " + error);
     }
 
-    private void ExecuteCommand(string input) {
+    public void ExecuteCommand(string input) {
         string[] args = input.Split(' ');
         string command = args[0];
         if (commands.ContainsKey(command)) {
@@ -108,7 +112,14 @@ public class DebugUIManager : MonoBehaviour {
     }
 
     public void ToggleDebugMenu() {
-       if (allowDebugMenu) debugScreen.SetActive(!debugScreen.activeSelf);
+        if (allowDebugMenu) { 
+            debugScreen.SetActive(!debugScreen.activeSelf);
+            if (debugScreen.activeInHierarchy) {
+                UIController.instance?.PauseGame();
+            } else {
+                UIController.instance?.ResumeGame();
+            }
+        }
     }
 
     public void LogOutput(string output) {
@@ -144,8 +155,16 @@ public class DebugUIManager : MonoBehaviour {
         }
     }   
 
-    private void ClearConsoleCommand(string[] args) {
-        debugConsoleText.text = "";
+    private void ClearCommand(string[] args) {
+        if (args == null || args.Length == 1) {
+            debugConsoleText.text = "";
+        } else if (args.Length > 1 && args[1] == "equip") {
+            PlayerDataHandler.instance?.ClearEquipInfos();
+            LogOutput("Equipped items successfully cleared.");
+        } else if (args.Length > 1) {
+            LogOutput("Invalid clear command. Available options: clear, clear equip");
+        }
+        
     }
 
     private void NullDirectory() {
@@ -266,6 +285,113 @@ public class DebugUIManager : MonoBehaviour {
         }
     }
 
+    private void SetCommand(string[] args) {
+        //this command is taken in as "setlvl <int>" parse out the int
+        
+        if (args.Length > 3) {
+            if (args[1] == "game") {
+                if (args[2] == "lvl") {
+                    if (int.TryParse(args[3], out int lvl)) {
+                        if (MenuManager.instance != null) {
+                            MenuManager.instance.SetWave(lvl);
+                            LogOutput("Map Starting Level Set to " + lvl);
+                            return;
+                        } else LogOutput("MenuManager is null.");
+                        return;
+                    } else {
+                        LogOutput("Invalid Set Command => " + args[3] + "!= int");
+                    }
+                } else if (args[2] == "difficulty") {
+                    if (int.TryParse(args[3], out int diff)) {
+                        if (MenuManager.instance != null) {
+                            MenuManager.instance.SetDifficulty(diff);
+                            LogOutput("Map Difficulty Set to " + diff);
+                            return;
+                        } else LogOutput("MenuManager is null.");
+                        return;
+                    } else {
+                        LogOutput("Invalid Set Command => " + args[3] + "!= int");
+                    }
+                } else if (args[2] == "cash") {
+                    if (int.TryParse(args[3], out int cash)) {
+                        if (UpgradesCatalog.instance != null) {
+                            UpgradesCatalog.instance.SetPlayerMoney(cash);
+                            LogOutput("Money Set to " + cash);
+                            return;
+                        } else LogOutput("UpgradesCatalog is null.");
+                    } else LogOutput("Invalid Set Command => " + args[3] + "!= int");
+                    return;
+                } else {
+                    LogOutput("Invalid Set Command => " + args[3] + "!= int");
+                }
+            } else {
+                
+            }
+        } else if (args.Length > 2) {
+            if (args[1] == "upgrades" && args[2] == "max") {
+                if (UpgradesCatalog.instance != null) {
+                    UpgradesCatalog.instance.ForceMaxUpgrades();
+                    LogOutput("All Upgrades Maxed.");
+                    return;
+                } else LogOutput("UpgradesCatalog is null.");
+            }
+        }
+        LogOutput("Invalid Set Command => List of set commands: \nset game lvl <int> \nset game difficulty <int> \nset game cash <int> \nset upgrades max");
+    }
+
+    private void GetCommand(string[] args) {
+        if (args.Length > 2) {
+            if (args[1] == "game") {
+                if (args[2] == "lvl") {
+                    if (MenuManager.instance != null) {
+                        LogOutput("Map Starting Level is " + MenuManager.instance.GetWave());
+                    } else LogOutput("MenuManager is null.");
+                    return;
+                } else if (args[2] == "difficulty") {
+                    if (MenuManager.instance != null) {
+                        LogOutput("Current Map Difficulty is " + MenuManager.instance.GetDifficulty());
+                        LogOutput(enemySpawnerPrefab.GetWaveDataString());
+                    } else LogOutput("MenuManager is null.");
+                    return;
+                }
+            }
+        }
+        LogOutput("Invalid Get Command => List of get commands: \nget game lvl \nget game difficulty");
+    }
+
+    private void EquipCommand(string[] args) {
+        if (args.Length > 1) {
+            if (itemDict.ContainsKey(args[1])) {
+                LogOutput("Item " + args[1] + " succesfully equipped.");
+                PlayerDataHandler.instance?.EquipInfo(args[1]);
+                return;
+            } else {
+                LogOutput("Item " + args[1] + " does not exist.");
+            }
+            return;
+        } else {
+            LogOutput("Invalid Equip Command => List of equip commands: \nequip <string>");
+        }
+
+    }
+
+    private void ToggleCommand(string[] args) {
+        if (args.Length > 1) {
+            if (args[1] == "cheats") {
+                if (NetworkedEntity.playerInstance != null) {
+                    NetworkedEntity.playerInstance.ToggleCheats();
+                    LogOutput("Cheats for local player toggled.");
+                    return;
+                } else {
+                    LogOutput("Player instance is null.");
+                }
+            } else {
+            }
+        } else {
+            LogOutput("Invalid Toggle Command => List of toggle commands: \ntoggle cheats");
+        }
+    }
+
     #region Command Save and Loading
 
     private void SaveCommandHistory() {
@@ -322,6 +448,12 @@ public class DebugUIManager : MonoBehaviour {
             Name = name;
             IsDirectory = isDirectory;
             Children = new Dictionary<string, FileSystemNode>();
+            if (!isDirectory && instance != null) {
+                string s = name.Replace(".txt", "");
+                if (instance.itemDict.ContainsKey(s)) {
+                    instance.itemDict[s] = Content;
+                } else instance.itemDict.Add(s, Content);
+            } 
         }
 
         public void AddChild(FileSystemNode node) {
@@ -393,6 +525,7 @@ public class DebugUIManager : MonoBehaviour {
 
 
     private void InitFileSystem() {
+        instance.itemDict.Clear();
         root = new FileSystemNode("root", true);
         currentDirectory = root;
 
@@ -512,12 +645,17 @@ public class DebugUIManager : MonoBehaviour {
         RegisterCommand("help", HelpCommand);
         //RegisterCommand("--equip", EquipCommand);
         
-        RegisterCommand("clear", ClearConsoleCommand);
+        RegisterCommand("clear", ClearCommand);
         RegisterCommand("cd", CdCommand);
         RegisterCommand("ls", LsCommand);
         RegisterCommand("cat", CatCommand);
 
         RegisterCommand("reset", ResetCommand);
+        RegisterCommand("set", SetCommand);
+        RegisterCommand("get", GetCommand);
+        RegisterCommand("equip", EquipCommand);
+        RegisterCommand("toggle", ToggleCommand);
+
         //RegisterCommand("money", GiveMoneyCommand);
         //Force upgrade
 
@@ -553,10 +691,10 @@ public class DebugUIManager : MonoBehaviour {
                     InitFileSystem();
                 }
             }
-            debugScreen.SetActive(!debugScreen.activeSelf);
+            ToggleDebugMenu();
         }
         if (debugScreen.activeInHierarchy) {
-            debugInputField.ActivateInputField();
+            if (!UIController.GetIsMobile()) debugInputField.ActivateInputField();
             if (Input.GetKeyDown(KeyCode.Return)) {
                  InterpretDebugText();
             }

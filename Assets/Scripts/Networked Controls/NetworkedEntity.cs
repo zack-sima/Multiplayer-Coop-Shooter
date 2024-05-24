@@ -131,6 +131,9 @@ public class NetworkedEntity : NetworkBehaviour {
 	private bool localIsDead = false;
 	public bool GetLocalIsDead() { return localIsDead; }
 
+	private bool isCheatsEnabled = false;
+	public void ToggleCheats() { isCheatsEnabled = !isCheatsEnabled; }
+
 	private Dictionary<string, UpgradesCatalog.UpgradeNode> currentUpgrades = new();
 	private List<(InflictionType type, float param, float time)> inflictions = new();
 	private List<(IAbility ability, bool isActivated)> abilities = new();
@@ -351,6 +354,7 @@ public class NetworkedEntity : NetworkBehaviour {
 
 		//within respawn protection
 		if (Time.time - lastRespawnTimestamp < RESPAWN_PROTECTION_TIME) return;
+		if (isCheatsEnabled) return;
 
 		//uses unique id to stack damages
 		int senderId = sender == null ? -1 : sender.gameObject.GetInstanceID() % 1000;

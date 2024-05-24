@@ -190,6 +190,7 @@ public class UpgradesCatalog : MonoBehaviour {
 	[SerializeField] private RectTransform upgradeDisplayParent;
 
 	[SerializeField] private GameObject buyReminderIcon;
+	[SerializeField] private GameObject debugUIPrefab;
 
 	#endregion
 
@@ -209,6 +210,10 @@ public class UpgradesCatalog : MonoBehaviour {
 	//NOTE: player money
 	private int playerMoney = 250;
 	public int GetPlayerMoney() { return playerMoney; }
+	public void SetPlayerMoney(int newMoney) {
+		playerMoney = newMoney;
+		MoneyChanged();
+	}
 
 	//whenever score changes, compare with this to see how much money player should get
 	private int lastScore = 0;
@@ -223,6 +228,14 @@ public class UpgradesCatalog : MonoBehaviour {
 	#endregion
 
 	#region Functions
+
+	public void ForceMaxUpgrades() {
+		foreach (UpgradeNode n in playerUpgrades.Values) {
+			n.unlocked = true;
+		}
+		ReRollUpgrades();
+		RerenderUpgrades();
+	}
 
 	//destroys GameObjects in UI and replaces them with new ones
 	private void RerenderUpgrades() {
@@ -447,13 +460,15 @@ public class UpgradesCatalog : MonoBehaviour {
 			buyReminderIcon.SetActive(canAfford);
 
 		if (Input.GetKeyDown(KeyCode.U)) {
-			ShowPossibleUpgrades();
+			if (debugUIPrefab != null && !debugUIPrefab.activeInHierarchy)
+				ShowPossibleUpgrades();
 		}
 #if UNITY_EDITOR
-		if (Input.GetKeyDown(KeyCode.P)) {
-			playerMoney += 1000;
-			MoneyChanged();
-		}
+		// if (Input.GetKeyDown(KeyCode.P)) {
+		// 	if (DebugUIManager.instance != null) DebugUIManager.instance.ExecuteCommand("set game cash 1000");
+		// 	else playerMoney += 1000;
+			// MoneyChanged();
+		// }
 #endif
 	}
 

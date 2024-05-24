@@ -39,6 +39,8 @@ public class UIController : MonoBehaviour {
 
 	[SerializeField] private AudioSource soundtrack;
 
+	[SerializeField] private GameObject debugUIPrefab;
+
 	#region Ability UI
 
 	/// <summary>
