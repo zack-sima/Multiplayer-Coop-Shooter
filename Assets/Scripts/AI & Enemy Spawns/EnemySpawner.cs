@@ -4,11 +4,13 @@ using UnityEngine;
 using Fusion;
 using System.Linq;
 
+
 /// <summary>
 /// This class handles spawning when the local player is the master client. Otherwise, it does nothing.
 /// </summary>
 
-public class EnemySpawner : NetworkBehaviour {
+public class EnemySpawner : NetworkBehaviour
+{
 
 	#region Statics
 
@@ -52,10 +54,13 @@ public class EnemySpawner : NetworkBehaviour {
 	//NOTE: 0 + n = standard, 10 + n = challenge, 20 + n = special mode (tbd)
 	[SerializeField] private List<WaveData> wavePresets;
 
-	public string GetWaveDataString() {
-		if (wavePresets != null) {
+	public string GetWaveDataString()
+	{
+		if (wavePresets != null)
+		{
 			string s = "Avaliable wave presets: ";
-			for(int i = 0; i < wavePresets.Count - 1; i++) {
+			for (int i = 0; i < wavePresets.Count - 1; i++)
+			{
 				if (wavePresets[i] != null)
 					s += i + ", ";
 			}
@@ -65,7 +70,7 @@ public class EnemySpawner : NetworkBehaviour {
 		}
 		return "wavePresets == null";
 	}
- 
+
 	#endregion
 
 	#region Members
@@ -81,11 +86,13 @@ public class EnemySpawner : NetworkBehaviour {
 
 	#region Spawn Logic
 
-	private bool GetIsBossWave(int waveNum) {
+	private bool GetIsBossWave(int waveNum)
+	{
 		return (waveNum + 1) % 5 == 0 && waveNum >= 9;
 	}
 	//NOTE: this returns a shuffled list (seeded by wave) of enemy prefab indices
-	private List<GameObject> DetermineEnemiesForInfiniteWave(int waveNum) {
+	private List<GameObject> DetermineEnemiesForInfiniteWave(int waveNum)
+	{
 		//$10 is the standard cost of a normal enemy
 
 		int totalSpawnCredits = 10 * ((int)(currentWavePresets.GetSpendingMultiplier() *
@@ -105,7 +112,8 @@ public class EnemySpawner : NetworkBehaviour {
 		bool onBoss = isBossWave;
 
 		int iterations = 0;
-		while (totalSpawnCredits >= minCost) {
+		while (totalSpawnCredits >= minCost)
+		{
 			int spawnChoice = rand.Next() % currEnemyCosts.Count;
 
 			//find another enemy
@@ -117,7 +125,8 @@ public class EnemySpawner : NetworkBehaviour {
 			spawned++;
 
 			//spawn non-bosses after spawning n number of bosses
-			if (onBoss && spawned >= (int)(Mathf.Pow(waveNum, 1.5f) / 35f)) {
+			if (onBoss && spawned >= (int)(Mathf.Pow(waveNum, 1.5f) / 35f))
+			{
 				Debug.LogWarning($"switching; currency = {totalSpawnCredits}");
 				currEnemyCosts = currentWavePresets.GetBogoSpawnCosts(waveNum, false);
 				currEnemyPrefabs = currentWavePresets.GetBogoSpawnPrefabs(waveNum, false);
@@ -126,36 +135,43 @@ public class EnemySpawner : NetworkBehaviour {
 			}
 
 			iterations++;
-			if (iterations > 9999) {
+			if (iterations > 9999)
+			{
 				Debug.LogWarning("could not finish spawning!");
 				break;
 			}
 		}
 		return enemySpawns;
 	}
-	private IEnumerator SpawnCycle() {
+	private IEnumerator SpawnCycle()
+	{
 
 		//NOTE: infinite mode
-		while (true) {
+		while (true)
+		{
 			while (EntityController.player == null || GameStatsSyncer.instance == null ||
 				GameStatsSyncer.instance.GetGameOver())
 				yield return null;
 
 			if (NetworkedEntity.playerInstance == null || !NetworkedEntity.playerInstance.
-				Runner.IsSharedModeMasterClient && !NetworkedEntity.playerInstance.Runner.IsSinglePlayer) {
+				Runner.IsSharedModeMasterClient && !NetworkedEntity.playerInstance.Runner.IsSinglePlayer)
+			{
 				yield return new WaitForSeconds(1f);
 				continue;
 			}
-			while (InitTimer >= 0) {
+			while (InitTimer >= 0)
+			{
 				yield return new WaitForEndOfFrame();
 				InitTimer -= Time.deltaTime;
 			}
-			if (SpawnIndex == 0) {
+			if (SpawnIndex == 0)
+			{
 				//if spawn timer goes down also comes back
 				yield return StartCoroutine(WaitUntilEnemiesDead());
 
 				//upgrades if there is a timer
-				if (SpawnTimer > 0) {
+				if (SpawnTimer > 0)
+				{
 
 					//force it down to 5
 					if (SpawnTimer > 5) SpawnTimer = 5;
@@ -164,7 +180,8 @@ public class EnemySpawner : NetworkBehaviour {
 					WaveCallback++;
 				}
 			}
-			while (SpawnTimer > 0) {
+			while (SpawnTimer > 0)
+			{
 				SpawnTimer -= Time.deltaTime;
 
 				if (SpawnTimer <= 0) GameStatsSyncer.instance.IncrementWave();
@@ -180,7 +197,8 @@ public class EnemySpawner : NetworkBehaviour {
 			List<GameObject> enemies = DetermineEnemiesForInfiniteWave(currWave);
 
 			//NOTE: SpawnIndex usually is 0, but if host was migrated this would be a nonzero number
-			for (int i = SpawnIndex; i < enemies.Count; i++) {
+			for (int i = SpawnIndex; i < enemies.Count; i++)
+			{
 				if (GameStatsSyncer.instance.GetGameOver()) break;
 
 				spawnEnemyLater = true;
@@ -197,52 +215,66 @@ public class EnemySpawner : NetworkBehaviour {
 			if ((currWave + 1) % 5 == 0) SpawnTimer += 10;
 		}
 	}
-	private IEnumerator WaitUntilEnemiesDead() {
+	private IEnumerator WaitUntilEnemiesDead()
+	{
 		//waits until all enemies are dead
 		bool enemiesAlive;
-		do {
+		do
+		{
 			yield return new WaitForEndOfFrame();
 
 			SpawnTimer -= Time.deltaTime;
 
 			enemiesAlive = false;
-			try {
+			try
+			{
 				enemiesAlive = !EnemiesAreDead();
-			} catch { }
+			}
+			catch { }
 		} while (enemiesAlive && SpawnTimer > 10f);
 	}
-	private bool EnemiesAreDead() {
-		try {
-			foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
+	private bool EnemiesAreDead()
+	{
+		try
+		{
+			foreach (CombatEntity e in EntityController.instance.GetCombatEntities())
+			{
 				if (e == null || e.GetIsPlayer()) continue;
 				return false;
 			}
 			return true;
-		} catch {
+		}
+		catch
+		{
 			return false;
 		}
 	}
 
 	//called so that all players get the shop scene
-	private void WaveChanged() {
+	private void WaveChanged()
+	{
 		//TODO: fix before using
 		return;
 		UpgradesCatalog.instance.ShowPossibleUpgrades();
 	}
 
-	private void SpawnEnemy(GameObject spawnPrefab) {
-		try {
+	private void SpawnEnemy(GameObject spawnPrefab)
+	{
+		try
+		{
 			//find a point far away enough from players
 			int iterations = 0; //prevent infinite loop
 
 			//keep finding a random spawnpoint until it is far away enough from everyone
 			float spawnpointDistance;
 			Vector3 point;
-			do {
+			do
+			{
 				spawnpointDistance = 999;
 				int rand = Random.Range(0, MapController.instance.GetSpawnpointParent().childCount);
 				point = MapController.instance.GetSpawnpointParent().GetChild(rand).position;
-				foreach (CombatEntity e in EntityController.instance.GetCombatEntities()) {
+				foreach (CombatEntity e in EntityController.instance.GetCombatEntities())
+				{
 					if (e == null || !e.GetIsPlayer()) continue;
 
 					float distance = Vector3.Distance(e.transform.position, point);
@@ -253,22 +285,28 @@ public class EnemySpawner : NetworkBehaviour {
 			} while (iterations < 20 && spawnpointDistance < 18f);
 
 			Runner.Spawn(spawnPrefab, new Vector3(point.x, 1, point.z), Quaternion.identity);
-		} catch (System.Exception e) { Debug.LogWarning(e); }
+		}
+		catch (System.Exception e) { Debug.LogWarning(e); }
 	}
 
-	public override void FixedUpdateNetwork() {
-		if (spawnEnemyLater) {
+	public override void FixedUpdateNetwork()
+	{
+		if (spawnEnemyLater)
+		{
 			spawnEnemyLater = false;
-			if (spawnEnemyLaterPrefab != null) {
+			if (spawnEnemyLaterPrefab != null)
+			{
 				SpawnEnemy(spawnEnemyLaterPrefab);
 			}
 		}
 	}
-	public bool HasSyncAuthority() {
+	public bool HasSyncAuthority()
+	{
 		return Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer;
 	}
 
-	private void SpawnPVPBot(int team) {
+	private void SpawnPVPBot(int team)
+	{
 		NetworkedEntity spawned = Runner.Spawn(PVPBotPrefabs[Random.Range(0, PVPBotPrefabs.Count)],
 			MapController.instance.GetTeamSpawnpoint(team) +
 			new Vector3(Random.Range(-3f, 3f), 0f, Random.Range(-3f, 3f)),
@@ -276,14 +314,17 @@ public class EnemySpawner : NetworkBehaviour {
 
 		spawned.SetNonPlayerTeam(team);
 	}
-	private IEnumerator SpawnPVPBots(int blueBots, int redBots) {
+	private IEnumerator SpawnPVPBots(int blueBots, int redBots)
+	{
 		yield return new WaitForSeconds(0.1f);
 
-		for (int i = 0; i < blueBots; i++) {
+		for (int i = 0; i < blueBots; i++)
+		{
 			SpawnPVPBot(0);
 			yield return new WaitForSeconds(0.1f);
 		}
-		for (int i = 0; i < redBots; i++) {
+		for (int i = 0; i < redBots; i++)
+		{
 			SpawnPVPBot(1);
 			yield return new WaitForSeconds(0.1f);
 		}
@@ -293,24 +334,30 @@ public class EnemySpawner : NetworkBehaviour {
 
 	#region Initialization
 
-	public override void Spawned() {
+	public override void Spawned()
+	{
 		if (!HasSyncAuthority()) return;
 
 		InitTimer = PlayerPrefs.GetInt("game_start_delay");
 	}
-	private void Awake() {
+	private void Awake()
+	{
 		instance = this;
 	}
-	private void Start() {
-		if (PlayerInfo.GetIsPVP()) {
+	private void Start()
+	{
+		if (PlayerInfo.GetIsPVP())
+		{
 			StartCoroutine(SpawnPVPBots(2, 2));
 			return;
 		}
 		int difficulty = PlayerPrefs.GetInt("game_start_difficulty");
-		if (difficulty < wavePresets.Count && difficulty >= 0) {
+		if (difficulty < wavePresets.Count && difficulty >= 0)
+		{
 			currentWavePresets = wavePresets[difficulty];
 		}
-		if (wavePresets == null) {
+		if (wavePresets == null)
+		{
 			Debug.LogWarning("no wave preset! defaulting to 0");
 			currentWavePresets = wavePresets[0];
 		}
