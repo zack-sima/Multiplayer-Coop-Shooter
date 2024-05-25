@@ -15,7 +15,7 @@
 /mono_crash.*.*.json
 
 # Ignore editor data
-/Assets/EditorData
+/[Aa]ssets/EditorData/
 
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
