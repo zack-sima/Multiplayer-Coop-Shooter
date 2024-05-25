@@ -324,9 +324,7 @@ public class DebugUIManager : MonoBehaviour {
                 } else {
                     LogOutput("Invalid Set Command => " + args[3] + "!= int");
                 }
-            } else {
-                
-            }
+            } 
         } else if (args.Length > 2) {
             if (args[1] == "upgrades" && args[2] == "max") {
                 if (UpgradesCatalog.instance != null) {
@@ -334,6 +332,18 @@ public class DebugUIManager : MonoBehaviour {
                     LogOutput("All Upgrades Maxed.");
                     return;
                 } else LogOutput("UpgradesCatalog is null.");
+            } else if (args[1] == "hull") {
+                if (PlayerDataHandler.instance != null) {
+                    if (PlayerDataHandler.instance.GetHullInfoKeys().Contains(args[2])) {
+                        NetworkedEntity.playerInstance?.SetHullName(args[2]);
+                    } else LogOutput("Hull " + args[2] + " does not exist.");
+                } else LogOutput("PlayerDataHandler is null.");
+            } else if (args[1] == "turret") {
+                if (PlayerDataHandler.instance != null) {
+                    if (PlayerDataHandler.instance.GetTurretInfoKeys().Contains(args[2])) {
+                        NetworkedEntity.playerInstance?.SetTurretName(args[2]);
+                    } else LogOutput("Turret " + args[2] + " does not exist.");
+                } else LogOutput("PlayerDataHandler is null.");
             }
         }
         LogOutput("Invalid Set Command => List of set commands: \nset game lvl <int> \nset game difficulty <int> \nset game cash <int> \nset upgrades max");

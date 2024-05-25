@@ -40,7 +40,7 @@ public class PlayerDataHandler : MonoBehaviour {
 
     [Header("Raw CSVs")]
     [SerializeField] public TextAsset activeRawCSV;
-    [SerializeField] public TextAsset gadgetRawCSV, hullRawCSV, turretRawCSV;
+    [SerializeField] public TextAsset gadgetRawCSV, hullRawCSV, turretRawCSV, superRawCSV;
 
     [Header("Icons")]
     [SerializeField] private List<IconBundle> icons;
@@ -55,6 +55,7 @@ public class PlayerDataHandler : MonoBehaviour {
     private Dictionary<string, InventoryInfo> gadgetsInfo = new();
     private Dictionary<string, InventoryInfo> hullsInfo = new();
     private Dictionary<string, InventoryInfo> turretsInfo = new();
+    private Dictionary<string, InventoryInfo> superInfos = new();
     private Dictionary<string, Dictionary<string, int>> equippedInfos = new();
 
     #endregion
@@ -118,29 +119,29 @@ public class PlayerDataHandler : MonoBehaviour {
     public string GetGadgetRawCSV() { return gadgetRawCSV.text; }
     public string GetHullRawCSV() { return hullRawCSV.text; }
     public string GetTurretRawCSV() { return turretRawCSV.text; }
+    public string GetSuperRawCSV() { return superRawCSV.text; }  
     public Dictionary<string, InventoryInfo> GetActiveInfos() { return activesInfo; }
     public Dictionary<string, InventoryInfo> GetGadgetInfos() { return gadgetsInfo; }
     public Dictionary<string, InventoryInfo> GetHullInfos() { return hullsInfo; }
     public Dictionary<string, InventoryInfo> GetTurretInfos() { return turretsInfo; }
+    public Dictionary<string, InventoryInfo> GetSuperInfos() { return superInfos; }
     public List<string> GetActiveInfoKeys() { return activesInfo.Keys.ToList(); }
     public List<string> GetGadgetInfoKeys() { return gadgetsInfo.Keys.ToList(); }
     public List<string> GetHullInfoKeys() { return hullsInfo.Keys.ToList(); }
     public List<string> GetTurretInfoKeys() { return turretsInfo.Keys.ToList(); }
+    public List<string> GetSuperInfoKeys() { return superInfos.Keys.ToList(); }
     /// <summary>
     /// II = Inventory Info. Used for DOUBLE value types.
     /// </summary>
     public bool TryGetIIModifierValue(CSVId itemKey, CSVMd modiKey, int level, out double modiVal) {
-        if (TryGetActiveModi(itemKey.ToString(), modiKey.ToString(), level, out modiVal)) { return true; }
-        if (TryGetGadgetModi(itemKey.ToString(), modiKey.ToString(), level, out modiVal)) { return true; }
-        if (TryGetHullModi(itemKey.ToString(), modiKey.ToString(), level, out modiVal)) { return true; }
-        if (TryGetTurretModi(itemKey.ToString(), modiKey.ToString(), level, out modiVal)) { return true; }
-        return false;
+        return TryGetIIModifierValue(itemKey.ToString(), modiKey.ToString(), level, out modiVal);
     }
     public bool TryGetIIModifierValue(string itemKey, string modiKey, int level, out double modiVal) {
         if (TryGetActiveModi(itemKey, modiKey, level, out modiVal)) { return true; }
         if (TryGetGadgetModi(itemKey, modiKey, level, out modiVal)) { return true; }
         if (TryGetHullModi(itemKey, modiKey, level, out modiVal)) { return true; }
         if (TryGetTurretModi(itemKey, modiKey, level, out modiVal)) { return true; }
+        if (TryGetSuperModi(itemKey, modiKey, level, out modiVal)) { return true; }
         return false;
     }
     /// <summary>
@@ -192,17 +193,14 @@ public class PlayerDataHandler : MonoBehaviour {
         }
     }
     private bool TryGetItemFromInfos(CSVId itemKey, out InventoryInfo info) {
-        if (activesInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
-        if (gadgetsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
-        if (hullsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
-        if (turretsInfo.TryGetValue(itemKey.ToString(), out info)) { return true; }
-        return false;
+        return TryGetItemFromInfos(itemKey.ToString(), out info);
     }
     private bool TryGetItemFromInfos(string itemKey, out InventoryInfo info) {
         if (activesInfo.TryGetValue(itemKey, out info)) { return true; }
         if (gadgetsInfo.TryGetValue(itemKey, out info)) { return true; }
         if (hullsInfo.TryGetValue(itemKey, out info)) { return true; }
         if (turretsInfo.TryGetValue(itemKey, out info)) { return true; }
+        if (superInfos.TryGetValue(itemKey, out info)) { return true; }
         return false;
     }
     private bool TryGetActiveModi(string itemKey, string modiKey, int level, out double modiVal) {
@@ -225,6 +223,12 @@ public class PlayerDataHandler : MonoBehaviour {
     }
     private bool TryGetTurretModi(string itemKey, string modiKey, int level, out double modiVal) {
         if (turretsInfo.TryGetValue(itemKey, out InventoryInfo info)) 
+            if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
+        modiVal = 0;
+        return false;
+    }
+    private bool TryGetSuperModi(string itemKey, string modiKey, int level, out double modiVal) {
+        if (superInfos.TryGetValue(itemKey, out InventoryInfo info)) 
             if (info.TryGetModi(modiKey, level, out modiVal)) { return true; }
         modiVal = 0;
         return false;
@@ -264,11 +268,15 @@ public class PlayerDataHandler : MonoBehaviour {
     }
 
     private void TempEquipInfos() { 
-        //EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
-        // EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 11);
+        //equip hull and turret.
+        EquipInfo(CSVType.HULLS, CSVId.TankHull, 1);
+        EquipInfo(CSVType.TURRETS, CSVId.Autocannon, 1);
+        //make the ingame stats change off of this.
+
+        EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
         EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 10);
         // EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 10);
-        EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 1);
+        
         // EquipInfo(CSVType.GADGETS, CSVId.HardenedAmmoGadget, 1);
         // EquipInfo(CSVType.GADGETS, CSVId.RegenerativeArmorGadget, 1);
 
