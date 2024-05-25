@@ -120,6 +120,8 @@ public class Bullet : MonoBehaviour {
 		if (firePrefab != null) {
 			spawnedFlame = Instantiate(firePrefab, transform.position, transform.rotation);
 		}
+		//no matter what, destroy after 5s
+		Destroy(gameObject, 5f);
 	}
 	virtual protected void Update() {
 		transform.Translate(speed * Time.deltaTime * Vector3.forward);

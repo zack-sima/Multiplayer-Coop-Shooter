@@ -10,7 +10,7 @@ public class GarageManager : MonoBehaviour {
 
 	public static GarageManager instance;
 
-	private const int MAX_ABILITIES = 3;
+	private const int MAX_ABILITIES = 2;
 	private const int MAX_GADGETS = 6;
 
 	#endregion
@@ -32,7 +32,7 @@ public class GarageManager : MonoBehaviour {
 	[SerializeField] private GridLayoutGroup selectionGrid;
 	[SerializeField] private TMP_Text selectionScreenTitle, selectedItemText;
 
-	[SerializeField] private Image selectedHullImage, selectedTurretImage;
+	[SerializeField] private Image selectedHullImage, selectedTurretImage, selectedAbilityImage;
 
 	//TODO: temporary storage of hulls and turrets here -> move to centralized location
 	[SerializeField] private List<string> hullNames;
@@ -237,6 +237,10 @@ public class GarageManager : MonoBehaviour {
 				selectedAbilityIsOn = equipped;
 
 				SetAbilitiesText();
+
+				if (equipped) {
+					selectedAbilityImage.sprite = selectedAbilitySprite;
+				}
 			}
 		}
 	}
@@ -381,8 +385,17 @@ public class GarageManager : MonoBehaviour {
 		instance = this;
 	}
 
-	//TODO: change menu manager dropdown values to correspond with hull & turret names in centralized file
 	private void Start() {
+		//abilitySprites
+		//icons setup
+		abilitySprites = new();
+		abilityNames = new();
+		var icons = PlayerDataHandler.instance.GetIcons();
+		foreach (var i in icons) {
+			abilitySprites.Add(i.icon);
+			abilityNames.Add(i.id);
+		}
+
 		for (int i = 0; i < hullNames.Count; i++) {
 			if (hullNames[i] == PlayerPrefs.GetString("hull_name")) {
 				SelectHull(hullNames[i], hullSprites[i]);

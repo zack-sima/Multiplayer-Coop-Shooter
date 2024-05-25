@@ -118,7 +118,6 @@ public class SettingsManager : MonoBehaviour {
 
 
 		if (PlayerPrefs.GetInt("quality") == 0) {
-
 #if UNITY_IOS
 			//NOTE: determine player graphics default ~iPhone SE 2nd gen
 			if ((int)Device.generation > 55) currentQualityIndex = 4;

@@ -19,6 +19,8 @@ public class LevelSelectManager : MonoBehaviour {
 	[SerializeField] private GameObject mainPlayerDisplay;
 	[SerializeField] private RectTransform levelSelectScreen;
 
+	[SerializeField] private TMP_Text trophiesDisplay, coopWavesDisplay, soloWavesDisplay;
+
 	#endregion
 
 	#region Members
@@ -82,7 +84,24 @@ public class LevelSelectManager : MonoBehaviour {
 		instance = this;
 	}
 
-	private void Start() { }
+	private void Start() {
+		trophiesDisplay.text = PersistentDict.GetInt("trophies").ToString();
+
+		int soloWaves = 0;
+		int coopWaves = 0;
+		foreach (LevelSelectButton b in Resources.FindObjectsOfTypeAll<LevelSelectButton>()) {
+			print(b.name);
+			if (b.GetMode() == MenuManager.GameMode.Singleplayer) {
+				soloWaves += b.GetWaveRecord();
+			} else if (b.GetMode() == MenuManager.GameMode.Coop) {
+				coopWaves += b.GetWaveRecord();
+			}
+		}
+		soloWavesDisplay.text = $"TOTAL:\n<color={LevelSelectButton.ChooseColorByWave(soloWaves, 999)}>" +
+			soloWaves.ToString() + " WAVES";
+		coopWavesDisplay.text = $"TOTAL:\n<color={LevelSelectButton.ChooseColorByWave(coopWaves, 999)}>" +
+			coopWaves.ToString() + " WAVES";
+	}
 
 	private void Update() { }
 

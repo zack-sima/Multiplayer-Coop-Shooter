@@ -16,7 +16,7 @@ public class SpiderAnimator : HullAnimatorBase {
 	private const float LEG_STOP_TIME = 0.07f;
 
 	//leg shifting speed
-	private const float LEG_MOVE_SPEED = 18f;
+	private const float LEG_MOVE_SPEED = 20f;
 
 	//determines leg shift
 	private const float BODY_SIZE = 1.25f;
@@ -71,6 +71,10 @@ public class SpiderAnimator : HullAnimatorBase {
 
 	protected override void Update() {
 		if (MenuManager.instance != null) return;
+
+		if (1f / Time.deltaTime < 20f && (int)Time.time - (int)(Time.time - Time.deltaTime) != 0) {
+			Teleported();
+		}
 
 		base.Update();
 

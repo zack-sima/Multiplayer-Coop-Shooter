@@ -117,13 +117,13 @@ public class AccountDataSyncer : MonoBehaviour {
 			webRequest.result == UnityWebRequest.Result.ProtocolError) {
 			Debug.LogError($"Error: {webRequest.error}");
 		} else {
-			Debug.Log($"Response: {webRequest.downloadHandler.text}");
+			//Debug.Log($"Response: {webRequest.downloadHandler.text}");
 
 			string downloadJson = SanitizeDownloadHandlerText(webRequest.downloadHandler.text);
-			Debug.Log(downloadJson);
+			//Debug.Log(downloadJson);
 			FriendsBlob downloadedBlob = (FriendsBlob)MyJsonUtility.FromJson(typeof(FriendsBlob), downloadJson);
 
-			Debug.Log("friends updated");
+			//Debug.Log("friends updated");
 
 			if (FriendsManager.instance != null)
 				FriendsManager.instance.FriendsUpdated(downloadedBlob);

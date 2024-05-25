@@ -70,7 +70,7 @@ public class FriendsManager : MonoBehaviour {
 		}
 		friendBars.Clear();
 
-		print(newFriendsBlob.friends_list);
+		//print(newFriendsBlob.friends_list);
 
 		newFriendsBlob.friends_list ??= new();
 
