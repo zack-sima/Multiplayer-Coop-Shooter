@@ -261,6 +261,9 @@ public class LobbyUI : MonoBehaviour {
 			PlayerPrefs.SetInt("joining_lobby_full", 0);
 			lobbyJoinFullScreen.gameObject.SetActive(true);
 		}
+
+		playerDisplayers[0].Initialize();
+
 		PlayerNameInputChanged();
 		SetPlayerHull();
 		SetPlayerTurret();

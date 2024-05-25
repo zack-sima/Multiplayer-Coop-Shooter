@@ -53,7 +53,7 @@ public class LobbyPlayerDisplayer : MonoBehaviour {
 
 	//called externally only by LobbyUI
 	public void Initialize() {
-		initialized = true;
+		Init();
 	}
 	//changes the turret if different! (NOTE: these functions are called every frame)
 	public void SetTurret(string turret) {
@@ -114,8 +114,9 @@ public class LobbyPlayerDisplayer : MonoBehaviour {
 		}
 		turret.GetAnimator().SetTeamMaterial(teamMaterials.GetTeamColor(0));
 	}
+	public void Init() {
+		if (initialized) return;
 
-	private void Awake() {
 		//spawn in all the required hulls/turrets (init all to disabled)
 		List<PlayerInfo.TurretInfo> turrets = playerInfoRef.GetTurrets();
 		List<PlayerInfo.HullInfo> hulls = playerInfoRef.GetHulls();
@@ -154,6 +155,8 @@ public class LobbyPlayerDisplayer : MonoBehaviour {
 
 		hull = spawnedHulls[0].hull;
 		turret = spawnedTurrets[0].turret;
+
+		initialized = true;
 	}
 
 	private void Update() { }

@@ -50,6 +50,7 @@ public class MenuManager : MonoBehaviour {
 	public string GetSelectedMap() { return selectedMapName; }
 	public void SetSelectedMap(string newMap) {
 		if (newMap != "") selectedMapName = newMap;
+		PlayerPrefs.SetString("game_map_name", selectedMapName);
 	}
 
 	//maps stuff
@@ -95,6 +96,7 @@ public class MenuManager : MonoBehaviour {
 	public int GetDifficulty() { return currentCoopDifficulty; }
 	public void SetDifficulty(int difficulty) {
 		currentCoopDifficulty = difficulty;
+		PlayerPrefs.SetInt("game_start_difficulty", currentCoopDifficulty);
 
 		if (LobbyStatsSyncer.instance != null && LobbyStatsSyncer.instance.Runner.IsSharedModeMasterClient) {
 			LobbyUI.instance.DifficultyChanged(difficulty);
