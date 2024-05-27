@@ -90,10 +90,11 @@ public class LevelSelectManager : MonoBehaviour {
 		int soloWaves = 0;
 		int coopWaves = 0;
 		foreach (LevelSelectButton b in Resources.FindObjectsOfTypeAll<LevelSelectButton>()) {
-			print(b.name);
 			if (b.GetMode() == MenuManager.GameMode.Singleplayer) {
+				//print("SP: " + b.name + ", " + b.GetWaveRecord());
 				soloWaves += b.GetWaveRecord();
 			} else if (b.GetMode() == MenuManager.GameMode.Coop) {
+				//print("CP: " + b.name + ", " + b.GetWaveRecord());
 				coopWaves += b.GetWaveRecord();
 			}
 		}

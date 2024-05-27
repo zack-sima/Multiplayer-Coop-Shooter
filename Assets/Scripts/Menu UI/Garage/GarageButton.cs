@@ -10,17 +10,30 @@ public class GarageButton : MonoBehaviour {
 	[SerializeField] private TMP_Text levelText;
 	[SerializeField] private Image itemImage;
 
+	[SerializeField] private TMP_Text usesLeftText;
+	[SerializeField] private Image usesLeftImage;
+
+	[SerializeField] private Color noUsesColor, haveUsesColor;
+	[SerializeField] private Image noUsesImage;
+
 	private string itemName = "";
 	private int mode = 0; //hull, turret, ability
 
 	public void Init(string name, Sprite sprite, int mode, int level, bool equipped) {
-		levelText.text = $"Level {level + 1}";
+		levelText.text = $"Lv. {level + 1}";
 		itemImage.sprite = sprite;
 
 		itemName = name;
 		this.mode = mode;
 
 		equippedBand.SetActive(equipped);
+	}
+	//for hull/turret, # of uses left
+	public void SetUsesLeft(int usesLeft, int maxUses) {
+		usesLeftImage.color = usesLeft == 0 ? noUsesColor : haveUsesColor;
+		usesLeftText.color = usesLeft == 0 ? noUsesColor : haveUsesColor;
+		noUsesImage.gameObject.SetActive(usesLeft == 0);
+		usesLeftText.text = usesLeft + "/" + maxUses;
 	}
 	public string GetItemName() {
 		return itemName;

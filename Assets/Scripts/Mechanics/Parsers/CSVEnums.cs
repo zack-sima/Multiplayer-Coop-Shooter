@@ -4,57 +4,70 @@ using UnityEngine;
 
 namespace CSV.Parsers {
 
-    public enum CSVType {
-        ACTIVES, TURRETS, GADGETS, HULLS,
-    }
+	public enum CSVType {
+		ACTIVES, TURRETS, GADGETS, HULLS,
+	}
 
-    public enum CSVId { // StringId
+	public enum CSVId { // StringId
 
-        // ! NEED TO BE NAMED THE SAME AS IN THE [----Id] SLOT !
+		// ! NEED TO BE NAMED THE SAME AS IN THE [----Id] SLOT !
 
-        #region //*==| HULLS |==*//
+		#region //*==| HULLS |==*//
 
-        TankHull, SpiderHull,
+		TankHull, SpiderHull,
 
-        #endregion
+		#endregion
 
-        #region //*==| TURRETS |==*//
+		#region //*==| TURRETS |==*//
 
-        Autocannon, Gatling, ExplosiveCannon, Mortar, Flamethrower, DoubleCannon,
+		Autocannon, Gatling, ExplosiveCannon, Mortar, Flamethrower, DoubleCannon,
 
-        #endregion
-        #region //*==| ACTIVES |==*//
+		#endregion
 
-        HealActive, RapidFireActive, SentryActive,
+		#region //*==| ACTIVES |==*//
 
-        #endregion
+		HealActive, RapidFireActive, SentryActive,
 
-        #region //*==| GADGETS |==*//
-        
-        HardenedAmmoGadget, ImprovedLoaderGadget, HardenedArmorGadget, FireControlGadget, PolishedTriggerGadget, LaserSightGadget, BracedInternalsGadget,
-        RegenerativeArmorGadget,
+		#endregion
 
-        #endregion
-    }
+		#region //*==| GADGETS |==*//
 
-    public enum CSVMd { // MODI == $"{nameof(Md.ModiId)}", & parse for [unlocked = 3] (compiler stuff lol)
-        /* TYPE */ StringId, 
-        /* BASIC */ Tags, Description, Display, IUpgrade, UPTags,
-        /* OPERATIONAL */ Add, Max, 
-        /* UPGRADE */ Level, UPCost,
-        /* BASIC */ XPCost, MoneyCost, Above, Cooldown, 
-        /* GENERAL */ Damage, Reload, AmmoRegen, MaxHP, CritChance, CritDamage,
+		HardenedAmmoGadget, ImprovedLoaderGadget, HardenedArmorGadget, FireControlGadget, PolishedTriggerGadget, LaserSightGadget, BracedInternalsGadget,
+		RegenerativeArmorGadget,
 
-        /* HULL */ Health,
-        /* TURRET */ /*Damage*/ FireRate, MaxAmmo,
+		#endregion
+	}
 
-        /* HEALTH */ HealAmount, 
+	/// <summary>
+	/// Enum for CSV keys
+	/// </summary>
+	public enum CSVMd { // MODI == $"{nameof(Md.ModiId)}", & parse for [unlocked = 3] (compiler stuff lol)
+		/* TYPE */
+		StringId,
+		/* BASIC */
+		Tags, Description, Display, IUpgrade, UPTags,
+		/* OPERATIONAL */
+		Add, Max,
+		/* UPGRADE */
+		Level, UPCost,
+		/* BASIC */
+		XPCost, MoneyCost, Above, Cooldown,
+		/* GENERAL */
+		Damage, Reload, AmmoRegen, MaxHP, CritChance, CritDamage,
 
-        /* Durations */
-            RapidDuration, HealDuration, 
-        
-        /* Sentries */
-            SentryDamage, SentryHealth, SentryShootSpeed, SentryMaxAmmo, SentryAmmoRegen, SentryShootSpread, SentryCritChance, SentryCritDamage,
+		/* HULL */
+		Health,
+		/* TURRET */ /*Damage*/
+		FireRate, MaxAmmo,
 
-    }
+		/* HEALTH */
+		HealAmount,
+
+		/* Durations */
+		RapidDuration, HealDuration,
+
+		/* Sentries */
+		SentryDamage, SentryHealth, SentryShootSpeed, SentryMaxAmmo, SentryAmmoRegen, SentryShootSpread, SentryCritChance, SentryCritDamage,
+
+	}
 }

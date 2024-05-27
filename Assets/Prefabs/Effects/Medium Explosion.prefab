@@ -14579,6 +14579,7 @@ MonoBehaviour:
   - {fileID: 5920494578282918464}
   audioName: exp_med
   audioCutoff: 0.05
+  shakeStrength: 0.7
 --- !u!198 &5286724081701702586
 ParticleSystem:
   m_ObjectHideFlags: 0

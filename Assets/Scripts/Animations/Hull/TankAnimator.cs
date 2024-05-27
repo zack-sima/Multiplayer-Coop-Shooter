@@ -44,11 +44,13 @@ public class TankAnimator : HullAnimatorBase {
 		//reversed set separatedly for PC clients
 		bool reversed;
 		if (GetInReverse() == -1) {
-			reversed = Quaternion.Angle(transform.rotation, Quaternion.Euler(0, targetRotation, 0)) > 90;
+			reversed = Quaternion.Angle(transform.rotation, Quaternion.Euler(0, targetRotation, 0)) > 105f;
 		} else {
 			reversed = GetInReverse() == 1;
 		}
-		
+		//bots should always drive forward
+		if (isBot) reversed = false;
+
 		float velocityMult = Time.deltaTime * Mathf.Min(1f, GetVelocity().magnitude * 0.25f);
 		if (!UIController.GetIsMobile()) velocityMult = 1;
 

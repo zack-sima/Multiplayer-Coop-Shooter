@@ -105,10 +105,6 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	private Rigidbody optionalRigidbody = null;
 
-	//local ability toggles; TODO: scale ability level, etc
-	private bool abilityHealOn = false;
-	private bool abilityOverclockOn = false;
-
 	//respawn protection (locally enforced); compares Time.time
 	private float lastRespawnTimestamp = -10f;
 
@@ -330,7 +326,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		try {
 			return HasStateAuthority && isPlayer || !isPlayer &&
 				(Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer);
-		} catch (System.Exception e) { Debug.LogError(e); return false; }
+		} catch (System.Exception e) { Debug.LogWarning(e); return false; }
 	}
 	[Rpc(RpcSources.StateAuthority, RpcTargets.Proxies)]
 	public void RPC_FireWeapon(int bulletId) {
@@ -482,7 +478,6 @@ public class NetworkedEntity : NetworkBehaviour {
 		this.InflictionHandlerSysTick(inflictions); // handles inflictions
 		this.SysTickStatHandler(abilities);
 
-		//UpdateStatModifier(); // Handle stat changes
 		if (HasSyncAuthority()) {
 			//local entity
 

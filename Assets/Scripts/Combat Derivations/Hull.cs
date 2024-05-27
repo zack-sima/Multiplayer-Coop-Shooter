@@ -74,6 +74,9 @@ public class Hull : MonoBehaviour {
 			TrySimulatePush(e.transform.position);
 		}
 	}
+	public void SetAsAI() {
+		animator.SetAsAI();
+	}
 	private void TrySimulatePush(Vector3 other) {
 		float threshold = 1.8f;
 		float distance = AIBrain.GroundDistance(transform.position, other);

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Video;
 
 public class HumanInputs : MonoBehaviour {
 
@@ -56,6 +55,9 @@ public class HumanInputs : MonoBehaviour {
 	//mobile "dot"
 	private Vector3 displayedMoveVector = Vector3.zero;
 	public Vector3 GetDisplayedMoveVector() { return displayedMoveVector; }
+
+	//screen shake
+	private Vector3 shakeOffset = Vector3.zero;
 
 	#endregion
 
@@ -250,7 +252,16 @@ public class HumanInputs : MonoBehaviour {
 			player.GetHull().Move(moveVector);
 		}
 	}
-
+	public void ShakeCamera(float shake) {
+		StartCoroutine(CameraShakeRoutine(shake));
+	}
+	private IEnumerator CameraShakeRoutine(float shake) {
+		for (float i = shake; i > 0f; i -= Time.deltaTime) {
+			shakeOffset = Random.insideUnitSphere * i;
+			yield return new WaitForEndOfFrame();
+		}
+		shakeOffset = Vector3.zero;
+	}
 	private void Start() {
 		cameraLocalPosition = Camera.main.gameObject.transform.localPosition;
 
@@ -275,7 +286,7 @@ public class HumanInputs : MonoBehaviour {
 			PCOnlyUpdate(player, canInput);
 		}
 
-		Camera.main.transform.position = player.transform.position + cameraLocalPosition;
+		Camera.main.transform.position = player.transform.position + cameraLocalPosition + shakeOffset;
 	}
 	private void Awake() {
 		instance = this;

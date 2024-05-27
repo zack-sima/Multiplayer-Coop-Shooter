@@ -142,8 +142,12 @@ public class GarageManager : MonoBehaviour {
 		for (int i = 0; i < hullNames.Count; i++) {
 			GarageButton b = Instantiate(scrollHullTurretPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
+
 			b.Init(hullNames[i], hullSprites[i], mode: 0, level: 0,
 				equipped: hullNames[i] == PlayerPrefs.GetString("hull_name"));
+
+			//TODO: plan for system time checks & usage regeneration...
+			b.SetUsesLeft(Random.Range(0, 4), 3);
 		}
 		currentSelectedMode = 0;
 	}
@@ -166,8 +170,12 @@ public class GarageManager : MonoBehaviour {
 		for (int i = 0; i < turretNames.Count; i++) {
 			GarageButton b = Instantiate(scrollHullTurretPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
+
 			b.Init(turretNames[i], turretSprites[i], mode: 1, level: 0,
 				equipped: turretNames[i] == PlayerPrefs.GetString("turret_name"));
+
+			//TODO: plan for system time checks & usage regeneration...
+			b.SetUsesLeft(Random.Range(0, 4), 3);
 		}
 		currentSelectedMode = 1;
 	}

@@ -202,6 +202,7 @@ public class CombatEntity : Entity {
 		//NOTE: NPCs don't get to change hull/turret
 		if (!GetIsPlayer()) {
 			base.Start();
+			hull.SetAsAI();
 			return;
 		}
 		//spawn in all the required hulls/turrets

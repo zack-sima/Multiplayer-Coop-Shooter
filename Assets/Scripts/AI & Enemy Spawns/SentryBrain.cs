@@ -32,6 +32,8 @@ public class SentryBrain : MonoBehaviour {
 		canShootTarget = CanHitTarget(target, range);
 	}
 	private bool CanHitTarget(CombatEntity target, float range) {
+		if (target == null) return false;
+
 		Vector3 directionToPlayer = target.transform.position - transform.position;
 		directionToPlayer.y = 0;
 
