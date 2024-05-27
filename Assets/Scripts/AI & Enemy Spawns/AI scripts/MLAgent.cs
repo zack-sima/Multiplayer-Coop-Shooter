@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
+using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Actuators;
+using System;
 public class MLAgent : Agent
 {
     [SerializeField]
@@ -9,6 +12,19 @@ public class MLAgent : Agent
     private bool shooting = false;
     private CombatEntity target;
     public Vector3 moveDirection = new Vector3();
+    public Camera nonOverrideCamera;
+    public CameraSensor cameraSensor;
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        sensor.AddObservation(transform.localPosition);
+        //sensor.AddObservation(cameraSensor);
+        base.CollectObservations(sensor);
+    }
+    public override void OnActionReceived(ActionBuffers actions)
+    {
+        base.OnActionReceived(actions);
+    }
     // Start is called before the first frame update
     private IEnumerator Tick()
     {
@@ -28,6 +44,13 @@ public class MLAgent : Agent
     }
     void Start()
     {
+        nonOverrideCamera = GetComponent<Camera>();
+        if (nonOverrideCamera == null)
+        {
+            throw new NullReferenceException("Camera not found");
+        }
+        print($"{(nonOverrideCamera.transform.position - transform.position).magnitude}");
+        cameraSensor = new CameraSensor(nonOverrideCamera, 128, 128, true, "VisualObservation", 0);
         StartCoroutine(Tick());
     }
 
