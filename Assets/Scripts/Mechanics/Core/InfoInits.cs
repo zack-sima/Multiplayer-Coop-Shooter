@@ -85,11 +85,7 @@ namespace Intializers {
                 //TODO: Add more active abilities here ...
 
                 //*?=======================| ACTIVE GADGETS |=======================?*//
-                case nameof(CSVId.RegenerativeArmorGadget): {
-                    RegenerativeArmorGadget r = new RegenerativeArmorGadget(CSVId.RegenerativeArmorGadget);
-                    r.Init(infos[activeId], level);
-                    actives.Add((r, false));
-                    break; }
+                case nameof(CSVId.RegenerativeArmorGadget): { actives.Add((new RegenerativeArmorGadget(CSVId.RegenerativeArmorGadget, infos[activeId], level), false)); break; }
 
                 //TODO: Add more active gadgets here ...
             }
@@ -119,48 +115,48 @@ namespace Intializers {
                 }
                 //Populate switch statement with gadget types just like in ActiveInitExtensions.cs
                 //HardenedAmmoGadget, ImprovedLoaderGadget, HardenedArmorGadget, FireControlGadget, PolishedTriggerGadget, LaserSightGadget, BracedInternalsGadget
-                switch(g) {
-                    //*?=======================| PASSIVE GADGETS |=======================?*//
+                // switch(g) {
+                //     //*?=======================| PASSIVE GADGETS |=======================?*//
 
-                    case nameof(CSVId.HardenedAmmoGadget): {
-                        if (infos[g].TryGetModi(CSVMd.Damage, gadgets[g], out double dmg) && TryGetTurret(out Turret turret)) {
-                            turret.SetBulletDmgModi(dmg += turret.GetBulletModi());
-                        }
-                        break; }
-                    case nameof(CSVId.ImprovedLoaderGadget): {
-                        if (infos[g].TryGetModi(nameof(CSVMd.Reload), gadgets[g], out double reload) && infos[g].TryGetModi(nameof(CSVMd.AmmoRegen),gadgets[g], out double ammoRegen) && TryGetTurret(out Turret turret)) {
-                            turret.SetShootSpeed(reload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
-                            turret.SetAmmoRegenRate(ammoRegen * turret.GetBaseAmmoRegenRate() + turret.GetAmmoRegenSpeed());
-                        }
-                        break; }
-                    case nameof(CSVId.HardenedArmorGadget): {
-                        if (infos[g].TryGetModi(nameof(CSVMd.MaxHP), gadgets[g], out double hp) && TryGetCombatEntity(out CombatEntity c)) {
-                            c.SetMaxHealth((float)hp * c.GetBaseHealth());
-                        }
-                        break; }
-                    case nameof(CSVId.FireControlGadget): {
-                        if (infos[g].TryGetModi(nameof(CSVMd.Reload), gadgets[g], out double reload) && TryGetTurret(out Turret turret)) {
-                            turret.SetShootSpeed(reload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
-                        }
-                        break; }
-                    case nameof(CSVId.PolishedTriggerGadget): {
-                        if (infos[g].TryGetModi(nameof(CSVMd.CritChance), gadgets[g], out double crit) && TryGetTurret(out Turret turret)) {
-                            turret.SetCritChance((float)crit + turret.GetCritValues().Item1);
-                        }
-                        break; }
-                    case nameof(CSVId.LaserSightGadget): {
-                        if (infos[g].TryGetModi(nameof(CSVMd.CritDamage), gadgets[g], out double critDmg) && TryGetTurret(out Turret turret)) {
-                            turret.SetCritDamage((float)critDmg + turret.GetCritValues().Item2);
-                        }
-                        break; }
-                    case nameof(CSVId.BracedInternalsGadget): {
-                        if (infos[g].TryGetModi(nameof(CSVMd.MaxHP), gadgets[g], out double hp) && TryGetCombatEntity(out CombatEntity c)) {
-                            c.SetMaxHealth((float)hp * c.GetBaseHealth());
-                        }
-                        break; }
+                //     case nameof(CSVId.HardenedAmmoGadget): {
+                //         if (infos[g].TryGetModi(CSVMd.Damage, gadgets[g], out double dmg) && TryGetTurret(out Turret turret)) {
+                //             turret.SetBulletDmgModi(dmg += turret.GetBulletModi());
+                //         }
+                //         break; }
+                //     case nameof(CSVId.ImprovedLoaderGadget): {
+                //         if (infos[g].TryGetModi(nameof(CSVMd.Reload), gadgets[g], out double reload) && infos[g].TryGetModi(nameof(CSVMd.AmmoRegen),gadgets[g], out double ammoRegen) && TryGetTurret(out Turret turret)) {
+                //             turret.SetShootSpeed(reload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
+                //             turret.SetAmmoRegenRate(ammoRegen * turret.GetBaseAmmoRegenRate() + turret.GetAmmoRegenSpeed());
+                //         }
+                //         break; }
+                //     case nameof(CSVId.HardenedArmorGadget): {
+                //         if (infos[g].TryGetModi(nameof(CSVMd.MaxHP), gadgets[g], out double hp) && TryGetCombatEntity(out CombatEntity c)) {
+                //             c.SetMaxHealth((float)hp * c.GetBaseHealth());
+                //         }
+                //         break; }
+                //     case nameof(CSVId.FireControlGadget): {
+                //         if (infos[g].TryGetModi(nameof(CSVMd.Reload), gadgets[g], out double reload) && TryGetTurret(out Turret turret)) {
+                //             turret.SetShootSpeed(reload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
+                //         }
+                //         break; }
+                //     case nameof(CSVId.PolishedTriggerGadget): {
+                //         if (infos[g].TryGetModi(nameof(CSVMd.CritChance), gadgets[g], out double crit) && TryGetTurret(out Turret turret)) {
+                //             turret.SetCritChance((float)crit + turret.GetCritValues().Item1);
+                //         }
+                //         break; }
+                //     case nameof(CSVId.LaserSightGadget): {
+                //         if (infos[g].TryGetModi(nameof(CSVMd.CritDamage), gadgets[g], out double critDmg) && TryGetTurret(out Turret turret)) {
+                //             turret.SetCritDamage((float)critDmg + turret.GetCritValues().Item2);
+                //         }
+                //         break; }
+                //     case nameof(CSVId.BracedInternalsGadget): {
+                //         if (infos[g].TryGetModi(nameof(CSVMd.MaxHP), gadgets[g], out double hp) && TryGetCombatEntity(out CombatEntity c)) {
+                //             c.SetMaxHealth((float)hp * c.GetBaseHealth());
+                //         }
+                //         break; }
                         
-                    //TODO: Populate with more gadgets here ...
-                }
+                //     //TODO: Populate with more gadgets here ...
+                // }
                 infos[g].GetInGameUpgrade().InitUpgrades();
             }
         }

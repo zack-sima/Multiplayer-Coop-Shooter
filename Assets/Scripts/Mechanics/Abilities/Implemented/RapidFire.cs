@@ -64,7 +64,7 @@ namespace Abilities {
         }
 
         public bool TryPushUpgrade(string id, InGameUpgradeInfo info) {
-            if (id == nameof(CSVId.RapidFireActive) + "Faster Fire") {
+            if (id == nameof(CSVId.RapidFireActive) + "FasterFire") {
                 if (info.TryGetModi(nameof(CSVMd.Cooldown), out double cooldown)) {
                     cooldownPeriod -= (float)cooldown;
                 } else DebugUIManager.instance?.LogError("No Cooldown found.", "RapidFireActive");

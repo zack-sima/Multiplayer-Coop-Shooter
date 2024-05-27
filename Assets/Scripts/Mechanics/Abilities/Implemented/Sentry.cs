@@ -71,11 +71,11 @@ namespace Abilities {
 		}
 
 		public bool TryPushUpgrade(string id, InGameUpgradeInfo info) {
-			if (id == nameof(CSVId.SentryActive) + "Reinforced Sentry") {
+			if (id == nameof(CSVId.SentryActive) + "ReinforcedSentry") {
 				if (info.TryGetModi(CSVMd.SentryHealth, out double hp)) maxHealth += (int)hp;
 				else DebugUIManager.instance?.LogError("No cooldown found for " + id, nameof(CSVId.SentryActive) + "Reinforced Sentry");
 				
-			} else if (id == nameof(CSVId.SentryActive) + "Larger Caliber") {
+			} else if (id == nameof(CSVId.SentryActive) + "LargerCaliber") {
 				if (info.TryGetModi(CSVMd.SentryDamage, out double damage)) dmgModi += (float)damage;
 				else DebugUIManager.instance?.LogError("No damage found for " + id, nameof(CSVId.SentryActive) + "Larger Caliber");
 

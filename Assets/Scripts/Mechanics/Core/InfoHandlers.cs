@@ -173,79 +173,95 @@ namespace Handlers {
             if (n == null || n.info == null) { Debug.LogError("Upgrade Null"); return; }
 
             foreach((IAbility i, bool b) in NetworkedEntity.playerInstance.GetAbilityList()) {
-                if (i is IActivatable && i.TryPushUpgrade(n.upgradeName, n.info)) {
+                if (i.TryPushUpgrade(n.upgradeName, n.info)) {
                     dict.Add(n.GetUpgradeId(), n);
                     return;
                 }
             }
 
             switch(n.upgradeName) {
-                // ? For one time stat change stuff. Below are prior implementations of it.
-                // case "Braced Internals": {
-                //     if (n.info.TryGetModi(nameof(ModiName.MaxHP), out float maxHp)) {
-                //         NetworkedEntity.playerInstance.GetEntity().SetMaxHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
-                //             * maxHp + NetworkedEntity.playerInstance.GetEntity().GetMaxHealth());
-                //     }
-                //     break; }
-                // case "Dynamic Loader": {
-                //     if (n.info.TryGetModi(nameof(ModiName.Reload), out float reload) && n.info.TryGetModi(nameof(ModiName.AmmoRegen), out float ammoRegen) && TryGetTurret(out Turret turret)) {
-                //         turret.SetShootSpeed(reload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
-                //         turret.SetAmmoRegenRate(ammoRegen * turret.GetBaseAmmoRegenRate() + turret.GetAmmoRegenSpeed());
-                //     }
-                //     break; }
-                // case "Fire Control System": {
-                //     if (n.info.TryGetModi(nameof(ModiName.Dmg), out float dmgModi) && TryGetTurret(out Turret turret)) {
-                //         turret.SetBulletDmgModi(dmgModi += turret.GetBulletModi());
-                //     }
-                //     break;}
-                // case "Hardened Ammo": {
-                //     if (n.info.TryGetModi(nameof(ModiName.Dmg), out float dmgModi) && TryGetTurret(out Turret turret)) {
-                //         turret.SetBulletDmgModi(dmgModi += turret.GetBulletModi());
-                //     }
-                // break; }
-                // case "Hardened Armor": {
-                //     if (n.info.TryGetModi(nameof(ModiName.MaxHP), out float maxHp)) {
-                //         NetworkedEntity.playerInstance.GetEntity().SetMaxHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
-                //             * maxHp + NetworkedEntity.playerInstance.GetEntity().GetMaxHealth());
-                //         NetworkedEntity.playerInstance.GetEntity().SetCurrentHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
-                //             * maxHp + NetworkedEntity.playerInstance.GetEntity().GetHealth());
-                //     }
-                //     break; }
-                // case "Improved Optics": {
-                //     if (n.info.TryGetModi(nameof(ModiName.CritChance), out float critChance) 
-                //             && n.info.TryGetModi(nameof(ModiName.CritDmg), out float critDmg) 
-                //             && TryGetTurret(out Turret lsTurret)) {
-                //         (float chance, float dmg) vals = lsTurret.GetCritValues();
-                //         lsTurret.SetCritChance(vals.chance += critChance);
-                //         lsTurret.SetCritDamage(critDmg);
-                //     }
-                // break; }
-                // case "Laser Sight": {
-                //     if (n.info.TryGetModi(nameof(ModiName.CritChance), out float critChance) 
-                //             && n.info.TryGetModi(nameof(ModiName.CritDmg), out float critDmg) 
-                //             && TryGetTurret(out Turret lsTurret)) {
-                //         (float chance, float dmg) vals = lsTurret.GetCritValues();
-                //         lsTurret.SetCritChance(vals.chance += critChance);
-                //         lsTurret.SetCritDamage(critDmg);
-                //     }
-                //     break; }
-                // case "Polished Trigger": {
-                //     if (n.info.TryGetModi(nameof(ModiName.CritChance), out float critChance) 
-                //             && n.info.TryGetModi(nameof(ModiName.CritDmg), out float critDmg) 
-                //             && TryGetTurret(out Turret lsTurret)) {
-                //         (float chance, float dmg) vals = lsTurret.GetCritValues();
-                //         lsTurret.SetCritChance(vals.chance += critChance);
-                //         lsTurret.SetCritDamage(critDmg);
-                //     }
-                //     if (n.info.TryGetModi(nameof(ModiName.Dmg), out float dmgModi) && TryGetTurret(out Turret turret)) {
-                //         turret.SetBulletDmgModi(dmgModi += turret.GetBulletModi());
-                //     }
-                // break; }
+                // ? For one time stat change stuff. Gadgets and stuff.
+                case nameof(CSVId.BracedInternalsGadget) + "BracedInternals": {
+                    if (n.info.TryGetModi(nameof(CSVMd.MaxHP), out double maxHp)) {
+                        NetworkedEntity.playerInstance.GetEntity().SetMaxHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
+                            * (float)maxHp + NetworkedEntity.playerInstance.GetEntity().GetMaxHealth());
+                        NetworkedEntity.playerInstance.GetEntity().SetCurrentHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
+                            * (float)maxHp + NetworkedEntity.playerInstance.GetEntity().GetHealth());
+                    }
+                    break; }
+                case nameof(CSVId.ImprovedLoaderGadget) + "ImprovedLoader": {
+                    if (n.info.TryGetModi(nameof(CSVMd.Reload), out double reload) && n.info.TryGetModi(nameof(CSVMd.AmmoRegen), out double ammoRegen) && TryGetTurret(out Turret turret)) {
+                        turret.SetShootSpeed(reload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
+                        turret.SetAmmoRegenRate((float)ammoRegen * turret.GetBaseAmmoRegenRate() + turret.GetAmmoRegenSpeed());
+                    }
+                    break; }
+                case nameof(CSVId.HardenedAmmoGadget) + "HardenedAmmo": {
+                    if (n.info.TryGetModi(nameof(CSVMd.Damage), out double dmgModi) && TryGetTurret(out Turret turret)) {
+                        turret.SetBulletDmgModi(dmgModi += turret.GetBulletModi());
+                    }
+                break; }
+                case nameof(CSVId.HardenedArmorGadget) + "HardenedArmor": {
+                    if (n.info.TryGetModi(nameof(CSVMd.MaxHP), out double maxHp)) {
+                        NetworkedEntity.playerInstance.GetEntity().SetMaxHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
+                            * (float)maxHp + NetworkedEntity.playerInstance.GetEntity().GetMaxHealth());
+                        NetworkedEntity.playerInstance.GetEntity().SetCurrentHealth(NetworkedEntity.playerInstance.GetEntity().GetBaseHealth() 
+                            * (float)maxHp + NetworkedEntity.playerInstance.GetEntity().GetHealth());
+                    }
+                    break; }
+                case nameof(CSVId.LaserSightGadget) + "LaserSight": {
+                    if (n.info.TryGetModi(nameof(CSVMd.CritChance), out double critChance) 
+                            && n.info.TryGetModi(nameof(CSVMd.CritDamage), out double critDmg) 
+                            && TryGetTurret(out Turret lsTurret)) {
+                        (float chance, float dmg) vals = lsTurret.GetCritValues();
+                        lsTurret.SetCritChance(vals.chance += (float)critChance);
+                        lsTurret.SetCritDamage((float)critDmg + vals.dmg);
+                    }
+                    break; }
+                case nameof(CSVId.FireControlGadget) + "FireControl": {
+                    if (n.info.TryGetModi(nameof(CSVMd.Reload), out double reload) && TryGetTurret(out Turret turret)) {
+                        turret.SetShootSpeed(reload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
+                    }
+                    break; }
+                case nameof(CSVId.PolishedTriggerGadget) + "PolishedTrigger": {
+                    if (n.info.TryGetModi(nameof(CSVMd.CritChance), out double critChance) 
+                            && TryGetTurret(out Turret lsTurret)) {
+                        (float chance, float dmg) vals = lsTurret.GetCritValues();
+                        lsTurret.SetCritChance(vals.chance += (float)critChance);
+                    }
+                    if (n.info.TryGetModi(nameof(CSVMd.Damage), out double dmgModi) && TryGetTurret(out Turret turret)) {
+                        turret.SetBulletDmgModi(dmgModi += turret.GetBulletModi());
+                    }
+                break; }
                 default: 
                     Debug.LogWarning("Ability " + n.GetUpgradeId() + " : does NOT exist in handler. Unable to pull Upgrade.");
                     return;
             }
             dict.Add(n.GetUpgradeId(), n);
+        }
+        public static bool TryGetActive(CSVId id, out IAbility a) {
+            var list = NetworkedEntity.playerInstance.GetAbilityList();
+            if (list == null) { a = null; return false; }
+            foreach(var i in list) {
+                if (i.Item1.GetId() == id.ToString()) {
+                    a = i.Item1;
+                    return true;
+                }
+            }
+            a = null; return false;
+        }
+
+        public static bool TryGetCombatEntity(out CombatEntity c) {
+            c = NetworkedEntity.playerInstance.GetCombatEntity();
+            if (c == null) return false;
+            else return true;
+        }
+
+        public static bool TryGetTurret(out Turret t) {
+            TryGetCombatEntity(out CombatEntity c);
+            if (c == null) { t = null; return false; }
+            t = c.GetTurret();
+            if (t == null) return false;
+            return true;
         }
     }
 

@@ -50,6 +50,8 @@ public class GarageManager : MonoBehaviour {
 	[SerializeField] private Camera playerCamera;
 	[SerializeField] private CameraBlur blur;
 
+	[SerializeField] private IconScriptableObj iconScriptObj;
+
 	#endregion
 
 	#region Members
@@ -398,7 +400,7 @@ public class GarageManager : MonoBehaviour {
 		//icons setup
 		abilitySprites = new();
 		abilityNames = new();
-		var icons = PlayerDataHandler.instance.GetIcons();
+		var icons = iconScriptObj.GetGarageIcons();
 		foreach (var i in icons) {
 			abilitySprites.Add(i.icon);
 			abilityNames.Add(i.id);

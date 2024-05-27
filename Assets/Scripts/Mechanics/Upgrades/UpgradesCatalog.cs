@@ -69,8 +69,8 @@ public class UpgradesCatalog : MonoBehaviour {
 			this.upgradeName = upgradeName;
 			this.displayName = displayName;
 			this.parentId = parentId;
-			if (PlayerDataHandler.instance.TryGetIcon(upgradeName, out PlayerDataHandler.IconKeyValuePair s)) {
-				internalIcon = s.icon;
+			if (instance.iconScriptObj.TryGetIcon(upgradeName, out Sprite s)) {
+				internalIcon = s;
 			} else {
 				Debug.LogError("Icon not found for " + upgradeName);
 				internalIcon = null;
@@ -190,6 +190,8 @@ public class UpgradesCatalog : MonoBehaviour {
 	[SerializeField] private GameObject buyReminderIcon;
 	[SerializeField] private GameObject debugUIPrefab;
 
+	[SerializeField] private IconScriptableObj iconScriptObj;
+
 	#endregion
 
 	#region Members
@@ -229,6 +231,7 @@ public class UpgradesCatalog : MonoBehaviour {
 
 	public void ForceMaxUpgrades() {
 		foreach (UpgradeNode n in playerUpgrades.Values) {
+			NetworkedEntity.playerInstance.PushUpgradeModi(n);
 			n.unlocked = true;
 		}
 		ReRollUpgrades();
@@ -259,8 +262,8 @@ public class UpgradesCatalog : MonoBehaviour {
 			string levelText = kv.Value == 0 ? "" : ToRoman(kv.Value);
 
 			//Sprite sprite = GetUpgradeIcon(kv.Key);
-			if (PlayerDataHandler.instance.TryGetIcon(kv.Key, out PlayerDataHandler.IconKeyValuePair i)) {
-				Sprite sprite = i.icon;
+			if (instance.iconScriptObj.TryGetIcon(kv.Key, out Sprite i)) {
+				Sprite sprite = i;
 
 				GameObject ins = Instantiate(upgradeDisplayPrefab, upgradeDisplayParent);
 				upgradeDisplays.Add(ins);
@@ -372,12 +375,12 @@ public class UpgradesCatalog : MonoBehaviour {
 			//init upgrade
 			upgradeIconsDict = new();
 
-			if (PlayerDataHandler.instance.TryGetIcon(n.GetIconId(), out PlayerDataHandler.IconKeyValuePair i)) {
+			if (instance.iconScriptObj.TryGetIcon(n.GetIconId(), out Sprite i)){
 
 				if (upgradeIconsDict.ContainsKey(n.GetIconId())) {
-					upgradeIconsDict[n.GetIconId()] = i.icon;
+					upgradeIconsDict[n.GetIconId()] = i;
 				} else {
-					upgradeIconsDict.Add(n.GetIconId(), i.icon);
+					upgradeIconsDict.Add(n.GetIconId(), i);
 				}
 			}
 		}

@@ -68,10 +68,10 @@ namespace Abilities {
         }
 
         public bool TryPushUpgrade(string id, InGameUpgradeInfo info) {
-            if (id == nameof(CSVId.HealActive) + "Faster Heals") {
+            if (id == nameof(CSVId.HealActive) + "FasterHeals") {
                 if (info.TryGetModi(nameof(CSVMd.Cooldown), out double cooldown)) 
                     cooldownPeriod -= (float)cooldown;
-            } else if (id == nameof(CSVId.HealActive) + "Bigger Heals") {
+            } else if (id == nameof(CSVId.HealActive) + "BiggerHeals") {
                 if (info.TryGetModi(nameof(CSVMd.HealAmount), out double heal)) 
                     healAmount += (float)heal;
             } else return false;

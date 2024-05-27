@@ -15,25 +15,6 @@ public class PlayerDataHandler : MonoBehaviour {
         ActivesRawCSV, GadgetsRawCSV, HullsRawCSV, TurretsRawCSV
     }
 
-    public enum IconType {
-        Active
-    }
-
-    [System.Serializable]
-    public class IconKeyValuePair {
-        public string id;
-        public Sprite icon;
-    }
-
-    [System.Serializable]
-    public class IconBundle {
-        public string id;
-        public Sprite icon;
-        //public IconKeyValuePair parent;
-        public Sprite regularUiIcon, activeUiIcon;
-        public List<IconKeyValuePair> children;
-    }
-
     #endregion
 
     #region References
@@ -43,9 +24,6 @@ public class PlayerDataHandler : MonoBehaviour {
     [Header("Raw CSVs")]
     [SerializeField] public TextAsset activeRawCSV;
     [SerializeField] public TextAsset gadgetRawCSV, hullRawCSV, turretRawCSV, superRawCSV;
-
-    [Header("Icons")]
-    [SerializeField] private List<IconBundle> icons;
 
     #endregion
 
@@ -72,50 +50,6 @@ public class PlayerDataHandler : MonoBehaviour {
     }
     public Dictionary<string, int> GetEquippedInfos(CSVType type) {
         return GetEquippedInfos(type.ToString());
-    }
-    public bool TryGetGeneralIcon(string id, out Sprite s) {
-        foreach(IconBundle icon in icons) {
-            if (icon.id == id) {
-                s = icon.icon;
-                return true;
-            }
-        }
-        s = null;
-        return false;
-    }
-    public bool TryGetUIIcon(string id, out (Sprite active, Sprite regular) s) {
-        foreach(IconBundle icon in icons) {
-            if (icon.id == id) {
-                s = (icon.activeUiIcon, icon.regularUiIcon);
-                return true;
-            }
-        }
-        s = (null, null);
-        return false;
-    }
-    public bool TryGetIcon(string id, out IconKeyValuePair i) {
-        foreach(IconBundle icon in icons) {
-            if (icon.id == id) {
-                IconKeyValuePair pair = new IconKeyValuePair {
-                    id = icon.id,
-                    icon = icon.icon
-                };
-                i = pair;
-                return true;
-            }
-
-            foreach(IconKeyValuePair child in icon.children) {
-                if (child.id == id) {
-                    i = child;
-                    return true;
-                }
-            }
-        }
-        i = null;
-        return false;
-    }
-    public List<IconBundle> GetIcons() {
-        return icons;
     }
     public string GetActiveRawCSV() { return activeRawCSV.text; }
     public string GetGadgetRawCSV() { return gadgetRawCSV.text; }
@@ -186,13 +120,6 @@ public class PlayerDataHandler : MonoBehaviour {
     }
     public Dictionary<string, Dictionary<string, int>> GetEquippedInfos() {
         return equippedInfos;
-    }
-    private void SetIconChildrenIds() {
-        for(int i = 0; i < icons.Count; i++) {
-            for(int j = 0; j < icons[i].children.Count; j++) {
-                icons[i].children[j].id = icons[i].id + icons[i].children[j].id;
-            }
-        }
     }
     private bool TryGetItemFromInfos(CSVId itemKey, out InventoryInfo info) {
         return TryGetItemFromInfos(itemKey.ToString(), out info);
@@ -279,17 +206,27 @@ public class PlayerDataHandler : MonoBehaviour {
     }
 
     private void TempEquipInfos() { 
-        //equip hull and turret.
+        //equip hull and turret. TODO: Make this do something lol
         EquipInfo(CSVType.HULLS, CSVId.TankHull, 1);
         EquipInfo(CSVType.TURRETS, CSVId.Autocannon, 1);
-        //make the ingame stats change off of this.
 
-        EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 10);
-        EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 10);
-        EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 10);
+        //All actives
+        EquipInfo(CSVType.ACTIVES, CSVId.HealActive, 11);
+        EquipInfo(CSVType.ACTIVES, CSVId.SentryActive, 11);
+        EquipInfo(CSVType.ACTIVES, CSVId.RapidFireActive, 11);
+        EquipInfo(CSVType.ACTIVES, CSVId.RegenerativeArmorGadget, 11);
         
-        // EquipInfo(CSVType.GADGETS, CSVId.HardenedAmmoGadget, 1);
-        // EquipInfo(CSVType.GADGETS, CSVId.RegenerativeArmorGadget, 1);
+
+        //All gadgets
+        EquipInfo(CSVType.GADGETS, CSVId.HardenedAmmoGadget, 11);
+        EquipInfo(CSVType.GADGETS, CSVId.ImprovedLoaderGadget, 11);
+        EquipInfo(CSVType.GADGETS, CSVId.HardenedArmorGadget, 11);
+        EquipInfo(CSVType.GADGETS, CSVId.FireControlGadget, 11);
+        EquipInfo(CSVType.GADGETS, CSVId.PolishedTriggerGadget, 11);
+        EquipInfo(CSVType.GADGETS, CSVId.LaserSightGadget, 11);
+        EquipInfo(CSVType.GADGETS, CSVId.BracedInternalsGadget, 11);
+        
+
 
     }
 
@@ -313,7 +250,6 @@ public class PlayerDataHandler : MonoBehaviour {
         if (instance == null) {
             instance = this;
             DontDestroyOnLoad(gameObject);
-            SetIconChildrenIds();
         } else {
             Destroy(gameObject);
         }
