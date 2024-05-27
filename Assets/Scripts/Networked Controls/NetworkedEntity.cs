@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 using Abilities;
-using Abilities.UpgradeHandler;
+using Handlers;
+using Intializers;
 using Effects;
-using Abilities.StatHandler;
+using CSV;
 
 
 public class NetworkedEntity : NetworkBehaviour {
@@ -188,10 +189,10 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	//*======================| Effects |======================*//
 
-	public GameObject InitEffect(float duration, float earlyDestruct, UpgradeIndex i) {
+	public GameObject InitEffect(float duration, float earlyDestruct, CSVId id) {
 		//Apply both local and RPC the effect change!
-		RPCInitEffect(i, duration, earlyDestruct);
-		GameObject e = this.GetEffect(i);
+		RPCInitEffect(duration, earlyDestruct, id);
+		GameObject e = this.GetEffect(id);
 		if (e == null) return null;
 		GameObject g = Instantiate(e, transform);
 		g.transform.Translate(Vector3.up * 0.1f);
@@ -199,9 +200,9 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 
 	[Rpc(RpcSources.All, RpcTargets.Proxies)]
-	private void RPCInitEffect(UpgradeIndex i, float duration, float earlyDestruct) {
+	private void RPCInitEffect(float duration, float earlyDestruct, CSVId id) {
 
-		GameObject g = this.GetEffect(i);
+		GameObject g = this.GetEffect(id);
 		if (g == null) return;
 
 		GameObject effect = Instantiate(g, transform);

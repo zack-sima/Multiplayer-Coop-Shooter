@@ -20,8 +20,6 @@ public class UpgradesCatalog : MonoBehaviour {
 	/// </summary>
 	///
 
-	[SerializeField] public CSVStorage csvStorage;
-
 	[System.Serializable]
 	public class UpgradeIcon {
 		public string upgradeName;
@@ -71,8 +69,8 @@ public class UpgradesCatalog : MonoBehaviour {
 			this.upgradeName = upgradeName;
 			this.displayName = displayName;
 			this.parentId = parentId;
-			if (PlayerDataHandler.instance.TryGetIcon(upgradeName, out PlayerDataHandler.IconKeyValuePair i)) {
-				internalIcon = i.icon;
+			if (PlayerDataHandler.instance.TryGetIcon(upgradeName, out PlayerDataHandler.IconKeyValuePair s)) {
+				internalIcon = s.icon;
 			} else {
 				Debug.LogError("Icon not found for " + upgradeName);
 				internalIcon = null;
@@ -358,8 +356,6 @@ public class UpgradesCatalog : MonoBehaviour {
 	public UpgradeNode AddUpgrade(string id, string parentId, string displayName, int cost, int level = 0, InGameUpgradeInfo info = null, bool unlocked = false,
 		bool replacePrior = false, List<string> mutuallyExclusiveUpgrades = null,
 		List<string> hardRequirements = null, List<string> softRequirements = null) {
-
-		Debug.LogWarning(parentId);
 
 		UpgradeNode n = new(id, parentId, displayName, cost, info, level, info?.GetDescription(), unlocked, replacePrior,
 			mutuallyExclusiveUpgrades, hardRequirements, softRequirements);

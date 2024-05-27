@@ -59,3 +59,98 @@
         public void AbilityOverclockActivated() {
             NetworkedEntity.playerInstance.AbilityOverclockCalled();
         }
+
+        #region //?==| PASSIVE GADGETS |==?//
+                // //*?=======================| Stat |=======================?*//
+                // // * ANYTHING SINGLE-FRAME BASED
+                // case nameof(CSVId.HardenedAmmoGadget) + "Hardened Ammo": {
+                //     if (n.info.TryGetModi(nameof(CSVMd.Damage), out double dmgModi) && TryGetTurret(out Turret turret)) {
+                //         turret.SetBulletDmgModi((float)dmgModi + turret.GetBulletModi());
+                //     }
+                //     break; }
+                // case nameof(CSVId.ImprovedLoaderGadget) + "Improved Loader": {
+                //     if (n.info.TryGetModi(nameof(CSVMd.Reload), out double reload) && n.info.TryGetModi(nameof(CSVMd.AmmoRegen), out double ammoRegen) && TryGetTurret(out Turret turret)) {
+                //         turret.SetShootSpeed((float)reload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
+                //         turret.SetAmmoRegenRate((float)ammoRegen * turret.GetBaseAmmoRegenRate() + turret.GetAmmoRegenSpeed());
+                //     }
+                //     break; }
+                // case nameof(CSVId.HardenedArmorGadget) + "Hardened Armor": {
+                //     if (n.info.TryGetModi(nameof(CSVMd.MaxHP), out double maxHp)) {
+                //         TryGetCombatEntity(out CombatEntity c);
+                //         c.SetMaxHealth((float)maxHp * c.GetBaseHealth());
+                //     }
+                //     break; }
+                // case nameof(CSVId.FireControlGadget) + "Fire Control": {
+                //     if (n.info.TryGetModi(nameof(CSVMd.Reload), out double reload) && TryGetTurret(out Turret turret)) {
+                //         turret.SetShootSpeed((float)reload * turret.GetBaseShootSpeed() + turret.GetShootSpeed());
+                //     }
+                //     break; }
+                // case nameof(CSVId.PolishedTriggerGadget) + "Polished Trigger": {
+                //     if (n.info.TryGetModi(nameof(CSVMd.CritChance), out double crit) && TryGetTurret(out Turret turret)) {
+                //         turret.SetCritChance((float)crit + turret.GetCritValues().Item1);
+                //     }
+                //     break; }
+                // case nameof(CSVId.LaserSightGadget) + "Laser Sight": {
+                //     if (n.info.TryGetModi(nameof(CSVMd.CritDamage), out double critDmg) && TryGetTurret(out Turret turret)) {
+                //         turret.SetCritDamage((float)critDmg + turret.GetCritValues().Item2);
+                //     }
+                //     break; }
+                // case nameof(CSVId.BracedInternalsGadget) + "Braced Internals": {
+                //     if (n.info.TryGetModi(nameof(CSVMd.MaxHP), out double maxHp)) {
+                //         TryGetCombatEntity(out CombatEntity c);
+                //         c.SetMaxHealth((float)maxHp * c.GetBaseHealth());
+                //     }
+                //     break; }
+                #endregion
+                
+                // // * ANYTHING PER-FRAME BASE
+                // case "Advanced Targeting":
+
+                //     break;
+                // case "Embracing Bind":
+                
+                //     break;
+                // case "Emergency Overclock":
+                
+                //     break;
+                // case "Exposed Inductor":
+                
+                //     break;
+                // case "Gas Canister":
+                
+                //     break;
+                // case "Lighter Fluid":
+                
+                //     break;
+                // case "Optical Battery":
+                
+                //     break;
+                // case "R.T.G":
+                
+                //     break;
+                // case "Regenerative Armor":
+                //     if (n.info.TryGetModi(nameof(ModiName.Misc1), out float RAoutput)) {
+                        // NetworkedEntity.playerInstance.GetAbilityList().Add((new RegenerativeArmor(RAoutput), false)); }
+                //     break;
+                // case "Rocket Pods":
+                
+                //     break;
+                // case "Scavengers Eye":
+                
+                //     break;
+                // case "Sticky Bomb":
+                
+                //     break;
+                // case "Stun Grenades":
+                
+                //     break;
+                // case "Tesla Pack":
+                
+                //     break;
+
+                //  //*?=======================| Projectile |=======================?*//
+                //     //TODO: Projectile changes, such as burning rounds, explosive, etc.
+
+                // #endregion
+
+                // //TODO: Place other trees here.

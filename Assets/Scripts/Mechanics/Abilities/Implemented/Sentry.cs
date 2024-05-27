@@ -1,72 +1,30 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Effects;
+using CSV;
 using CSV.Parsers;
-using UnityEngine.Rendering;
-using UnityEngine.UI;
 
 namespace Abilities {
-	//TODO: turret ability hook up here!
-	public class Sentry : IActivatable, ISysTickable, IButtonRechargable, IInitable {
+	
+	public class Sentry : IActivatable, ISysTickable, ICooldownable {
 		public float cooldownPeriod, remainingCooldownTime;
 		public int team, maxHealth, maxAmmo;
 		public float ammoRegen, shootSpeed, shootSpread, dmgModi;
 		public bool isFullAuto;
 		private string id;
 
-		private Image outline = null;
-		private Image abilityIcon = null;
-		private Sprite active, regular;
-
-		public Sentry(CSVId id) { this.id = id.ToString(); }
-
-		public void Activate(NetworkedEntity entity, bool isOverride = false) { //reset the timer and activate ability.
-			if (!isOverride && remainingCooldownTime != 0) return;
-			remainingCooldownTime = cooldownPeriod;
-			NetworkedEntity sentry = entity.SpawnSentry();
-
-			sentry.SetSentryStats(entity.GetTeam(), maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto);
-			outline.fillAmount = 0f;
-
-			GameObject sentryEffect = sentry.InitEffect(1, 0f, UpgradeIndex.Sentry); //Effect
-			if (sentryEffect == null) return;
-			if (sentryEffect.TryGetComponent(out Effect e)) {
-				e.EnableDestroy(1f);
-			}
-			// if (sentryEffect.TryGetComponent(out ParticleSystem p)) {
-			//     //For Particle effects.
-			// }
-
-		}
-
 		public bool GetIsActive() { return false; }
+		public float GetCooldownPercentage() { return (cooldownPeriod - remainingCooldownTime) / cooldownPeriod; }
+		public string GetId() { return id; }
 
-		public float GetCooldownPercentage() {
-			return (cooldownPeriod - remainingCooldownTime) / cooldownPeriod;
-		}
-		/// >>>>>>>>>>>>>>>>>>>> TODO: BECAUSE ALL ABILITIES HAVE ONLY TWO MODES OF COOLDOWN --
-		/// DOWNWARDS-CONSUMPTION OR INSTANT USE -- CHANGE THIS SO THAT IT IS HANDLED CENTRALLY AND ONLY
-		/// ONE BOOLEAN/ENUM NEEDS TO BE CALLED
-		public void SysTickCall() {
-			remainingCooldownTime = Mathf.Max(0, remainingCooldownTime - Time.deltaTime);
-			if (remainingCooldownTime == 0) {
-				if (abilityIcon.sprite != active) abilityIcon.sprite = active;
-			} else if (abilityIcon.sprite != regular) abilityIcon.sprite = regular;
-			if (outline != null) { // update the outline.
-				outline.fillAmount = (cooldownPeriod - remainingCooldownTime) / cooldownPeriod;
-			}
-		}
+		public Sentry(CSVId id, InventoryInfo info = null, int level = 1) { 
+			this.id = id.ToString(); 
+			
+			if (info == null && PlayerDataHandler.instance.TryGetInfo(id.ToString(), out InventoryInfo i)) 
+				info = i;
+			
+			if (info == null) { DebugUIManager.instance?.LogError("No info found for " + id, "SentryInit"); return; }
 
-		public void SetButtonOutlineProgressImage(Image outlineProgress) {
-			outline = outlineProgress;
-		}
-
-		public string GetId() {
-			return id;
-		}
-
-		public void Init(InventoryInfo info, int level) {
+			//Init stats
 			if (info.TryGetModi(CSVMd.Cooldown, level, out double cooldown)) cooldownPeriod = (float)cooldown;
 			else DebugUIManager.instance?.LogError("No cooldown found for " + id, "SentryInit");
 
@@ -91,13 +49,38 @@ namespace Abilities {
 			remainingCooldownTime = cooldownPeriod;
 		}
 
-		public void SetIconImage(Image iconImage) {
-			if (PlayerDataHandler.instance.TryGetUIIcon(nameof(CSVId.SentryActive), out (Sprite active, Sprite regular) s)) {
-				abilityIcon = iconImage;
-				iconImage.sprite = s.regular;
-				active = s.active;
-				regular = s.regular;
-			} else DebugUIManager.instance?.LogError("No icon found for : ", "RapidFireActive");
+		public void Activate(NetworkedEntity entity, bool isOverride = false) { //reset the timer and activate ability.
+			if (!isOverride && remainingCooldownTime != 0) return;
+			remainingCooldownTime = cooldownPeriod;
+			NetworkedEntity sentry = entity.SpawnSentry();
+
+			sentry.SetSentryStats(entity.GetTeam(), maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto);
+
+			GameObject sentryEffect = sentry.InitEffect(1, 0f, CSVId.SentryActive); //Effect
+			if (sentryEffect == null) return;
+			if (sentryEffect.TryGetComponent(out Effect e)) {
+				e.EnableDestroy(1f);
+			}
+		}
+
+		/// >>>>>>>>>>>>>>>>>>>> TODO: BECAUSE ALL ABILITIES HAVE ONLY TWO MODES OF COOLDOWN --
+		/// DOWNWARDS-CONSUMPTION OR INSTANT USE -- CHANGE THIS SO THAT IT IS HANDLED CENTRALLY AND ONLY
+		/// ONE BOOLEAN/ENUM NEEDS TO BE CALLED
+		public void SysTickCall(NetworkedEntity entity) {
+			remainingCooldownTime = Mathf.Max(0, remainingCooldownTime - Time.deltaTime);
+		}
+
+		public bool TryPushUpgrade(string id, InGameUpgradeInfo info) {
+			if (id == nameof(CSVId.SentryActive) + "Reinforced Sentry") {
+				if (info.TryGetModi(CSVMd.SentryHealth, out double hp)) maxHealth += (int)hp;
+				else DebugUIManager.instance?.LogError("No cooldown found for " + id, nameof(CSVId.SentryActive) + "Reinforced Sentry");
+				
+			} else if (id == nameof(CSVId.SentryActive) + "Larger Caliber") {
+				if (info.TryGetModi(CSVMd.SentryDamage, out double damage)) dmgModi += (float)damage;
+				else DebugUIManager.instance?.LogError("No damage found for " + id, nameof(CSVId.SentryActive) + "Larger Caliber");
+
+			} else return false;
+			return true;
 		}
 	}
 }

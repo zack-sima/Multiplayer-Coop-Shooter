@@ -1,20 +1,28 @@
 
 using UnityEngine;
+using CSV;
 using CSV.Parsers;
+using Handlers;
 
 namespace Abilities {
-    public class RegenerativeArmorGadget : IPassivable, IStatSysTickable, IInitable {
+    public class RegenerativeArmorGadget : IAbility {
 
         public float hpPercentPerSec = 0;
         private string id;
+        public string GetId() { return id; }
 
         public RegenerativeArmorGadget(CSVId id) {
             this.id = id.ToString();
         }
 
-        public string GetId() {
-            throw new System.NotImplementedException();
+        public bool TryPushUpgrade(string id, InGameUpgradeInfo info) {
+            if (id == nameof(CSVId.RegenerativeArmorGadget) + "Enhanced Healing") {
+                if (info.TryGetModi(nameof(CSVMd.HealAmount), out double hpPercentPerSec))
+                    this.hpPercentPerSec += (float)hpPercentPerSec;
+            } else return false;
+            return true;
         }
+        
 
         public void Init(InventoryInfo info, int level) {
             if (info.TryGetModi(nameof(CSVMd.HealAmount), level, out double hpPercentPerSec)) {
