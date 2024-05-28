@@ -41,7 +41,10 @@ public class GarageManager : MonoBehaviour {
 	[SerializeField] private List<Sprite> turretSprites;
 
 	[SerializeField] private Camera playerCamera;
+	public Camera GetPlayerCamera() { return playerCamera; }
+
 	[SerializeField] private CameraBlur blur;
+	public CameraBlur GetBlur() { return blur; }
 
 	[SerializeField] private IconScriptableObj iconScriptObj;
 
@@ -366,6 +369,8 @@ public class GarageManager : MonoBehaviour {
 		MenuManager.instance.SetHull(PlayerPrefs.GetString("hull_name"), false);
 		MenuManager.instance.SetTurret(PlayerPrefs.GetString("turret_name"), false);
 
+		MenuManager.instance.SetLastClosed(0);
+
 		inGarage = false;
 	}
 
@@ -489,7 +494,7 @@ public class GarageManager : MonoBehaviour {
 				target, Time.deltaTime * 10f);
 			playerCamera.transform.rotation = Quaternion.RotateTowards(playerCamera.transform.rotation,
 				Quaternion.Euler(targetGarageCameraRotation), Time.deltaTime * 25f);
-		} else {
+		} else if (MenuManager.instance.GetLastClosedId() == 0 && !RepairsManager.instance.GetIsInRepairs()) {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
 				normalCameraPosition, Time.deltaTime * 10f);
 			playerCamera.transform.rotation = Quaternion.RotateTowards(playerCamera.transform.rotation,

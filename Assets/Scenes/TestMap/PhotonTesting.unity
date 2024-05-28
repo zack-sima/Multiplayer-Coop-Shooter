@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44680852, g: 0.49629307, b: 0.57324356, a: 1}
+  m_IndirectSpecularColor: {r: 0.44667363, g: 0.4961304, b: 0.57304573, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -865,10 +865,30 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -6952520449624810893, guid: 04222d429082f416498e72063c2c566b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: deb221638e04b40d088148c3fe6f6dd3, type: 2}
+    - target: {fileID: -6919805450434176690, guid: 04222d429082f416498e72063c2c566b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: deb221638e04b40d088148c3fe6f6dd3, type: 2}
     - target: {fileID: -6757433916455753435, guid: 04222d429082f416498e72063c2c566b, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.33
       objectReference: {fileID: 0}
+    - target: {fileID: -4802999106726143172, guid: 04222d429082f416498e72063c2c566b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: deb221638e04b40d088148c3fe6f6dd3, type: 2}
+    - target: {fileID: -4015923997787874189, guid: 04222d429082f416498e72063c2c566b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: deb221638e04b40d088148c3fe6f6dd3, type: 2}
+    - target: {fileID: -2920149315098233552, guid: 04222d429082f416498e72063c2c566b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: deb221638e04b40d088148c3fe6f6dd3, type: 2}
     - target: {fileID: -1641418580741316055, guid: 04222d429082f416498e72063c2c566b, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.33
@@ -885,6 +905,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Guns
       objectReference: {fileID: 0}
+    - target: {fileID: 2816693086258733867, guid: 04222d429082f416498e72063c2c566b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: deb221638e04b40d088148c3fe6f6dd3, type: 2}
+    - target: {fileID: 3300525862611353438, guid: 04222d429082f416498e72063c2c566b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: deb221638e04b40d088148c3fe6f6dd3, type: 2}
+    - target: {fileID: 4541118569615376773, guid: 04222d429082f416498e72063c2c566b, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: deb221638e04b40d088148c3fe6f6dd3, type: 2}
     - target: {fileID: 7869873546869171050, guid: 04222d429082f416498e72063c2c566b, type: 3}
       propertyPath: m_IsActive
       value: 0

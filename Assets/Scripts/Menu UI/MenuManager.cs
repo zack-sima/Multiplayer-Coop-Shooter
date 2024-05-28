@@ -103,10 +103,22 @@ public class MenuManager : MonoBehaviour {
 		}
 	}
 
+	//for waiting coroutine
+	bool waitingChangeNameInput = false;
+
+	//0 = garage, 1 = repairs
+	int lastClosedId = 0;
+
 	#endregion
 
 	#region Functions
 
+	public void SetLastClosed(int id) {
+		lastClosedId = id;
+	}
+	public int GetLastClosedId() {
+		return lastClosedId;
+	}
 	public void SetGameMode(GameMode mode) {
 		PlayerPrefs.SetInt("game_mode", (int)mode);
 		PlayerPrefs.SetString("last_map", selectedMapName);
@@ -285,7 +297,6 @@ public class MenuManager : MonoBehaviour {
 		PlayerPrefs.SetString("player_name", playerNameInput.text);
 	}
 	//don't make networking call until input was finished changing
-	bool waitingChangeNameInput = false;
 	private IEnumerator WaitForNameInputExit() {
 		waitingChangeNameInput = true;
 		while (playerNameInput.isFocused) yield return null;
