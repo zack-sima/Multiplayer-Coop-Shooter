@@ -301,6 +301,10 @@ public class MenuManager : MonoBehaviour {
 
 		if (PlayerPrefs.GetString("hull_name") != "")
 			currentHull = PlayerPrefs.GetString("hull_name");
+
+		if (TestingServerLinker.instance != null) {
+			Destroy(TestingServerLinker.instance.gameObject);
+		}
 	}
 	private void Start() {
 		QualitySettings.SetQualityLevel(4);

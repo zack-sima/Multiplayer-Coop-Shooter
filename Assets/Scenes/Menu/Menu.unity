@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.7299091, g: 0.4687732, b: 0.45260692, a: 1}
+  m_IndirectSpecularColor: {r: 0.73028886, g: 0.46850646, b: 0.45308775, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -10435,9 +10435,11 @@ MonoBehaviour:
   selectionGrid: {fileID: 1633911133}
   selectionScreenTitle: {fileID: 1397048303}
   selectedItemText: {fileID: 875766067}
+  equipText: {fileID: 1757850791}
   selectedHullImage: {fileID: 1329757004}
   selectedTurretImage: {fileID: 864223015}
   selectedAbilityImage: {fileID: 956393435}
+  selectedGadgetImage: {fileID: 941142552}
   hullNames:
   - Tank
   - Spider
@@ -10458,32 +10460,6 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 7f5b43cb978694f9bb181bc92010dbb8, type: 3}
   - {fileID: 21300000, guid: 25dca2f29c29b4825b074437505634e7, type: 3}
   - {fileID: 21300000, guid: f1cdc3d2f7a65422aa5b28a717f57e45, type: 3}
-  gadgetNames:
-  - a
-  - b
-  - c
-  - d
-  - e
-  - f
-  - g
-  - h
-  gadgetSprites:
-  - {fileID: 21300000, guid: dcf1faa0b04c24ebe8917ed462b59bf7, type: 3}
-  - {fileID: 21300000, guid: 8709cf0fb6146429ba2d96ec4d790238, type: 3}
-  - {fileID: 21300000, guid: adc7de8378256444f8afbdf3e027f9bf, type: 3}
-  - {fileID: 21300000, guid: 9a96e03a9239c4b11b7c2f084317d27f, type: 3}
-  - {fileID: 21300000, guid: c2ac11d4d54f14674bde750dac6caf41, type: 3}
-  - {fileID: 21300000, guid: 70b8586fb95584701aed47cc134a80bf, type: 3}
-  - {fileID: 21300000, guid: 9a4f72d3aa7ac4eaf80adfdd56fcf8b4, type: 3}
-  - {fileID: 21300000, guid: ff45a81ebad47488aa023a16d48e103f, type: 3}
-  abilityNames:
-  - aa
-  - bb
-  - cc
-  abilitySprites:
-  - {fileID: 21300000, guid: de76d80adde8a41e890bf1866535fd42, type: 3}
-  - {fileID: 21300000, guid: 8709cf0fb6146429ba2d96ec4d790238, type: 3}
-  - {fileID: 21300000, guid: ea9a7a0f5c1e4418a835386818927849, type: 3}
   playerCamera: {fileID: 1447961981}
   blur: {fileID: 1447961983}
   iconScriptObj: {fileID: 11400000, guid: 6eb6750fb2fa14e0796c2b9564d1b8bf, type: 2}
@@ -20717,7 +20693,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 17.999987}
-  m_SizeDelta: {x: 75, y: 75}
+  m_SizeDelta: {x: 85, y: 85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &941142550
 MonoBehaviour:
@@ -20769,7 +20745,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ff45a81ebad47488aa023a16d48e103f, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c2bd06d4af97f4833a32785da32534f5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -20824,7 +20800,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 17.999987}
-  m_SizeDelta: {x: 75, y: 75}
+  m_SizeDelta: {x: 85, y: 85}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &956393433
 MonoBehaviour:
@@ -20876,7 +20852,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: de76d80adde8a41e890bf1866535fd42, type: 3}
+  m_Sprite: {fileID: 21300000, guid: c2bd06d4af97f4833a32785da32534f5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -22604,7 +22580,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1021251283
 RectTransform:
   m_ObjectHideFlags: 0
@@ -32653,7 +32629,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -21.579956}
+  m_AnchoredPosition: {x: 0, y: -21.580078}
   m_SizeDelta: {x: 0, y: -209}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1237262996
@@ -40406,7 +40382,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -21.579956}
+  m_AnchoredPosition: {x: 0, y: -21.580078}
   m_SizeDelta: {x: 0, y: -209}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1517937144
@@ -49514,7 +49490,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -21.579956}
+  m_AnchoredPosition: {x: 0, y: -21.580078}
   m_SizeDelta: {x: 0, y: -209}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1916919507

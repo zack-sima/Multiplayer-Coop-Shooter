@@ -20,6 +20,7 @@ public class UIController : MonoBehaviour {
 	public class IconBundle {
 		public string id; // ID is found in the Active CSV file or as nameof(CSVId.---)
 		public Sprite icon;
+		public Color color;
 	}
 
 	#endregion
@@ -74,6 +75,12 @@ public class UIController : MonoBehaviour {
 		}
 		return null;
 	}
+	public Color GetAbilityColor(string id) {
+		foreach (IconBundle i in abilityButtonIcons) {
+			if (i.id == id) return i.color;
+		}
+		return Color.white;
+	}
 
 	/// <summary>
 	/// Turns off all ability Buttons for a clean slate.
@@ -103,14 +110,17 @@ public class UIController : MonoBehaviour {
 		List<GameObject> buttons = GetIsMobile() ? mobileAbilityButtons : pcAbilityButtons;
 		InitAbilityButtons(); // turn off all the buttons.
 		int i = 0;
-		foreach((IAbility a, bool b) in NetworkedEntity.playerInstance.GetAbilityList()) { // init the button icons.
+		foreach ((IAbility a, bool b) in NetworkedEntity.playerInstance.GetAbilityList()) { // init the button icons.
 			if (a is IActivatable) {
 				if (i < buttons.Count) {
 					buttons[i].SetActive(true);
-					GameObject g = buttons[i].FindChild("Icon");
-					if (g != null) {
-						g.GetComponent<Image>().sprite = GetAbilityIcon(a.GetId());
-					}
+					GameObject o = buttons[i].transform.GetChild(1).gameObject;
+					GameObject g = buttons[i].transform.GetChild(2).gameObject;
+
+					g.GetComponent<Image>().sprite = GetAbilityIcon(a.GetId());
+					g.GetComponent<Image>().color = GetAbilityColor(a.GetId());
+					o.GetComponent<Image>().color = GetAbilityColor(a.GetId());
+
 					++i;
 				} else break;
 			}
@@ -124,7 +134,7 @@ public class UIController : MonoBehaviour {
 	private void UpdateAbilityButtons() { // TODO: Implement this in a better way zack??
 		int index = 0;
 		List<GameObject> buttons = GetIsMobile() ? mobileAbilityButtons : pcAbilityButtons;
-		foreach((IAbility i, bool b) in NetworkedEntity.playerInstance.GetAbilityList()) {
+		foreach ((IAbility i, bool b) in NetworkedEntity.playerInstance.GetAbilityList()) {
 			if (i is ICooldownable a) {
 				if (index < buttons.Count) {
 					float percentage = a.GetCooldownPercentage();

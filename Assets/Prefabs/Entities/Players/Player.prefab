@@ -378,6 +378,7 @@ MonoBehaviour:
   critSoundEffect: {fileID: 318313311001861415}
   effectPrefabs: {fileID: 11400000, guid: d09ac29cb14874b14ae8f5d6efd45caa, type: 2}
   sentryPrefab: {fileID: 954837698998907771, guid: 560190efce93a4f81ae82ed30e3ab6aa, type: 3}
+  sentryTossPrefab: {fileID: 7677204683722180389, guid: 062b9e82e4d1244128998c64f1476e25, type: 3}
   isPlayer: 1
 --- !u!114 &5931193942257798054
 MonoBehaviour:

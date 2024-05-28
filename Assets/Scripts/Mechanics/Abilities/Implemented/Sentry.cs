@@ -4,7 +4,7 @@ using CSV;
 using CSV.Parsers;
 
 namespace Abilities {
-	
+
 	public class Sentry : IActivatable, ISysTickable, ICooldownable {
 		public float cooldownPeriod, remainingCooldownTime;
 		public int team, maxHealth, maxAmmo;
@@ -16,12 +16,12 @@ namespace Abilities {
 		public float GetCooldownPercentage() { return (cooldownPeriod - remainingCooldownTime) / cooldownPeriod; }
 		public string GetId() { return id; }
 
-		public Sentry(CSVId id, InventoryInfo info = null, int level = 1) { 
-			this.id = id.ToString(); 
-			
-			if (info == null && PlayerDataHandler.instance.TryGetInfo(id.ToString(), out InventoryInfo i)) 
+		public Sentry(CSVId id, InventoryInfo info = null, int level = 1) {
+			this.id = id.ToString();
+
+			if (info == null && PlayerDataHandler.instance.TryGetInfo(id.ToString(), out InventoryInfo i))
 				info = i;
-			
+
 			if (info == null) { DebugUIManager.instance?.LogError("No info found for " + id, "SentryInit"); return; }
 
 			//Init stats
@@ -52,15 +52,8 @@ namespace Abilities {
 		public void Activate(NetworkedEntity entity, bool isOverride = false) { //reset the timer and activate ability.
 			if (!isOverride && remainingCooldownTime != 0) return;
 			remainingCooldownTime = cooldownPeriod;
-			NetworkedEntity sentry = entity.SpawnSentry();
 
-			sentry.SetSentryStats(entity.GetTeam(), maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto);
-
-			GameObject sentryEffect = sentry.InitEffect(1, 0f, CSVId.SentryActive); //Effect
-			if (sentryEffect == null) return;
-			if (sentryEffect.TryGetComponent(out Effect e)) {
-				e.EnableDestroy(1f);
-			}
+			entity.SpawnSentry(entity.GetTeam(), maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto);
 		}
 
 		/// >>>>>>>>>>>>>>>>>>>> TODO: BECAUSE ALL ABILITIES HAVE ONLY TWO MODES OF COOLDOWN --
@@ -74,7 +67,7 @@ namespace Abilities {
 			if (id == nameof(CSVId.SentryActive) + "ReinforcedSentry") {
 				if (info.TryGetModi(CSVMd.SentryHealth, out double hp)) maxHealth += (int)hp;
 				else DebugUIManager.instance?.LogError("No cooldown found for " + id, nameof(CSVId.SentryActive) + "Reinforced Sentry");
-				
+
 			} else if (id == nameof(CSVId.SentryActive) + "LargerCaliber") {
 				if (info.TryGetModi(CSVMd.SentryDamage, out double damage)) dmgModi += (float)damage;
 				else DebugUIManager.instance?.LogError("No damage found for " + id, nameof(CSVId.SentryActive) + "Larger Caliber");

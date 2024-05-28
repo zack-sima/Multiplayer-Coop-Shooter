@@ -29,6 +29,13 @@ MonoBehaviour:
     icon: {fileID: 21300000, guid: 753d4a81dc05c4aa693a7cba1daf2573, type: 3}
   - id: SentryActiveLargerCaliber
     icon: {fileID: 21300000, guid: 0eed031fe50394484a433a42c19d2dc8, type: 3}
+  abilitiesIcons:
+  - id: HealActive
+    icon: {fileID: 21300000, guid: c7b397002edfa4e7c80a76ffcb73de4c, type: 3}
+  - id: RapidFireActive
+    icon: {fileID: 21300000, guid: 20883c1139ab74393844dfc740918ab5, type: 3}
+  - id: SentryActive
+    icon: {fileID: 21300000, guid: 56f0c9b4fc3f34c009143569a465f28a, type: 3}
   gadgetIcons:
   - id: HardenedAmmoGadget
     childrenid: HardenedAmmo
@@ -54,4 +61,3 @@ MonoBehaviour:
   - id: RegenerativeArmorGadget
     childrenid: EnhancedHealing
     icon: {fileID: 21300000, guid: 5ad0e71a527eb4dfb92389187e57c18f, type: 3}
-  garageIcons: []

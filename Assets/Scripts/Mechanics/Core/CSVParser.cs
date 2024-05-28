@@ -325,7 +325,7 @@ namespace CSV.Parsers {
 				if (kvp.Key == nameof(CSVMd.Level) || kvp.Key == nameof(CSVMd.UPCost)) continue;
 
 				//TODO: Switch statement for different types of modis.
-				s += parentDisplay + " :\n " + AddSpacesToSentence(kvp.Key) + " " + (kvp.Value > 0 ? "+" : "") + kvp.Value.DescriptionInit(kvp.Key) + "\n";
+				s += parentDisplay + ":\n " + AddSpacesToSentence(kvp.Key) + " " + (kvp.Value > 0 ? "+" : "") + kvp.Value.DescriptionInit(kvp.Key) + "\n";
 			}
 			return s;
 		}

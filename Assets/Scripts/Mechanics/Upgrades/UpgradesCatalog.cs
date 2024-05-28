@@ -375,7 +375,7 @@ public class UpgradesCatalog : MonoBehaviour {
 			//init upgrade
 			upgradeIconsDict = new();
 
-			if (instance.iconScriptObj.TryGetIcon(n.GetIconId(), out Sprite i)){
+			if (instance.iconScriptObj.TryGetIcon(n.GetIconId(), out Sprite i)) {
 
 				if (upgradeIconsDict.ContainsKey(n.GetIconId())) {
 					upgradeIconsDict[n.GetIconId()] = i;
@@ -422,8 +422,7 @@ public class UpgradesCatalog : MonoBehaviour {
 		}
 #if UNITY_EDITOR
 		if (Input.GetKeyDown(KeyCode.P)) {
-			if (DebugUIManager.instance != null) DebugUIManager.instance.ExecuteCommand("set game cash 1000");
-			else playerMoney += 1000;
+			playerMoney += 1000;
 			MoneyChanged();
 		}
 #endif

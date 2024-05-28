@@ -10,7 +10,7 @@ public class GarageManager : MonoBehaviour {
 
 	public static GarageManager instance;
 
-	private const int MAX_ABILITIES = 2;
+	private const int MAX_ABILITIES = 3;
 	private const int MAX_GADGETS = 6;
 
 	#endregion
@@ -30,22 +30,15 @@ public class GarageManager : MonoBehaviour {
 
 	[SerializeField] private RectTransform selectionContentParent;
 	[SerializeField] private GridLayoutGroup selectionGrid;
-	[SerializeField] private TMP_Text selectionScreenTitle, selectedItemText;
+	[SerializeField] private TMP_Text selectionScreenTitle, selectedItemText, equipText;
 
-	[SerializeField] private Image selectedHullImage, selectedTurretImage, selectedAbilityImage;
+	[SerializeField] private Image selectedHullImage, selectedTurretImage, selectedAbilityImage, selectedGadgetImage;
 
-	//TODO: temporary storage of hulls and turrets here -> move to centralized location
 	[SerializeField] private List<string> hullNames;
 	[SerializeField] private List<Sprite> hullSprites;
 
 	[SerializeField] private List<string> turretNames;
 	[SerializeField] private List<Sprite> turretSprites;
-
-	[SerializeField] private List<string> gadgetNames;
-	[SerializeField] private List<Sprite> gadgetSprites;
-
-	[SerializeField] private List<string> abilityNames;
-	[SerializeField] private List<Sprite> abilitySprites;
 
 	[SerializeField] private Camera playerCamera;
 	[SerializeField] private CameraBlur blur;
@@ -55,6 +48,12 @@ public class GarageManager : MonoBehaviour {
 	#endregion
 
 	#region Members
+
+	private List<string> gadgetNames;
+	private List<Sprite> gadgetSprites;
+
+	private List<string> abilityNames;
+	private List<Sprite> abilitySprites;
 
 	private readonly List<GameObject> spawnedButtons = new();
 
@@ -96,25 +95,25 @@ public class GarageManager : MonoBehaviour {
 		selectedHullSprite = hullSprite;
 		selectedHullName = hullName;
 
-		selectedItemText.text = hullName;
+		selectedItemText.text = Translator.Translate(hullName);
 	}
 	private void SelectTurret(string turretName, Sprite turretSprite) {
 		selectedTurretName = turretName;
 		selectedTurretSprite = turretSprite;
 
-		selectedItemText.text = turretName;
+		selectedItemText.text = Translator.Translate(turretName);
 	}
 	private void SelectGadget(string gadgetName, Sprite gadgetSprite) {
 		selectedGadgetName = gadgetName;
 		selectedGadgetSprite = gadgetSprite;
 
-		selectedItemText.text = gadgetName;
+		selectedItemText.text = Translator.Translate(gadgetName);
 	}
 	private void SelectAbility(string abilityName, Sprite abilitySprite) {
 		selectedAbilityName = abilityName;
 		selectedAbilitySprite = abilitySprite;
 
-		selectedItemText.text = abilityName;
+		selectedItemText.text = Translator.Translate(abilityName);
 	}
 	private void ReselectHull() {
 		for (int i = 0; i < hullNames.Count; i++) {
@@ -151,6 +150,7 @@ public class GarageManager : MonoBehaviour {
 			//TODO: plan for system time checks & usage regeneration...
 			b.SetUsesLeft(Random.Range(0, 4), 3);
 		}
+		equipText.text = Translator.Translate("Equip");
 		currentSelectedMode = 0;
 	}
 	public void OpenTurrets() {
@@ -179,6 +179,7 @@ public class GarageManager : MonoBehaviour {
 			//TODO: plan for system time checks & usage regeneration...
 			b.SetUsesLeft(Random.Range(0, 4), 3);
 		}
+		equipText.text = Translator.Translate("Equip");
 		currentSelectedMode = 1;
 	}
 	public void OpenGadgets() {
@@ -193,8 +194,11 @@ public class GarageManager : MonoBehaviour {
 		for (int i = 0; i < gadgetNames.Count; i++) {
 			GarageButton b = Instantiate(scrollAbilityPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
-			b.Init(gadgetNames[i], gadgetSprites[i], mode: 2, level: 0,
-				equipped: PlayerPrefs.GetInt("gadget_" + gadgetNames[i]) == 1);
+
+			bool equipped = PlayerPrefs.GetInt("gadget_" + gadgetNames[i]) == 1;
+			b.Init(gadgetNames[i], gadgetSprites[i], mode: 2, level: 0, equipped: equipped);
+
+			if (i == 0) equipText.text = equipped ? Translator.Translate("Unequip") : Translator.Translate("Equip");
 		}
 		currentSelectedMode = 2;
 		SelectGadget(gadgetNames[0], gadgetSprites[0]);
@@ -211,8 +215,11 @@ public class GarageManager : MonoBehaviour {
 		for (int i = 0; i < abilityNames.Count; i++) {
 			GarageButton b = Instantiate(scrollAbilityPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
-			b.Init(abilityNames[i], abilitySprites[i], mode: 3, level: 0,
-				equipped: PlayerPrefs.GetInt("ability_" + abilityNames[i]) == 1);
+
+			bool equipped = PlayerPrefs.GetInt("ability_" + abilityNames[i]) == 1;
+			b.Init(abilityNames[i], abilitySprites[i], mode: 3, level: 0, equipped: equipped);
+
+			if (i == 0) equipText.text = equipped ? Translator.Translate("Unequip") : Translator.Translate("Equip");
 		}
 		currentSelectedMode = 3;
 		SelectAbility(abilityNames[0], abilitySprites[0]);
@@ -237,7 +244,13 @@ public class GarageManager : MonoBehaviour {
 				selectedAbilityIsOn = equipped;
 
 				SetGadgetsText();
+
+				if (equipped) {
+					selectedGadgetImage.sprite = selectedGadgetSprite;
+				}
+				equipText.text = equipped ? Translator.Translate("Unequip") : Translator.Translate("Equip");
 			}
+
 		} else {
 			//equip ability if under max
 			if (!saveAbilities || selectedAbilityIsOn || CountAbilities() < MAX_ABILITIES) {
@@ -251,6 +264,7 @@ public class GarageManager : MonoBehaviour {
 				if (equipped) {
 					selectedAbilityImage.sprite = selectedAbilitySprite;
 				}
+				equipText.text = equipped ? Translator.Translate("Unequip") : Translator.Translate("Equip");
 			}
 		}
 	}
@@ -284,10 +298,11 @@ public class GarageManager : MonoBehaviour {
 	//loads gadgets and abilities into one big persistentdict list
 	private void SaveAbilities() {
 		List<string> abilitiesToLoad = new();
+		List<string> gadgetsToLoad = new();
 
 		for (int i = 0; i < gadgetNames.Count; i++) {
 			if (PlayerPrefs.GetInt("gadget_" + gadgetNames[i]) == 1) {
-				abilitiesToLoad.Add(gadgetNames[i]);
+				gadgetsToLoad.Add(gadgetNames[i]);
 			}
 		}
 		for (int i = 0; i < abilityNames.Count; i++) {
@@ -296,6 +311,7 @@ public class GarageManager : MonoBehaviour {
 			}
 		}
 		PersistentDict.SetStringList("active_abilities", abilitiesToLoad);
+		PersistentDict.SetStringList("active_gadgets", gadgetsToLoad);
 	}
 	private bool UpdateEquipped(string itemName, bool isToggle, bool onlyOne) {
 		foreach (GameObject g in spawnedButtons) {
@@ -323,9 +339,12 @@ public class GarageManager : MonoBehaviour {
 			SelectTurret(itemName, sprite);
 			MenuManager.instance.SetTurret(itemName, isTemporary: true);
 		} else if (mode == 2) {
+			equipText.text = isEnabled ? Translator.Translate("Unequip") :
+				 Translator.Translate("Equip");
 			selectedAbilityIsOn = isEnabled;
 			SelectGadget(itemName, sprite);
 		} else {
+			equipText.text = isEnabled ? Translator.Translate("Unequip") : Translator.Translate("Equip");
 			selectedAbilityIsOn = isEnabled;
 			SelectAbility(itemName, sprite);
 		}
@@ -400,10 +419,22 @@ public class GarageManager : MonoBehaviour {
 		//icons setup
 		abilitySprites = new();
 		abilityNames = new();
-		var icons = iconScriptObj.GetGarageIcons();
+
+		gadgetSprites = new();
+		gadgetNames = new();
+
+		var icons = iconScriptObj.GetAbilitiesIcons();
+
 		foreach (var i in icons) {
 			abilitySprites.Add(i.icon);
 			abilityNames.Add(i.id);
+		}
+
+		var icons2 = iconScriptObj.GetGadgetIcons();
+
+		foreach (var i in icons2) {
+			gadgetSprites.Add(i.icon);
+			gadgetNames.Add(i.id);
 		}
 
 		for (int i = 0; i < hullNames.Count; i++) {

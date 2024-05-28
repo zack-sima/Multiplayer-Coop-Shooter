@@ -48,6 +48,7 @@ public class GarageButton : MonoBehaviour {
 		equippedBand.SetActive(equipped);
 	}
 	public void ButtonClicked() {
+		print(mode);
 		GarageManager.instance.ScreenButtonClicked(itemName, itemImage.sprite, mode, GetIsEquipped());
 	}
 }

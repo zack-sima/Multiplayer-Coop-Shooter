@@ -38,7 +38,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	#region Prefabs
 
 	[SerializeField] public AbilityPrefabAssets effectPrefabs;
-	[SerializeField] private GameObject sentryPrefab;
+	[SerializeField] private GameObject sentryPrefab, sentryTossPrefab;
 
 	#endregion
 
@@ -292,11 +292,40 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	#region Functions
 
-	//TODO: regulate using abilities
-	public NetworkedEntity SpawnSentry() {
-		//if (!HasSyncAuthority()) return null;
-		return Runner.Spawn(sentryPrefab, transform.position + new Vector3(Random.Range(-0.1f, 0.1f), 0f,
+	public void SpawnSentry(int team, int maxHealth, int maxAmmo, float ammoRegen,
+		float shootSpeed, float shootSpread, float dmgModi, bool isFullAuto) {
+
+		StartCoroutine(SentryToss(team, maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto));
+	}
+	private IEnumerator SentryToss(int team, int maxHealth, int maxAmmo, float ammoRegen,
+		float shootSpeed, float shootSpread, float dmgModi, bool isFullAuto) {
+
+		GameObject g = Instantiate(sentryTossPrefab, transform.position, transform.rotation);
+		Destroy(g, 2f);
+
+		Vector3 rand = new Vector3(Random.Range(-100f, 100f), Random.Range(-100f, 100f), Random.Range(-100f, 100f));
+
+		for (float i = 0; i < 1.5f; i += Time.deltaTime) {
+			g.transform.position = new Vector3(g.transform.position.x, 5f * (1 - Mathf.Pow(i * 1.3f - 1, 2)), g.transform.position.z);
+			g.transform.Rotate(Time.deltaTime * rand);
+			yield return new WaitForEndOfFrame();
+		}
+
+		Vector3 pos = g.transform.position;
+		pos.y = 0;
+
+		Destroy(g);
+
+		NetworkedEntity s = Runner.Spawn(sentryPrefab, pos + new Vector3(Random.Range(-0.1f, 0.1f), 0f,
 			Random.Range(-0.1f, 0.1f)), Quaternion.identity).GetComponent<NetworkedEntity>();
+
+		s.SetSentryStats(team, maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto);
+
+		GameObject sentryEffect = s.InitEffect(1, 0f, CSVId.SentryActive); //Effect
+		if (sentryEffect == null) yield break;
+		if (sentryEffect.TryGetComponent(out Effect e)) {
+			e.EnableDestroy(1f);
+		}
 	}
 
 	public void SetSentryStats(int team, int maxHealth, int maxAmmo, float ammoRegen, float shootSpeed, float shootSpread, float dmgModi, bool isFullAuto) {
