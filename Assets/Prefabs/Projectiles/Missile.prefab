@@ -55,7 +55,7 @@ MonoBehaviour:
   missileTeamMaterials: {fileID: 11400000, guid: faa23109d9fc044828b87850367187b7, type: 2}
   missileRenderer: {fileID: 1291242423525887661}
   speed: 20
-  damage: 820
+  damage: 720
   isExplosion: 1
   isFlame: 0
   explosionRadius: 6

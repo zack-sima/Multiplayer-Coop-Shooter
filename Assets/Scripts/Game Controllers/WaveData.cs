@@ -71,6 +71,12 @@ public class WaveData : ScriptableObject {
 	public int GetMoney() {
 		return additionalSpawnMoney;
 	}
+	private GameObject GetBoss(int wave, int index) {
+		return enemyBossPrefabs[GetBossTier(wave)].prefabs[index];
+	}
+	private GameObject GetEnemy(int wave, int index) {
+		return enemyPrefabs[GetTier(wave)].prefabs[index];
+	}
 	public List<GameObject> GetBogoSpawnPrefabs(int wave, bool isBoss) {
 		if (!waveDict.ContainsKey(wave) || isBoss)
 			return isBoss ? enemyBossPrefabs[GetBossTier(wave)].prefabs :
@@ -79,7 +85,7 @@ public class WaveData : ScriptableObject {
 		List<GameObject> prefabs = new();
 
 		foreach (int i in waveDict[wave].bogoEnemyPrefabs)
-			prefabs.Add(isBoss ? enemyBossPrefabs[GetBossTier(wave)].prefabs[i] : enemyPrefabs[GetTier(wave)].prefabs[i]);
+			prefabs.Add(isBoss ? GetBoss(wave, i) : GetEnemy(wave, i));
 
 		if (prefabs.Count == 0) return null;
 		return prefabs;

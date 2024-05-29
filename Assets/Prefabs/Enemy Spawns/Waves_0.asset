@@ -58,7 +58,7 @@ MonoBehaviour:
   - prefabs:
     - {fileID: 8120391685944419036, guid: 0cbb1cac6991048ef8970ddbe7e01d6d, type: 3}
     - {fileID: 614729261378040568, guid: f6318791af30e4f6ea0519bfa8e08b10, type: 3}
-    - {fileID: 257450857768645666, guid: b9e3977f90de04e7a92090df30472e28, type: 3}
+    - {fileID: 7199139338457447609, guid: a5c0e70a2ddad403ab9de61dcf096c16, type: 3}
   enemyBossCosts:
   - costs: 5a0000006400000069000000
   - costs: 960000006400000069000000

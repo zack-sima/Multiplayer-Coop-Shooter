@@ -56,7 +56,7 @@ public class Bullet : MonoBehaviour {
 		senderEntity = sender;
 		this.bulletId = bulletId;
 
-		damage *= sender.GetTurret().GetBulletModi() * (PlayerInfo.GetIsPVP() ? 1.5f : 1f);
+		damage *= sender.GetTurret().GetBulletModi();// * (PlayerInfo.GetIsPVP() ? 1.5f : 1f);
 
 		if (isMissile) {
 			missileRenderer.material = missileTeamMaterials.GetTeamColor(team);
@@ -158,10 +158,8 @@ public class Bullet : MonoBehaviour {
 			distanceTravelled += Time.deltaTime;
 		}
 
-
-
-		if (distanceTravelled > maxDistance && !destroyed &&
-			senderEntity != null && (senderEntity.GetIsPlayer() || PlayerInfo.GetIsPVP())) {
+		if (distanceTravelled > maxDistance && ((!destroyed &&
+			senderEntity != null && (senderEntity.GetIsPlayer() || PlayerInfo.GetIsPVP())) || isGrenade)) {
 			if (senderIsLocal && isExplosion) {
 				DamageHandler.DealExplosiveDamage(transform.position, explosionRadius,
 					damage, false, senderEntity);
