@@ -508,6 +508,8 @@ public class GarageManager : MonoBehaviour {
 		playerHealthCanvas.SetActive(false);
 		inGarage = true;
 		blur.SetBlur(1);
+
+		Init();
 	}
 	public void CloseGarageTab() {
 		garageUI.gameObject.SetActive(false);
@@ -568,8 +570,10 @@ public class GarageManager : MonoBehaviour {
 	private void Awake() {
 		instance = this;
 	}
-
 	private void Start() {
+		Init();
+	}
+	private void Init() {
 		//abilitySprites
 		//icons setup
 		abilitySprites = new();
@@ -644,7 +648,8 @@ public class GarageManager : MonoBehaviour {
 				target, Time.deltaTime * 10f);
 			playerCamera.transform.rotation = Quaternion.RotateTowards(playerCamera.transform.rotation,
 				Quaternion.Euler(targetGarageCameraRotation), Time.deltaTime * 25f);
-		} else if (MenuManager.instance.GetLastClosedId() == 0 && !RepairsManager.instance.GetIsInRepairs()) {
+		} else if (MenuManager.instance.GetLastClosedId() == 0 && !RepairsManager.instance.GetIsInRepairs() &&
+			!UpgradesManager.instance.GetIsInUpgrades()) {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
 				normalCameraPosition, Time.deltaTime * 10f);
 			playerCamera.transform.rotation = Quaternion.RotateTowards(playerCamera.transform.rotation,

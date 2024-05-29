@@ -18,7 +18,8 @@ namespace Intializers {
 			Dictionary<string, Dictionary<string, int>> requested = PlayerDataHandler.instance.GetEquippedInfos();
 
 			if (requested == null || requested.Count == 0) {
-				LogError("No items requested to be equipped.", "InventoryHandler");
+				LogWarning("No items requested to be equipped.", "InventoryHandler");
+				UIController.instance.AbilitiesUpdated();
 				return;
 			}
 

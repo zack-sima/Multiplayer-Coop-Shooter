@@ -168,7 +168,8 @@ public class RepairsManager : MonoBehaviour {
 				target, Time.deltaTime * 10f), Quaternion.RotateTowards(
 				GarageManager.instance.GetPlayerCamera().transform.rotation,
 				Quaternion.Euler(targetGarageCameraRotation), Time.deltaTime * 150f));
-		} else if (MenuManager.instance.GetLastClosedId() == 1 && !GarageManager.instance.GetIsInGarage()) {
+		} else if (MenuManager.instance.GetLastClosedId() == 1 && !GarageManager.instance.GetIsInGarage() &&
+			!UpgradesManager.instance.GetIsInUpgrades()) {
 			GarageManager.instance.GetPlayerCamera().transform.SetPositionAndRotation(Vector3.MoveTowards(
 				GarageManager.instance.GetPlayerCamera().transform.position,
 				normalCameraPosition, Time.deltaTime * 10f), Quaternion.RotateTowards(
