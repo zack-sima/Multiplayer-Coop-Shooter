@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 4294967295
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8d858f0eba4f06746b8e655966671815, type: 2}
+  - {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -196,7 +196,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 3, z: 0}
-  m_LocalScale: {x: 3, y: 3, z: 3}
+  m_LocalScale: {x: 3.5, y: 3.5, z: 3.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7021440867166806146}
@@ -217,6 +217,9 @@ MonoBehaviour:
   explosionPrefab: {fileID: 8446013055927753855, guid: fdbc35bd3f6774bebbe877f64dbe32de, type: 3}
   firePrefab: {fileID: 0}
   isGrenade: 1
+  isMissile: 0
+  missileTeamMaterials: {fileID: 11400000, guid: b2d40957c065d43fd955c9770c5ea063, type: 2}
+  missileRenderer: {fileID: 1957941013799146605}
   speed: 13.5
   damage: 800
   isExplosion: 1

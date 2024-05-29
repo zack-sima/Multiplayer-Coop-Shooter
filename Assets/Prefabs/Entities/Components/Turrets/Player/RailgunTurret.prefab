@@ -1560,7 +1560,7 @@ MonoBehaviour:
   bulletAnchor: {fileID: 6510844160750349756}
   bulletPrefab: {fileID: 8601614415527540211, guid: 2002959a5b19d41d28d3a89b0eab3834, type: 3}
   maxAmmo: 1
-  ammoRegenerationSpeed: 0.5
+  ammoRegenerationSpeed: 0.42
   isFullAuto: 0
   shootSpeed: 0.2
   shootSpread: 3
@@ -1585,6 +1585,7 @@ MonoBehaviour:
   - {fileID: 4094886762251762357}
   - {fileID: 4233992434346480566}
   teamColor2ndMatRenderers: []
+  teamColorRendererIndices: 
   gun: {fileID: 4130643892392862748}
   muzzleFlashes:
   - {fileID: 7805661936414053286}

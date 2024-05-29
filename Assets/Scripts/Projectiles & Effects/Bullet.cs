@@ -58,8 +58,9 @@ public class Bullet : MonoBehaviour {
 
 		damage *= sender.GetTurret().GetBulletModi();// * (PlayerInfo.GetIsPVP() ? 1.5f : 1f);
 
+		if (isMissile || isGrenade) missileRenderer.material = missileTeamMaterials.GetTeamColor(team);
+
 		if (isMissile) {
-			missileRenderer.material = missileTeamMaterials.GetTeamColor(team);
 			System.Random r = new(bulletId);
 			bogoRotate = (float)r.NextDouble() * 3f;
 			speed /= 1.25f;
