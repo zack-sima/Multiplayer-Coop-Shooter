@@ -21,6 +21,11 @@ public class ServerLinker : MonoBehaviour {
 		if (LobbyUI.instance != null) LobbyUI.instance.InLobbyUpdated();
 	}
 
+	//world time fetch
+	private bool fetchedWorldTime = false;
+	public bool GetWorldTimeFetched() { return fetchedWorldTime; }
+	public void SetWorldTimeFetched() { fetchedWorldTime = true; }
+
 	//prevent audio clipping
 	private bool gameStopped = false;
 	public bool GetGameIsStopped() { return gameStopped; }

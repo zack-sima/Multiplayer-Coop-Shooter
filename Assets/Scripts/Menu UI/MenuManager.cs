@@ -26,6 +26,10 @@ public class MenuManager : MonoBehaviour {
 	[SerializeField] private RectTransform debugScreen, menuScreen;
 	public void SetMenuScreen(bool active) { menuScreen.gameObject.SetActive(active); }
 
+	[SerializeField] private RectTransform needRepairScreen;
+	public void ShowNeedRepairPopup() { needRepairScreen.gameObject.SetActive(true); }
+	public void HideNeedRepairPopup() { needRepairScreen.gameObject.SetActive(false); }
+
 	//play button (change text!)
 	[SerializeField] private TMP_Text playButtonText;
 	public void SetPlayButtonText(string text) { playButtonText.text = text; }
@@ -180,6 +184,11 @@ public class MenuManager : MonoBehaviour {
 
 	//NOTE: play button goes to where currentGameMode is set to (SP game, lobby, etc)
 	public void PlayButtonClicked() {
+		if (RepairsManager.instance.PlayerNeedsRepair()) {
+			ShowNeedRepairPopup();
+			return;
+		}
+
 		PlayerPrefs.SetInt("game_mode", (int)currentGameMode);
 
 		switch (currentGameMode) {
@@ -199,6 +208,11 @@ public class MenuManager : MonoBehaviour {
 		}
 	}
 	public void StartLobby(string lobbyId, bool isJoining) {
+		if (RepairsManager.instance.PlayerNeedsRepair()) {
+			ShowNeedRepairPopup();
+			return;
+		}
+
 		if (lobbyId == "") return;
 
 		//NOTE: lobbies directly use room_id; games have _g appended to it to distinguish it from lobby rooms

@@ -6,7 +6,7 @@ using TMPro;
 
 public class GarageButton : MonoBehaviour {
 
-	[SerializeField] private GameObject equippedBand;
+	[SerializeField] private GameObject equippedBand, repairBand;
 	[SerializeField] private TMP_Text levelText;
 	[SerializeField] private Image itemImage;
 
@@ -37,6 +37,9 @@ public class GarageButton : MonoBehaviour {
 	}
 	public string GetItemName() {
 		return itemName;
+	}
+	public void SetRepairing(bool repairing) {
+		repairBand.SetActive(repairing);
 	}
 	public bool GetIsEquipped() {
 		return equippedBand.activeInHierarchy;
