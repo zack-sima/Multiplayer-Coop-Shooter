@@ -22,7 +22,7 @@ public class MenuManager : MonoBehaviour {
 	[SerializeField] private TMP_Text modeDisplayTitle, modeDisplayDescription;
 	[SerializeField] private Image modeDispalyIcon;
 
-	//debug screen (TODO: add in all other required stuff!)
+	//debug screen
 	[SerializeField] private RectTransform debugScreen, menuScreen;
 	public void SetMenuScreen(bool active) { menuScreen.gameObject.SetActive(active); }
 
@@ -345,10 +345,10 @@ public class MenuManager : MonoBehaviour {
 			PlayerPrefs.SetString("player_name", inputText);
 			if (!waitingChangeNameInput) StartCoroutine(WaitForNameInputExit());
 		}
-		if (outdoorsMap.activeInHierarchy != (PlayerPrefs.GetInt("use_outdoor") == 1)) {
-			outdoorsMap.SetActive(PlayerPrefs.GetInt("use_outdoor") == 1);
-			garageMap.SetActive(PlayerPrefs.GetInt("use_outdoor") != 1);
-		}
+		//if (outdoorsMap.activeInHierarchy != (PlayerPrefs.GetInt("use_outdoor") == 1)) {
+		//	outdoorsMap.SetActive(PlayerPrefs.GetInt("use_outdoor") == 1);
+		//	garageMap.SetActive(PlayerPrefs.GetInt("use_outdoor") != 1);
+		//}
 
 #if UNITY_EDITOR
 		if (Input.GetKey(KeyCode.LeftAlt) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.D))

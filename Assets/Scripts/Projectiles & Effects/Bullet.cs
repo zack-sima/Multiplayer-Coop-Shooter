@@ -13,6 +13,13 @@ public class Bullet : MonoBehaviour {
 
 	#region Members
 
+	[SerializeField] private bool isGrenade;
+	[SerializeField] private bool isMissile;
+
+	//missiles have teams
+	[SerializeField] private TeamMaterialManager missileTeamMaterials;
+	[SerializeField] private Renderer missileRenderer;
+
 	[SerializeField] protected float speed;
 	public float GetSpeed() { return speed; }
 
@@ -26,7 +33,6 @@ public class Bullet : MonoBehaviour {
 	private int bulletId = -1;
 	private bool senderIsLocal = false;
 	private bool alreadyHitTarget = false;
-	private bool isCrit = false;
 
 	//for flame
 	private readonly List<Collider> hitTargets = new();
@@ -35,6 +41,10 @@ public class Bullet : MonoBehaviour {
 	//self destruction
 	private float distanceTravelled = 0;
 	private bool destroyed = false;
+
+	//for missile
+	private float time = 0.8f;
+	private float bogoRotate = 0f;
 
 	#endregion
 
@@ -47,6 +57,13 @@ public class Bullet : MonoBehaviour {
 		this.bulletId = bulletId;
 
 		damage *= sender.GetTurret().GetBulletModi() * (PlayerInfo.GetIsPVP() ? 1.5f : 1f);
+
+		if (isMissile) {
+			missileRenderer.material = missileTeamMaterials.GetTeamColor(team);
+			System.Random r = new(bulletId);
+			bogoRotate = (float)r.NextDouble() * 3f;
+			speed /= 1.25f;
+		}
 	}
 	//checks layermask (gpt)
 	private bool IsLayerInLayerMask(GameObject obj, LayerMask mask) {
@@ -117,6 +134,10 @@ public class Bullet : MonoBehaviour {
 		DestroyBulletEffect();
 	}
 	private void Start() {
+		if (isGrenade) {
+			GetComponent<Rigidbody>().AddForce(Random.Range(65f, 85f) * speed * transform.forward + Vector3.up * 50f +
+				Random.insideUnitSphere * Random.Range(0f, 5f));
+		}
 		if (firePrefab != null) {
 			spawnedFlame = Instantiate(firePrefab, transform.position, transform.rotation);
 		}
@@ -124,8 +145,20 @@ public class Bullet : MonoBehaviour {
 		Destroy(gameObject, 5f);
 	}
 	virtual protected void Update() {
-		transform.Translate(speed * Time.deltaTime * Vector3.forward);
-		distanceTravelled += speed * Time.deltaTime;
+		if (!isGrenade) {
+			if (isMissile) {
+				time = Mathf.Min(time + Time.deltaTime * 5f, 3.5f);
+				speed += Time.deltaTime * time * time;
+				transform.Rotate(Time.deltaTime * 5f * (speed - 5f) *
+					Mathf.Sin(Mathf.Min(speed * 0.7f, 15f) * 1.2f * Mathf.PI + bogoRotate) * Vector3.up);
+			}
+			transform.Translate(speed * Time.deltaTime * Vector3.forward);
+			distanceTravelled += speed * Time.deltaTime;
+		} else {
+			distanceTravelled += Time.deltaTime;
+		}
+
+
 
 		if (distanceTravelled > maxDistance && !destroyed &&
 			senderEntity != null && (senderEntity.GetIsPlayer() || PlayerInfo.GetIsPVP())) {

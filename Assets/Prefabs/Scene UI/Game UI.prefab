@@ -2231,6 +2231,21 @@ MonoBehaviour:
   - turret: {fileID: 8306412023698569218, guid: 81647acf7fd274e03a3bf4245c173d50, type: 3}
     turretName: Flamethrower
     localPositionOffset: {x: 0, y: 0, z: 0}
+  - turret: {fileID: 8306412023698569218, guid: c98045763e7384728b32d6021fdf80ec, type: 3}
+    turretName: Howitzer
+    localPositionOffset: {x: 0, y: 0, z: 0}
+  - turret: {fileID: 8306412023698569218, guid: 9769f0dd34bce435f94c261adb4672dc, type: 3}
+    turretName: Railgun
+    localPositionOffset: {x: 0, y: 0, z: 0}
+  - turret: {fileID: 8306412023698569218, guid: f820e53ce91f64084a571f059aedf55f, type: 3}
+    turretName: Grenade Launcher
+    localPositionOffset: {x: 0, y: 0, z: 0}
+  - turret: {fileID: 8306412023698569218, guid: 5f34e56610708418ea68797b54e603e6, type: 3}
+    turretName: Shotgun
+    localPositionOffset: {x: 0, y: 0, z: 0}
+  - turret: {fileID: 8306412023698569218, guid: f58b753d0a08f466087b587016850dc2, type: 3}
+    turretName: Missile Launcher
+    localPositionOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &4836627643148608670
 MonoBehaviour:
   m_ObjectHideFlags: 0

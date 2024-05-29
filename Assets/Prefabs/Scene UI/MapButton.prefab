@@ -442,10 +442,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapName: Military_1
-  isSolo: 1
-  isRapid: 0
-  isComp: 0
-  isPCP: 0
+  mode: 0
+  difficulty: 0
   displayProg: 0
   progDisplayText: {fileID: 7274514588250172352}
   progDisplayIcon: {fileID: 3703729772810729074}

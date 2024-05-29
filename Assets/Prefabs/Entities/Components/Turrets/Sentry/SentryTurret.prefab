@@ -248,6 +248,7 @@ GameObject:
   - component: {fileID: 8306412023698569218}
   - component: {fileID: 3630697892632472453}
   - component: {fileID: 2880983561177711098}
+  - component: {fileID: 5269152819386190283}
   m_Layer: 6
   m_Name: SentryTurret
   m_TagString: Untagged
@@ -463,6 +464,27 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!65 &5269152819386190283
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4780522923598946021}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 4, z: 1}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1001 &961883026658539980
 PrefabInstance:
   m_ObjectHideFlags: 0
