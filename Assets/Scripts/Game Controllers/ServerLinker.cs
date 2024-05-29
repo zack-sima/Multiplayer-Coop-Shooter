@@ -25,6 +25,7 @@ public class ServerLinker : MonoBehaviour {
 	private bool fetchedWorldTime = false;
 	public bool GetWorldTimeFetched() { return fetchedWorldTime; }
 	public void SetWorldTimeFetched() { fetchedWorldTime = true; }
+	public void SetWorldTimeUnfetched() { fetchedWorldTime = false; }
 
 	//prevent audio clipping
 	private bool gameStopped = false;

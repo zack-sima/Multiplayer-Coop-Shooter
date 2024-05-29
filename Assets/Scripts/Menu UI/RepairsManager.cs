@@ -104,6 +104,8 @@ public class RepairsManager : MonoBehaviour {
 	//tries to fetch world time. If successful, allow time to "jump" if it is the first time the user got it in a session.
 	private IEnumerator GetWorldTime() {
 		while (true) {
+			AccountDataSyncer.instance.CheckBackgroundTime();
+
 			using (UnityWebRequest webRequest = UnityWebRequest.Get("http://worldtimeapi.org/api/timezone/Etc/UTC")) {
 				yield return webRequest.SendWebRequest();
 

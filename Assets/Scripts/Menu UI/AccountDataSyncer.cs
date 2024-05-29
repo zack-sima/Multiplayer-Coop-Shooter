@@ -47,6 +47,13 @@ public class AccountDataSyncer : MonoBehaviour {
 
 	private float lastChangedTimestamp = -20f;
 
+	private long lastRepairsTimestamp = 0;
+
+	public static long GetSystemTime() {
+		System.DateTimeOffset dateTimeOffset = System.DateTimeOffset.UtcNow;
+		return dateTimeOffset.ToUnixTimeSeconds();
+	}
+
 	#endregion
 
 	#region Functions
@@ -269,6 +276,17 @@ public class AccountDataSyncer : MonoBehaviour {
 			RepairsManager.instance.UpdateRepairs();
 		}
 	}
+	public void CheckBackgroundTime() {
+		if (lastRepairsTimestamp == 0) {
+			lastRepairsTimestamp = GetSystemTime();
+		}
+
+		//application went to background
+		if (GetSystemTime() - lastRepairsTimestamp > 10) {
+			//Debug.Log($"Application went to background for {GetSystemTime() - lastRepairsTimestamp}s");
+			ServerLinker.instance.SetWorldTimeUnfetched();
+		}
+	}
 	private void Awake() {
 		if (instance != null) {
 			Destroy(gameObject);
@@ -279,6 +297,9 @@ public class AccountDataSyncer : MonoBehaviour {
 	}
 	private void Start() {
 		if (instance != this) return;
+
+		print("started again");
+		lastRepairsTimestamp = GetSystemTime();
 	}
 	private void Update() {
 		updateInfoTimer -= Time.deltaTime;
@@ -290,8 +311,10 @@ public class AccountDataSyncer : MonoBehaviour {
 		//repairs; TODO: research also here
 		repairIncrementTimer -= Time.deltaTime;
 		if (repairIncrementTimer <= 0f) {
+			CheckBackgroundTime();
 			repairIncrementTimer = 1f;
 			UpdateRepairs(1);
+			lastRepairsTimestamp = GetSystemTime();
 		}
 	}
 
