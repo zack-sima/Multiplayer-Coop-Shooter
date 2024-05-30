@@ -399,7 +399,7 @@ MonoBehaviour:
   teamMaterials: {fileID: 11400000, guid: faa23109d9fc044828b87850367187b7, type: 2}
   hitbox: {fileID: 7181200219554754575}
   isPlayer: 1
-  isStructure: 0
+  isStructure: 1
   maxHealth: 5000
   healthBarType: 0
   killReward: 0
@@ -480,10 +480,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.75
-  m_Height: 2.6986914
+  m_Radius: 0.9
+  m_Height: 2.986492
   m_Direction: 1
-  m_Center: {x: 0, y: 1.9371266, z: 0}
+  m_Center: {x: 0, y: 1.7932264, z: 0}
 --- !u!1 &1545255075196001074
 GameObject:
   m_ObjectHideFlags: 0
