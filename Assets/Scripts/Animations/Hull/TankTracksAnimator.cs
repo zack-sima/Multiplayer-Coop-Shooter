@@ -10,6 +10,8 @@ public class TankTracksAnimator : MonoBehaviour {
 
 	[SerializeField] private List<Transform> tracks, wheels;
 
+	[SerializeField] private bool useZCarAxis, reverseWheels, reverseTracks;
+
 	#endregion
 
 	#region Members
@@ -32,6 +34,11 @@ public class TankTracksAnimator : MonoBehaviour {
 			trackPositions.Add(t.localPosition);
 			trackRotations.Add(t.localRotation);
 		}
+		if (reverseTracks) {
+			tracks.Reverse();
+			trackPositions.Reverse();
+			trackRotations.Reverse();
+		}
 	}
 	void Update() {
 		if (speed < 0) {
@@ -51,7 +58,11 @@ public class TankTracksAnimator : MonoBehaviour {
 			);
 		}
 		foreach (Transform t in wheels) {
-			t.localEulerAngles = new Vector3(trackProgress * 45f, 0, 0);
+			t.localEulerAngles = new Vector3(t.localEulerAngles.x, t.localEulerAngles.y, trackProgress * 45f * (reverseWheels ? -1f : 1f));
+			if (useZCarAxis) {
+			} else {
+				t.localEulerAngles = new Vector3(trackProgress * 45f * (reverseWheels ? -1f : 1f), t.localEulerAngles.y, t.localEulerAngles.z);
+			}
 		}
 	}
 }

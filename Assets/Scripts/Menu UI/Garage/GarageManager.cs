@@ -153,14 +153,12 @@ public class GarageManager : MonoBehaviour {
 	}
 	private void CheckRepairButtonTurret() {
 		repairButton.SetActive(PersistentDict.GetInt("repair_uses_" + selectedTurretName) > 0 &&
-			PlayerPrefs.GetString("turret_name") != selectedTurretName &&
 			!PersistentDict.GetStringList("repair_names").Contains(selectedTurretName) &&
 			RepairsManager.instance.HasRepairRoom());
 		SetEquipButtonTurret();
 	}
 	private void CheckRepairButtonHull() {
 		repairButton.SetActive(PersistentDict.GetInt("repair_uses_" + selectedHullName) > 0 &&
-			PlayerPrefs.GetString("hull_name") != selectedHullName &&
 			!PersistentDict.GetStringList("repair_names").Contains(selectedHullName) &&
 			RepairsManager.instance.HasRepairRoom());
 		SetEquipButtonHull();
@@ -321,8 +319,8 @@ public class GarageManager : MonoBehaviour {
 		string selected = currentSelectedMode == 0 ? selectedHullName : selectedTurretName;
 		string current = currentSelectedMode == 0 ? PlayerPrefs.GetString("hull_name") : PlayerPrefs.GetString("turret_name");
 
-		//not equipped
-		if (selected != current) {
+		//not equipped (NOTE: not enforced anymore)
+		if (selected != current || true) {
 			List<int> repairTimers = PersistentDict.GetIntList("repair_timers");
 			List<string> repairNames = PersistentDict.GetStringList("repair_names");
 

@@ -226,7 +226,7 @@ public class HumanInputs : MonoBehaviour {
 		moveVector = moveVector.normalized;
 
 		//NOTE: PC-only tank drive
-		if (player.GetNetworker().GetHullName() == "Tank") {
+		if (player.GetNetworker().GetCombatEntity().GetHull().GetHullType() == Hull.HullType.TankDrive) {
 			float moveMagnitude = 0f;
 			float moveDir = 0f;
 			if (Input.GetKey(KeyCode.W)) {

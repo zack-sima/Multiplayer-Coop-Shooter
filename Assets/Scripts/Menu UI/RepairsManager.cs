@@ -54,7 +54,11 @@ public class RepairsManager : MonoBehaviour {
 			PersistentDict.GetInt("repair_uses_" + MenuManager.instance.GetPlayerHull()) <= 0 ||
 
 			GarageManager.instance.GetTurretDurability(MenuManager.instance.GetPlayerTurret()) -
-			PersistentDict.GetInt("repair_uses_" + MenuManager.instance.GetPlayerTurret()) <= 0;
+			PersistentDict.GetInt("repair_uses_" + MenuManager.instance.GetPlayerTurret()) <= 0 || PlayerSelectedIsRepairing();
+	}
+	public bool PlayerSelectedIsRepairing() {
+		List<string> repairing = PersistentDict.GetStringList("repair_names");
+		return repairing.Contains(PlayerPrefs.GetString("hull_name")) || repairing.Contains(PlayerPrefs.GetString("turret_name"));
 	}
 	//is repair shop full yet?
 	public bool HasRepairRoom() {
@@ -182,7 +186,7 @@ public class RepairsManager : MonoBehaviour {
 #if UNITY_EDITOR
 
 		if (Input.GetKeyDown(KeyCode.P)) {
-			JumpTime(60);
+			JumpTime(600);
 		}
 
 #endif

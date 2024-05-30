@@ -11465,11 +11465,17 @@ MonoBehaviour:
   hullNames:
   - Tank
   - Spider
+  - Car
+  - Objekt
+  - Hover
   hullSprites:
   - {fileID: 21300000, guid: 9a64bb7cf2da5429eb7aada631ee7a68, type: 3}
   - {fileID: 21300000, guid: f7e04599590fc4291859e8a23312311b, type: 3}
-  hullRepairDurabilities: 0500000005000000
-  hullRepairTimes: b0040000b0040000
+  - {fileID: 21300000, guid: acb48776da0fc465dab06ec2e7a001a5, type: 3}
+  - {fileID: 21300000, guid: 1c7b19a12c592452aac21f5463b9f4ab, type: 3}
+  - {fileID: 21300000, guid: 302eef2a90fe54936b9efe8a0cd47f11, type: 3}
+  hullRepairDurabilities: 0500000005000000050000000500000005000000
+  hullRepairTimes: b0040000b0040000b0040000b0040000b0040000
   turretNames:
   - Autocannon
   - Explosive Cannon

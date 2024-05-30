@@ -58,14 +58,17 @@ public class Entity : MonoBehaviour {
 	[SerializeField] private bool isStructure;
 	public bool GetIsStructure() { return isStructure; }
 
-	//set in inspector; TODO: change via upgrades, etc & set at init function
+	//set in inspector
 	[SerializeField] private float maxHealth;
-	private float baseHealth;
-	public float GetBaseHealth() { return baseHealth; }
 	public float GetMaxHealth() { return maxHealth; }
+
+	protected float baseHealth; //set as max health when changing hulls if is player
+	public float GetBaseHealth() { return baseHealth; }
+
 	public void SetMaxHealth(float maxHealth) { this.maxHealth = maxHealth; }
 	public void SetCurrentHealth(float health) {
-		networker.ChangeLocalHealth(health);}
+		networker.ChangeLocalHealth(health);
+	}
 	[SerializeField] private HealthBarType healthBarType;
 
 	//for autohealing
@@ -152,9 +155,6 @@ public class Entity : MonoBehaviour {
 	}
 	public void UpdateHealthBar() {
 		healthCanvas.GetHealthBar().localScale = new Vector2(GetHealth() / maxHealth, 1f);
-	}
-	public void UpdateMaxHealth(float maxHealth) {
-		this.maxHealth = maxHealth;
 	}
 
 	#endregion
