@@ -51,6 +51,7 @@ public class MLAgent : Agent
         }
         print($"{(nonOverrideCamera.transform.position - transform.position).magnitude}");
         cameraSensor = new CameraSensor(nonOverrideCamera, 128, 128, true, "VisualObservation", 0);
+        cameraSensor.GetCompressedObservation();
         StartCoroutine(Tick());
     }
 
