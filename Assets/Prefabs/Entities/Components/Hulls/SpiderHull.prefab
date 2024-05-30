@@ -174,7 +174,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -572870694361189799, guid: 13922d86574024da9b3276a8aacbf48e, type: 3}
+  - {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
   - {fileID: -4973734387028869240, guid: cb541d5bbc0b946e0aa91717ec3dc144, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -503,7 +503,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -572870694361189799, guid: 13922d86574024da9b3276a8aacbf48e, type: 3}
+  - {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
   - {fileID: -4973734387028869240, guid: cb541d5bbc0b946e0aa91717ec3dc144, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -933,7 +933,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -572870694361189799, guid: 13922d86574024da9b3276a8aacbf48e, type: 3}
+  - {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1007,7 +1007,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -572870694361189799, guid: 13922d86574024da9b3276a8aacbf48e, type: 3}
+  - {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
   - {fileID: -4973734387028869240, guid: cb541d5bbc0b946e0aa91717ec3dc144, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -1350,7 +1350,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -572870694361189799, guid: 13922d86574024da9b3276a8aacbf48e, type: 3}
+  - {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
   - {fileID: -4973734387028869240, guid: cb541d5bbc0b946e0aa91717ec3dc144, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -1633,8 +1633,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   turretAnchor: {fileID: 5800266155160921073}
   animator: {fileID: 2645694096353508049}
-  speed: 4.5
+  speed: 4.2
   acceleration: 25
+  hullType: 1
+  baseHealth: 7000
 --- !u!114 &2645694096353508049
 MonoBehaviour:
   m_ObjectHideFlags: 0

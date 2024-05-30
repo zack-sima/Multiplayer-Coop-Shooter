@@ -25,10 +25,18 @@ public class Hull : MonoBehaviour {
 
 	#region Members
 
+	public enum HullType { TankDrive, SpiderDrive }
+
 	[SerializeField] private float speed;
 	public float GetSpeed() { return speed; }
 
 	[SerializeField] private float acceleration;
+
+	[SerializeField] private HullType hullType;
+	public HullType GetHullType() { return hullType; }
+
+	[SerializeField] private int baseHealth = 5000;
+	public int GetBaseHealth() { return baseHealth; }
 
 	private Vector3 currentVelocity = Vector3.zero;
 	private Vector3 lastDirection = Vector3.zero;
@@ -73,6 +81,9 @@ public class Hull : MonoBehaviour {
 			if (e == null || e == self || e.GetNetworker().GetIsDead()) continue;
 			TrySimulatePush(e.transform.position);
 		}
+	}
+	public void SetAsAI() {
+		animator.SetAsAI();
 	}
 	private void TrySimulatePush(Vector3 other) {
 		float threshold = 1.8f;

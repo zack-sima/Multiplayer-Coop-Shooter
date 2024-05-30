@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &6978819917799538892
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1447761011914515099}
+  - component: {fileID: 6459345738036201722}
+  m_Layer: 0
+  m_Name: PlayerDataHandler
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1447761011914515099
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6978819917799538892}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6459345738036201722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6978819917799538892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 44166f354ec20410daa502d0d3fa3107, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  activeRawCSV: {fileID: 4900000, guid: 1b1c2d97245994f0e8dc1ba734c5281d, type: 3}
+  gadgetRawCSV: {fileID: 4900000, guid: 33c44551077f74459a4d3e01c4714284, type: 3}
+  hullRawCSV: {fileID: 4900000, guid: c22a9c111db254793bb735a1b81c53c4, type: 3}
+  turretRawCSV: {fileID: 4900000, guid: 0b6b164fbec7540a2bfee11f8702c7dc, type: 3}
+  superRawCSV: {fileID: 0}
+  icons:
+  - id: HealActive
+    icon: {fileID: 21300000, guid: c7b397002edfa4e7c80a76ffcb73de4c, type: 3}
+    regularUiIcon: {fileID: 21300000, guid: 0a78727290d0c46058ae42cfa9032d94, type: 3}
+    activeUiIcon: {fileID: 21300000, guid: 821543d94fdcf4585b51f76651aedc6c, type: 3}
+    children:
+    - id: Faster Heals
+      icon: {fileID: 21300000, guid: c53113c0d4e33447da5dde2bc4be243a, type: 3}
+    - id: Bigger Heals
+      icon: {fileID: 21300000, guid: 672a4bb0d63894d88a070e0b6f519dc3, type: 3}
+  - id: RapidFireActive
+    icon: {fileID: 21300000, guid: 20883c1139ab74393844dfc740918ab5, type: 3}
+    regularUiIcon: {fileID: 21300000, guid: 37a6ef267109a473ea8e83f8e587173b, type: 3}
+    activeUiIcon: {fileID: 21300000, guid: db404816c5bb24e95924d45f2152cd92, type: 3}
+    children:
+    - id: Faster Fire
+      icon: {fileID: 21300000, guid: a7252f6b476284a51bed29c1c0e05e11, type: 3}
+  - id: SentryActive
+    icon: {fileID: 21300000, guid: 56f0c9b4fc3f34c009143569a465f28a, type: 3}
+    regularUiIcon: {fileID: 21300000, guid: 5d284b69185e1424daf49fe5e86f3fd4, type: 3}
+    activeUiIcon: {fileID: 21300000, guid: b62f528563d7d4f37b23bb843afbcc8b, type: 3}
+    children:
+    - id: Reinforced Sentry
+      icon: {fileID: 21300000, guid: 0eed031fe50394484a433a42c19d2dc8, type: 3}
+    - id: Larger Caliber
+      icon: {fileID: 21300000, guid: 753d4a81dc05c4aa693a7cba1daf2573, type: 3}

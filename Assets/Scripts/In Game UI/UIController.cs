@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Abilities;
+using Handlers;
+
 
 #if UNITY_IOS || UNITY_ANDROID
 using CandyCoded.HapticFeedback;
@@ -11,6 +13,17 @@ using CandyCoded.HapticFeedback;
 using TMPro;
 
 public class UIController : MonoBehaviour {
+
+	#region Nested
+
+	[System.Serializable]
+	public class IconBundle {
+		public string id; // ID is found in the Active CSV file or as nameof(CSVId.---)
+		public Sprite icon;
+		public Color color;
+	}
+
+	#endregion
 
 	#region Statics & Consts
 
@@ -28,20 +41,46 @@ public class UIController : MonoBehaviour {
 	#endregion
 
 	#region References
+	[Header("UI Elements")]
 
-	[SerializeField] private TMP_Text respawnTimerText, gameOverTimerText, moneyText, waveText;
-
+	[SerializeField] private TMP_Text respawnTimerText;
+	[SerializeField] private TMP_Text gameOverTimerText, moneyText, waveText;
 	[SerializeField] private RectTransform respawnUI, gameOverUI, mobileUI, pcUI, loadingUI, optionsUI;
 
+	[Header("Abilities")]
 	[SerializeField] private List<GameObject> mobileAbilityButtons;
-
 	[SerializeField] private List<GameObject> pcAbilityButtons;
+	[SerializeField] private Sprite defaultAbilityButtonIcon;
+	[SerializeField] private List<IconBundle> abilityButtonIcons; //TODO: Name this better perhaps?
 
+	[Header("Misc")]
 	[SerializeField] private AudioSource soundtrack;
-
 	[SerializeField] private GameObject debugUIPrefab;
 
-	#region Ability UI
+	#endregion
+
+	#region Members
+
+	//if just closed options, don't allow fire
+	private float closedOptionsTimestamp = 0f;
+	private bool hasInitButtons = false;
+
+	#endregion
+
+	#region Functions
+
+	public Sprite GetAbilityIcon(string id) {
+		foreach (IconBundle i in abilityButtonIcons) {
+			if (i.id == id) return i.icon;
+		}
+		return null;
+	}
+	public Color GetAbilityColor(string id) {
+		foreach (IconBundle i in abilityButtonIcons) {
+			if (i.id == id) return i.color;
+		}
+		return Color.white;
+	}
 
 	/// <summary>
 	/// Turns off all ability Buttons for a clean slate.
@@ -54,14 +93,6 @@ public class UIController : MonoBehaviour {
 		foreach (GameObject g in pcAbilityButtons) {
 			if (g.activeInHierarchy) g.SetActive(false);
 		}
-	}
-
-	/// <summary>
-	/// Called by each ability to update certain stuff on a callback basis.
-	/// </summary>
-	public GameObject GetAbilityButton(int index) {
-		if (index! < (GetIsMobile() ? mobileAbilityButtons.Count : pcAbilityButtons.Count)) return null;
-		return GetIsMobile() ? mobileAbilityButtons[index] : pcAbilityButtons[index];
 	}
 
 	/// <summary>
@@ -78,78 +109,48 @@ public class UIController : MonoBehaviour {
 	public void AbilitiesUpdated() {
 		List<GameObject> buttons = GetIsMobile() ? mobileAbilityButtons : pcAbilityButtons;
 		InitAbilityButtons(); // turn off all the buttons.
-							  //Debug.Log("UI controller is reached" + PlayerInfo.instance.GetAbilityList().Count + " " + buttons.Count);
-		for (int i = 0; i < NetworkedEntity.playerInstance.GetAbilityList().Count && i < buttons.Count; i++) {
-			//PlayerInfo.instance.GetAbilityList()[i]. /* TODO: Callback for icon, color, shape, etc. */
+		int i = 0;
+		foreach ((IAbility a, bool b) in NetworkedEntity.playerInstance.GetAbilityList()) { // init the button icons.
+			if (a is IActivatable) {
+				if (i < buttons.Count) {
+					buttons[i].SetActive(true);
+					GameObject o = buttons[i].transform.GetChild(1).gameObject;
+					GameObject g = buttons[i].transform.GetChild(2).gameObject;
 
-			//Callback for updating the UI button fill amount.
-			if (NetworkedEntity.playerInstance.GetAbilityList()[i].Item1 is IButtonRechargable) {
-				//callback for the image.
-				GameObject g = buttons[i].FindChild("OutlineProgress");
-				if (g != null) {
-					Image image = g.GetComponent<Image>();
-					if (image != null)
-						((IButtonRechargable)NetworkedEntity.playerInstance.GetAbilityList()[i].Item1).SetButtonOutlineProgressImage(image);
-				}
-				GameObject icon = buttons[i].FindChild("Icon");
-				if (icon != null) {
-					Image image = icon.GetComponent<Image>();
-					if (image != null)
-						((IButtonRechargable)NetworkedEntity.playerInstance.GetAbilityList()[i].Item1).SetIconImage(image);
-				}
+					g.GetComponent<Image>().sprite = GetAbilityIcon(a.GetId());
+					g.GetComponent<Image>().color = GetAbilityColor(a.GetId());
+					o.GetComponent<Image>().color = GetAbilityColor(a.GetId());
+
+					++i;
+				} else break;
 			}
-			//Debug.Log("Button is activated");
-			buttons[i].SetActive(true);
 		}
+		hasInitButtons = true;
 	}
 
+	/// <summary>
+	/// Updates the cooldowns on the ability buttons.
+	/// </summary>
+	private void UpdateAbilityButtons() { // TODO: Implement this in a better way zack??
+		int index = 0;
+		List<GameObject> buttons = GetIsMobile() ? mobileAbilityButtons : pcAbilityButtons;
+		foreach ((IAbility i, bool b) in NetworkedEntity.playerInstance.GetAbilityList()) {
+			if (i is ICooldownable a) {
+				if (index < buttons.Count) {
+					float percentage = a.GetCooldownPercentage();
+					GameObject g = buttons[index].FindChild("OutlineProgress");
+					if (g != null) {
+						Image image = g.GetComponent<Image>();
+						if (image != null) {
+							image.fillAmount = percentage;
+						}
+					}
+				} else return;
+				++index;
+			}
 
-	// private List<AbilityButton> abilityButtons;
-
-	// private struct AbilityButton {
-	// 	public GameObject realButton;
-	// 	public IAbility ability;
-	// }
-
-
-	// /// <summary>
-	// /// Maps each button to a ability and toggles visibility. Is a CALLBACK from Ability.Manager.AbilityUIManagerExtensions
-	// /// </summary>
-	// public void MapAbilityButtons() {
-	// 	abilityButtons.Clear();
-
-	// 	//Deactivate all the buttons.
-	// 	foreach(GameObject g in GetIsMobile() ? mobileAbilityButtons : pcAbilityButtons) {
-	// 		if (g.activeInHierarchy) g.SetActive(false);
-	// 	} 
-	// 	int i = 0;
-	// 	foreach((IAbility a, bool b) in PlayerInfo.instance.GetAbilityList()) {
-	// 		if ((GetIsMobile() ? mobileAbilityButtons.Count : pcAbilityButtons.Count) !< i) break;
-
-	// 		AbilityButton button = new AbilityButton {
-	// 			realButton = GetIsMobile() ? mobileAbilityButtons[i] : pcAbilityButtons[i],
-	// 			ability = a
-	// 		};
-
-	// 		button.realButton.SetActive(true);
-	// 		//TODO: Update icon.
-	// 		abilityButtons.Add(button);
-	// 		i++;
-	// 	}
-	// }
-
-	#endregion
-
-	#endregion
-
-	#region Members
-
-	//if just closed options, don't allow fire
-	private float closedOptionsTimestamp = 0f;
-
-	#endregion
-
-	#region Functions
+		}
+	}
 
 	/// <summary>
 	/// Haptic feedback
@@ -250,6 +251,7 @@ public class UIController : MonoBehaviour {
 		if (EnemySpawner.instance != null) {
 			SetWaveText(GameStatsSyncer.instance.GetWave() + 1);
 		}
+		if (hasInitButtons) UpdateAbilityButtons();
 	}
 	public void PauseGame() {
 		if (NetworkedEntity.playerInstance != null &&

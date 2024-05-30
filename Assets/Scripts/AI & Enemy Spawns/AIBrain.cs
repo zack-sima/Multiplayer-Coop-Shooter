@@ -44,6 +44,9 @@ public class AIBrain : MonoBehaviour {
 	//point cap
 	private CapturePoint targetPoint = null;
 
+	//when to find target again in coop
+	private int findTargetCountdown = 3;
+
 	#endregion
 
 	#region Functions
@@ -64,7 +67,9 @@ public class AIBrain : MonoBehaviour {
 
 		//try finding target
 		float closestDistance = isPVPBot ? 16 : 999;
-		if (target == null || isPVPBot) {
+		findTargetCountdown--;
+		if (target == null || isPVPBot || findTargetCountdown <= 0) {
+			findTargetCountdown = Random.Range(2, 5);
 			foreach (CombatEntity ce in EntityController.instance.GetCombatEntities()) {
 				if (!ce.GetNetworker().GetInitialized() ||
 					ce.GetTeam() == entity.GetTeam() || ce.GetNetworker().GetIsDead()) continue;

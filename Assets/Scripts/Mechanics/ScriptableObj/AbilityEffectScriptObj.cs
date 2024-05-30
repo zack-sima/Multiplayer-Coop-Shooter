@@ -1,8 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Abilities;
+
 using UnityEngine;
+using CSV;
 
 namespace Effects {
 
@@ -30,20 +28,20 @@ namespace Effects {
     }
 
     public static class EffectHandler {
-        public static GameObject GetEffect(this NetworkedEntity entity, UpgradeIndex i) {
+        public static GameObject GetEffect(this NetworkedEntity entity, CSVId i) {
             switch(i) {
-                case UpgradeIndex.Heal:
+                case CSVId.HealActive:
                     return entity.effectPrefabs.healEffectPrefab;
-                case UpgradeIndex.AreaHeal:
-                    return entity.effectPrefabs.areaHealEffectPrefab;
-                case UpgradeIndex.InfiHeal:
-                    return entity.effectPrefabs.infiHealEffectPrefab;
-                case UpgradeIndex.HPSteal:
-                    return entity.effectPrefabs.hpStealEffectPrefab;
-                case UpgradeIndex.RapidFire:
+                case CSVId.RapidFireActive:
                     return entity.effectPrefabs.fireEffectPrefab;
-                case UpgradeIndex.Sentry:
+                case CSVId.SentryActive:
                     return entity.effectPrefabs.sentryEffectPrefab;
+                // case UpgradeIndex.AreaHeal:
+                //     return entity.effectPrefabs.areaHealEffectPrefab;
+                // case UpgradeIndex.InfiHeal:
+                //     return entity.effectPrefabs.infiHealEffectPrefab;
+                // case UpgradeIndex.HPSteal:
+                //     return entity.effectPrefabs.hpStealEffectPrefab;
                 //! RMBR TO ATTACH A EFFECT SCRIPT TO THE PREFAB !
                 default:
                     return null;

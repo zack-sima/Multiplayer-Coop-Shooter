@@ -28,13 +28,13 @@ MonoBehaviour:
   - prefabs:
     - {fileID: 5607350789513698284, guid: 85e4a08c0098442d581b401123a52ebf, type: 3}
     - {fileID: 7199139338457447609, guid: 3d77f42239fd8491291821b0ea053287, type: 3}
-    - {fileID: 2225056807299657409, guid: a9048107fb4ba4ed3bee611e79583493, type: 3}
+    - {fileID: 7199139338457447609, guid: 4327244b9f57b49f59aae9a1212bb24f, type: 3}
     - {fileID: 7199139338457447609, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
     - {fileID: 3257286713558779120, guid: bf1fa87f381564931868369f6131c349, type: 3}
   - prefabs:
     - {fileID: 5607350789513698284, guid: 85e4a08c0098442d581b401123a52ebf, type: 3}
     - {fileID: 6796912476885155776, guid: f9e71ea7548cf449b813bc31dc536be1, type: 3}
-    - {fileID: 2225056807299657409, guid: a9048107fb4ba4ed3bee611e79583493, type: 3}
+    - {fileID: 7199139338457447609, guid: 4327244b9f57b49f59aae9a1212bb24f, type: 3}
     - {fileID: 7199139338457447609, guid: 8c174db57d7da4a048f6ccc979fdf7f1, type: 3}
     - {fileID: 3257286713558779120, guid: bf1fa87f381564931868369f6131c349, type: 3}
   enemyCosts:
@@ -88,7 +88,7 @@ MonoBehaviour:
   - waveNum: 28
     bogoEnemyPrefabs: 010000000400000003000000
   - waveNum: 32
-    bogoEnemyPrefabs: 000000000200000003000000
+    bogoEnemyPrefabs: 02000000
   - waveNum: 37
     bogoEnemyPrefabs: 0300000004000000
   allocCostMultiplier: 1.8

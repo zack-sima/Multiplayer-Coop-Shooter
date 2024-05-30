@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 using Abilities;
-using Abilities.UpgradeHandler;
+using Handlers;
+using Intializers;
 using Effects;
-using Abilities.StatHandler;
+using CSV;
 
 
 public class NetworkedEntity : NetworkBehaviour {
@@ -37,7 +38,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	#region Prefabs
 
 	[SerializeField] public AbilityPrefabAssets effectPrefabs;
-	[SerializeField] private GameObject sentryPrefab;
+	[SerializeField] private GameObject sentryPrefab, sentryTossPrefab;
 
 	#endregion
 
@@ -104,10 +105,6 @@ public class NetworkedEntity : NetworkBehaviour {
 	public bool GetInitialized() { return initialized; }
 
 	private Rigidbody optionalRigidbody = null;
-
-	//local ability toggles; TODO: scale ability level, etc
-	private bool abilityHealOn = false;
-	private bool abilityOverclockOn = false;
 
 	//respawn protection (locally enforced); compares Time.time
 	private float lastRespawnTimestamp = -10f;
@@ -192,10 +189,10 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	//*======================| Effects |======================*//
 
-	public GameObject InitEffect(float duration, float earlyDestruct, UpgradeIndex i) {
+	public GameObject InitEffect(float duration, float earlyDestruct, CSVId id) {
 		//Apply both local and RPC the effect change!
-		RPCInitEffect(i, duration, earlyDestruct);
-		GameObject e = this.GetEffect(i);
+		RPCInitEffect(duration, earlyDestruct, id);
+		GameObject e = this.GetEffect(id);
 		if (e == null) return null;
 		GameObject g = Instantiate(e, transform);
 		g.transform.Translate(Vector3.up * 0.1f);
@@ -203,9 +200,9 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 
 	[Rpc(RpcSources.All, RpcTargets.Proxies)]
-	private void RPCInitEffect(UpgradeIndex i, float duration, float earlyDestruct) {
+	private void RPCInitEffect(float duration, float earlyDestruct, CSVId id) {
 
-		GameObject g = this.GetEffect(i);
+		GameObject g = this.GetEffect(id);
 		if (g == null) return;
 
 		GameObject effect = Instantiate(g, transform);
@@ -273,7 +270,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 	private void MaxHealthBarChanged() {
 		if (!isPlayer || HasSyncAuthority()) return;
-		mainEntity.UpdateMaxHealth(MaxHealth);
+		mainEntity.SetMaxHealth(MaxHealth);
 	}
 	private void TeamChanged() {
 		if (Team != -1) {
@@ -295,11 +292,40 @@ public class NetworkedEntity : NetworkBehaviour {
 
 	#region Functions
 
-	//TODO: regulate using abilities
-	public NetworkedEntity SpawnSentry() {
-		//if (!HasSyncAuthority()) return null;
-		return Runner.Spawn(sentryPrefab, transform.position + new Vector3(Random.Range(-0.1f, 0.1f), 0f,
+	public void SpawnSentry(int team, int maxHealth, int maxAmmo, float ammoRegen,
+		float shootSpeed, float shootSpread, float dmgModi, bool isFullAuto) {
+
+		StartCoroutine(SentryToss(team, maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto));
+	}
+	private IEnumerator SentryToss(int team, int maxHealth, int maxAmmo, float ammoRegen,
+		float shootSpeed, float shootSpread, float dmgModi, bool isFullAuto) {
+
+		GameObject g = Instantiate(sentryTossPrefab, transform.position, transform.rotation);
+		Destroy(g, 2f);
+
+		Vector3 rand = new Vector3(Random.Range(-100f, 100f), Random.Range(-100f, 100f), Random.Range(-100f, 100f));
+
+		for (float i = 0; i < 1.5f; i += Time.deltaTime) {
+			g.transform.position = new Vector3(g.transform.position.x, 5f * (1 - Mathf.Pow(i * 1.3f - 1, 2)), g.transform.position.z);
+			g.transform.Rotate(Time.deltaTime * rand);
+			yield return new WaitForEndOfFrame();
+		}
+
+		Vector3 pos = g.transform.position;
+		pos.y = 0;
+
+		Destroy(g);
+
+		NetworkedEntity s = Runner.Spawn(sentryPrefab, pos + new Vector3(Random.Range(-0.1f, 0.1f), 0f,
 			Random.Range(-0.1f, 0.1f)), Quaternion.identity).GetComponent<NetworkedEntity>();
+
+		s.SetSentryStats(team, maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto);
+
+		GameObject sentryEffect = s.InitEffect(1, 0f, CSVId.SentryActive); //Effect
+		if (sentryEffect == null) yield break;
+		if (sentryEffect.TryGetComponent(out Effect e)) {
+			e.EnableDestroy(1f);
+		}
 	}
 
 	public void SetSentryStats(int team, int maxHealth, int maxAmmo, float ammoRegen, float shootSpeed, float shootSpread, float dmgModi, bool isFullAuto) {
@@ -330,7 +356,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		try {
 			return HasStateAuthority && isPlayer || !isPlayer &&
 				(Runner.IsSharedModeMasterClient || Runner.IsSinglePlayer);
-		} catch (System.Exception e) { Debug.LogError(e); return false; }
+		} catch (System.Exception e) { Debug.LogWarning(e); return false; }
 	}
 	[Rpc(RpcSources.StateAuthority, RpcTargets.Proxies)]
 	public void RPC_FireWeapon(int bulletId) {
@@ -482,7 +508,6 @@ public class NetworkedEntity : NetworkBehaviour {
 		this.InflictionHandlerSysTick(inflictions); // handles inflictions
 		this.SysTickStatHandler(abilities);
 
-		//UpdateStatModifier(); // Handle stat changes
 		if (HasSyncAuthority()) {
 			//local entity
 

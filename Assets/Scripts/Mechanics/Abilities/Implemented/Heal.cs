@@ -1,71 +1,31 @@
+using CSV;
 using CSV.Parsers;
+using Handlers;
 using Effects;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 namespace Abilities {
 
-     class Heal : IActivatable, ISysTickable, IButtonRechargable, IInitable {
+     class Heal : IActivatable, ISysTickable, ICooldownable {
         public float cooldownPeriod, healAmount, healDuration, remainingCooldownTime; 
         private float remainingHealTime = 0;
         private bool isActive = false;
-        private Image outline = null;
-        private Image abilityIcon = null;
-        private Sprite active, regular;
         private readonly string id;
 
         public string GetId() { return id; }
-
-        public Heal(CSVId id) { this.id = id.ToString(); }
-
-        public void Activate(NetworkedEntity entity, bool isOverride = false) { //reset the timer and activate ability.
-            if (!isOverride && (isActive || remainingCooldownTime != 0)) return;
-            remainingCooldownTime = cooldownPeriod;
-            remainingHealTime = healDuration;
-            isActive = true;
-            abilityIcon.sprite = active;
-
-            //Effect
-            GameObject healEffect = entity.InitEffect(healDuration, 0f, UpgradeIndex.Heal);
-            if (healEffect == null) return;
-            if (healEffect.TryGetComponent(out Effect e)) {
-                e.EnableDestroy(healDuration);
-            }
-            if (healEffect.TryGetComponent(out ParticleSystem p)) {
-                //For Particle effects.
-            }
-        }
-
         public bool GetIsActive() { return isActive; }
+        public float GetCooldownPercentage() { return isActive ? remainingHealTime / healDuration : (cooldownPeriod - remainingCooldownTime) / cooldownPeriod; }
 
-        public float GetCooldownPercentage() {
-            return (cooldownPeriod - remainingCooldownTime) / cooldownPeriod;
-        }
+        public Heal(CSVId id, InventoryInfo info = null, int level = 1) { 
+            this.id = id.ToString(); 
 
-        public void SysTickCall() {
-            if (isActive) {
-                remainingHealTime = Mathf.Max(0, remainingHealTime - Time.deltaTime);
-                if (remainingHealTime == 0) isActive = false;
-                if (outline != null) { // Show that the ability is currently active + cooldown bar for that.
-                    outline.fillAmount = remainingHealTime / healDuration;
-                }
-            } else {
-                remainingCooldownTime = Mathf.Max(0, remainingCooldownTime - Time.deltaTime);
-                if (outline != null) { // update the outline.
-                    outline.fillAmount = (cooldownPeriod - remainingCooldownTime) / cooldownPeriod;
-                    if (remainingCooldownTime != 0 && abilityIcon.sprite != regular) abilityIcon.sprite = regular;
-                    else if (remainingCooldownTime == 0 && abilityIcon.sprite != active) abilityIcon.sprite = active;
-                }
-            }
-        }
+            if (info == null && PlayerDataHandler.instance.TryGetInfo(id.ToString(), out InventoryInfo i)) 
+                info = i;
+            
+            if (info == null) { DebugUIManager.instance?.LogError("No info found for " + id, "HealActive"); return; }
 
-        public void SetButtonOutlineProgressImage(Image outlineProgress) {
-            outline = outlineProgress;
-            outline.color = Color.green;
-        }
-
-        public void Init(InventoryInfo info, int level) {
+            //Init stats
             if (info.TryGetModi(CSVMd.HealAmount, level, out double h)) {
                 healAmount = (float)h;
             } else DebugUIManager.instance?.LogError("No HealAmount found.", "HealActive");
@@ -78,13 +38,44 @@ namespace Abilities {
             remainingCooldownTime = cooldownPeriod;
         }
 
-        public void SetIconImage(Image iconImage) {
-            if(PlayerDataHandler.instance.TryGetUIIcon(nameof(CSVId.HealActive), out (Sprite active, Sprite regular) s)) {
-                abilityIcon = iconImage;
-                iconImage.sprite = s.regular;
-                active = s.active;
-                regular = s.regular;
-            } else DebugUIManager.instance?.LogError("No icon found for : ", "RapidFireActive");
+        public void Activate(NetworkedEntity entity, bool isOverride = false) { //reset the timer and activate ability.
+            if (!isOverride && (isActive || remainingCooldownTime != 0)) return;
+            remainingCooldownTime = cooldownPeriod;
+            remainingHealTime = healDuration;
+            isActive = true;
+
+            //Effect
+            GameObject healEffect = entity.InitEffect(healDuration, 0f, CSVId.HealActive);
+            if (healEffect == null) return;
+            if (healEffect.TryGetComponent(out Effect e)) {
+                e.EnableDestroy(healDuration);
+            }
+            if (healEffect.TryGetComponent(out ParticleSystem p)) {
+                //For Particle effects.
+            }
+        }
+
+        public void SysTickCall(NetworkedEntity entity) {
+            if (isActive) {
+                remainingHealTime = Mathf.Max(0, remainingHealTime - Time.deltaTime);
+                if (remainingHealTime == 0) isActive = false;
+                StatModifier stats = new();
+                stats.healthFlatModifier += healAmount * entity.GetEntity().GetMaxHealth() * Time.deltaTime / healDuration; 
+                entity.PushStatChanges(stats);
+            } else {
+                remainingCooldownTime = Mathf.Max(0, remainingCooldownTime - Time.deltaTime);
+            }
+        }
+
+        public bool TryPushUpgrade(string id, InGameUpgradeInfo info) {
+            if (id == nameof(CSVId.HealActive) + "FasterHeals") {
+                if (info.TryGetModi(nameof(CSVMd.Cooldown), out double cooldown)) 
+                    cooldownPeriod -= (float)cooldown;
+            } else if (id == nameof(CSVId.HealActive) + "BiggerHeals") {
+                if (info.TryGetModi(nameof(CSVMd.HealAmount), out double heal)) 
+                    healAmount += (float)heal;
+            } else return false;
+            return true;
         }
     }
 

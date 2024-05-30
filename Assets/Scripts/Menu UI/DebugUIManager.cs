@@ -4,8 +4,7 @@ using UnityEngine;
 using TMPro;
 using CSV.Parsers;
 using System;
-using UnityEngine.Rendering;
-using Fusion;
+using CSV;
 
 public class DebugUIManager : MonoBehaviour {
 
@@ -597,7 +596,9 @@ public class DebugUIManager : MonoBehaviour {
             }
         }
 
+        //convert to a dictionary<string, dictionary<string, int>>
         Dictionary<string, Dictionary<string, int>> equipped = PlayerDataHandler.instance?.GetEquippedInfos();
+
         if (equipped != null) {
 
             if (equipped.ContainsKey(nameof(CSVType.ACTIVES))) {

@@ -63,7 +63,7 @@ public class Turret : MonoBehaviour {
 	[SerializeField] protected float explosionDamage;
 	public float GetExplosionDamage() { return explosionDamage; }
 
-	protected float critChance = 0, critDamage = 1;
+	protected float critChance = 0, critDamage = 3f;
 	public (float critChance, float critDamage) GetCritValues() { return (critChance, critDamage); }
 	public void SetCritChance(float critChance) { this.critChance = critChance; }
 	public void SetCritDamage(float critDamage) { this.critDamage = critDamage; }

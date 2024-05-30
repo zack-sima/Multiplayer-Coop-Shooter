@@ -22,9 +22,13 @@ public class MenuManager : MonoBehaviour {
 	[SerializeField] private TMP_Text modeDisplayTitle, modeDisplayDescription;
 	[SerializeField] private Image modeDispalyIcon;
 
-	//debug screen (TODO: add in all other required stuff!)
+	//debug screen
 	[SerializeField] private RectTransform debugScreen, menuScreen;
 	public void SetMenuScreen(bool active) { menuScreen.gameObject.SetActive(active); }
+
+	[SerializeField] private RectTransform needRepairScreen;
+	public void ShowNeedRepairPopup() { needRepairScreen.gameObject.SetActive(true); }
+	public void HideNeedRepairPopup() { needRepairScreen.gameObject.SetActive(false); }
 
 	//play button (change text!)
 	[SerializeField] private TMP_Text playButtonText;
@@ -103,10 +107,22 @@ public class MenuManager : MonoBehaviour {
 		}
 	}
 
+	//for waiting coroutine
+	bool waitingChangeNameInput = false;
+
+	//0 = garage, 1 = repairs
+	int lastClosedId = 0;
+
 	#endregion
 
 	#region Functions
 
+	public void SetLastClosed(int id) {
+		lastClosedId = id;
+	}
+	public int GetLastClosedId() {
+		return lastClosedId;
+	}
 	public void SetGameMode(GameMode mode) {
 		PlayerPrefs.SetInt("game_mode", (int)mode);
 		PlayerPrefs.SetString("last_map", selectedMapName);
@@ -168,6 +184,11 @@ public class MenuManager : MonoBehaviour {
 
 	//NOTE: play button goes to where currentGameMode is set to (SP game, lobby, etc)
 	public void PlayButtonClicked() {
+		if (RepairsManager.instance.PlayerNeedsRepair()) {
+			ShowNeedRepairPopup();
+			return;
+		}
+
 		PlayerPrefs.SetInt("game_mode", (int)currentGameMode);
 
 		switch (currentGameMode) {
@@ -187,6 +208,11 @@ public class MenuManager : MonoBehaviour {
 		}
 	}
 	public void StartLobby(string lobbyId, bool isJoining) {
+		if (RepairsManager.instance.PlayerNeedsRepair()) {
+			ShowNeedRepairPopup();
+			return;
+		}
+
 		if (lobbyId == "") return;
 
 		//NOTE: lobbies directly use room_id; games have _g appended to it to distinguish it from lobby rooms
@@ -285,7 +311,6 @@ public class MenuManager : MonoBehaviour {
 		PlayerPrefs.SetString("player_name", playerNameInput.text);
 	}
 	//don't make networking call until input was finished changing
-	bool waitingChangeNameInput = false;
 	private IEnumerator WaitForNameInputExit() {
 		waitingChangeNameInput = true;
 		while (playerNameInput.isFocused) yield return null;
@@ -301,6 +326,10 @@ public class MenuManager : MonoBehaviour {
 
 		if (PlayerPrefs.GetString("hull_name") != "")
 			currentHull = PlayerPrefs.GetString("hull_name");
+
+		if (TestingServerLinker.instance != null) {
+			Destroy(TestingServerLinker.instance.gameObject);
+		}
 	}
 	private void Start() {
 		QualitySettings.SetQualityLevel(4);
@@ -330,10 +359,10 @@ public class MenuManager : MonoBehaviour {
 			PlayerPrefs.SetString("player_name", inputText);
 			if (!waitingChangeNameInput) StartCoroutine(WaitForNameInputExit());
 		}
-		if (outdoorsMap.activeInHierarchy != (PlayerPrefs.GetInt("use_outdoor") == 1)) {
-			outdoorsMap.SetActive(PlayerPrefs.GetInt("use_outdoor") == 1);
-			garageMap.SetActive(PlayerPrefs.GetInt("use_outdoor") != 1);
-		}
+		//if (outdoorsMap.activeInHierarchy != (PlayerPrefs.GetInt("use_outdoor") == 1)) {
+		//	outdoorsMap.SetActive(PlayerPrefs.GetInt("use_outdoor") == 1);
+		//	garageMap.SetActive(PlayerPrefs.GetInt("use_outdoor") != 1);
+		//}
 
 #if UNITY_EDITOR
 		if (Input.GetKey(KeyCode.LeftAlt) && Input.GetKey(KeyCode.LeftShift) && Input.GetKeyDown(KeyCode.D))

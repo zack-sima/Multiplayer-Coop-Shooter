@@ -1,9 +1,7 @@
-using System.Collections;
+
 using System.Collections.Generic;
-using System.Data;
-using Abilities;
-using ExitGames.Client.Photon.StructWrapping;
 using UnityEngine;
+using Handlers;
 
 
 /// <summary>
@@ -161,10 +159,16 @@ public class PlayerInfo : MonoBehaviour {
 		if (TryGetAmmoRegen(out float regenSpeed)) {
 			ammoReloadSpeed = regenSpeed;
 		}
-		
+
 	}
 	private void Start() {
 		TurretChanged(GetLocalPlayerTurretName());
+
+		//cost a hull & turret!
+		PersistentDict.SetInt("repair_uses_" + PlayerPrefs.GetString("hull_name"),
+			PersistentDict.GetInt("repair_uses_" + PlayerPrefs.GetString("hull_name")) + 1);
+		PersistentDict.SetInt("repair_uses_" + PlayerPrefs.GetString("turret_name"),
+			PersistentDict.GetInt("repair_uses_" + PlayerPrefs.GetString("turret_name")) + 1);
 	}
 	private void Awake() {
 		instance = this;

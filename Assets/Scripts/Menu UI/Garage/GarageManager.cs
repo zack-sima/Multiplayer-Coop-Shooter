@@ -10,7 +10,7 @@ public class GarageManager : MonoBehaviour {
 
 	public static GarageManager instance;
 
-	private const int MAX_ABILITIES = 2;
+	private const int MAX_ABILITIES = 3;
 	private const int MAX_GADGETS = 6;
 
 	#endregion
@@ -30,29 +30,40 @@ public class GarageManager : MonoBehaviour {
 
 	[SerializeField] private RectTransform selectionContentParent;
 	[SerializeField] private GridLayoutGroup selectionGrid;
-	[SerializeField] private TMP_Text selectionScreenTitle, selectedItemText;
+	[SerializeField] private TMP_Text selectionScreenTitle, selectedItemText, equipText, buyText;
 
-	[SerializeField] private Image selectedHullImage, selectedTurretImage, selectedAbilityImage;
+	[SerializeField] private GameObject equipButton, repairButton, buyButton;
 
-	//TODO: temporary storage of hulls and turrets here -> move to centralized location
+	[SerializeField] private Image selectedHullImage, selectedTurretImage, selectedAbilityImage, selectedGadgetImage;
+
+	//hulls & turrets
 	[SerializeField] private List<string> hullNames;
 	[SerializeField] private List<Sprite> hullSprites;
+	[SerializeField] private List<int> hullRepairDurabilities; //# of times hull can be used
+	[SerializeField] private List<int> hullRepairTimes; //sec, multiplied by number of uses
 
 	[SerializeField] private List<string> turretNames;
 	[SerializeField] private List<Sprite> turretSprites;
-
-	[SerializeField] private List<string> gadgetNames;
-	[SerializeField] private List<Sprite> gadgetSprites;
-
-	[SerializeField] private List<string> abilityNames;
-	[SerializeField] private List<Sprite> abilitySprites;
+	[SerializeField] private List<int> turretRepairDurabilities;
+	[SerializeField] private List<int> turretRepairTimes;
 
 	[SerializeField] private Camera playerCamera;
+	public Camera GetPlayerCamera() { return playerCamera; }
+
 	[SerializeField] private CameraBlur blur;
+	public CameraBlur GetBlur() { return blur; }
+
+	[SerializeField] private IconScriptableObj iconScriptObj;
 
 	#endregion
 
 	#region Members
+
+	private List<string> gadgetNames;
+	private List<Sprite> gadgetSprites;
+
+	private List<string> abilityNames;
+	private List<Sprite> abilitySprites;
 
 	private readonly List<GameObject> spawnedButtons = new();
 
@@ -84,35 +95,89 @@ public class GarageManager : MonoBehaviour {
 
 	#region Functions
 
+	public Sprite GetHullSprite(string hullName) {
+		for (int i = 0; i < hullNames.Count; i++) {
+			if (hullNames[i] == hullName) return hullSprites[i];
+		}
+		return null;
+	}
+	public Sprite GetTurretSprite(string turretName) {
+		for (int i = 0; i < turretNames.Count; i++) {
+			if (turretNames[i] == turretName) return turretSprites[i];
+		}
+		return null;
+	}
 	private void ClearButtons() {
 		foreach (GameObject g in spawnedButtons) {
 			if (g != null) Destroy(g);
 		}
 		spawnedButtons.Clear();
 	}
+	public int GetHullDurability(string hullName) {
+		for (int i = 0; i < hullNames.Count; i++) {
+			if (hullNames[i] == hullName) return hullRepairDurabilities[i];
+		}
+		return 1;
+	}
+	public int GetTurretDurability(string turretName) {
+		for (int i = 0; i < turretNames.Count; i++) {
+			if (turretNames[i] == turretName) return turretRepairDurabilities[i];
+		}
+		return 1;
+	}
+	private void SetEquipButtonHull() {
+		equipButton.SetActive(!PersistentDict.GetStringList("repair_names").Contains(selectedHullName) &&
+			GetHullDurability(selectedHullName) - PersistentDict.GetInt("repair_uses_" + selectedHullName) > 0);
+	}
+	private void SetEquipButtonTurret() {
+		equipButton.SetActive(!PersistentDict.GetStringList("repair_names").Contains(selectedTurretName) &&
+			GetTurretDurability(selectedTurretName) - PersistentDict.GetInt("repair_uses_" + selectedTurretName) > 0);
+	}
 	private void SelectHull(string hullName, Sprite hullSprite) {
 		selectedHullSprite = hullSprite;
 		selectedHullName = hullName;
 
-		selectedItemText.text = hullName;
+		selectedItemText.text = Translator.Translate(hullName);
+
+		CheckRepairButtonHull();
+		SetEquipButtonHull();
 	}
 	private void SelectTurret(string turretName, Sprite turretSprite) {
 		selectedTurretName = turretName;
 		selectedTurretSprite = turretSprite;
 
-		selectedItemText.text = turretName;
+		selectedItemText.text = Translator.Translate(turretName);
+		CheckRepairButtonTurret();
+
+		SetEquipButtonTurret();
+	}
+	private void CheckRepairButtonTurret() {
+		repairButton.SetActive(PersistentDict.GetInt("repair_uses_" + selectedTurretName) > 0 &&
+			!PersistentDict.GetStringList("repair_names").Contains(selectedTurretName) &&
+			RepairsManager.instance.HasRepairRoom());
+		SetEquipButtonTurret();
+	}
+	private void CheckRepairButtonHull() {
+		repairButton.SetActive(PersistentDict.GetInt("repair_uses_" + selectedHullName) > 0 &&
+			!PersistentDict.GetStringList("repair_names").Contains(selectedHullName) &&
+			RepairsManager.instance.HasRepairRoom());
+		SetEquipButtonHull();
 	}
 	private void SelectGadget(string gadgetName, Sprite gadgetSprite) {
 		selectedGadgetName = gadgetName;
 		selectedGadgetSprite = gadgetSprite;
 
-		selectedItemText.text = gadgetName;
+		selectedItemText.text = Translator.Translate(gadgetName);
+		repairButton.SetActive(false);
+		equipButton.SetActive(true);
 	}
 	private void SelectAbility(string abilityName, Sprite abilitySprite) {
 		selectedAbilityName = abilityName;
 		selectedAbilitySprite = abilitySprite;
 
-		selectedItemText.text = abilityName;
+		selectedItemText.text = Translator.Translate(abilityName);
+		repairButton.SetActive(false);
+		equipButton.SetActive(true);
 	}
 	private void ReselectHull() {
 		for (int i = 0; i < hullNames.Count; i++) {
@@ -142,10 +207,17 @@ public class GarageManager : MonoBehaviour {
 		for (int i = 0; i < hullNames.Count; i++) {
 			GarageButton b = Instantiate(scrollHullTurretPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
+
 			b.Init(hullNames[i], hullSprites[i], mode: 0, level: 0,
 				equipped: hullNames[i] == PlayerPrefs.GetString("hull_name"));
+
+			b.SetUsesLeft(hullRepairDurabilities[i] - PersistentDict.GetInt("repair_uses_" + hullNames[i]),
+				hullRepairDurabilities[i]);
 		}
+		equipText.text = Translator.Translate("EQUIP");
 		currentSelectedMode = 0;
+
+		UpdateRepairStatus();
 	}
 	public void OpenTurrets() {
 		//revert hull/turret to non-temp state
@@ -166,10 +238,17 @@ public class GarageManager : MonoBehaviour {
 		for (int i = 0; i < turretNames.Count; i++) {
 			GarageButton b = Instantiate(scrollHullTurretPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
+
 			b.Init(turretNames[i], turretSprites[i], mode: 1, level: 0,
 				equipped: turretNames[i] == PlayerPrefs.GetString("turret_name"));
+
+			b.SetUsesLeft(turretRepairDurabilities[i] - PersistentDict.GetInt("repair_uses_" + turretNames[i]),
+				turretRepairDurabilities[i]);
 		}
+		equipText.text = Translator.Translate("EQUIP");
 		currentSelectedMode = 1;
+
+		UpdateRepairStatus();
 	}
 	public void OpenGadgets() {
 		//revert hull/turret to non-temp state
@@ -183,10 +262,16 @@ public class GarageManager : MonoBehaviour {
 		for (int i = 0; i < gadgetNames.Count; i++) {
 			GarageButton b = Instantiate(scrollAbilityPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
-			b.Init(gadgetNames[i], gadgetSprites[i], mode: 2, level: 0,
-				equipped: PlayerPrefs.GetInt("gadget_" + gadgetNames[i]) == 1);
+
+			bool equipped = PlayerPrefs.GetInt("gadget_" + gadgetNames[i]) == 1;
+			b.Init(gadgetNames[i], gadgetSprites[i], mode: 2, level: 0, equipped: equipped);
+
+			if (i == 0) equipText.text = equipped ? Translator.Translate("UNEQUIP") : Translator.Translate("EQUIP");
 		}
 		currentSelectedMode = 2;
+
+		repairButton.SetActive(false);
+
 		SelectGadget(gadgetNames[0], gadgetSprites[0]);
 	}
 	public void OpenAbilities() {
@@ -201,23 +286,96 @@ public class GarageManager : MonoBehaviour {
 		for (int i = 0; i < abilityNames.Count; i++) {
 			GarageButton b = Instantiate(scrollAbilityPrefab, selectionContentParent).GetComponent<GarageButton>();
 			spawnedButtons.Add(b.gameObject);
-			b.Init(abilityNames[i], abilitySprites[i], mode: 3, level: 0,
-				equipped: PlayerPrefs.GetInt("ability_" + abilityNames[i]) == 1);
+
+			bool equipped = PlayerPrefs.GetInt("ability_" + abilityNames[i]) == 1;
+			b.Init(abilityNames[i], abilitySprites[i], mode: 3, level: 0, equipped: equipped);
+
+			if (i == 0) equipText.text = equipped ? Translator.Translate("UNEQUIP") : Translator.Translate("EQUIP");
 		}
 		currentSelectedMode = 3;
+
+		repairButton.SetActive(false);
+
 		SelectAbility(abilityNames[0], abilitySprites[0]);
+	}
+	//called every second through RepairsManager and in startup
+	public void UpdateRepairStatus() {
+		if (currentSelectedMode > 1) return;
+
+		List<string> itemsInRepair = PersistentDict.GetStringList("repair_names");
+
+		foreach (GameObject g in spawnedButtons) {
+			if (g == null || !g.TryGetComponent(out GarageButton b)) continue;
+
+			bool repairing = itemsInRepair.Contains(b.GetItemName());
+			b.SetRepairing(repairing);
+		}
+	}
+	//sends selected to repair shop; TODO: do the same thing for upgrade
+	public void SendToRepair() {
+		if (currentSelectedMode > 1) return; //wrong mode; TODO: remove repair button in other modes!
+
+		//NOTE: hull/turret must not be equipped when sending to repair shop
+		string selected = currentSelectedMode == 0 ? selectedHullName : selectedTurretName;
+		string current = currentSelectedMode == 0 ? PlayerPrefs.GetString("hull_name") : PlayerPrefs.GetString("turret_name");
+
+		//not equipped (NOTE: not enforced anymore)
+		if (selected != current || true) {
+			List<int> repairTimers = PersistentDict.GetIntList("repair_timers");
+			List<string> repairNames = PersistentDict.GetStringList("repair_names");
+
+			//already in repair or don't need repair!
+			if (repairNames.Contains(selected) || PersistentDict.GetInt("repair_uses_" + selected) == 0) return;
+
+			int time = 20; //fallback 20s
+
+			if (currentSelectedMode == 0) {
+				for (int i = 0; i < hullNames.Count; i++) {
+					if (hullNames[i] == selected) {
+						time = hullRepairTimes[i] * PersistentDict.GetInt("repair_uses_" + selected);
+						break;
+					}
+				}
+			} else {
+				for (int i = 0; i < turretNames.Count; i++) {
+					if (turretNames[i] == selected) {
+						time = turretRepairTimes[i] * PersistentDict.GetInt("repair_uses_" + selected);
+						break;
+					}
+				}
+			}
+
+			repairNames.Add(selected);
+			repairTimers.Add(time);
+
+			PersistentDict.SetIntList("repair_timers", repairTimers);
+			PersistentDict.SetStringList("repair_names", repairNames);
+
+			UpdateRepairing(selected, true);
+		}
+		if (currentSelectedMode == 0) {
+			CheckRepairButtonHull();
+		} else {
+			CheckRepairButtonTurret();
+		}
 	}
 	private void EquipItem(bool saveAbilities) {
 		if (currentSelectedMode == 0) {
 			//equip hull
-			MenuManager.instance.SetHull(selectedHullName, isTemporary: false);
-			UpdateEquipped(selectedHullName, false, true);
-			selectedHullImage.sprite = selectedHullSprite;
+			if (!PersistentDict.GetStringList("repair_names").Contains(selectedHullName)) {
+				MenuManager.instance.SetHull(selectedHullName, isTemporary: false);
+				UpdateEquipped(selectedHullName, false, true);
+				selectedHullImage.sprite = selectedHullSprite;
+			}
+			CheckRepairButtonHull();
 		} else if (currentSelectedMode == 1) {
 			//equip turret
-			MenuManager.instance.SetTurret(selectedTurretName, isTemporary: false);
-			UpdateEquipped(selectedTurretName, false, true);
-			selectedTurretImage.sprite = selectedTurretSprite;
+			if (!PersistentDict.GetStringList("repair_names").Contains(selectedTurretName)) {
+				MenuManager.instance.SetTurret(selectedTurretName, isTemporary: false);
+				UpdateEquipped(selectedTurretName, false, true);
+				selectedTurretImage.sprite = selectedTurretSprite;
+			}
+			CheckRepairButtonTurret();
 		} else if (currentSelectedMode == 2) {
 			//equip gadget if under max
 			if (!saveAbilities || selectedAbilityIsOn || CountGadgets() < MAX_GADGETS) {
@@ -227,7 +385,13 @@ public class GarageManager : MonoBehaviour {
 				selectedAbilityIsOn = equipped;
 
 				SetGadgetsText();
+
+				if (equipped) {
+					selectedGadgetImage.sprite = selectedGadgetSprite;
+				}
+				equipText.text = equipped ? Translator.Translate("UNEQUIP") : Translator.Translate("EQUIP");
 			}
+
 		} else {
 			//equip ability if under max
 			if (!saveAbilities || selectedAbilityIsOn || CountAbilities() < MAX_ABILITIES) {
@@ -241,6 +405,7 @@ public class GarageManager : MonoBehaviour {
 				if (equipped) {
 					selectedAbilityImage.sprite = selectedAbilitySprite;
 				}
+				equipText.text = equipped ? Translator.Translate("UNEQUIP") : Translator.Translate("EQUIP");
 			}
 		}
 	}
@@ -274,10 +439,11 @@ public class GarageManager : MonoBehaviour {
 	//loads gadgets and abilities into one big persistentdict list
 	private void SaveAbilities() {
 		List<string> abilitiesToLoad = new();
+		List<string> gadgetsToLoad = new();
 
 		for (int i = 0; i < gadgetNames.Count; i++) {
 			if (PlayerPrefs.GetInt("gadget_" + gadgetNames[i]) == 1) {
-				abilitiesToLoad.Add(gadgetNames[i]);
+				gadgetsToLoad.Add(gadgetNames[i]);
 			}
 		}
 		for (int i = 0; i < abilityNames.Count; i++) {
@@ -286,6 +452,17 @@ public class GarageManager : MonoBehaviour {
 			}
 		}
 		PersistentDict.SetStringList("active_abilities", abilitiesToLoad);
+		PersistentDict.SetStringList("active_gadgets", gadgetsToLoad);
+	}
+	private void UpdateRepairing(string itemName, bool isRepairing) {
+		foreach (GameObject g in spawnedButtons) {
+			if (g == null || !g.TryGetComponent(out GarageButton b)) continue;
+
+			if (b.GetItemName() == itemName) {
+				b.SetRepairing(isRepairing);
+				return;
+			}
+		}
 	}
 	private bool UpdateEquipped(string itemName, bool isToggle, bool onlyOne) {
 		foreach (GameObject g in spawnedButtons) {
@@ -313,9 +490,12 @@ public class GarageManager : MonoBehaviour {
 			SelectTurret(itemName, sprite);
 			MenuManager.instance.SetTurret(itemName, isTemporary: true);
 		} else if (mode == 2) {
+			equipText.text = isEnabled ? Translator.Translate("UNEQUIP") :
+				 Translator.Translate("EQUIP");
 			selectedAbilityIsOn = isEnabled;
 			SelectGadget(itemName, sprite);
 		} else {
+			equipText.text = isEnabled ? Translator.Translate("UNEQUIP") : Translator.Translate("UNEQUIP");
 			selectedAbilityIsOn = isEnabled;
 			SelectAbility(itemName, sprite);
 		}
@@ -326,6 +506,8 @@ public class GarageManager : MonoBehaviour {
 		playerHealthCanvas.SetActive(false);
 		inGarage = true;
 		blur.SetBlur(1);
+
+		Init();
 	}
 	public void CloseGarageTab() {
 		garageUI.gameObject.SetActive(false);
@@ -336,6 +518,8 @@ public class GarageManager : MonoBehaviour {
 		//revert hull/turret to non-temp state
 		MenuManager.instance.SetHull(PlayerPrefs.GetString("hull_name"), false);
 		MenuManager.instance.SetTurret(PlayerPrefs.GetString("turret_name"), false);
+
+		MenuManager.instance.SetLastClosed(0);
 
 		inGarage = false;
 	}
@@ -378,22 +562,36 @@ public class GarageManager : MonoBehaviour {
 	#endregion
 
 	#endregion
-	//TODO: Push and pulling from persistent data, Loadouts, UIUpdating, etc.
 
 	#region Awake & Start & Update
+
 	private void Awake() {
 		instance = this;
 	}
-
 	private void Start() {
+		Init();
+	}
+	private void Init() {
 		//abilitySprites
 		//icons setup
 		abilitySprites = new();
 		abilityNames = new();
-		var icons = PlayerDataHandler.instance.GetIcons();
+
+		gadgetSprites = new();
+		gadgetNames = new();
+
+		var icons = iconScriptObj.GetAbilitiesIcons();
+
 		foreach (var i in icons) {
 			abilitySprites.Add(i.icon);
 			abilityNames.Add(i.id);
+		}
+
+		var icons2 = iconScriptObj.GetGadgetIcons();
+
+		foreach (var i in icons2) {
+			gadgetSprites.Add(i.icon);
+			gadgetNames.Add(i.id);
 		}
 
 		for (int i = 0; i < hullNames.Count; i++) {
@@ -448,7 +646,8 @@ public class GarageManager : MonoBehaviour {
 				target, Time.deltaTime * 10f);
 			playerCamera.transform.rotation = Quaternion.RotateTowards(playerCamera.transform.rotation,
 				Quaternion.Euler(targetGarageCameraRotation), Time.deltaTime * 25f);
-		} else {
+		} else if (MenuManager.instance.GetLastClosedId() == 0 && !RepairsManager.instance.GetIsInRepairs() &&
+			!UpgradesManager.instance.GetIsInUpgrades()) {
 			playerCamera.transform.position = Vector3.MoveTowards(playerCamera.transform.position,
 				normalCameraPosition, Time.deltaTime * 10f);
 			playerCamera.transform.rotation = Quaternion.RotateTowards(playerCamera.transform.rotation,

@@ -8,12 +8,20 @@ using Fusion;
 /// </summary>
 
 public class TestingServerLinker : MonoBehaviour {
+	public static TestingServerLinker instance;
+
 	FusionBootstrap bootstrap = null;
 
 	private bool TryFindBootstrap() {
 		bootstrap = null;
 		bootstrap = FindObjectOfType<FusionBootstrap>();
 		return bootstrap != null;
+	}
+	private void Awake() {
+		if (instance != null) {
+			Destroy(instance.gameObject);
+		}
+		instance = this;
 	}
 	void Start() {
 		if (ServerLinker.instance != null) {

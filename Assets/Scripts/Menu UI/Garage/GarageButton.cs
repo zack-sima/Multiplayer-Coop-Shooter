@@ -6,15 +6,21 @@ using TMPro;
 
 public class GarageButton : MonoBehaviour {
 
-	[SerializeField] private GameObject equippedBand;
+	[SerializeField] private GameObject equippedBand, repairBand;
 	[SerializeField] private TMP_Text levelText;
 	[SerializeField] private Image itemImage;
+
+	[SerializeField] private TMP_Text usesLeftText;
+	[SerializeField] private Image usesLeftImage;
+
+	[SerializeField] private Color noUsesColor, haveUsesColor;
+	[SerializeField] private Image noUsesImage;
 
 	private string itemName = "";
 	private int mode = 0; //hull, turret, ability
 
 	public void Init(string name, Sprite sprite, int mode, int level, bool equipped) {
-		levelText.text = $"Level {level + 1}";
+		levelText.text = $"Lv. {level + 1}";
 		itemImage.sprite = sprite;
 
 		itemName = name;
@@ -22,8 +28,19 @@ public class GarageButton : MonoBehaviour {
 
 		equippedBand.SetActive(equipped);
 	}
+	//for hull/turret, # of uses left
+	public void SetUsesLeft(int usesLeft, int maxUses) {
+		usesLeftImage.color = usesLeft == 0 ? noUsesColor : haveUsesColor;
+		usesLeftText.color = usesLeft == 0 ? noUsesColor : haveUsesColor;
+		noUsesImage.gameObject.SetActive(usesLeft == 0);
+		usesLeftText.text = usesLeft + "/" + maxUses;
+	}
 	public string GetItemName() {
 		return itemName;
+	}
+	public void SetRepairing(bool repairing) {
+		repairBand.SetActive(repairing);
+		if (repairing) SetEquipped(false);
 	}
 	public bool GetIsEquipped() {
 		return equippedBand.activeInHierarchy;
@@ -33,8 +50,11 @@ public class GarageButton : MonoBehaviour {
 	}
 	public void SetEquipped(bool equipped) {
 		equippedBand.SetActive(equipped);
+
+		if (repairBand.activeInHierarchy) equippedBand.SetActive(false);
 	}
 	public void ButtonClicked() {
+		print(mode);
 		GarageManager.instance.ScreenButtonClicked(itemName, itemImage.sprite, mode, GetIsEquipped());
 	}
 }

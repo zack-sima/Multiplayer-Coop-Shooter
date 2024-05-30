@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Text.RegularExpressions;
 
 public class UpgradeCardButton : MonoBehaviour {
 	[SerializeField] private Image image;
@@ -30,7 +31,7 @@ public class UpgradeCardButton : MonoBehaviour {
 
 		if (node == null) return;
 
-		nameText.text = node.displayName;
+		nameText.text = Translator.Translate(node.displayName);
 		if (node.level > 0) nameText.text += " " + UpgradesCatalog.ToRoman(node.level);
 
 		descriptionText.text = node.description;

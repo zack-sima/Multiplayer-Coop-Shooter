@@ -1,0 +1,63 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73403a92f991a4e0c88a09370cb9f573, type: 3}
+  m_Name: IconScriptableObj
+  m_EditorClassIdentifier: 
+  activesIcons:
+  - id: HealActive
+    icon: {fileID: 21300000, guid: c7b397002edfa4e7c80a76ffcb73de4c, type: 3}
+  - id: HealActiveFasterHeals
+    icon: {fileID: 21300000, guid: c53113c0d4e33447da5dde2bc4be243a, type: 3}
+  - id: HealActiveBiggerHeals
+    icon: {fileID: 21300000, guid: 672a4bb0d63894d88a070e0b6f519dc3, type: 3}
+  - id: RapidFireActive
+    icon: {fileID: 21300000, guid: 20883c1139ab74393844dfc740918ab5, type: 3}
+  - id: RapidFireActiveFasterFire
+    icon: {fileID: 21300000, guid: a7252f6b476284a51bed29c1c0e05e11, type: 3}
+  - id: SentryActive
+    icon: {fileID: 21300000, guid: 56f0c9b4fc3f34c009143569a465f28a, type: 3}
+  - id: SentryActiveReinforcedSentry
+    icon: {fileID: 21300000, guid: 753d4a81dc05c4aa693a7cba1daf2573, type: 3}
+  - id: SentryActiveLargerCaliber
+    icon: {fileID: 21300000, guid: 0eed031fe50394484a433a42c19d2dc8, type: 3}
+  abilitiesIcons:
+  - id: HealActive
+    icon: {fileID: 21300000, guid: c7b397002edfa4e7c80a76ffcb73de4c, type: 3}
+  - id: RapidFireActive
+    icon: {fileID: 21300000, guid: 20883c1139ab74393844dfc740918ab5, type: 3}
+  - id: SentryActive
+    icon: {fileID: 21300000, guid: 56f0c9b4fc3f34c009143569a465f28a, type: 3}
+  gadgetIcons:
+  - id: HardenedAmmoGadget
+    childrenid: HardenedAmmo
+    icon: {fileID: 21300000, guid: adc7de8378256444f8afbdf3e027f9bf, type: 3}
+  - id: ImprovedLoaderGadget
+    childrenid: ImprovedLoader
+    icon: {fileID: 21300000, guid: ff45a81ebad47488aa023a16d48e103f, type: 3}
+  - id: HardenedArmorGadget
+    childrenid: HardenedArmor
+    icon: {fileID: 21300000, guid: dcf1faa0b04c24ebe8917ed462b59bf7, type: 3}
+  - id: FireControlGadget
+    childrenid: FireControl
+    icon: {fileID: 21300000, guid: c2ac11d4d54f14674bde750dac6caf41, type: 3}
+  - id: PolishedTriggerGadget
+    childrenid: PolishedTrigger
+    icon: {fileID: 21300000, guid: 88076169dd1bb463789152f9a7ae36fe, type: 3}
+  - id: LaserSightGadget
+    childrenid: LaserSight
+    icon: {fileID: 21300000, guid: ea9a7a0f5c1e4418a835386818927849, type: 3}
+  - id: BracedInternalsGadget
+    childrenid: BracedInternals
+    icon: {fileID: 21300000, guid: 9a96e03a9239c4b11b7c2f084317d27f, type: 3}
+  - id: RegenerativeArmorGadget
+    childrenid: EnhancedHealing
+    icon: {fileID: 21300000, guid: 5ad0e71a527eb4dfb92389187e57c18f, type: 3}

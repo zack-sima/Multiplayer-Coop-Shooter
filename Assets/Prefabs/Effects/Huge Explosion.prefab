@@ -29140,6 +29140,7 @@ MonoBehaviour:
   - {fileID: 2038266058975655049}
   audioName: exp_big
   audioCutoff: 0.05
+  shakeStrength: 1.25
 --- !u!82 &5438088891224232068
 AudioSource:
   m_ObjectHideFlags: 0

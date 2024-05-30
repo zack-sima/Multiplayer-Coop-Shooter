@@ -8,13 +8,28 @@ public class TurretAnimatorBase : MonoBehaviour {
 
 	[SerializeField] private List<Renderer> teamColorRenderers;
 
+	//for blend models where the material ordering got messed up
+	[SerializeField] private List<Renderer> teamColor2ndMatRenderers;
+
+	[SerializeField] private List<int> teamColorRendererIndices;
+
 	#endregion
 
 	#region Functions
 
 	public void SetTeamMaterial(Material m) {
+		int index = 0;
 		foreach (Renderer r in teamColorRenderers) {
-			List<Material> materials = new(r.materials) { [0] = m };
+			int i = 0;
+			if (teamColorRendererIndices.Count > index) {
+				i = teamColorRendererIndices[index];
+			}
+			List<Material> materials = new(r.materials) { [i] = m };
+			r.SetMaterials(materials);
+			index++;
+		}
+		foreach (Renderer r in teamColor2ndMatRenderers) {
+			List<Material> materials = new(r.materials) { [1] = m };
 			r.SetMaterials(materials);
 		}
 	}

@@ -25,6 +25,10 @@ public abstract class HullAnimatorBase : MonoBehaviour {
 	private Vector3 targetDirection = Vector3.zero;
 	protected Vector3 GetTargetDirection() { return targetDirection; }
 
+	//bots shouldn't reverse drive
+	protected bool isBot = false;
+	public void SetAsAI() { isBot = true; }
+
 	#endregion
 
 	#region Functions

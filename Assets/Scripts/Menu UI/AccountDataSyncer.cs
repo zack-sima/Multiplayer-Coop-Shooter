@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using TMPro;
+using UnityEngine.UI;
 
 public class AccountDataSyncer : MonoBehaviour {
 
@@ -40,7 +42,17 @@ public class AccountDataSyncer : MonoBehaviour {
 	//NOTE: don't use infinite coroutines because switching scenes kills them; do these calls in update
 	private float updateInfoTimer = 0f;
 
+	//every second decrement repair list
+	private float repairIncrementTimer = 1f;
+
 	private float lastChangedTimestamp = -20f;
+
+	private long lastRepairsTimestamp = 0;
+
+	public static long GetSystemTime() {
+		System.DateTimeOffset dateTimeOffset = System.DateTimeOffset.UtcNow;
+		return dateTimeOffset.ToUnixTimeSeconds();
+	}
 
 	#endregion
 
@@ -239,6 +251,42 @@ public class AccountDataSyncer : MonoBehaviour {
 		lastChangedTimestamp = Time.time;
 		StartCoroutine(ChangeUsername(PersistentDict.GetString("user_id")));
 	}
+	//for hull and turret repairs
+	public void UpdateRepairs(int time) {
+		List<int> repairTimers = PersistentDict.GetIntList("repair_timers");
+		List<string> repairNames = PersistentDict.GetStringList("repair_names");
+
+		for (int i = 0; i < repairTimers.Count; i++) {
+			repairTimers[i] -= time;
+
+			//repair complete
+			if (repairTimers[i] <= 0) {
+				//0 means no wear and tear
+				PersistentDict.SetInt("repair_uses_" + repairNames[i], 0);
+				repairTimers.RemoveAt(i);
+				repairNames.RemoveAt(i);
+				i--;
+			}
+		}
+
+		PersistentDict.SetIntList("repair_timers", repairTimers);
+		PersistentDict.SetStringList("repair_names", repairNames);
+
+		if (RepairsManager.instance != null) {
+			RepairsManager.instance.UpdateRepairs();
+		}
+	}
+	public void CheckBackgroundTime() {
+		if (lastRepairsTimestamp == 0) {
+			lastRepairsTimestamp = GetSystemTime();
+		}
+
+		//application went to background
+		if (GetSystemTime() - lastRepairsTimestamp > 10) {
+			//Debug.Log($"Application went to background for {GetSystemTime() - lastRepairsTimestamp}s");
+			ServerLinker.instance.SetWorldTimeUnfetched();
+		}
+	}
 	private void Awake() {
 		if (instance != null) {
 			Destroy(gameObject);
@@ -249,12 +297,24 @@ public class AccountDataSyncer : MonoBehaviour {
 	}
 	private void Start() {
 		if (instance != this) return;
+
+		print("started again");
+		lastRepairsTimestamp = GetSystemTime();
 	}
 	private void Update() {
 		updateInfoTimer -= Time.deltaTime;
 		if (updateInfoTimer <= 0f) {
 			updateInfoTimer = 2.5f;
 			StartCoroutine(UpdateInformation());
+		}
+
+		//repairs; TODO: research also here
+		repairIncrementTimer -= Time.deltaTime;
+		if (repairIncrementTimer <= 0f) {
+			CheckBackgroundTime();
+			repairIncrementTimer = 1f;
+			UpdateRepairs(1);
+			lastRepairsTimestamp = GetSystemTime();
 		}
 	}
 
