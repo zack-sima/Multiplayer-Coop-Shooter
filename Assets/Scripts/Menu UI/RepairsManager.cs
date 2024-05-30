@@ -54,7 +54,11 @@ public class RepairsManager : MonoBehaviour {
 			PersistentDict.GetInt("repair_uses_" + MenuManager.instance.GetPlayerHull()) <= 0 ||
 
 			GarageManager.instance.GetTurretDurability(MenuManager.instance.GetPlayerTurret()) -
-			PersistentDict.GetInt("repair_uses_" + MenuManager.instance.GetPlayerTurret()) <= 0;
+			PersistentDict.GetInt("repair_uses_" + MenuManager.instance.GetPlayerTurret()) <= 0 || PlayerSelectedIsRepairing();
+	}
+	public bool PlayerSelectedIsRepairing() {
+		List<string> repairing = PersistentDict.GetStringList("repair_names");
+		return repairing.Contains(PlayerPrefs.GetString("hull_name")) || repairing.Contains(PlayerPrefs.GetString("turret_name"));
 	}
 	//is repair shop full yet?
 	public bool HasRepairRoom() {
@@ -104,6 +108,8 @@ public class RepairsManager : MonoBehaviour {
 	//tries to fetch world time. If successful, allow time to "jump" if it is the first time the user got it in a session.
 	private IEnumerator GetWorldTime() {
 		while (true) {
+			AccountDataSyncer.instance.CheckBackgroundTime();
+
 			using (UnityWebRequest webRequest = UnityWebRequest.Get("http://worldtimeapi.org/api/timezone/Etc/UTC")) {
 				yield return webRequest.SendWebRequest();
 
@@ -168,7 +174,8 @@ public class RepairsManager : MonoBehaviour {
 				target, Time.deltaTime * 10f), Quaternion.RotateTowards(
 				GarageManager.instance.GetPlayerCamera().transform.rotation,
 				Quaternion.Euler(targetGarageCameraRotation), Time.deltaTime * 150f));
-		} else if (MenuManager.instance.GetLastClosedId() == 1 && !GarageManager.instance.GetIsInGarage()) {
+		} else if (MenuManager.instance.GetLastClosedId() == 1 && !GarageManager.instance.GetIsInGarage() &&
+			!UpgradesManager.instance.GetIsInUpgrades()) {
 			GarageManager.instance.GetPlayerCamera().transform.SetPositionAndRotation(Vector3.MoveTowards(
 				GarageManager.instance.GetPlayerCamera().transform.position,
 				normalCameraPosition, Time.deltaTime * 10f), Quaternion.RotateTowards(
@@ -179,7 +186,7 @@ public class RepairsManager : MonoBehaviour {
 #if UNITY_EDITOR
 
 		if (Input.GetKeyDown(KeyCode.P)) {
-			JumpTime(60);
+			JumpTime(600);
 		}
 
 #endif

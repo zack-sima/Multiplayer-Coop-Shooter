@@ -2,12 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TankAnimator : HullAnimatorBase {
+public class HoverAnimator : HullAnimatorBase {
 
 	#region References
 
-	[SerializeField] private Transform meshParent;
-	[SerializeField] private List<TankTracksAnimator> leftTracksAnimators, rightTracksAnimators;
+	[SerializeField] private List<Transform> blades;
 
 	#endregion
 
@@ -28,6 +27,10 @@ public class TankAnimator : HullAnimatorBase {
 
 	protected override void Update() {
 		base.Update();
+
+		foreach (Transform t in blades) {
+			t.Rotate(0f, 0f, Time.deltaTime * 500f);
+		}
 
 		if (GetVelocity() != Vector3.zero) {
 			moved = true;
@@ -57,19 +60,9 @@ public class TankAnimator : HullAnimatorBase {
 		if (reversed) {
 			transform.rotation = Quaternion.RotateTowards(
 				transform.rotation, Quaternion.Euler(0, targetRotation + 180, 0), 250f * velocityMult);
-
-			foreach (TankTracksAnimator t in leftTracksAnimators)
-				t.SetSpeed(-GetVelocity().magnitude);
-			foreach (TankTracksAnimator t in rightTracksAnimators)
-				t.SetSpeed(-GetVelocity().magnitude);
 		} else {
 			transform.rotation = Quaternion.RotateTowards(
 				transform.rotation, Quaternion.Euler(0, targetRotation, 0), 250f * velocityMult);
-
-			foreach (TankTracksAnimator t in leftTracksAnimators)
-				t.SetSpeed(GetVelocity().magnitude);
-			foreach (TankTracksAnimator t in rightTracksAnimators)
-				t.SetSpeed(GetVelocity().magnitude);
 		}
 	}
 

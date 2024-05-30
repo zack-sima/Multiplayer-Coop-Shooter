@@ -270,7 +270,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	}
 	private void MaxHealthBarChanged() {
 		if (!isPlayer || HasSyncAuthority()) return;
-		mainEntity.UpdateMaxHealth(MaxHealth);
+		mainEntity.SetMaxHealth(MaxHealth);
 	}
 	private void TeamChanged() {
 		if (Team != -1) {

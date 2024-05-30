@@ -85,6 +85,12 @@ public class CombatEntity : Entity {
 			if (h.hullName == newHullName) {
 				h.hull.gameObject.SetActive(true);
 				hull = h.hull;
+
+				if (GetIsPlayer()) {
+					baseHealth = h.hull.GetBaseHealth();
+					SetMaxHealth(baseHealth);
+					SetCurrentHealth(baseHealth);
+				}
 			} else {
 				h.hull.gameObject.SetActive(false);
 			}

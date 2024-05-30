@@ -40,6 +40,7 @@ public class GarageButton : MonoBehaviour {
 	}
 	public void SetRepairing(bool repairing) {
 		repairBand.SetActive(repairing);
+		if (repairing) SetEquipped(false);
 	}
 	public bool GetIsEquipped() {
 		return equippedBand.activeInHierarchy;
@@ -49,6 +50,8 @@ public class GarageButton : MonoBehaviour {
 	}
 	public void SetEquipped(bool equipped) {
 		equippedBand.SetActive(equipped);
+
+		if (repairBand.activeInHierarchy) equippedBand.SetActive(false);
 	}
 	public void ButtonClicked() {
 		print(mode);

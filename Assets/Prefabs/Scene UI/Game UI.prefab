@@ -2212,6 +2212,15 @@ MonoBehaviour:
   - hull: {fileID: 3968374540305798568, guid: 01d2a72fad62a4acab79661aa0493348, type: 3}
     hullName: Tank
     localPositionOffset: {x: 0, y: 1.45, z: 0}
+  - hull: {fileID: 3968374540305798568, guid: be4ce258f22e04bf491ca6c1ebc8e60d, type: 3}
+    hullName: Car
+    localPositionOffset: {x: 0, y: 1.45, z: 0}
+  - hull: {fileID: 3968374540305798568, guid: 94f784d7d373440ba832c91c3ef03134, type: 3}
+    hullName: Objekt
+    localPositionOffset: {x: 0, y: 1.45, z: 0}
+  - hull: {fileID: 3968374540305798568, guid: 6ac9bcbee12bc4bacb76ba3d123763c4, type: 3}
+    hullName: Hover
+    localPositionOffset: {x: 0, y: 1.45, z: 0}
   turretPrefabs:
   - turret: {fileID: 8306412023698569218, guid: 7affb4ce29449426eabe2ae4c4637b4e, type: 3}
     turretName: Autocannon

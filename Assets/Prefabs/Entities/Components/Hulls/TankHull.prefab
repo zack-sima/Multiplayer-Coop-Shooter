@@ -61,7 +61,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -572870694361189799, guid: cb541d5bbc0b946e0aa91717ec3dc144, type: 3}
+  - {fileID: 2100000, guid: 7a58afe5c46194d42960ad54dac72130, type: 2}
   - {fileID: 2100000, guid: 5baa09d0f1d3646d98525ff98b6656dc, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
@@ -137,6 +137,8 @@ MonoBehaviour:
   animator: {fileID: 4346554063448639422}
   speed: 5
   acceleration: 15
+  hullType: 0
+  baseHealth: 6000
 --- !u!114 &4346554063448639422
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -152,8 +154,10 @@ MonoBehaviour:
   teamColorRenderers:
   - {fileID: 4475625711253803300}
   meshParent: {fileID: 2067305844212383928}
-  leftTracksAnimator: {fileID: 5098497922213608679}
-  rightTracksAnimator: {fileID: 3990229844156452909}
+  leftTracksAnimators:
+  - {fileID: 5098497922213608679}
+  rightTracksAnimators:
+  - {fileID: 3990229844156452909}
 --- !u!1 &8013949640478799500
 GameObject:
   m_ObjectHideFlags: 0

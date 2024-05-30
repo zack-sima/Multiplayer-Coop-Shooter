@@ -127,7 +127,6 @@ public class Translator {
 		}
 	}
 	public static string Translate(string key) {
-		Debug.Log("tried translating");
 		Dictionary<string, string> dict = GetAllValues(PlayerPrefs.GetString("language"));
 
 		if (dict.TryGetValue(key, out string value)) {
