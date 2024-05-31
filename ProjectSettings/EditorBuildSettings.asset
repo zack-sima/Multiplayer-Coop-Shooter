@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Maps/Orbital/Orbital_1.unity
     guid: e4cec3a65cbc44189ab32a19625e5f78
+  - enabled: 1
+    path: Assets/Scenes/Maps/Foundry/Foundry_1.unity
+    guid: 132935f01636a43f195ebd1f148995ae
   m_configObjects: {}
