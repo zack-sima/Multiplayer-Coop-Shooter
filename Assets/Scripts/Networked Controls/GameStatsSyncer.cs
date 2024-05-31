@@ -136,6 +136,8 @@ public class GameStatsSyncer : NetworkBehaviour {
 		//NOTE: PVP should have separate handler for score and win/loss, etc
 		if (!HasSyncAuthority() || EntityController.player == null) return;
 
+		Debug.LogWarning("gameupdate");
+
 		//PvP follows other rulesets; TODO: expand for more than TDM
 		if (PlayerInfo.GetIsPVP()) {
 			if (PlayerInfo.GetIsPointCap()) {
@@ -221,6 +223,9 @@ public class GameStatsSyncer : NetworkBehaviour {
 	}
 	//called when game over is detected as true
 	private IEnumerator GameOverCoroutine() {
+
+		Debug
+			.Log("Game over!");
 		UIController.instance.SetRespawnUIEnabled(false);
 		UIController.instance.SetGameOverUIEnabled(true);
 

@@ -399,7 +399,7 @@ MonoBehaviour:
   teamMaterials: {fileID: 11400000, guid: faa23109d9fc044828b87850367187b7, type: 2}
   hitbox: {fileID: 7181200219554754575}
   isPlayer: 1
-  isStructure: 1
+  isStructure: 0
   maxHealth: 5000
   healthBarType: 0
   killReward: 0
