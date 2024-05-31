@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5270560707035760667}
   - component: {fileID: 994341000288482483}
   - component: {fileID: 8385359737134791040}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MissileTurret.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 4648038055445644837}
   - component: {fileID: 7742463190093066183}
   - component: {fileID: 5579824145648588569}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MissileTurret.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -218,7 +218,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6587734583480599979}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MissileTurret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -257,7 +257,7 @@ GameObject:
   - component: {fileID: 4739262611638180290}
   - component: {fileID: 1230055112749839185}
   - component: {fileID: 5316373467512400051}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MissileTurret.004
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -340,7 +340,7 @@ GameObject:
   - component: {fileID: 4951511327084341374}
   - component: {fileID: 8515804994002581933}
   - component: {fileID: 190979369960315403}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Color3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -426,7 +426,7 @@ GameObject:
   - component: {fileID: 1681448098720640594}
   - component: {fileID: 7865768384821179022}
   - component: {fileID: 7245713292023795300}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MissileTurret.006
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -805,7 +805,7 @@ GameObject:
   - component: {fileID: 6201797658260339357}
   - component: {fileID: 7751177103951168348}
   - component: {fileID: 8059458243623800294}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MissileTurret.005
   m_TagString: Untagged
   m_Icon: {fileID: 0}

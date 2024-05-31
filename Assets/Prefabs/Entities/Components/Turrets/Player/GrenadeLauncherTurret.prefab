@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2764644703131931200}
   - component: {fileID: 7961007106386087559}
   - component: {fileID: 9185440773532285450}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4666704757910676573}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 358910257524525405}
   - component: {fileID: 3583872244599194361}
   - component: {fileID: 2866378158356331195}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.014
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -227,7 +227,7 @@ GameObject:
   - component: {fileID: 3609759088606070507}
   - component: {fileID: 3947112749873536243}
   - component: {fileID: 5895025489344036799}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.013
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -310,7 +310,7 @@ GameObject:
   - component: {fileID: 6217773196436245680}
   - component: {fileID: 3407697444302734422}
   - component: {fileID: 5496070409989427551}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.008
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -393,7 +393,7 @@ GameObject:
   - component: {fileID: 5668689647647775576}
   - component: {fileID: 6448876871105173834}
   - component: {fileID: 2995209400793309541}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cutter.010
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -476,7 +476,7 @@ GameObject:
   - component: {fileID: 234883889990150642}
   - component: {fileID: 8763149189287698229}
   - component: {fileID: 4440853200013014667}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Color
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -560,7 +560,7 @@ GameObject:
   - component: {fileID: 8270391039112802492}
   - component: {fileID: 1403463200047993629}
   - component: {fileID: 8507583351626202645}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.018
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -643,7 +643,7 @@ GameObject:
   - component: {fileID: 6924810504529192923}
   - component: {fileID: 8531857406416666784}
   - component: {fileID: 5874043293960719188}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cutter.009
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -764,7 +764,7 @@ GameObject:
   - component: {fileID: 3593743425145040435}
   - component: {fileID: 5249775443121702553}
   - component: {fileID: 4039827700034401060}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.004
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -847,7 +847,7 @@ GameObject:
   - component: {fileID: 4470582449058537075}
   - component: {fileID: 8226533774035286969}
   - component: {fileID: 5573528531949428789}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Color
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -931,7 +931,7 @@ GameObject:
   - component: {fileID: 4810242589775166729}
   - component: {fileID: 5514526242883244557}
   - component: {fileID: 6519464060882881782}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Color2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1015,7 +1015,7 @@ GameObject:
   - component: {fileID: 4180350478281878652}
   - component: {fileID: 2182958652453529841}
   - component: {fileID: 4056171790337467001}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1167,6 +1167,7 @@ MonoBehaviour:
   - {fileID: 4440853200013014667}
   teamColor2ndMatRenderers:
   - {fileID: 6519464060882881782}
+  teamColorRendererIndices: 
   gun: {fileID: 4130643892392862748}
   muzzleFlashes:
   - {fileID: 7805661936414053286}
@@ -1329,7 +1330,7 @@ GameObject:
   - component: {fileID: 1841156346249984473}
   - component: {fileID: 1113012448688332702}
   - component: {fileID: 2527670212218749536}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.015
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1412,7 +1413,7 @@ GameObject:
   - component: {fileID: 8886271039717467542}
   - component: {fileID: 1554033032477864675}
   - component: {fileID: 6821173620781448402}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1526,7 +1527,7 @@ GameObject:
   - component: {fileID: 3064201146825583886}
   - component: {fileID: 3893079306812385201}
   - component: {fileID: 6282872263228711612}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.007
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1609,7 +1610,7 @@ GameObject:
   - component: {fileID: 7346340311516577763}
   - component: {fileID: 3954438136872336097}
   - component: {fileID: 5479151141306620011}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.006
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1693,7 +1694,7 @@ GameObject:
   - component: {fileID: 882798752308740727}
   - component: {fileID: 5515683990374638351}
   - component: {fileID: 2701610743110136970}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Color
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1777,7 +1778,7 @@ GameObject:
   - component: {fileID: 390847271945482954}
   - component: {fileID: 5160212976440072057}
   - component: {fileID: 5986154749579287373}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.016
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1860,7 +1861,7 @@ GameObject:
   - component: {fileID: 2191389898310178344}
   - component: {fileID: 7379873223589550836}
   - component: {fileID: 7946823069007764365}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.012
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1944,7 +1945,7 @@ GameObject:
   - component: {fileID: 3831605363996462113}
   - component: {fileID: 3312700428577691896}
   - component: {fileID: 6130263354520076301}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MissileTurret.007
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2027,7 +2028,7 @@ GameObject:
   - component: {fileID: 6506094048008994442}
   - component: {fileID: 4080225845571937173}
   - component: {fileID: 7546959143078376297}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cutter.011
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2110,7 +2111,7 @@ GameObject:
   - component: {fileID: 1229128128525891162}
   - component: {fileID: 5603980265091511105}
   - component: {fileID: 4688881575576401325}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: GrenadeTurret.017
   m_TagString: Untagged
   m_Icon: {fileID: 0}
