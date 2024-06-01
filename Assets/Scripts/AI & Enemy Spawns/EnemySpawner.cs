@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
 using System.Linq;
+using CSV;
+using Effects;
 
 /// <summary>
 /// This class handles spawning when the local player is the master client. Otherwise, it does nothing.
@@ -20,6 +22,8 @@ public class EnemySpawner : NetworkBehaviour {
 
 	//PVP bots
 	[SerializeField] private List<GameObject> PVPBotPrefabs;
+
+	[SerializeField] private GameObject sentryPrefab;
 
 	#endregion
 
@@ -254,6 +258,22 @@ public class EnemySpawner : NetworkBehaviour {
 
 			Runner.Spawn(spawnPrefab, new Vector3(point.x, 1, point.z), Quaternion.identity);
 		} catch (System.Exception e) { Debug.LogWarning(e); }
+	}
+
+	[Rpc(RpcSources.All, RpcTargets.StateAuthority)]
+	public void RPCSpawnSentry(Vector3 pos, int team, int maxHealth, int maxAmmo, float ammoRegen,
+		float shootSpeed, float shootSpread, float dmgModi, bool isFullAuto) {
+
+		NetworkedEntity s = Runner.Spawn(sentryPrefab, pos + new Vector3(Random.Range(-0.1f, 0.1f), 0f,
+				Random.Range(-0.1f, 0.1f)), Quaternion.identity).GetComponent<NetworkedEntity>();
+
+		s.SetSentryStats(team, maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto);
+
+		GameObject sentryEffect = s.InitEffect(1, 0f, CSVId.SentryActive); //Effect
+		if (sentryEffect == null) return;
+		if (sentryEffect.TryGetComponent(out Effect e)) {
+			e.EnableDestroy(1f);
+		}
 	}
 
 	public override void FixedUpdateNetwork() {

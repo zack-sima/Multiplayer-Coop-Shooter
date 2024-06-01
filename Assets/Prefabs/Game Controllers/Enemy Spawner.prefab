@@ -51,6 +51,7 @@ MonoBehaviour:
   - {fileID: 7199139338457447609, guid: 74f18c2209c3440f582b984f87250592, type: 3}
   - {fileID: 7199139338457447609, guid: 8116b6c29317f4825b8afa4e3c8483c8, type: 3}
   - {fileID: 7199139338457447609, guid: ebe244f6269a94d51b912011ad469658, type: 3}
+  sentryPrefab: {fileID: 954837698998907771, guid: 560190efce93a4f81ae82ed30e3ab6aa, type: 3}
   wavePresets:
   - {fileID: 11400000, guid: c0748d1957d164f16aa94d951b08a0fc, type: 2}
   - {fileID: 11400000, guid: 005b7f513f0454d41b84cf222ce93bf2, type: 2}

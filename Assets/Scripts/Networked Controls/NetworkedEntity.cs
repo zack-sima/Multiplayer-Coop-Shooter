@@ -38,7 +38,7 @@ public class NetworkedEntity : NetworkBehaviour {
 	#region Prefabs
 
 	[SerializeField] public AbilityPrefabAssets effectPrefabs;
-	[SerializeField] private GameObject sentryPrefab, sentryTossPrefab;
+	[SerializeField] private GameObject sentryTossPrefab;
 
 	#endregion
 
@@ -199,7 +199,7 @@ public class NetworkedEntity : NetworkBehaviour {
 		return g;
 	}
 
-	[Rpc(RpcSources.All, RpcTargets.Proxies)]
+	[Rpc(RpcSources.StateAuthority, RpcTargets.Proxies)]
 	private void RPCInitEffect(float duration, float earlyDestruct, CSVId id) {
 
 		GameObject g = this.GetEffect(id);
@@ -323,16 +323,8 @@ public class NetworkedEntity : NetworkBehaviour {
 		Destroy(g);
 
 		if (HasSyncAuthority()) {
-			NetworkedEntity s = Runner.Spawn(sentryPrefab, pos + new Vector3(Random.Range(-0.1f, 0.1f), 0f,
-				Random.Range(-0.1f, 0.1f)), Quaternion.identity).GetComponent<NetworkedEntity>();
-
-			s.SetSentryStats(team, maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto);
-
-			GameObject sentryEffect = s.InitEffect(1, 0f, CSVId.SentryActive); //Effect
-			if (sentryEffect == null) yield break;
-			if (sentryEffect.TryGetComponent(out Effect e)) {
-				e.EnableDestroy(1f);
-			}
+			EnemySpawner.instance.RPCSpawnSentry(pos, team, maxHealth, maxAmmo, ammoRegen,
+				shootSpeed, shootSpread, dmgModi, isFullAuto);
 		}
 	}
 
