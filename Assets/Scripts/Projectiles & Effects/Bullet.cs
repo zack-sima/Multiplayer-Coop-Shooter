@@ -15,7 +15,9 @@ public class Bullet : MonoBehaviour {
 
 	[SerializeField] private bool isGrenade;
 	[SerializeField] private bool isMissile;
-	[SerializeField] private bool isRailGun;
+	[SerializeField] private bool isRailgun;
+	[SerializeField] private bool isPierce;
+	public void SetPierce(bool value) { isPierce = value; }
 
 	//missiles have teams
 	[SerializeField] private TeamMaterialManager missileTeamMaterials;
@@ -27,6 +29,7 @@ public class Bullet : MonoBehaviour {
 	[SerializeField] private float damage;
 	[SerializeField] private bool isExplosion, isFlame;
 	[SerializeField] private float explosionRadius;
+	[SerializeField] private bool isNotUsed = false;
 	[SerializeField] private float maxDistance = 10f;
 
 	private CombatEntity senderEntity = null;
@@ -72,11 +75,11 @@ public class Bullet : MonoBehaviour {
 		return (mask.value & (1 << obj.layer)) != 0;
 	}
 	private void OnTriggerEnter(Collider other) {
-		if (alreadyHitTarget) return;
+		if (alreadyHitTarget || isNotUsed) return;
 		if (other.gameObject.layer == LayerMask.NameToLayer("Projectiles")) return;
 
 		//flamethrower gets to hit every target once
-		if (isFlame || isRailGun) {
+		if (isFlame || isPierce) {
 			if (hitTargets.Contains(other)) return;
 			hitTargets.Add(other);
 		}
@@ -125,10 +128,15 @@ public class Bullet : MonoBehaviour {
 			Instantiate(explosionPrefab, transform.position, Quaternion.identity);
 		if (spawnedFlame != null)
 			Destroy(spawnedFlame);
-		if (!isRailGun) Destroy(gameObject);
-		else { 
-			float time = (maxDistance - distanceTravelled) / speed;
-			Destroy(gameObject, time); 
+		if (!isPierce) { 
+			if (isRailgun) {
+				isNotUsed = true;
+				Destroy(gameObject, .5f);
+				return;
+			}
+			Destroy(gameObject); 
+		} else { 
+			Destroy(gameObject, 5f); 
 		}
 	}
 	//tries to make an RPC call so everyone destroys the bullet

@@ -24783,7 +24783,8 @@ MonoBehaviour:
   firePrefab: {fileID: 0}
   isGrenade: 0
   isMissile: 0
-  isRailGun: 1
+  isRailgun: 1
+  isPierce: 0
   missileTeamMaterials: {fileID: 0}
   missileRenderer: {fileID: 0}
   speed: 30
