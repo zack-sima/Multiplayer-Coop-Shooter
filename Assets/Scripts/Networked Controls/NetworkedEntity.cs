@@ -295,6 +295,12 @@ public class NetworkedEntity : NetworkBehaviour {
 	public void SpawnSentry(int team, int maxHealth, int maxAmmo, float ammoRegen,
 		float shootSpeed, float shootSpread, float dmgModi, bool isFullAuto) {
 
+		RPCSentryToss(team, maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto);
+	}
+	[Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+	private void RPCSentryToss(int team, int maxHealth, int maxAmmo, float ammoRegen,
+		float shootSpeed, float shootSpread, float dmgModi, bool isFullAuto) {
+
 		StartCoroutine(SentryToss(team, maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto));
 	}
 	private IEnumerator SentryToss(int team, int maxHealth, int maxAmmo, float ammoRegen,
@@ -316,15 +322,17 @@ public class NetworkedEntity : NetworkBehaviour {
 
 		Destroy(g);
 
-		NetworkedEntity s = Runner.Spawn(sentryPrefab, pos + new Vector3(Random.Range(-0.1f, 0.1f), 0f,
-			Random.Range(-0.1f, 0.1f)), Quaternion.identity).GetComponent<NetworkedEntity>();
+		if (HasSyncAuthority()) {
+			NetworkedEntity s = Runner.Spawn(sentryPrefab, pos + new Vector3(Random.Range(-0.1f, 0.1f), 0f,
+				Random.Range(-0.1f, 0.1f)), Quaternion.identity).GetComponent<NetworkedEntity>();
 
-		s.SetSentryStats(team, maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto);
+			s.SetSentryStats(team, maxHealth, maxAmmo, ammoRegen, shootSpeed, shootSpread, dmgModi, isFullAuto);
 
-		GameObject sentryEffect = s.InitEffect(1, 0f, CSVId.SentryActive); //Effect
-		if (sentryEffect == null) yield break;
-		if (sentryEffect.TryGetComponent(out Effect e)) {
-			e.EnableDestroy(1f);
+			GameObject sentryEffect = s.InitEffect(1, 0f, CSVId.SentryActive); //Effect
+			if (sentryEffect == null) yield break;
+			if (sentryEffect.TryGetComponent(out Effect e)) {
+				e.EnableDestroy(1f);
+			}
 		}
 	}
 
