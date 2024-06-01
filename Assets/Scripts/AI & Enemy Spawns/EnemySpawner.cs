@@ -55,7 +55,7 @@ public class EnemySpawner : NetworkBehaviour {
 	public string GetWaveDataString() {
 		if (wavePresets != null) {
 			string s = "Avaliable wave presets: ";
-			for(int i = 0; i < wavePresets.Count - 1; i++) {
+			for (int i = 0; i < wavePresets.Count - 1; i++) {
 				if (wavePresets[i] != null)
 					s += i + ", ";
 			}
@@ -65,7 +65,7 @@ public class EnemySpawner : NetworkBehaviour {
 		}
 		return "wavePresets == null";
 	}
- 
+
 	#endregion
 
 	#region Members
@@ -303,7 +303,8 @@ public class EnemySpawner : NetworkBehaviour {
 	}
 	private void Start() {
 		if (PlayerInfo.GetIsPVP()) {
-			StartCoroutine(SpawnPVPBots(2, 2));
+			if (PlayerPrefs.GetInt("use_bots") == 1)
+				StartCoroutine(SpawnPVPBots(2, 3));
 			return;
 		}
 		int difficulty = PlayerPrefs.GetInt("game_start_difficulty");

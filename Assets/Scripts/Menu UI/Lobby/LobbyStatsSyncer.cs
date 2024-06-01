@@ -59,7 +59,6 @@ public class LobbyStatsSyncer : NetworkBehaviour {
 
 		//force all clients (master or not) to go to game scene once this is ever set to true
 		MenuManager.instance.StartShared(MapName);
-		LobbyUI.instance.SetGameStarting();
 	}
 
 	#endregion

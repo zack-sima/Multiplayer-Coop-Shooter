@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
 using System.IO;
+using UnityEngine.Networking;
 
 public class MenuManager : MonoBehaviour {
 
@@ -25,6 +26,9 @@ public class MenuManager : MonoBehaviour {
 	//debug screen
 	[SerializeField] private RectTransform debugScreen, menuScreen;
 	public void SetMenuScreen(bool active) { menuScreen.gameObject.SetActive(active); }
+
+	//comp screen
+	[SerializeField] private RectTransform compWaitScreen, matchFailedScreen;
 
 	[SerializeField] private RectTransform needRepairScreen;
 	public void ShowNeedRepairPopup() { needRepairScreen.gameObject.SetActive(true); }
@@ -113,6 +117,9 @@ public class MenuManager : MonoBehaviour {
 	//0 = garage, 1 = repairs
 	int lastClosedId = 0;
 
+	//matchmaking coroutine
+	private Coroutine compCoroutine = null;
+
 	#endregion
 
 	#region Functions
@@ -163,6 +170,8 @@ public class MenuManager : MonoBehaviour {
 
 				if (ServerLinker.instance.GetIsInLobby()) {
 					ServerLinker.instance.StopLobby();
+
+					PlayerPrefs.SetInt("join_match_failed", 1);
 					SceneManager.LoadScene(0);
 					return;
 				}
@@ -263,16 +272,167 @@ public class MenuManager : MonoBehaviour {
 
 		int mapIndex = GetSceneIndexByName(mapName);
 
-		//TODO: scale by challenge mode, difficulty, etc
+		//TODO: unless player invites friend, pressing play should go to matchmaking directly
+		if (currentGameMode == GameMode.PointCap) {
+			StartCoroutine(SearchCompetitiveMatch(mapName));
+			return;
+		}
+
+		LobbyUI.instance.SetGameStarting();
+
+		//NOTE: scale by challenge mode, difficulty, etc
 		PlayerPrefs.SetInt("game_start_delay", GetStartDelayByDifficulty(currentCoopDifficulty));
 		PlayerPrefs.SetInt("game_start_cash", GetCashByDifficulty(currentCoopDifficulty));
 		PlayerPrefs.SetInt("game_start_wave", currentWave);
 		PlayerPrefs.SetInt("game_start_difficulty", currentCoopDifficulty);
 		PlayerPrefs.SetString("game_map_name", mapName);
 
+		//any normal non-comp method will revert to not using bots
+		PlayerPrefs.SetInt("use_bots", 0);
+
 		//saved lobby room ID + "_g" goes to correct game room
 		if (mapIndex != -1)
 			ServerLinker.instance.StartShared(mapIndex, PlayerPrefs.GetString("room_id") + "_g");
+	}
+	public void CancelMatch() {
+		compWaitScreen.gameObject.SetActive(false);
+
+		if (compCoroutine != null) StopCoroutine(compCoroutine);
+
+		StartCoroutine(StopMatchmaking());
+
+		SceneManager.LoadScene(0);
+	}
+	public void AcknowledgeJoinMatchFailed() {
+		matchFailedScreen.gameObject.SetActive(false);
+	}
+
+	//ALL POST FUNCTIONS
+	//matchmake/start, UID: str, mode: str -> no return
+	//leave/queue, UID: str, mode: str -> no return
+	//match/ping, UID: str, mode: str -> returns "useBots", "null", or lobby ID
+	//game/termination, lobbyID: str, UID: str, winner: str -> no return
+
+	private IEnumerator StopMatchmaking() {
+		string url = $"{AccountDataSyncer.baseURL}leave/queue";
+
+		WWWForm form = new();
+		form.AddField("UID", PersistentDict.GetString("user_id"));
+		form.AddField("mode", currentGameMode.ToString());
+
+		using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
+		yield return webRequest.SendWebRequest();
+
+		//useless for this function except for debug
+		if (webRequest.result == UnityWebRequest.Result.ConnectionError ||
+			webRequest.result == UnityWebRequest.Result.ProtocolError) {
+			Debug.LogError($"Error: {webRequest.error}");
+		} else {
+			Debug.Log($"Received stopmatch: {webRequest.downloadHandler.text}");
+		}
+
+		compWaitScreen.gameObject.SetActive(false);
+	}
+
+	private IEnumerator SearchCompetitiveMatch(string mapName) {
+		compWaitScreen.gameObject.SetActive(true);
+
+		string url = $"{AccountDataSyncer.baseURL}matchmake/start";
+
+		Debug.Log(url);
+
+		WWWForm form = new();
+		form.AddField("UID", PersistentDict.GetString("user_id"));
+		form.AddField("mode", currentGameMode.ToString());
+
+		using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
+		yield return webRequest.SendWebRequest();
+
+		if (webRequest.result == UnityWebRequest.Result.ConnectionError ||
+			webRequest.result == UnityWebRequest.Result.ProtocolError) {
+			Debug.LogError($"Error: {webRequest.error}");
+
+			PlayerPrefs.SetInt("join_match_failed", 1);
+			SceneManager.LoadScene(0);
+
+			yield break;
+		} else {
+			Debug.Log($"Received matchmake: {webRequest.downloadHandler.text}");
+			compCoroutine = StartCoroutine(CompetitiveMatchPing(mapName));
+		}
+	}
+	private IEnumerator CompetitiveMatchPing(string mapName) {
+		while (true) {
+			string url = $"{AccountDataSyncer.baseURL}match/ping";
+
+			WWWForm form = new();
+			form.AddField("UID", PersistentDict.GetString("user_id"));
+			form.AddField("mode", currentGameMode.ToString());
+
+			using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
+
+			yield return webRequest.SendWebRequest();
+
+			if (webRequest.result == UnityWebRequest.Result.ConnectionError ||
+				webRequest.result == UnityWebRequest.Result.ProtocolError) {
+				Debug.LogError($"Error: {webRequest.error}");
+
+				if (webRequest.error.Contains("Curl error 65")) {
+					yield return new WaitForSeconds(1.5f);
+					continue;
+				}
+
+				PlayerPrefs.SetInt("join_match_failed", 1);
+				SceneManager.LoadScene(0);
+
+				yield break;
+			} else {
+				Debug.Log($"Received ping: {webRequest.downloadHandler.text}");
+
+				string text = webRequest.downloadHandler.text[1..^1];
+
+				//keep waiting
+				if (text == "null") {
+					yield return new WaitForSeconds(1.5f);
+					continue;
+				}
+				//TODO: populate game with bots
+				if (text == "useBots") {
+					JoinMatch(Random.Range(1000000, 9999999).ToString(), 0, mapName, true);
+					yield break;
+				}
+				//must be real
+				string[] parts = text.Split('|');
+
+				int team = parts[1] == "red" ? 1 : 0;
+				JoinMatch(parts[0], team, mapName, false);
+			}
+			yield return new WaitForSeconds(1.5f);
+		}
+	}
+	private void JoinMatch(string matchId, int team, string mapName, bool isBots) {
+		int mapIndex = GetSceneIndexByName(mapName);
+
+		LobbyUI.instance.SetGameStarting();
+
+		//TODO: scale by player and mode preset, etc; support coop modes
+		PlayerPrefs.SetInt("game_start_cash", 1000);
+		PlayerPrefs.SetString("game_map_name", mapName);
+		PlayerPrefs.SetString("comp_match_id", matchId);
+		PlayerPrefs.SetInt("comp_match_team", team);
+
+		if (mapIndex != -1) {
+			//if isBots, create single player game and flag bots to true
+			if (isBots) {
+				PlayerPrefs.SetInt("use_bots", 1);
+				compWaitScreen.gameObject.SetActive(false);
+				ServerLinker.instance.StartSinglePlayer(mapIndex);
+			} else {
+				PlayerPrefs.SetInt("use_bots", 0);
+				compWaitScreen.gameObject.SetActive(false);
+				ServerLinker.instance.StartShared(mapIndex, matchId);
+			}
+		}
 	}
 	public void StartSingle() {
 		int sceneIndex = GetSceneIndexByName(selectedMapName);
@@ -329,6 +489,11 @@ public class MenuManager : MonoBehaviour {
 
 		if (TestingServerLinker.instance != null) {
 			Destroy(TestingServerLinker.instance.gameObject);
+		}
+
+		if (PlayerPrefs.GetInt("join_match_failed") == 1) {
+			PlayerPrefs.SetInt("join_match_failed", 0);
+			matchFailedScreen.gameObject.SetActive(true);
 		}
 	}
 	private void Start() {

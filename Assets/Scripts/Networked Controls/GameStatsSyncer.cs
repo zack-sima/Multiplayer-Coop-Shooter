@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Fusion;
+using UnityEngine.Networking;
 
 /// <summary>
 /// This script is the primary way to sync the game's server data, like team score, current wave, etc.
@@ -223,13 +224,22 @@ public class GameStatsSyncer : NetworkBehaviour {
 	}
 	//called when game over is detected as true
 	private IEnumerator GameOverCoroutine() {
-
-		Debug
-			.Log("Game over!");
 		UIController.instance.SetRespawnUIEnabled(false);
 		UIController.instance.SetGameOverUIEnabled(true);
 
 		gameOverInvoked = true;
+
+		if (PlayerInfo.GetIsPVP()) {
+			string url = $"{AccountDataSyncer.baseURL}game/termination";
+
+			WWWForm form = new();
+			form.AddField("lobbyID", PlayerPrefs.GetString("comp_match_id"));
+			form.AddField("UID", PersistentDict.GetString("user_id"));
+			form.AddField("winner", WinningTeam == 1 ? "red" : "blue");
+
+			using UnityWebRequest webRequest = UnityWebRequest.Post(url, form);
+			yield return webRequest.SendWebRequest();
+		}
 
 		for (float i = 10f; i > 0f; i -= Time.deltaTime) {
 			//UIController screen

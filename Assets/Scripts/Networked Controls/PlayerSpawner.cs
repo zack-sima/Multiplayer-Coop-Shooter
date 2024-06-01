@@ -10,11 +10,13 @@ public class PlayerSpawner : SimulationBehaviour, IPlayerJoined {
 	private int playerTeam = -1;
 
 	private void GeneratePlayerTeam() {
-		int playerId = Runner.LocalPlayer.PlayerId;
-		Debug.Log(playerId);
+		playerTeam = PlayerPrefs.GetInt("comp_match_team");
 
-		if (playerId < 0) playerTeam = 0;
-		else playerTeam = (playerId + 1) % 2;
+		//int playerId = Runner.LocalPlayer.PlayerId;
+		//Debug.Log(playerId);
+
+		//if (playerId < 0) playerTeam = 0;
+		//else playerTeam = (playerId + 1) % 2;
 	}
 	public int GetPlayerTeam() {
 		return playerTeam;
