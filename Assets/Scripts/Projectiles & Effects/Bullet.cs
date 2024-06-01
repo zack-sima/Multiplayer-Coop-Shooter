@@ -15,6 +15,7 @@ public class Bullet : MonoBehaviour {
 
 	[SerializeField] private bool isGrenade;
 	[SerializeField] private bool isMissile;
+	[SerializeField] private bool isRailGun;
 
 	//missiles have teams
 	[SerializeField] private TeamMaterialManager missileTeamMaterials;
@@ -124,7 +125,8 @@ public class Bullet : MonoBehaviour {
 			Instantiate(explosionPrefab, transform.position, Quaternion.identity);
 		if (spawnedFlame != null)
 			Destroy(spawnedFlame);
-		Destroy(gameObject);
+		if (!isRailGun) Destroy(gameObject);
+		else Destroy(gameObject, 1.5f);
 	}
 	//tries to make an RPC call so everyone destroys the bullet
 	private void DestroyLocalBullet() {
