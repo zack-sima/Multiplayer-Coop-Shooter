@@ -76,7 +76,7 @@ public class Bullet : MonoBehaviour {
 		if (other.gameObject.layer == LayerMask.NameToLayer("Projectiles")) return;
 
 		//flamethrower gets to hit every target once
-		if (isFlame) {
+		if (isFlame || isRailGun) {
 			if (hitTargets.Contains(other)) return;
 			hitTargets.Add(other);
 		}
@@ -126,7 +126,10 @@ public class Bullet : MonoBehaviour {
 		if (spawnedFlame != null)
 			Destroy(spawnedFlame);
 		if (!isRailGun) Destroy(gameObject);
-		else Destroy(gameObject, 1.5f);
+		else { 
+			float time = (maxDistance - distanceTravelled) / speed;
+			Destroy(gameObject, time); 
+		}
 	}
 	//tries to make an RPC call so everyone destroys the bullet
 	private void DestroyLocalBullet() {
