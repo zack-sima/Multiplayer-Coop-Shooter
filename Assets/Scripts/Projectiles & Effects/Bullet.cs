@@ -128,16 +128,8 @@ public class Bullet : MonoBehaviour {
 			Instantiate(explosionPrefab, transform.position, Quaternion.identity);
 		if (spawnedFlame != null)
 			Destroy(spawnedFlame);
-		if (!isPierce) { 
-			if (isRailgun) {
-				isNotUsed = true;
-				Destroy(gameObject, .5f);
-				return;
-			}
-			Destroy(gameObject); 
-		} else { 
-			Destroy(gameObject, 5f); 
-		}
+		Destroy(gameObject); 
+		
 	}
 	//tries to make an RPC call so everyone destroys the bullet
 	private void DestroyLocalBullet() {

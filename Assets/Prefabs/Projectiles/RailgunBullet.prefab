@@ -9901,7 +9901,7 @@ GameObject:
   - component: {fileID: 8020575848135747995}
   - component: {fileID: 5087427406399167772}
   - component: {fileID: 733065731378021897}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Glow (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14846,7 +14846,7 @@ GameObject:
   - component: {fileID: 2093263170071361777}
   - component: {fileID: 1754981539328943928}
   - component: {fileID: 2087456646901204188}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Glow (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19791,7 +19791,7 @@ GameObject:
   - component: {fileID: 7443997803110142784}
   - component: {fileID: 853052693302579276}
   - component: {fileID: 3640019006493115907}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Glow (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24792,6 +24792,7 @@ MonoBehaviour:
   isExplosion: 1
   isFlame: 0
   explosionRadius: 8
+  isNotUsed: 0
   maxDistance: 12
 --- !u!54 &2229630022482374810
 Rigidbody:
