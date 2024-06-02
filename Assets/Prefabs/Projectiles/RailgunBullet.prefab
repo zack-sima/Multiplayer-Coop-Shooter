@@ -9901,7 +9901,7 @@ GameObject:
   - component: {fileID: 8020575848135747995}
   - component: {fileID: 5087427406399167772}
   - component: {fileID: 733065731378021897}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Glow (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -14846,7 +14846,7 @@ GameObject:
   - component: {fileID: 2093263170071361777}
   - component: {fileID: 1754981539328943928}
   - component: {fileID: 2087456646901204188}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Glow (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -19791,7 +19791,7 @@ GameObject:
   - component: {fileID: 7443997803110142784}
   - component: {fileID: 853052693302579276}
   - component: {fileID: 3640019006493115907}
-  m_Layer: 7
+  m_Layer: 12
   m_Name: Glow (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24755,8 +24755,8 @@ Transform:
   m_GameObject: {fileID: 8601614415527540211}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3, z: 0}
-  m_LocalScale: {x: 0.15, y: -0.118710876, z: 0.8}
+  m_LocalPosition: {x: -0, y: 3, z: 0.1742}
+  m_LocalScale: {x: 0.15, y: -0.118710876, z: 0.4516}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8020575848135747995}
@@ -24783,7 +24783,8 @@ MonoBehaviour:
   firePrefab: {fileID: 0}
   isGrenade: 0
   isMissile: 0
-  isRailGun: 1
+  isRailgun: 1
+  isPierce: 0
   missileTeamMaterials: {fileID: 0}
   missileRenderer: {fileID: 0}
   speed: 30
@@ -24791,6 +24792,7 @@ MonoBehaviour:
   isExplosion: 1
   isFlame: 0
   explosionRadius: 8
+  isNotUsed: 0
   maxDistance: 12
 --- !u!54 &2229630022482374810
 Rigidbody:
@@ -24834,7 +24836,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8601614415527540211}
-  m_Enabled: 0
+  m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
